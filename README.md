@@ -12,19 +12,19 @@ This project is part of my System Test Engineering coursework, supervised by Ms.
 ## Project Structure
 The repository is organized as follows:
 
-- **Code:** Contains Python scripts and Jupyter notebooks for data analysis, model development, and image preprocessing.
+- **python_code:** Contains Python scripts and Jupyter notebooks for data analysis, model development, and image preprocessing.
 
-- **Data:** Contains the dataset used for training and testing and processed data.
+- **data:** Contains the dataset used for training and testing and processed data.
 
-- **Documentation:** Contains project documentation, reports, and any research materials.
+- **documentation:** Contains project documentation, reports, and any research materials.
 
-- **Environment:** Contains information to set up the project environment.
+- **environment:** Contains information to set up the project environment.
 
-- **Images:** Contains image-related outputs.
+- **images:** Contains image-related outputs.
 
-- **References:** Contains external references.
+- **references:** Contains external references.
 
-- **Results:** Stores model evaluation results.
+- **results:** Stores model evaluation results.
 
 ## Getting Started
 To get started with this project, follow these steps:
