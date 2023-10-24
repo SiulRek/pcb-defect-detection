@@ -4,7 +4,7 @@ import matplotlib.ticker as ticker
 import tensorflow as tf
 
 class PCBVisualizer:
-    """ PCB Visualizer during image processing. Pass slice of tensorflow images as input parameter. """
+    """ PCB Visualizer during image processing. Pass slice from tensorflow images as input parameter. """
 
     def __init__(self):
         self.last_plot = None  
