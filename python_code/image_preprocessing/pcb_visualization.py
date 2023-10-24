@@ -58,7 +58,7 @@ class PCBVisualizer:
             axes[i].set_xlabel("Color Values", labelpad=10)
             axes[i].set_ylabel("Frequencies", labelpad=10)
 
-        fig.suptitle(title, fontsize=20, fontweight='bold', y=0.97)
+        fig.suptitle(title, fontsize=20, fontweight='bold', y=1.03)
         plt.subplots_adjust(wspace=0.4, hspace=0.4)
         plt.show()
 
