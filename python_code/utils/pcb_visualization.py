@@ -22,10 +22,15 @@ class PCBVisualizer:
         axes = axes.ravel()
         
         for i, image_data in enumerate(image_tf_dataset.take(9)):
-            axes[i].imshow(image_data[0].numpy())
+            
+            if len(image_data[0].shape) == 3 and image_data[0].shape[2] == 1:
+                axes[i].imshow(tf.squeeze(image_data[0]).numpy(), cmap='gray')  # use the gray colormap       
+            else:
+                axes[i].imshow(image_data[0].numpy())
+            
             axes[i].axis('off')
             
-        fig.suptitle(title, fontsize=20, fontweight='bold', y=0.9)
+        fig.suptitle(title, fontsize=20, fontweight='bold', y=0.95)
         plt.subplots_adjust(wspace=0.01, hspace=0.01)
         plt.show()
 
@@ -100,6 +105,7 @@ class PCBVisualizer:
 
     def _compute_image_fft(self, image): 
         
+        #image_conv = tf.cast(image, dtype=tf.int16)
         image_np = tf.image.rgb_to_grayscale(image).numpy().squeeze()
 
         f_transform = np.fft.fft2(image_np)
