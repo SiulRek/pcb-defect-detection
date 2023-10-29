@@ -27,6 +27,8 @@ def get_dataframe(path_an=PATH_ANNOTATIONS, path_im=PATH_IMAGE, create_annotatio
     - 'class', 'xmin', 'ymin', 'xmax', 'ymax', 'file', 'defect_x_center', 'defect_y_center',
       'defect_width', 'defect_height', 'image_width', 'image_height', 'width_ratio', 'height_ratio',
       'path', 'category_codes'
+      
+    Implementation Reference: https://www.kaggle.com/code/leedh000/cpb-defect-detecting-with-yolov7.
     """
     
     dataset = {
