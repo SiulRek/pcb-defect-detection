@@ -7,7 +7,7 @@ DATASET_DIR = os.path.join(ROOT_DIR, 'data', 'deep_pcb_tangsali5201')
 class LoadDataError(Exception): pass
 
 def get_dataframes(dataset_dir=DATASET_DIR, create_annotation_summary=True):
-    """Generates and returns pandas DataFrames for training and testing datasets.
+    """Generates and returns pandas DataFrames for training and testing deepPCB datasets of tangali5201 (https://github.com/tangsanli5201/DeepPCB/tree/master).
 
     Parameters:
         dataset_dir (str, optional): Directory path containing the dataset files.
