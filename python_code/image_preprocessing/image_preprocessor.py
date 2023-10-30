@@ -1,62 +1,38 @@
 import tensorflow as tf
+from copy import deepcopy
 
-#IMPORTANT ANNOTATIONS: The current class implementation serves jusst as a template and as documentation of the current software plan.
-
+from python_code.image_preprocessing.image_preprocessing_steps import StepBase
 
 class ImagePreprocessor:
-    def __init__(self, pipeline=None):
-        """Initializes the ImagePreprocessor with a given pipeline.
+    def __init__(self, pipeline=None): 
+        
+        if pipeline is None:
+            pipeline = []
 
-        Args:
-            pipeline (dict, optional): Pipeline represented as configuartion dict specifying which preprocessing steps to apply. 
-                                                   Each key is a step name, and the associated value is a dictionary of arguments for that step.
-        """
-        self.pipeline = pipeline or {}
+        self._pipeline = deepcopy(pipeline)
+
+    @property
+    def pipeline(self):
+        return self._pipeline
+
+    @pipeline.setter
+    def pipeline(self, pipeline):
+
+        for step in pipeline:
+            if not isinstance(step, StepBase):  
+                raise ValueError(f'Expecting a Child of StepBase, got {type(step)} instead.')
+            
+        self._pipeline = deepcopy(pipeline)
+
+    def add_step(self, step):
+        if not isinstance(step, StepBase):  
+                    raise ValueError(f'Expecting a Child of StepBase, got {type(step)} instead.')
+        self._pipeline.append(deepcopy(step))
 
     def process(self, image_dataset):
-        """Processes the images according to the provided configuration.
-        
-        Args:
-            images (tf.Tensor): Input images to preprocess.
-        
-        Returns:
-            tf.Tensor: Preprocessed images.
-        """
 
         processed_dataset = image_dataset
-        
-        for key in self.pipeline.keys:
-
-            if key == "resize":
-                processed_dataset = self.resize_images(processed_dataset, **self.pipeline["resize"])
-            
-            if key == "enhance_contrast":
-                processed_dataset = self.enhance_contrast(processed_dataset, **self.pipeline["enhance_contrast"])
-            
-            if key == "reduce_noise":
-                processed_dataset = self.reduce_noise(processed_dataset, **self.pipeline["reduce_noise"])
-        
-                # other steps can be added here similarly
+        for step in self.pipeline:
+            processed_dataset = step.process_step(processed_dataset)
 
         return processed_dataset
-
-    def resize_images(self, images, width, height):
-        """Resizes the images to the specified dimensions.
-        """
-        pass
-
-    def enhance_contrast(self, images):
-        """Enhances the contrast of the images.
-
-        """
-        pass
-
-        
-
-    def reduce_noise(self, images, method='gaussian'):
-        """Reduces noise in the images.
-        """
-        pass
-
-
-    # Add other processing functions similarly...
