@@ -2,10 +2,12 @@ import pandas as pd
 import os
 import xml.etree.ElementTree as ET 
 
-ROOT_DIRECTORY = os.path.curdir
+from python_code.load_raw_data.get_tf_dataset import get_tf_dataset as get_tf_dataset_from_df
 
-PATH_ANNOTATIONS = os.path.join(ROOT_DIRECTORY, "data\pcb_defects_kaggle\Annotations") # Path to annotations.
-PATH_IMAGE = os.path.join(ROOT_DIRECTORY, "data\pcb_defects_kaggle\images") # Path to .jpg images.
+ROOT_DIRECTORY = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
+
+PATH_ANNOTATIONS = os.path.join(ROOT_DIRECTORY, r"data\pcb_defects_kaggle\Annotations") # Path to annotations.
+PATH_IMAGE = os.path.join(ROOT_DIRECTORY, r"data\pcb_defects_kaggle\images") # Path to .jpg images.
 
 def get_dataframe(path_an=PATH_ANNOTATIONS, path_im=PATH_IMAGE, create_annotation_summary=True):
     """
@@ -21,7 +23,6 @@ def get_dataframe(path_an=PATH_ANNOTATIONS, path_im=PATH_IMAGE, create_annotatio
 
     This function reads XML annotations for PCB defects, extracts information and stores
     the information in a DataFrame.
-
 
     The resulting DataFrame contains the following columns:
     - 'class', 'xmin', 'ymin', 'xmax', 'ymax', 'file', 'defect_x_center', 'defect_y_center',
@@ -51,7 +52,7 @@ def get_dataframe(path_an=PATH_ANNOTATIONS, path_im=PATH_IMAGE, create_annotatio
             }
 
     all_files = []          # Stores the path to all Files
-    for path, subdirs, files in os.walk(path_an):
+    for path, _, files in os.walk(path_an):
         #print([path, subdirs, files])
         for name in files:
             if '.csv' not in name:
@@ -133,18 +134,34 @@ def get_dataframe(path_an=PATH_ANNOTATIONS, path_im=PATH_IMAGE, create_annotatio
             tmp_path = tree.find('path').text
             dataset['path']+= [path_im + tmp_path[32:]]     # Adapt path to pcb-defect-detection Workspace     
 
-    for key in dataset.keys():
-        print(key, len(dataset[key]))
-
     dataframe = pd.DataFrame(dataset)
 
     if create_annotation_summary:
         file_path = os.path.join(path_an, 'annotation_summary.csv')
+        #file_path = os.path.join(ROOT_DIRECTORY, 'file_to_remove.csv')
         dataframe.to_csv(file_path, sep=';')
-
-
+        
     return dataframe
+
+def get_tf_dataset(path_an=PATH_ANNOTATIONS, path_im=PATH_IMAGE, create_annotation_summary=False, random_seed=75):
+    """
+    Creates a TensorFlow Dataset from Kaggle Dataset.
+    
+    Parameters:
+    - path_an (str): Path to the directory containing XML annotations.
+    - path_im (str): Path to the directory containing images.
+    - create_annotation_summary (bool): If True, create an annotation summary CSV file.
+    - random_seed (int, optional): The random seed for shuffling the dataset. Defaults to 34.
+    
+    Returns:
+    - tf.data.Dataset: A TensorFlow Dataset object containing shuffled paths and corresponding targets.
+    """
+    
+    df = get_dataframe(path_an, path_im, create_annotation_summary)
+
+    return get_tf_dataset_from_df(df, random_seed=random_seed)
+
 
 
 if __name__ == '__main__':
-    get_dataframe()
+    get_tf_dataset()
