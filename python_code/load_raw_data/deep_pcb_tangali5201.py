@@ -1,7 +1,10 @@
 import pandas as pd
 import os
 
-ROOT_DIR = os.path.curdir
+from python_code.load_raw_data.get_tf_dataset import get_tf_dataset as get_tf_dataset_from_df
+
+
+ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 DATASET_DIR = os.path.join(ROOT_DIR, 'data', 'deep_pcb_tangsali5201')
 
 class LoadDataError(Exception): pass
@@ -129,8 +132,29 @@ def get_dataset(path_to_paths_file, dataset_dir=DATASET_DIR):
                 
     return dataset
 
+def get_tf_datasets(dataset_dir=DATASET_DIR, create_annotation_summary=False, random_seed=89):
+    """
+    Creates a TensorFlow Dataset from Kaggle Dataset.
+    
+    Parameters:
+    - dataset_dir (str): Path to the dataset directory.
+    - create_annotation_summary (bool): If True, create an annotation summary CSV file.
+    - random_seed (int, optional): The random seed for shuffling the dataset. Defaults to 34.
+    
+    Returns:
+    - train_tf_dataset, test_df_dataset (tf.data.Dataset, tf.data.Dataset):  A tuple of two TensorFlow Dataset object containing shuffled paths and corresponding targets.
+    """
+    
+    train_df, test_df = get_dataframes(dataset_dir, create_annotation_summary)
+
+    train_tf_dataset = get_tf_dataset_from_df(train_df, random_seed)
+    test_tf_dataset = get_tf_dataset_from_df(test_df, random_seed)
+
+    return train_tf_dataset, test_tf_dataset
+
+
 if __name__ == '__main__':
-    get_dataframes()
+    get_tf_datasets()
 
 
 
