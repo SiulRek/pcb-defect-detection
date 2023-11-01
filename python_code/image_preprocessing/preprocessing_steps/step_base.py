@@ -5,8 +5,8 @@ import os
 import cv2
 import tensorflow as tf
 
-ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
-JSON_PATH = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/parameter_ranges.json')
+ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
+JSON_PATH = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/config/parameter_ranges.json')
 
 class StepBase:
     """  Base class for defining preprocessing steps for images.
@@ -14,11 +14,14 @@ class StepBase:
     Attributes:
     - name (str): A name identifier for the preprocessing step.
     - params (dict):  A dictionary containing parameters needed for the preprocessing step.
+    - output_datatypes (dict): A dictionary containing the output datatypes (Only relevand when using the py_function_decorator).
 
     Methods:
     - process_step(tf_image: tf.Tensor, tf_target: tf.Tensor) -> (tf.Tensor, tf.Tensor):
         To be implemented by the child class to define the specific preprocessing functionality.
-
+    - set_output_datatypes():
+        Function to set the output_datatypes(), child classes are allowed to overwrite the function.
+          
     - extract_params(local_vars: dict) -> dict:
         Extracts parameters needed for the preprocessing step based on local variables. 
         It considers if parameters should be randomized or extracted directly from local_vars.
@@ -36,9 +39,8 @@ class StepBase:
         Loads parameters available for randomization from a JSON file. If a parameter for the current 
         preprocessing step is not available in the JSON, it raises a KeyError.
 
-    - reshape_color_channel(tf_image: tf.Tensor, color_channel: str = 'gray', tf_image_comparison: tf.Tensor = None) -> tf.Tensor:
-        Helper method to reshape image tensor based on color channel. It supports reshaping to grayscale 
-        or RGB. If tf_image_comparison is provided, it reshapes the image to match the channels of tf_image_comparison.
+    - correct_shape() -> tf.Tensor:
+        Corrects the shape of a TensorFlow image tensor based on the inferred dimensions.
 
     Notes:
     - The class is represents the base class for specific preprocessing steps inheriting from this class.
@@ -49,6 +51,13 @@ class StepBase:
     def __init__(self, name,  local_vars):
         self.name = name
         self.params = self.extract_params(local_vars)
+        self.output_datatypes = {'image': None, 'target': None}
+        self.set_output_datatypes()
+
+    def set_output_datatypes(self):
+        # Child class can overwrite this method
+        self.output_datatypes['image'] = tf.uint8
+        self.output_datatypes['target'] = tf.int8
         
     def process_step(self, tf_image, tf_target):
         # Child class must implement this method.
@@ -57,7 +66,7 @@ class StepBase:
     def extract_params(self, local_vars):
         if local_vars['set_random_params']:
             return self.random_params()
-        return {key: value for key, value in local_vars.items() if key != 'self' and key != 'set_random_params'}
+        return {key: value for key, value in local_vars.items() if key not in ['self', 'set_random_params', '__class__']}
 
     @staticmethod
     def tf_function_decorator(func):
@@ -74,7 +83,7 @@ class StepBase:
                 processed_img, processed_tgt = tf.py_function(
                     func=lambda image, target: func(self, image, target),  # Lambda is used to pass self.
                     inp=[img, tgt],
-                    Tout=(tf.uint8, tf.int8),
+                    Tout=(self.output_datatypes['image'], self.output_datatypes['target']),
                 )
                 return processed_img, processed_tgt
             return image_dataset.map(mapped_function)
@@ -95,12 +104,22 @@ class StepBase:
             configs = json.load(file)
         return configs.get(self.name, {})
 
-    def reshape_color_channel(self, tf_image, color_channel='gray', tf_image_comparison=None):
-        if tf_image_comparison is not None:
-            return tf.reshape(tf_image, [tf_image.shape[0], tf_image.shape[1], tf_image_comparison.shape[2]])
-        elif color_channel == 'gray':
-            return tf.reshape(tf_image, [tf_image.shape[0], tf_image.shape[1], 1])
-        elif color_channel == 'rgb':
-            return tf.reshape(tf_image, [tf_image.shape[0], tf_image.shape[1], 3])
-        else:
-            raise ValueError(f'Color channel {color_channel} is invalid.')
+    def correct_shape(self, tf_image):
+        """
+        Corrects the shape of a TensorFlow image tensor based on the inferred dimensions.
+        
+        Parameters:
+        - tf_image (tf.Tensor): The input image tensor.
+        
+        Returns:
+        - tf.Tensor: A reshaped tensor based on inferred dimensions.
+        """
+        
+        height = tf.shape(tf_image)[0]
+        width = tf.shape(tf_image)[1]
+        channel_num = tf.shape(tf_image)[2]
+        
+        reshaped_image = tf.reshape(tf_image, [height, width, channel_num])
+        
+        return reshaped_image
+
