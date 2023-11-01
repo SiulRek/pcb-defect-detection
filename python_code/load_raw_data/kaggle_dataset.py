@@ -2,12 +2,14 @@ import pandas as pd
 import os
 import xml.etree.ElementTree as ET 
 
-from python_code.load_raw_data.get_tf_dataset import get_tf_dataset as get_tf_dataset_from_df
+from python_code.load_raw_data.get_tf_dataset import get_tf_dataset_from_df
+from python_code.load_raw_data.dataset_serialization import load_tfrecord_from_file, save_tfrecord_from_file
 
-ROOT_DIRECTORY = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
+ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 
-PATH_ANNOTATIONS = os.path.join(ROOT_DIRECTORY, r"data\pcb_defects_kaggle\Annotations") # Path to annotations.
-PATH_IMAGE = os.path.join(ROOT_DIRECTORY, r"data\pcb_defects_kaggle\images") # Path to .jpg images.
+PATH_ANNOTATIONS = os.path.join(ROOT_DIR, r"data\pcb_defects_kaggle\Annotations") # Path to annotations.
+PATH_IMAGE = os.path.join(ROOT_DIR, r"data\pcb_defects_kaggle\images") # Path to .jpg images.
+PATH_RECORD = os.path.join(ROOT_DIR, r"data\tensorflow_records\pcb_defects_kaggle.tfrecord")
 
 def get_dataframe(path_an=PATH_ANNOTATIONS, path_im=PATH_IMAGE, create_annotation_summary=True):
     """
@@ -138,12 +140,12 @@ def get_dataframe(path_an=PATH_ANNOTATIONS, path_im=PATH_IMAGE, create_annotatio
 
     if create_annotation_summary:
         file_path = os.path.join(path_an, 'annotation_summary.csv')
-        #file_path = os.path.join(ROOT_DIRECTORY, 'file_to_remove.csv')
+        #file_path = os.path.join(ROOT_DIR, 'file_to_remove.csv')
         dataframe.to_csv(file_path, sep=';')
         
     return dataframe
 
-def get_tf_dataset(path_an=PATH_ANNOTATIONS, path_im=PATH_IMAGE, create_annotation_summary=False, random_seed=75):
+def get_tf_dataset(path_an=PATH_ANNOTATIONS, path_im=PATH_IMAGE, create_annotation_summary=False, random_seed=75, sample_num=-1):
     """
     Creates a TensorFlow Dataset from Kaggle Dataset.
     
@@ -152,6 +154,7 @@ def get_tf_dataset(path_an=PATH_ANNOTATIONS, path_im=PATH_IMAGE, create_annotati
     - path_im (str): Path to the directory containing images.
     - create_annotation_summary (bool): If True, create an annotation summary CSV file.
     - random_seed (int, optional): The random seed for shuffling the dataset. Defaults to 34.
+    - sample_num (int, optional): Numbers of samples to take from the dataframe. Defaults to -1 -> All Samples are taken.
     
     Returns:
     - tf.data.Dataset: A TensorFlow Dataset object containing shuffled paths and corresponding targets.
@@ -159,9 +162,20 @@ def get_tf_dataset(path_an=PATH_ANNOTATIONS, path_im=PATH_IMAGE, create_annotati
     
     df = get_dataframe(path_an, path_im, create_annotation_summary)
 
-    return get_tf_dataset_from_df(df, random_seed=random_seed)
+    return get_tf_dataset_from_df(df, random_seed=random_seed, sample_num=sample_num)
 
+def save_tf_record():
+    """    Saves TensorFlow dataset to the TFRecord file.
+    """
+    save_tfrecord_from_file(get_tf_dataset(), PATH_RECORD)
 
+def load_tf_record():
+    """    Loads the specific TFRecord file and returns a parsed TensorFlow dataset.
+
+    Returns:
+    - tf.data.Dataset: A parsed and optimized TensorFlow dataset containing shuffled paths and corresponding targets.
+    """
+    return load_tfrecord_from_file(PATH_RECORD)
 
 if __name__ == '__main__':
-    get_tf_dataset()
+    save_tf_record()
