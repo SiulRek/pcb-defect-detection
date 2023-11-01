@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,19 +10,19 @@ class PCBVisualizerBase:
     """ This class represents the base for the PCBVisualizer child classes."""
 
     def __init__(self):
-        self.last_plot = None  
+        self.last_fig = None  
     
     def save_plot_to_file(self, filename):
-        if self.last_plot:
-            self.last_plot.savefig(filename)
+        if self.last_fig:
+            self.last_fig.savefig(filename)
         else:
             print("No plot to save!")
 
     def _generate_plot(self, fig, title, y_title=0.95, wspace=0.01, hspace=0.01):
         fig.suptitle(title, fontsize=20, fontweight='bold', y=y_title)
         plt.subplots_adjust(wspace=wspace, hspace=hspace)
+        self.last_fig = fig
         plt.show()
-        self.last_plot = plt.gcf()  
 
     def _get_defect_name(self, target):
 
@@ -172,9 +174,9 @@ class PCBVisualizerforTF(PCBVisualizerBase):
         
         fig.subplots_adjust(left=0.10, right=0.90, bottom=0.10, top=0.90, wspace=0.70, hspace=0.70)
         plt.tight_layout()
+        self.last_fig = fig
         plt.show()
 
-        self.last_plot = plt.gcf()  
 
     def _compute_image_fft(self, image): 
         
