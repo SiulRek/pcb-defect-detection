@@ -9,8 +9,9 @@ import tensorflow as tf
 class PCBVisualizerBase:
     """ This class represents the base for the PCBVisualizer child classes."""
 
-    def __init__(self):
+    def __init__(self, show_plot=True):
         self.last_fig = None  
+        self.show_plot = show_plot
     
     def save_plot_to_file(self, filename):
         if self.last_fig:
@@ -22,7 +23,8 @@ class PCBVisualizerBase:
         fig.suptitle(title, fontsize=20, fontweight='bold', y=y_title)
         plt.subplots_adjust(wspace=wspace, hspace=hspace)
         self.last_fig = fig
-        plt.show()
+        if self.show_plot:
+            plt.show()
 
     def _get_defect_name(self, target):
 
@@ -175,7 +177,8 @@ class PCBVisualizerforTF(PCBVisualizerBase):
         fig.subplots_adjust(left=0.10, right=0.90, bottom=0.10, top=0.90, wspace=0.70, hspace=0.70)
         plt.tight_layout()
         self.last_fig = fig
-        plt.show()
+        if self.show_plot:
+            plt.show()
 
 
     def _compute_image_fft(self, image): 
