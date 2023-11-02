@@ -5,7 +5,7 @@ import json
 import tensorflow as tf
 import cv2
 
-from python_code.image_preprocessing.preprocessing_steps.step_base import StepBase
+from python_code.image_preprocessing import StepBase
 from python_code.load_raw_data.kaggle_dataset import load_tf_record
 
 
@@ -15,7 +15,7 @@ class TestStepBase(unittest.TestCase):
         def __init__(self, param1=10 , param2=(10,10), param3=True, set_params_from_range=False):
             super().__init__('Test_Step', locals())
 
-        @StepBase.tf_function_decorator
+        @StepBase._tf_function_decorator
         def process_step(self, tf_image, tf_target):
             tf_image_grayscale = tf.image.rgb_to_grayscale(tf_image)
             self.correct_shape(tf_image_grayscale)
@@ -25,7 +25,7 @@ class TestStepBase(unittest.TestCase):
         def __init__(self, param1=10 , param2=(10,10), param3=True, set_params_from_range=False):
             super().__init__('Test_Step', locals())
 
-        @StepBase.py_function_decorator
+        @StepBase._py_function_decorator
         def process_step(self, tf_image, tf_target):
             cv_img = (tf_image.numpy()).astype('uint8')
             cv_blurred_image = cv2.GaussianBlur(cv_img, ksize=(5,5), sigmaX=2)  # Randomly choosen action.
@@ -48,12 +48,12 @@ class TestStepBase(unittest.TestCase):
         self.assertEqual(self.tf_preprocessing_step.params, {'param1': 10, 'param2': (10,10), 'param3': True})
         
     def test_load_params_from_json(self):
-        configs = self.tf_preprocessing_step.load_params_from_json()
+        configs = self.tf_preprocessing_step._load_params_from_json()
         self.assertIsInstance(configs, dict)
 
     def test_params_from_range(self):
         self.local_vars['set_params_from_range'] = True
-        self.tf_preprocessing_step.params_from_range()
+        self.tf_preprocessing_step._params_from_range()
         self.assertIn(self.tf_preprocessing_step.params['param1'], [10,20,30,40])  # Adjust based on your json file
         self.assertIn(self.tf_preprocessing_step.params['param2'], [(10,10),(20,20),(30,30)])  # Adjust based on your json file
         self.assertIn(self.tf_preprocessing_step.params['param3'], [True, False])  # Adjust based on your json file
