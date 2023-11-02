@@ -32,8 +32,8 @@ class StepBase:
     - py_function_decorator(func: Callable) -> Callable:
         A decorator to wrap python functions for mapping onto a dataset using tf.py_function.
 
-    - random_params() -> None:
-        Randomizes parameters for the preprocessing step based on values defined in a JSON file.
+    - params_from_range() -> None:
+        Randomizes parameters for the preprocessing step based on value ranges defined in a JSON file.
 
     - load_params_from_json() -> dict:
         Loads parameters available for randomization from a JSON file. If a parameter for the current 
@@ -54,6 +54,29 @@ class StepBase:
         self.output_datatypes = {'image': None, 'target': None}
         self.set_output_datatypes()
 
+    def extract_params(self, local_vars):
+        if local_vars['set_params_from_range']:
+            return self.params_from_range()
+        return {key: value for key, value in local_vars.items() if key not in ['self', 'set_params_from_range', '__class__']}
+
+    def params_from_range(self): 
+
+        configs = self.load_params_from_json()
+
+        params = {}
+        for key, value in self.params.items():
+            if key not in configs:
+                raise KeyError(f"Config for class '{str(self)}' does not contain the parameter '{key}'.")       
+            type_of_value = type(value)
+            params[key] = type_of_value(random.choice(configs[key]))
+
+        return params
+    
+    def load_params_from_json(self):
+        with open(JSON_PATH, 'r', encoding='utf-8') as file:
+            configs = json.load(file)
+        return configs.get(self.name, {})
+    
     def set_output_datatypes(self):
         # Child class can overwrite this method
         self.output_datatypes['image'] = tf.uint8
@@ -63,11 +86,6 @@ class StepBase:
         # Child class must implement this method.
         pass
     
-    def extract_params(self, local_vars):
-        if local_vars['set_random_params']:
-            return self.random_params()
-        return {key: value for key, value in local_vars.items() if key not in ['self', 'set_random_params', '__class__']}
-
     @staticmethod
     def tf_function_decorator(func):
         def wrapper(self, image_dataset):
@@ -89,20 +107,6 @@ class StepBase:
             return image_dataset.map(mapped_function)
         return wrapper
 
-    def random_params(self): 
-
-        configs = self.load_params_from_json()
-
-        for key, value in self.params.items():
-            if key not in configs:
-                raise KeyError(f"Config for class '{str(self)}' does not contain the parameter '{key}'.")       
-            type_of_value = type(value)
-            self.params[key] = type_of_value(random.choice(configs[key]))
-
-    def load_params_from_json(self):
-        with open(JSON_PATH, 'r', encoding='utf-8') as file:
-            configs = json.load(file)
-        return configs.get(self.name, {})
 
     def correct_shape(self, tf_image):
         """
