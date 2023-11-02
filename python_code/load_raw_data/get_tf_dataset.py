@@ -3,6 +3,8 @@ import random
 
 import tensorflow as tf
 
+ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
+
 
 def get_tf_dataset_from_df(dataframe, random_seed=34, sample_num=-1):
     """
@@ -17,13 +19,12 @@ def get_tf_dataset_from_df(dataframe, random_seed=34, sample_num=-1):
     Returns:
     - tf.data.Dataset: A TensorFlow Dataset object containing shuffled paths and corresponding targets.
     """
-    root_dir = os.path.join(os.path.curdir)
 
     paths = []
     targets = []
     for _, sample in dataframe.iterrows():
         if sample['path'] not in paths:
-            paths.append(os.path.join(root_dir, sample['path']))
+            paths.append(os.path.join(ROOT_DIR, sample['path']))
             targets.append(tf.constant(sample['category_codes'], dtype=tf.int8))
     
     if sample_num == -1:
