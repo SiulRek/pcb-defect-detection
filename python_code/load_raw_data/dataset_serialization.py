@@ -19,6 +19,10 @@ def serialize_sample(image, label):
 
 def save_tfrecord_from_file(dataset, filepath):
     # Saves a tf.data.Dataset object to a TFRecord file.
+    
+    if not os.path.exists(os.path.dirname(filepath)):
+        raise FileNotFoundError(f"Directory '{os.path.dirname(filepath)}' does not exist.")
+    
     with tf.io.TFRecordWriter(filepath) as writer:
         for image, label in dataset:
             example = serialize_sample(image, label)
@@ -36,6 +40,10 @@ def parse_tfrecord(sample_proto):
     return image, label
 
 def load_tfrecord_from_file(filepath):
+    
+    if not os.path.exists(filepath):
+        raise FileNotFoundError(f"tfrecord '{filepath}' does not exist.")
+    
     raw_dataset = tf.data.TFRecordDataset(filepath)
     parsed_dataset = raw_dataset.map(parse_tfrecord)
     parsed_dataset = parsed_dataset.prefetch(buffer_size=tf.data.experimental.AUTOTUNE) # Allows parallel processing of multiple items.
