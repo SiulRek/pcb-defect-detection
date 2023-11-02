@@ -5,6 +5,8 @@ import os
 import cv2
 import tensorflow as tf
 
+from python_code.utils import recursive_type_conversion
+
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
 JSON_DEFAULT_PATH = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/config/parameter_ranges.json')
 
@@ -81,8 +83,8 @@ class StepBase:
         for key, value in self.params.items():
             if key not in configs:
                 raise KeyError(f"JSON Configuration for class '{str(self)}' does not contain the parameter '{key}'.")       
-            type_of_value = type(value)
-            params[key] = type_of_value(random.choice(configs[key]))
+
+            params[key] = recursive_type_conversion(random.choice(configs[key]), value)  # Match the datatype of value.
 
         return params
     
