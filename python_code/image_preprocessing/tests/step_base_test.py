@@ -5,7 +5,7 @@ import json
 import tensorflow as tf
 import cv2
 
-from python_code.image_preprocessing import StepBase
+from python_code.image_preprocessing.preprocessing_steps.step_base import StepBase
 from python_code.load_raw_data.kaggle_dataset import load_tf_record
 
 
@@ -53,10 +53,10 @@ class TestStepBase(unittest.TestCase):
 
     def test_params_from_range(self):
         self.local_vars['set_params_from_range'] = True
-        self.tf_preprocessing_step._params_from_range()
-        self.assertIn(self.tf_preprocessing_step.params['param1'], [10,20,30,40])  # Adjust based on your json file
-        self.assertIn(self.tf_preprocessing_step.params['param2'], [(10,10),(20,20),(30,30)])  # Adjust based on your json file
-        self.assertIn(self.tf_preprocessing_step.params['param3'], [True, False])  # Adjust based on your json file
+        preprocessing_step = TestStepBase.TfTestStep(**self.local_vars)
+        self.assertIn(preprocessing_step.params['param1'], [20,30,40])  # Adjust based on json file
+        self.assertIn(preprocessing_step.params['param2'], [(20,20),(30,30)])  # Adjust based on json file
+        self.assertIn(preprocessing_step.params['param3'], [False])  # Adjust based on json file
 
     def test_correct_shape_gray(self):
         tf_image = [x for x in TestStepBase.image_dataset.take(1)][0][0]
@@ -81,6 +81,18 @@ class TestStepBase(unittest.TestCase):
         reshaped_image = self.tf_preprocessing_step.correct_shape(tf_image)
         self.assertEqual(reshaped_image.shape, [2464, 3056, 1])
         self.assertEqual(tf_image.shape, [2464, 3056, 1])
+    
+    def test_equal_objects(self):
+        self.assertEqual(self.py_preprocessing_step, self.tf_preprocessing_step)
+
+    def test_not_equal_objects(self):
+        local_vars = {'set_params_from_range': False, 'param1': 20, 'param2': (20,20), 'param3': False}
+        tf_preprocessing_step = self.TfTestStep(**local_vars)
+        self.assertNotEqual(self.py_preprocessing_step, tf_preprocessing_step)
+        local_vars = {'set_params_from_range': False, 'param1': 10, 'param2': (10,10), 'param3': True}
+        tf_preprocessing_step = self.TfTestStep(**local_vars)
+        tf_preprocessing_step.name = 'Wrong name'
+        self.assertNotEqual(self.py_preprocessing_step, tf_preprocessing_step)
 
 
 if __name__ == '__main__':
