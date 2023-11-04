@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 from python_code.load_raw_data.get_tf_dataset import get_tf_dataset_from_df
-from python_code.load_raw_data.dataset_serialization import load_tfrecord_from_file, save_tfrecord_from_file
+from python_code.load_raw_data.dataset_serialization import load_tfrecord_from_file, save_tfrecord_to_file
 
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
@@ -156,11 +156,11 @@ def get_tf_datasets(dataset_dir=DATASET_DIR, create_annotation_summary=False, ra
     return train_tf_dataset, test_tf_dataset
 
 def save_tf_records():
-    """    Saves TensorFlow dataset to the TFRecord file.
+    """    Generates and saves TensorFlow dataset to the TFRecord file.
     """
     train_tf_dataset, test_tf_dataset = get_tf_datasets()
-    save_tfrecord_from_file(train_tf_dataset(), PATH_TRAIN_RECORD)
-    save_tfrecord_from_file(test_tf_dataset(), PATH_TEST_RECORD)
+    save_tfrecord_to_file(train_tf_dataset, PATH_TRAIN_RECORD)
+    save_tfrecord_to_file(test_tf_dataset, PATH_TEST_RECORD)
 
 def load_tf_records():
     """    Loads the specific TFRecord file and returns a parsed TensorFlow dataset.

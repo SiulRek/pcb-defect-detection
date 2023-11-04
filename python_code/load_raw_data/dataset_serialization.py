@@ -17,7 +17,7 @@ def serialize_sample(image, label):
     sample_proto = tf.train.Example(features=tf.train.Features(feature=feature))
     return sample_proto.SerializeToString()
 
-def save_tfrecord_from_file(dataset, filepath):
+def save_tfrecord_to_file(dataset, filepath):
     # Saves a tf.data.Dataset object to a TFRecord file.
     
     if not os.path.exists(os.path.dirname(filepath)):
