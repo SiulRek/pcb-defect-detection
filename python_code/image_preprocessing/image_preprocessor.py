@@ -81,16 +81,24 @@ class ImagePreprocessor:
         """
         processed_dataset = image_dataset
         for step in self.pipeline:
-            if not self._raise_step_process_exception:
+            if self._raise_step_process_exception:
                 processed_dataset = step.process_step(processed_dataset)
             else:
                 try:
                     processed_dataset = step.process_step(processed_dataset)
+                    self._consume_tf_dataset(processed_dataset)
                 except Exception as e:
                     print(f"An error occurred in step {step.name}: {str(e)}")
                     return None
 
         return processed_dataset
+    
+    def _consume_tf_dataset(self, tf_dataset):
+        """
+        Consumes a TensorFlow dataset to force the execution of the computation graph.
+        """
+        for _, _ in tf_dataset.take(1): 
+            pass
 
     def save_pipe_to_json(self, filepath):
         "Serializes the preprocessing pipeline to a JSON file, saving the step configurations."

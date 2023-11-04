@@ -23,7 +23,9 @@ class TestStepBase(unittest.TestCase):
     It also verifies the capability to save and load preprocessing pipelines to and from a JSON configuration file.
     
     The suite comprises unit tests for individual preprocessing steps and integration tests for the overall
-    preprocessing pipeline with a focus on parameter handling, image data type conversions, and pipeline persistence.
+    preprocessing pipeline with a focus on parameter handling, image data type conversions, and pipeline persistence. Also, 
+    these tests ensure that the step classes correctly process image datasets and handle exceptions as expected when 
+    integrated in the ImagePreprocessing pipeline
     """
 
     class GrayscaleToRGB(StepBase):
@@ -48,6 +50,18 @@ class TestStepBase(unittest.TestCase):
             tf_image_grayscale = tf.image.rgb_to_grayscale(tf_blurred_image)
             tf_blurred_image = correct_tf_image_shape(tf_blurred_image)
             return (tf_image_grayscale, tf_target)
+        
+    class ErrorStep(StepBase):
+        def __init__(self, name_postfix='', set_params_from_range=False):
+            super().__init__('Error_Step', locals())
+            
+        @StepBase._py_function_decorator
+        def process_step(self, tf_image, tf_target):
+            cv_img = (tf_image.numpy()).astype('uint8')
+            cv_blurred_image = cv2.GaussianBlur(cv_img, oops_unknown_parameter_here='sorry')  
+            tf_blurred_image = tf.convert_to_tensor(cv_blurred_image, dtype=tf.uint8)
+            return (tf_blurred_image, tf_target)
+
 
     @classmethod
     def setUpClass(cls):
@@ -57,9 +71,9 @@ class TestStepBase(unittest.TestCase):
         self.pipeline = [
             TestStepBase.RGBToGrayscale(param1=20,param2=(20,20),param3=False),
             TestStepBase.GrayscaleToRGB(param1=40,param2=(30,30),param3=False),
-            TestStepBase.RGBToGrayscale(param1=30,param2=(10,10),param3=True, name_postfix='__2'),  
-            TestStepBase.GrayscaleToRGB(param1=40,param2=(30,30),param3=False, name_postfix='__2'),
-            TestStepBase.RGBToGrayscale(param1=30,param2=(10,10),param3=True, name_postfix='__3')  
+            TestStepBase.RGBToGrayscale(param1=30,param2=(10,10),param3=True),  
+            TestStepBase.GrayscaleToRGB(param1=40,param2=(30,30),param3=False),
+            TestStepBase.RGBToGrayscale(param1=30,param2=(10,10),param3=False)  
         ]
 
     def tearDown(self):
@@ -77,7 +91,7 @@ class TestStepBase(unittest.TestCase):
         preprocessor = ImagePreprocessor()
         preprocessor.set_pipe(self.pipeline)
         processed_dataset = preprocessor.process(self.image_dataset)
-        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel=1)
+        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=1)
 
     def test_save_and_load_pipeline(self):
         """    Ensures the image preprocessing pipeline can be saved and subsequently loaded.
@@ -99,14 +113,46 @@ class TestStepBase(unittest.TestCase):
             self.assertEqual(old_step, new_step, 'Pipeline steps are not equal.')
         
         processed_dataset = new_preprocessor.process(self.image_dataset)
-        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel=1)
+        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=1)
 
-    def _verify_image_shapes(self, processed_dataset, original_dataset, color_channel):
+    def _verify_image_shapes(self, processed_dataset, original_dataset, color_channel_expected):
 
         for original_data, processed_data in zip(original_dataset, processed_dataset):
             self.assertEqual(processed_data[1], original_data[1])   # Check if targets are equal.
             self.assertEqual(processed_data[0].shape[:1], original_data[0].shape[:1]) # Check if height and width are equal.
-            self.assertEqual(color_channel, processed_data[0].shape[2])     
+            self.assertEqual(color_channel_expected, processed_data[0].shape[2])     
+    
+    def test_not_raised_step_process_exception_1(self):
+        """   Test case for ensuring that the ErrorStep subclass, when processing an image
+        dataset, raises an exception as expected, but the exception is caught and 
+        handled silently by the ImagePreprocessor pipeline, allowing the execution
+        to continue without interruption.
+        """
+
+        pipeline = [
+             TestStepBase.RGBToGrayscale(param1=20,param2=(20,20),param3=False),
+             TestStepBase.ErrorStep()
+        ]
+        preprocessor = ImagePreprocessor(raise_step_process_exception=False)
+        preprocessor.set_pipe(pipeline)
+        processed_dataset = preprocessor.process(self.image_dataset)
+        self.assertIsNone(processed_dataset)
+    
+    def test_not_raised_step_process_exception_2(self):
+        """   Test case for ensuring that when pipeline construction is faulty, when processing an image
+        dataset, raises an exception as expected, but the exception is caught and 
+        handled silently by the ImagePreprocessor pipeline, allowing the execution
+        to continue without interruption.
+        """
+
+        pipeline = [
+             TestStepBase.RGBToGrayscale(param1=20,param2=(20,20),param3=False),
+             TestStepBase.RGBToGrayscale(param1=20,param2=(20,20),param3=False)     
+        ]
+        preprocessor = ImagePreprocessor(raise_step_process_exception=False)
+        preprocessor.set_pipe(pipeline)
+        processed_dataset = preprocessor.process(self.image_dataset)
+        self.assertIsNone(processed_dataset)
 
 
 if __name__ == '__main__':
