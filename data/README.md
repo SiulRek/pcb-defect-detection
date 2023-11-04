@@ -2,16 +2,12 @@
 
 This folder contains various datasets that are crucial for the PCB Defect Detection project. Below is an outline of the primary datasets and their details.
 
----
-
 ## Table of Contents
 
 1. [Datasets](#datasets)
     - [PCB Defects Dataset (Kaggle)](#pcb-defects-dataset-kaggle)
     - [DeepPCB (tangsali5201)](#deeppcb-tangsali5201)
 2. [Annotation Summary](#annotation-summary)
-
----
 
 ## Datasets
 
@@ -33,8 +29,6 @@ This folder contains various datasets that are crucial for the PCB Defect Detect
 - **Access**: [DeepPCB GitHub Repository](https://github.com/tangsanli5201/DeepPCB)
 - **Accessed**: 29.10.2023 
 
----
-
 ## Annotation Summary
 
 The `annotation_summary.csv` file serves to consolidate all relevant information for the images from each dataset into a single file. This includes columns specifying the absolute paths to the images.
@@ -43,4 +37,6 @@ The `annotation_summary.csv` file serves to consolidate all relevant information
 
 To update the `annotation_summary.csv`, call the function `get_dataframe(create_annotation_summary=True)` with the `create_annotation_summary` parameter set to `True` of the corresponding dataset.
 
----
+## Tensorflow Records
+
+To speed up the process of loading datasets during machine learning workflows, TensorFlow Records (TFRecords) format is employed. The TFRecords can be found in the[Tensorflow Records](data/tensorflow_records) directory.

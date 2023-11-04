@@ -3,7 +3,7 @@ import os
 import xml.etree.ElementTree as ET 
 
 from python_code.load_raw_data.get_tf_dataset import get_tf_dataset_from_df
-from python_code.load_raw_data.dataset_serialization import load_tfrecord_from_file, save_tfrecord_from_file
+from python_code.load_raw_data.dataset_serialization import load_tfrecord_from_file, save_tfrecord_to_file
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 
@@ -167,7 +167,7 @@ def get_tf_dataset(path_an=PATH_ANNOTATIONS, path_im=PATH_IMAGE, create_annotati
 def save_tf_record():
     """    Saves TensorFlow dataset to the TFRecord file.
     """
-    save_tfrecord_from_file(get_tf_dataset(), PATH_RECORD)
+    save_tfrecord_to_file(get_tf_dataset(), PATH_RECORD)
 
 def load_tf_record():
     """    Loads the specific TFRecord file and returns a parsed TensorFlow dataset.

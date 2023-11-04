@@ -27,8 +27,34 @@ The repository is organized as follows:
 - **[results](./results):** Stores model evaluation results.
 
 ## Getting Started
-To get started with this project, follow these steps:
+To get started with the PCB Defect Detection project, follow these instructions:
 
-1. Clone the repository to your local machine:
-   ```shell
-   git clone https://github.com/SiulRek/pcb-defect-detection.git
+1. **Clone the Repository**  
+   `git clone https://github.com/SiulRek/pcb-defect-detection.git`  
+   Navigate into the project directory:  
+   `cd pcb-defect-detection`
+
+2. **Configure Repository Path**  
+   To include the repository path in the system's search paths at runtime, create a `pcb-defect-detection.pth` file containing the absolute path to the `pcb-defect-detection` directory. Place this file in the `Lib\site-packages` directory of your Python installation or virtual environment. This ensures that Python includes your repository directory in its `sys.path`.
+   
+   Example of `.pth` file content:  
+   `C:\path\to\your\pcb-defect-detection`
+
+3. **Set Up Python Virtual Environment**  
+   Create the virtual environment:  
+   `python -m venv venv`  
+   Activate the virtual environment:  
+   On Windows:  
+   `.\venv\Scripts\activate`  
+   On macOS and Linux:  
+   `source venv/bin/activate`
+
+4. **Install Dependencies**  
+   Install the required packages:  
+   `pip install -r environment/requirements.txt`
+
+5. **Generate TFRecord Files**  
+   Run the script to create the Tensorflow Record files of the repository datasets:  
+   [Create TFRecords Script](./python_code/load_raw_data/create_tf_records_local.py)
+
+
