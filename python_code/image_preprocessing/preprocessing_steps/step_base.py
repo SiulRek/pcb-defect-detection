@@ -86,7 +86,7 @@ class StepBase:
         return self._params
     
     def __eq__(self, obj: 'StepBase') -> bool:
-        return self._name == obj.name and self._params == obj.params
+        return self._name.split('__')[0] == obj.name.split('__')[0] and self._params == obj.params
 
     def __str__(self):
         """The string representation of the class is at the same time the JSON entry text to be added to a JSON file."""
