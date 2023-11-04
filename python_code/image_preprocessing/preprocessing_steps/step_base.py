@@ -70,6 +70,10 @@ class StepBase:
             name (str): The base identifier for the preprocessing step.
             local_vars (dict): A collection of variables provided by the child class instantiation that includes configurations and a potential name postfix to append to the step's base name. Note: `local_vars` dict MUST contain the keys 'set_params_from_range' (value boolean) and 'name_postfix' (value string).
         """
+
+        if 'name_postfix' not in local_vars.keys() or 'set_params_from_range' not in local_vars.keys():
+            raise AttributeError("'name_postfix' or/and 'set_params_from_range' not in local vars, probably missing in child class parameter initialization.")
+        
         self._name = name + local_vars['name_postfix']
         self._params = self._extract_params(local_vars)
         self._output_datatypes = {'image': None, 'target': None}
