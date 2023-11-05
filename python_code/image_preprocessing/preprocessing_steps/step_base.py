@@ -9,6 +9,7 @@ from python_code.utils.recursive_type_conversion import recursive_type_conversio
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
 JSON_DEFAULT_PATH = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/config/parameter_ranges.json')
 
+#TODO Change documentation according to last changes.
 
 class StepBase:
     """  Base class for defining preprocessing steps for images.
@@ -48,7 +49,7 @@ class StepBase:
         3. Add JSON entry of the class to parameter_ranges.json
     """
     
-    _json_path = JSON_DEFAULT_PATH
+    init_params_datatypes = None   
 
     @classmethod
     def set_json_path(cls, path):
@@ -70,11 +71,8 @@ class StepBase:
             name (str): The base identifier for the preprocessing step.
             local_vars (dict): A collection of variables provided by the child class instantiation that includes configurations and a potential name postfix to append to the step's base name. Note: `local_vars` dict MUST contain the keys 'set_params_from_range' (value boolean) and 'name_postfix' (value string).
         """
-
-        if 'name_postfix' not in local_vars.keys() or 'set_params_from_range' not in local_vars.keys():
-            raise AttributeError("'name_postfix' or/and 'set_params_from_range' not in local vars, probably missing in child class parameter initialization.")
         
-        self._name = name + local_vars['name_postfix']
+        self._name = name
         self._params = self._extract_params(local_vars)
         self._output_datatypes = {'image': None, 'target': None}
         self._set_output_datatypes()
@@ -109,34 +107,10 @@ class StepBase:
     def _extract_params(self, local_vars):
         """  Extracts parameters needed for the preprocessing step based on local variables. It considers if parameters should be randomized or extracted directly from `local_vars`."""
 
-        excluded_params = ['self', 'set_params_from_range', '__class__', 'name_postfix']
+        excluded_params = ['self', '__class__']
         initialization_params =  {key: value for key, value in local_vars.items() if key not in excluded_params}
 
-        if local_vars['set_params_from_range']:
-            return self._params_from_range(initialization_params)
         return initialization_params
-
-    def _params_from_range(self, initialization_params): 
-        """  Randomizes parameters for the preprocessing step based on value ranges defined in a JSON file. (Initialization parameters are required for datatype reference)."""
-
-        configs = self._load_params_from_json()
-
-        params = {}
-        for key, value in initialization_params.items():
-
-            if key not in configs:
-                raise KeyError(f"JSON Configuration for instance named '{self.name}' does not contain the parameter '{key}'.")       
-
-            params[key] = recursive_type_conversion(random.choice(configs[key]), value)  # Match the datatype of value.
-
-        return params
-    
-    def _load_params_from_json(self):
-        """   Loads parameters available for randomization from a JSON file. If a parameter for the current 
-        preprocessing step is not available in the JSON, it raises a KeyError (The loaded value is converted to a datatype that matches the input_parameter)."""
-        with open(StepBase._json_path, 'r', encoding='utf-8') as file:
-            configs = json.load(file)
-        return configs.get(self._name, {})
     
     def _set_output_datatypes(self):
         """ Sets the output datatypes of the step process."""

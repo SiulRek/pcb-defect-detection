@@ -9,6 +9,8 @@ from python_code.image_preprocessing.image_preprocessor import ImagePreprocessor
 from python_code.image_preprocessing.preprocessing_steps.step_base import StepBase
 from python_code.image_preprocessing.preprocessing_steps.step_utils import correct_tf_image_shape
 from python_code.load_raw_data.kaggle_dataset import load_tf_record
+from python_code.utils import ConfigurationHandler
+
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
 JSON_TEST_PATH = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/config/test_image_preprocessor.json')
@@ -29,7 +31,10 @@ class TestStepBase(unittest.TestCase):
     """
 
     class GrayscaleToRGB(StepBase):
-        def __init__(self, name_postfix='', set_params_from_range=False, param1=10 , param2=(10,10), param3=True):
+
+        init_params_datatypes = {'param1': int, 'param2':(int,int), 'param3':bool}
+
+        def __init__(self, param1=10 , param2=(10,10), param3=True):
             super().__init__('Grayscale_to_RGB', locals())
 
         @StepBase._tf_function_decorator
@@ -39,7 +44,10 @@ class TestStepBase(unittest.TestCase):
             return tf_image_grayscale, tf_target
 
     class RGBToGrayscale(StepBase):
-        def __init__(self, name_postfix='', set_params_from_range=False, param1=10 , param2=(10,10), param3=True):
+        
+        init_params_datatypes = {'param1': int, 'param2':(int,int), 'param3':bool}
+        
+        def __init__(self, param1=10 , param2=(10,10), param3=True):
             super().__init__('RGB_to_Grayscale', locals())
             
         @StepBase._py_function_decorator
@@ -52,7 +60,7 @@ class TestStepBase(unittest.TestCase):
             return (tf_image_grayscale, tf_target)
         
     class ErrorStep(StepBase):
-        def __init__(self, name_postfix='', set_params_from_range=False):
+        def __init__(self):
             super().__init__('Error_Step', locals())
             
         @StepBase._py_function_decorator
@@ -68,6 +76,9 @@ class TestStepBase(unittest.TestCase):
         cls.image_dataset = load_tf_record().take(9)        # To reduce testing time test cases share this attribute. Do not change this attribute!
     
     def setUp(self):
+        with open(JSON_TEST_PATH, 'a'): pass
+        mapping = {'RGB_to_Grayscale': TestStepBase.RGBToGrayscale, 'Grayscale_to_RGB': TestStepBase.GrayscaleToRGB}
+        self.configuration_handler = ConfigurationHandler(JSON_TEST_PATH, mapping)
         self.pipeline = [
             TestStepBase.RGBToGrayscale(param1=20,param2=(20,20),param3=False),
             TestStepBase.GrayscaleToRGB(param1=40,param2=(30,30),param3=False),
@@ -88,25 +99,23 @@ class TestStepBase(unittest.TestCase):
         the integrity of the images' shape, specifically ensuring the color channel conversion was done and the 
         dimension is correct after processing.
         """
-        preprocessor = ImagePreprocessor()
+        preprocessor = ImagePreprocessor(self.configuration_handler)
         preprocessor.set_pipe(self.pipeline)
         processed_dataset = preprocessor.process(self.image_dataset)
         self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=1)
 
-    def test_save_and_load_pipeline(self):
+    def test_a_save_and_load_pipeline(self):
         """    Ensures the image preprocessing pipeline can be saved and subsequently loaded.
 
         This test case checks the pipeline's persistence mechanism, verifying that the
         pipeline can be serialized to a JSON configuration and reloaded to create an
         identical pipeline setup.
         """
-        old_preprocessor = ImagePreprocessor()
+        old_preprocessor = ImagePreprocessor(self.configuration_handler)
         old_preprocessor.set_pipe(self.pipeline)
-        old_preprocessor.save_pipe_to_json(JSON_TEST_PATH)
-        mock_mapping = {'RGB_to_Grayscale': TestStepBase.RGBToGrayscale, 'Grayscale_to_RGB': TestStepBase.GrayscaleToRGB}
-        with patch('python_code.image_preprocessing.image_preprocessor.STEP_CLASS_MAPPING', mock_mapping):
-            new_preprocessor = ImagePreprocessor()
-            new_preprocessor.load_pipe_from_json(JSON_TEST_PATH)
+        old_preprocessor.save_pipe_to_json()
+        new_preprocessor = ImagePreprocessor(self.configuration_handler)
+        new_preprocessor.load_pipe_from_json()
 
         self.assertEqual(len(old_preprocessor._pipeline), len(new_preprocessor._pipeline), 'Pipeline lengths are not equal.')
         for old_step, new_step in zip(old_preprocessor._pipeline, new_preprocessor._pipeline):
