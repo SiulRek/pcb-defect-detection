@@ -20,7 +20,7 @@ class TestStepBase(unittest.TestCase):
     """
     A test class derived from unittest.TestCase that verifies the functionality of image preprocessing steps.
 
-    This test suite checks the integrity and flow of a preprocessing pipeline, including conversions between
+    This test suite checks the integrity and flow of a preprocessing pipeline, making conversions between
     grayscale and RGB, ensuring that image shapes are maintained and targets remain unaltered after processing.
     It also verifies the capability to save and load preprocessing pipelines to and from a JSON configuration file.
     
@@ -32,7 +32,7 @@ class TestStepBase(unittest.TestCase):
 
     class GrayscaleToRGB(StepBase):
 
-        init_params_datatypes = {'param1': int, 'param2':(int,int), 'param3':bool}
+        _init_params_datatypes = {'param1': int, 'param2':(int,int), 'param3':bool}
 
         def __init__(self, param1=10 , param2=(10,10), param3=True):
             super().__init__('Grayscale_to_RGB', locals())
@@ -45,7 +45,7 @@ class TestStepBase(unittest.TestCase):
 
     class RGBToGrayscale(StepBase):
         
-        init_params_datatypes = {'param1': int, 'param2':(int,int), 'param3':bool}
+        _init_params_datatypes = {'param1': int, 'param2':(int,int), 'param3':bool}
         
         def __init__(self, param1=10 , param2=(10,10), param3=True):
             super().__init__('RGB_to_Grayscale', locals())
@@ -77,8 +77,6 @@ class TestStepBase(unittest.TestCase):
     
     def setUp(self):
         with open(JSON_TEST_PATH, 'a'): pass
-        mapping = {'RGB_to_Grayscale': TestStepBase.RGBToGrayscale, 'Grayscale_to_RGB': TestStepBase.GrayscaleToRGB}
-        self.configuration_handler = ConfigurationHandler(JSON_TEST_PATH, mapping)
         self.pipeline = [
             TestStepBase.RGBToGrayscale(param1=20,param2=(20,20),param3=False),
             TestStepBase.GrayscaleToRGB(param1=40,param2=(30,30),param3=False),
@@ -99,23 +97,26 @@ class TestStepBase(unittest.TestCase):
         the integrity of the images' shape, specifically ensuring the color channel conversion was done and the 
         dimension is correct after processing.
         """
-        preprocessor = ImagePreprocessor(self.configuration_handler)
+        preprocessor = ImagePreprocessor()
         preprocessor.set_pipe(self.pipeline)
         processed_dataset = preprocessor.process(self.image_dataset)
         self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=1)
 
-    def test_a_save_and_load_pipeline(self):
+    def test_save_and_load_pipeline(self):
         """    Ensures the image preprocessing pipeline can be saved and subsequently loaded.
 
         This test case checks the pipeline's persistence mechanism, verifying that the
         pipeline can be serialized to a JSON configuration and reloaded to create an
         identical pipeline setup.
         """
-        old_preprocessor = ImagePreprocessor(self.configuration_handler)
-        old_preprocessor.set_pipe(self.pipeline)
-        old_preprocessor.save_pipe_to_json()
-        new_preprocessor = ImagePreprocessor(self.configuration_handler)
-        new_preprocessor.load_pipe_from_json()
+        
+        mock_mapping = {'RGB_to_Grayscale': TestStepBase.RGBToGrayscale, 'Grayscale_to_RGB': TestStepBase.GrayscaleToRGB}
+        with patch('python_code.image_preprocessing.image_preprocessor.STEP_CLASS_MAPPING', mock_mapping):
+            old_preprocessor = ImagePreprocessor()
+            old_preprocessor.set_pipe(self.pipeline)
+            old_preprocessor.save_pipe_to_json(JSON_TEST_PATH)
+            new_preprocessor = ImagePreprocessor()
+            new_preprocessor.load_pipe_from_json(JSON_TEST_PATH)
 
         self.assertEqual(len(old_preprocessor._pipeline), len(new_preprocessor._pipeline), 'Pipeline lengths are not equal.')
         for old_step, new_step in zip(old_preprocessor._pipeline, new_preprocessor._pipeline):

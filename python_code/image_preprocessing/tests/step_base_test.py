@@ -13,11 +13,10 @@ from python_code.load_raw_data.kaggle_dataset import load_tf_record
 class TestStepBase(unittest.TestCase):
     """    Test suite for validating the functionality of the preprocessing steps parent class 'StepBase' in the image preprocessing module.
     
-    This suite includes tests to verify the correct initialization of preprocessing steps, the loading
-    of parameters from a configuration file, the application of parameter ranges, and the proper function
+    This suite includes tests to verify the correct initialization of preprocessing steps,  the proper function
     of both TensorFlow and Python-based image preprocessing steps. Additionally, it ensures that images
     maintain correct shape transformations throughout the preprocessing pipeline and that the custom object
-    equality logic behaves as expected. `TfTestStep` and `PyTestStep` make a simple conversion of the images from RGB to Grayscale, that can be easily verified.
+    equality logic behaves as expected. The example test steps `TfTestStep` and `PyTestStep` make a simple conversion of the images from RGB to Grayscale, that can be easily verified.
     """
     class TfTestStep(StepBase):
 
@@ -60,17 +59,6 @@ class TestStepBase(unittest.TestCase):
     def test_initialization(self):
         self.assertEqual(self.tf_preprocessing_step.name, "Test_Step")
         self.assertEqual(self.tf_preprocessing_step.params, {'param1': 10, 'param2': (10,10), 'param3': True})
-        
-    # def test_load_params_from_json(self):
-    #     configs = self.tf_preprocessing_step._load_params_from_json()
-    #     self.assertIsInstance(configs, dict)
-
-    # def test_params_from_range(self):
-    #     self.local_vars['set_params_from_range'] = True
-    #     preprocessing_step = TestStepBase.TfTestStep(**self.local_vars)
-    #     self.assertIn(preprocessing_step.params['param1'], [20,30,40])  # Adjust based on json file
-    #     self.assertIn(preprocessing_step.params['param2'], [(20,20),(30,30)])  # Adjust based on json file
-    #     self.assertIn(preprocessing_step.params['param3'], [False])  # Adjust based on json file
 
     def test_correct_shape_gray(self):
         tf_image = [x for x in TestStepBase.image_dataset.take(1)][0][0]

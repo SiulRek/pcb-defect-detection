@@ -49,14 +49,7 @@ class StepBase:
         3. Add JSON entry of the class to parameter_ranges.json
     """
     
-    init_params_datatypes = None   
-
-    @classmethod
-    def set_json_path(cls, path):
-        """ Set the path to the JSON file specifieng the ranges of the preprocessing step parameters."""
-        if not os.path.exists(path):
-            raise FileNotFoundError(f"Could not find specified JSON file with path '{path}'.")
-        cls._json_path = path
+    _init_params_datatypes = None   
 
     def __init__(self, name,  local_vars):
         """    Constructs the base preprocessing step with a customizable name and set of parameters.

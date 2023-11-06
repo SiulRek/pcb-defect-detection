@@ -17,8 +17,10 @@ class ImagePreprocessor:
     reduction, normalization, etc. The steps are applied in sequence to an input
     dataset of images.
 
-    Attributes:
-        pipeline (list of StepBase): A list of preprocessing steps to be executed.
+    Attributes (read only):
+        pipeline (list of StepBase Child classes): A list of preprocessing steps to be executed.
+        configuration_handler (ConfigurationHandler): Hnadles the serialization and deserialization of the pipeline to and from a JSON file.
+
 
     Methods:
         pipeline(self):
@@ -50,17 +52,14 @@ class ImagePreprocessor:
     
     """
 
-    def __init__(self, configuration_handler=None, raise_step_process_exception=True): 
+    def __init__(self, raise_step_process_exception=True): 
         """ Initializes the ImagePreprocessor with an empty pipeline.
             The `raise_step_process_exception` flag determines whether exceptions
             during step processing are raised or logged.
         """
         self._pipeline = []
         self._configuration_handler = None
-        if configuration_handler:
-            self.configuration_handler = configuration_handler
-        else:
-            print('Image Preprocessor initialization warning: Without passing a configuration handler methods to load and save pipe cannot be used.')
+        self._initialize_configuration_handler(STEP_CLASS_MAPPING)
         self._raise_step_process_exception = raise_step_process_exception
 
     @property
@@ -70,12 +69,16 @@ class ImagePreprocessor:
     @property
     def configuration_handler(self):
         return self._configuration_handler
-
-    @configuration_handler.setter
-    def configuration_handler(self, value):
-        if not isinstance(value, ConfigurationHandler):
-            raise ValueError(f"The 'configration_handler' object is not of class 'ConfigurationHandler'.")
-        self._configuration_handler = value
+    
+    def _initialize_configuration_handler(self, step_class_mapping):
+        """ Checks if `step_class_mapping` is a dictionary and mapps to subclasses of `StepBase`, if successfull instanciates the `ConfigurationHandler` for pipeline serialization and deserialization."""
+        if not type(step_class_mapping) is dict:
+            raise TypeError(f"'step_class_mapping' must be of type dict not {type(step_class_mapping)}.")
+        else:
+            for mapped_class in step_class_mapping.values():
+                if not issubclass(mapped_class, StepBase):
+                    raise ValueError("At least one mapped class is not a class or subclass of StepBase.")
+            self._configuration_handler = ConfigurationHandler(step_class_mapping)
 
     def set_pipe(self, pipeline):
         """  Sets the preprocessing pipeline with a deep copy of the provided steps ensuring each step is an instance of a StepBase subclass."""
@@ -116,20 +119,20 @@ class ImagePreprocessor:
         for _, _ in tf_dataset.take(1): 
             pass
 
-    def save_pipe_to_json(self):
-        "Serializes the preprocessing pipeline to a JSON file, saving the step configurations."
+    def save_pipe_to_json(self, json_path):
+        "Serializes the preprocessing pipeline to the specified JSON file, saving the step configurations."
         if self.configuration_handler:
-            self.configuration_handler.save_instance_list_to_json(self.pipeline)
+            self.configuration_handler.save_instance_list_to_json(self.pipeline, json_path)
         else:
             raise AttributeError(f"Not None Instance Attribute 'configuration_handler' is required to save pipe.")
     
         
-    def load_pipe_from_json(self):
-        """  Loads and reconstructs a preprocessing pipeline from a JSON file.
+    def load_pipe_from_json(self, json_path):
+        """  Loads and reconstructs a preprocessing pipeline from the specified JSON file.
         """
         
         if self.configuration_handler:
-             self._pipeline = self.configuration_handler.get_instance_list_from_json()
+             self._pipeline = self.configuration_handler.get_instance_list_from_json(json_path)
         else:
             raise AttributeError(f"Not None Instance Attribute 'configuration_handler' is required to save pipe.")
 
