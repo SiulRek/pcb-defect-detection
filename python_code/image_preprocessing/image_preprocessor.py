@@ -6,6 +6,7 @@ import tensorflow as tf
 
 from python_code.image_preprocessing.preprocessing_steps.step_base import StepBase
 from python_code.image_preprocessing.preprocessing_steps.step_class_mapping import STEP_CLASS_MAPPING
+from python_code.utils import ConfigurationHandler
 
 class ImagePreprocessor:
     """
@@ -16,8 +17,10 @@ class ImagePreprocessor:
     reduction, normalization, etc. The steps are applied in sequence to an input
     dataset of images.
 
-    Attributes:
-        pipeline (list of StepBase): A list of preprocessing steps to be executed.
+    Attributes (read only):
+        pipeline (list of StepBase Child classes): A list of preprocessing steps to be executed.
+        configuration_handler (ConfigurationHandler): Hnadles the serialization and deserialization of the pipeline to and from a JSON file.
+
 
     Methods:
         pipeline(self):
@@ -55,11 +58,27 @@ class ImagePreprocessor:
             during step processing are raised or logged.
         """
         self._pipeline = []
+        self._configuration_handler = None
+        self._initialize_configuration_handler(STEP_CLASS_MAPPING)
         self._raise_step_process_exception = raise_step_process_exception
 
     @property
     def pipeline(self):
         return self._pipeline
+    
+    @property
+    def configuration_handler(self):
+        return self._configuration_handler
+    
+    def _initialize_configuration_handler(self, step_class_mapping):
+        """ Checks if `step_class_mapping` is a dictionary and mapps to subclasses of `StepBase`, if successfull instanciates the `ConfigurationHandler` for pipeline serialization and deserialization."""
+        if not type(step_class_mapping) is dict:
+            raise TypeError(f"'step_class_mapping' must be of type dict not {type(step_class_mapping)}.")
+        else:
+            for mapped_class in step_class_mapping.values():
+                if not issubclass(mapped_class, StepBase):
+                    raise ValueError("At least one mapped class is not a class or subclass of StepBase.")
+            self._configuration_handler = ConfigurationHandler(step_class_mapping)
 
     def set_pipe(self, pipeline):
         """  Sets the preprocessing pipeline with a deep copy of the provided steps ensuring each step is an instance of a StepBase subclass."""
@@ -100,78 +119,21 @@ class ImagePreprocessor:
         for _, _ in tf_dataset.take(1): 
             pass
 
-    def save_pipe_to_json(self, filepath):
-        "Serializes the preprocessing pipeline to a JSON file, saving the step configurations."
-
-        json_data = {}
-        for step in self.pipeline:
-
-            converted_params = {}
-            for key, value in step.params.items():
-                converted_params[key] = [self._convert_tuple_to_list(value)]  # Square Brackets required as StepBase child instances expect ranges.
-            
-            name = self._generate_unique_entry_name(step.name, json_data)   
-            json_data[name] = converted_params
-        
-        json_string = json.dumps(json_data, indent=4)
-        json_string = json_string.replace('},', '},\n')
-
-        pattern = r'\[[^\[\]]*(?:\[[^\[\]]*\][^\[\]]*)*\]'   # This regex pattern finds text within square brackets, including nested brackets
-        result = re.sub(pattern, self._remove_newlines, json_string)  # Replace newlines and spaces within square brackets (improves readability)
-
-        with open(filepath, 'w') as file:
-            file.write(result)
-    
-    def _convert_tuple_to_list(self, obj, recursive_call=False):
-        """ Helper method to recursively convert tuples in a nested structure to lists."""
-        if isinstance(obj, tuple) or isinstance(obj, list):
-            return [self._convert_tuple_to_list(item, recursive_call=True) for item in obj]
-        if type(obj) in {int, float, str, bool}:
-            return obj
+    def save_pipe_to_json(self, json_path):
+        "Serializes the preprocessing pipeline to the specified JSON file, saving the step configurations."
+        if self.configuration_handler:
+            self.configuration_handler.save_instance_list_to_json(self.pipeline, json_path)
         else:
-            raise TypeError(f"Object with value '{obj} cannot not be recursivly converted to list.")
-    
-    def _generate_unique_entry_name(self, current_entry, json_data):        
-        """ Generates a unique step name for JSON entries to avoid conflicts."""
-        name = current_entry
-        i = 2
-        while name in json_data.keys():              # Same namining of entries are not allowed in json.
-            name = name.split('__')[0] + '__' + str(i)
-            i += 1
-
-        return name
-        
-    def _remove_newlines(self, match):
-        """ Removes newlines and spaces within square brackets in JSON strings."""
-        return match.group().replace('\n', '').replace(' ', '')
+            raise AttributeError(f"Not None Instance Attribute 'configuration_handler' is required to save pipe.")
     
         
-    def load_pipe_from_json(self, filepath):
-        """  Loads and reconstructs a preprocessing pipeline from a JSON file.
+    def load_pipe_from_json(self, json_path):
+        """  Loads and reconstructs a preprocessing pipeline from the specified JSON file.
         """
         
-        StepBase.set_json_path(filepath)
-        with open(filepath, 'r') as file:
-            data = json.load(file)
-            step_names = list(data.keys())
-        
-        self.pipeline.clear()
-        for step_name in step_names:
-            step = self._construct_step_instance(step_name)
-            self.add_step(step)
-    
-    def _construct_step_instance(self, step_name):
-        """Constructs an instance of a preprocessing step from its name, as defined in the JSON configuration. """    
-
-        step_name_parts = step_name.split('__')
-
-        if step_name_parts[0] not in STEP_CLASS_MAPPING.keys():
-            raise KeyError(f"Step name {step_name_parts[0]} from json file has no mapping.")
-        step_class = STEP_CLASS_MAPPING[step_name_parts[0]]
-
-        if len(step_name_parts) > 1:
-            name_postfix = '__' + '__'.join(step_name_parts[1:])
-            return step_class(set_params_from_range=True, name_postfix=name_postfix)
+        if self.configuration_handler:
+             self._pipeline = self.configuration_handler.get_instance_list_from_json(json_path)
         else:
-            return step_class(set_params_from_range=True)
+            raise AttributeError(f"Not None Instance Attribute 'configuration_handler' is required to save pipe.")
+
 

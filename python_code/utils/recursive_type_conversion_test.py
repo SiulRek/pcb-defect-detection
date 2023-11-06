@@ -2,25 +2,24 @@ import unittest
 
 from python_code.utils.recursive_type_conversion import recursive_type_conversion
 
-
 class TestRecursiveTypeConversion(unittest.TestCase):
 
     def test_primitive_conversion(self):
-        self.assertEqual(recursive_type_conversion("123", 1), 123)
-        self.assertEqual(recursive_type_conversion("123.456", 1.0), 123.456)
-        self.assertEqual(recursive_type_conversion("True", True), True)
-        self.assertEqual(recursive_type_conversion(123, "string"), "123")
+        self.assertEqual(recursive_type_conversion("123", int), 123)
+        self.assertEqual(recursive_type_conversion("123.456", float), 123.456)
+        self.assertEqual(recursive_type_conversion("True", bool), True)
+        self.assertEqual(recursive_type_conversion(123, str), "123")
 
     def test_list_conversion(self):
-        self.assertEqual(recursive_type_conversion(["1", "2", "3"], [1, 2, 3]), [1, 2, 3])
-        self.assertEqual(recursive_type_conversion(("1", 2, ""), [1, '3', True]), [1, '2', False])
+        self.assertEqual(recursive_type_conversion(["1", "2", "3"], [int, int, int]), [1, 2, 3])
+        self.assertEqual(recursive_type_conversion(("1", 2, ""), [str, int, bool]), ['1', 2, False])
 
     def test_tuple_conversion(self):
-        self.assertEqual(recursive_type_conversion(["1", "2", "True"], (1, 2, False)), (1, 2, True))
-        self.assertEqual(recursive_type_conversion(("1", 2, "3"), (1, '2', 3)), (1, '2', 3))
+        self.assertEqual(recursive_type_conversion(["1", "2", "True"], (int, int, bool)), (1, 2, True))
+        self.assertEqual(recursive_type_conversion(("1", 2, "3"), (str, str, int)), ('1', '2', 3))
 
     def test_dict_conversion(self):
-        self.assertEqual(recursive_type_conversion({"key1": "123", "key2": 456}, {"key1": 1, "key2": '2'}), {"key1": 123, "key2": '456'})
+        self.assertEqual(recursive_type_conversion({"key1": "123", "key2": 456}, {"key1": int, "key2": str}), {"key1": 123, "key2": '456'})
 
     def test_recursive_conversion(self):
         source = {
@@ -28,29 +27,32 @@ class TestRecursiveTypeConversion(unittest.TestCase):
             "list_of_str": ["1", "2", "3"],
             "nested_dict": {
                 "bool_str": "True"
-            }
+            },
+            "tuple_of_mixed": ('30','',['30',10])
         }
         template = {
-            "number_str": 0,
-            "list_of_str": [0, 0, 0],
+            "number_str": int,
+            "list_of_str": [int,int,int],
             "nested_dict": {
-                "bool_str": False
-            }
+                "bool_str": bool
+            },
+            "tuple_of_mixed": (int,bool,[int, str])
         }
         expected = {
             "number_str": 123,
             "list_of_str": [1, 2, 3],
             "nested_dict": {
                 "bool_str": True
-            }
+            },
+            "tuple_of_mixed": (30,False,[30,'10'])
         }
         self.assertEqual(recursive_type_conversion(source, template), expected)
 
     def test_error_handling(self):
         with self.assertRaises(TypeError):
-            recursive_type_conversion("not a list", [1, 2, 3])
+            recursive_type_conversion("not a list", [int])
         with self.assertRaises(TypeError):
-            recursive_type_conversion("not a tuple", (1, 2, 3))
+            recursive_type_conversion("not a tuple", (int, str, bool))
 
 if __name__ == '__main__':
     unittest.main()

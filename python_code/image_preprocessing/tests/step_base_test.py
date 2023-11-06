@@ -13,14 +13,16 @@ from python_code.load_raw_data.kaggle_dataset import load_tf_record
 class TestStepBase(unittest.TestCase):
     """    Test suite for validating the functionality of the preprocessing steps parent class 'StepBase' in the image preprocessing module.
     
-    This suite includes tests to verify the correct initialization of preprocessing steps, the loading
-    of parameters from a configuration file, the application of parameter ranges, and the proper function
+    This suite includes tests to verify the correct initialization of preprocessing steps,  the proper function
     of both TensorFlow and Python-based image preprocessing steps. Additionally, it ensures that images
     maintain correct shape transformations throughout the preprocessing pipeline and that the custom object
-    equality logic behaves as expected. `TfTestStep` and `PyTestStep` make a simple conversion of the images from RGB to Grayscale, that can be easily verified.
+    equality logic behaves as expected. The example test steps `TfTestStep` and `PyTestStep` make a simple conversion of the images from RGB to Grayscale, that can be easily verified.
     """
     class TfTestStep(StepBase):
-        def __init__(self, set_params_from_range=False, name_postfix='', param1=10 , param2=(10,10), param3=True):
+
+        init_params_datatypes = {'param1': int, 'param2':(int,int), 'param3':bool}
+        
+        def __init__(self, param1=10 , param2=(10,10), param3=True):
             super().__init__('Test_Step', locals())
 
         @StepBase._tf_function_decorator
@@ -30,7 +32,10 @@ class TestStepBase(unittest.TestCase):
             return tf_image_grayscale, tf_target
 
     class PyTestStep(StepBase):
-        def __init__(self, set_params_from_range=False, name_postfix='', param1=10 , param2=(10,10), param3=True):
+        
+        init_params_datatypes = {'param1': int, 'param2':(int,int), 'param3':bool}
+        
+        def __init__(self, param1=10 , param2=(10,10), param3=True):
             super().__init__('Test_Step', locals())
 
         @StepBase._py_function_decorator
@@ -47,24 +52,13 @@ class TestStepBase(unittest.TestCase):
         cls.image_dataset = load_tf_record().take(9)
     
     def setUp(self):
-        self.local_vars = {'set_params_from_range': False, 'param1': 10, 'param2': (10,10), 'param3': True}
+        self.local_vars = {'param1': 10, 'param2': (10,10), 'param3': True}
         self.tf_preprocessing_step = self.TfTestStep(**self.local_vars)
         self.py_preprocessing_step = self.PyTestStep(**self.local_vars)
     
     def test_initialization(self):
         self.assertEqual(self.tf_preprocessing_step.name, "Test_Step")
         self.assertEqual(self.tf_preprocessing_step.params, {'param1': 10, 'param2': (10,10), 'param3': True})
-        
-    def test_load_params_from_json(self):
-        configs = self.tf_preprocessing_step._load_params_from_json()
-        self.assertIsInstance(configs, dict)
-
-    def test_params_from_range(self):
-        self.local_vars['set_params_from_range'] = True
-        preprocessing_step = TestStepBase.TfTestStep(**self.local_vars)
-        self.assertIn(preprocessing_step.params['param1'], [20,30,40])  # Adjust based on json file
-        self.assertIn(preprocessing_step.params['param2'], [(20,20),(30,30)])  # Adjust based on json file
-        self.assertIn(preprocessing_step.params['param3'], [False])  # Adjust based on json file
 
     def test_correct_shape_gray(self):
         tf_image = [x for x in TestStepBase.image_dataset.take(1)][0][0]
@@ -91,10 +85,7 @@ class TestStepBase(unittest.TestCase):
         self.assertEqual(self.py_preprocessing_step, self.tf_preprocessing_step)
 
     def test_not_equal_objects(self):
-        local_vars = {'set_params_from_range': False, 'param1': 20, 'param2': (20,20), 'param3': False}
-        tf_preprocessing_step = self.TfTestStep(**local_vars)
-        self.assertNotEqual(self.py_preprocessing_step, tf_preprocessing_step)
-        local_vars = {'set_params_from_range': False, 'name_postfix': 'invalid', 'param1': 10, 'param2': (10,10), 'param3': True}
+        local_vars = { 'param1': 20, 'param2': (20,20), 'param3': False}
         tf_preprocessing_step = self.TfTestStep(**local_vars)
         self.assertNotEqual(self.py_preprocessing_step, tf_preprocessing_step)
 
