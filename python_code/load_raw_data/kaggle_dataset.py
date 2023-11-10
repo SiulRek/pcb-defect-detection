@@ -167,7 +167,7 @@ def get_tf_dataset(path_an=PATH_ANNOTATIONS, path_im=PATH_IMAGE, create_annotati
 def save_tf_record():
     """    Saves TensorFlow dataset to the TFRecord file.
     """
-    save_tfrecord_to_file(get_tf_dataset(), PATH_RECORD)
+    save_tfrecord_to_file(get_tf_dataset(create_annotation_summary=True), PATH_RECORD)
 
 def load_tf_record():
     """    Loads the specific TFRecord file and returns a parsed TensorFlow dataset.

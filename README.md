@@ -34,13 +34,7 @@ To get started with the PCB Defect Detection project, follow these instructions:
    Navigate into the project directory:  
    `cd pcb-defect-detection`
 
-2. **Configure Repository Path**  
-   To include the repository path in the system's search paths at runtime, create a `pcb-defect-detection.pth` file containing the absolute path to the `pcb-defect-detection` directory. Place this file in the `Lib\site-packages` directory of your Python installation or virtual environment. This ensures that Python includes your repository directory in its `sys.path`.
-   
-   Example of `.pth` file content:  
-   `C:\path\to\your\pcb-defect-detection`
-
-3. **Set Up Python Virtual Environment**  
+2. **Set Up Python Virtual Environment**  
    Create the virtual environment:  
    `python -m venv venv`  
    Activate the virtual environment:  
@@ -48,6 +42,13 @@ To get started with the PCB Defect Detection project, follow these instructions:
    `.\venv\Scripts\activate`  
    On macOS and Linux:  
    `source venv/bin/activate`
+
+3. **Configure Repository Path**  
+   To include the repository path in the system's search paths at runtime, create a `your-repository-name.pth` file containing the absolute path to the `your-repository-name` directory. Place this file in the `Lib\site-packages` directory of your Python installation or virtual environment. This ensures that Python includes your repository directory in its `sys.path`.
+   
+   Example of `.pth` file content:  
+   `C:\path\to\your\repository`
+
 
 4. **Install Dependencies**  
    Install the required packages:  
