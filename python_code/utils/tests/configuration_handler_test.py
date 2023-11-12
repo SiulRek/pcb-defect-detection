@@ -4,7 +4,7 @@ import shutil
 
 from python_code.utils.configuration_handler import ConfigurationHandler
 
-ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
+ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..')
 TEST_DIR = os.path.join(ROOT_DIR, r'python_code/utils/test/')
 
 
@@ -92,12 +92,12 @@ class TestConfigurationHandler(unittest.TestCase):
         nested_structure = {
             'list': [1, 2, 3],
             'tuple': (1, 2, 3),
-            'dict': {'nested_list': [4, 5, 6]}
+            'dict': {'nested_list': (4, 5, '30')}
         }
         expected = {
             'list': [1, 2, 3],
             'tuple': [1, 2, 3],
-            'dict': {'nested_list': [4, 5, 6]}
+            'dict': {'nested_list': [4, 5, '30']}
         }
         self.assertEqual(self.handler._serialize_to_json_value(nested_structure), expected)
 
