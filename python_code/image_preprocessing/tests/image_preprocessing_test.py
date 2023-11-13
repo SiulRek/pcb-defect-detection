@@ -123,13 +123,6 @@ class TestStepBase(unittest.TestCase):
         
         processed_dataset = new_preprocessor.process(self.image_dataset)
         self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=1)
-
-    def _verify_image_shapes(self, processed_dataset, original_dataset, color_channel_expected):
-
-        for original_data, processed_data in zip(original_dataset, processed_dataset):
-            self.assertEqual(processed_data[1], original_data[1])   # Check if targets are equal.
-            self.assertEqual(processed_data[0].shape[:1], original_data[0].shape[:1]) # Check if height and width are equal.
-            self.assertEqual(color_channel_expected, processed_data[0].shape[2])     
     
     def test_not_raised_step_process_exception_1(self):
         """   Test case for ensuring that the ErrorStep subclass, when processing an image
@@ -162,6 +155,35 @@ class TestStepBase(unittest.TestCase):
         preprocessor.set_pipe(pipeline)
         processed_dataset = preprocessor.process(self.image_dataset)
         self.assertIsNone(processed_dataset)
+    
+    def test_pipe_pop_and_push(self):
+        """
+        Tests the functionality of popping and pushing steps in the image preprocessing pipeline.
+        
+        This test case first populates the pipeline with specific steps, then pops the last step, 
+        and finally pushes it back. It verifies both the popped step and the integrity of the 
+        pipeline after these operations.
+        """
+        pipeline = [
+             TestStepBase.RGBToGrayscale(param1=20,param2=(20,20),param3=False),
+             TestStepBase.GrayscaleToRGB(param1=40,param2=(30,30),param3=False),     
+        ]
+        preprocessor = ImagePreprocessor(raise_step_process_exception=False)
+        preprocessor.set_pipe(pipeline)
+        popped_step = preprocessor.pipe_pop()
+
+        self.assertEqual(popped_step, TestStepBase.GrayscaleToRGB(param1=40,param2=(30,30),param3=False))
+        self.assertEqual(preprocessor._pipeline, pipeline[:1])
+
+        preprocessor.pipe_push(popped_step)
+        self.assertEqual(preprocessor._pipeline, pipeline)
+
+    def _verify_image_shapes(self, processed_dataset, original_dataset, color_channel_expected):
+
+        for original_data, processed_data in zip(original_dataset, processed_dataset):
+            self.assertEqual(processed_data[1], original_data[1])   # Check if targets are equal.
+            self.assertEqual(processed_data[0].shape[:1], original_data[0].shape[:1]) # Check if height and width are equal.
+            self.assertEqual(color_channel_expected, processed_data[0].shape[2])     
 
 
 if __name__ == '__main__':

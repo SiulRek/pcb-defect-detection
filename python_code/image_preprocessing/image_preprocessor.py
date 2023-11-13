@@ -69,7 +69,7 @@ class ImagePreprocessor:
     def _initialize_class_instance_serializer(self, step_class_mapping):
         """ Checks if `step_class_mapping` is a dictionary and mapps to subclasses of `StepBase`, if successfull instanciates the `ClassInstanceSerializer` for pipeline serialization and deserialization."""
 
-        if isinstance(step_class_mapping, dict):
+        if not isinstance(step_class_mapping, dict):
             raise TypeError(f"'step_class_mapping' must be of type dict not {type(step_class_mapping)}.")
         
         for mapped_class in step_class_mapping.values():
@@ -84,7 +84,11 @@ class ImagePreprocessor:
                 raise ValueError(f'Expecting a Child of StepBase, got {type(step)} instead.')        
         self._pipeline = deepcopy(pipeline)
 
-    def add_step(self, step):
+    def pipe_pop(self):
+        """ Adds a new step to the pipeline, verifying that it is a subclass of StepBase."""
+        return self._pipeline.pop()
+
+    def pipe_push(self, step):
         """ Adds a new step to the pipeline, verifying that it is a subclass of StepBase."""
         if not isinstance(step, StepBase):  
                     raise ValueError(f'Expecting a Child of StepBase, got {type(step)} instead.')
