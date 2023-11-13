@@ -11,10 +11,15 @@ def correct_tf_image_shape(tf_image):
     - tf.Tensor: A reshaped tensor based on inferred dimensions.
     """
     
-    height = shape(tf_image)[0]
-    width = shape(tf_image)[1]
-    channel_num = shape(tf_image)[2]
-    
-    reshaped_image = reshape(tf_image, [height, width, channel_num])
+    dims = shape(tf_image)
+    height = dims[0]
+    width = dims[1]
+
+    # Check if the image is grayscale (2D) and if so, reshape it to 3D with 1 channel.
+    if len(dims) == 2:
+        reshaped_image = reshape(tf_image, [height, width, 1])
+    else:
+        channel_num = dims[2]
+        reshaped_image = reshape(tf_image, [height, width, channel_num])
     
     return reshaped_image    
