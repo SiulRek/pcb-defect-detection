@@ -2,11 +2,13 @@ import cv2
 import tensorflow as tf
 
 from python_code.image_preprocessing.preprocessing_steps.step_base import StepBase
+from python_code.image_preprocessing.preprocessing_steps.step_utils import correct_tf_image_shape
 
 
 class AdaptiveHistogramEqualization(StepBase):
 
-    def __init__(self, clip_limit=2.0, tile_gridsize=(8,8),  set_params_from_range=False, name_postfix=''):
+    _init_params_datatypes = {'clip_limit': float, 'tile_gridsize': (int, int)}
+    def __init__(self, clip_limit=2.0, tile_gridsize=(8,8)):
         super().__init__('Adaptive Histogram Equalization', locals())
 
     @StepBase._py_function_decorator
@@ -24,7 +26,7 @@ class AdaptiveHistogramEqualization(StepBase):
 
         tf_clahe_image = tf.convert_to_tensor(cv2_clahe_image, dtype=tf.uint8)
 
-        tf_clahe_image = self.reshape_color_channel(tf_clahe_image, tf_image_comparison=tf_image)
+        tf_clahe_image = correct_tf_image_shape(tf_clahe_image)
 
         return (tf_clahe_image, tf_target)
     
