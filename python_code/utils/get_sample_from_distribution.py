@@ -31,7 +31,7 @@ def get_sample_from_distribution(distribution_data):
     }
 
     if 'distribution' not in distribution_data.keys():
-        raise KeyError(f"No key named 'distribution' in 'distribution_data'.")
+        raise KeyError("No key named 'distribution' in 'distribution_data'.")
     
     dist_function = distribution_map.get(distribution_data['distribution'].lower())
     if not dist_function:
@@ -43,7 +43,7 @@ def get_sample_from_distribution(distribution_data):
     try:
         sample = float(dist_function(**args)[0])
     except TypeError as e:
-        error_message = f"Impossible to call the specified distribution function with contents of 'distribution_data' dict."
+        error_message = "Impossible to call the specified distribution function with contents of 'distribution_data' dict."
         raise ValueError(error_message) from e
-    
+     
     return sample
