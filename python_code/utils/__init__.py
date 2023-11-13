@@ -1,3 +1,3 @@
 from python_code.utils.pcb_visualization import PCBVisualizerforCV2, PCBVisualizerforTF
 from python_code.utils.recursive_type_conversion import recursive_type_conversion
-from python_code.utils.configuration_handler import ConfigurationHandler
+from python_code.utils.class_instance_serializer import ClassInstanceSerializer

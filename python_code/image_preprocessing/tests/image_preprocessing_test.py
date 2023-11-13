@@ -9,7 +9,6 @@ from python_code.image_preprocessing.image_preprocessor import ImagePreprocessor
 from python_code.image_preprocessing.preprocessing_steps.step_base import StepBase
 from python_code.image_preprocessing.preprocessing_steps.step_utils import correct_tf_image_shape
 from python_code.load_raw_data.kaggle_dataset import load_tf_record
-from python_code.utils import ConfigurationHandler
 
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')

@@ -6,7 +6,7 @@ import tensorflow as tf
 
 from python_code.image_preprocessing.preprocessing_steps.step_base import StepBase
 from python_code.image_preprocessing.preprocessing_steps.step_class_mapping import STEP_CLASS_MAPPING
-from python_code.utils import ConfigurationHandler
+from python_code.utils import ClassInstanceSerializer
 
 class ImagePreprocessor:
     """
@@ -19,7 +19,7 @@ class ImagePreprocessor:
 
     Attributes (read only):
         pipeline (list of StepBase Child classes): A list of preprocessing steps to be executed.
-        configuration_handler (ConfigurationHandler): Hnadles the serialization and deserialization of the pipeline to and from a JSON file.
+        class_instance_serializer (ClassInstanceSerializer): Handles the serialization and deserialization of the pipeline to and from a JSON file.
 
 
     Methods:
@@ -58,8 +58,8 @@ class ImagePreprocessor:
             during step processing are raised or logged.
         """
         self._pipeline = []
-        self._configuration_handler = None
-        self._initialize_configuration_handler(STEP_CLASS_MAPPING)
+        self._class_instance_serializer = None
+        self._initialize_class_instance_serializer(STEP_CLASS_MAPPING)
         self._raise_step_process_exception = raise_step_process_exception
 
     @property
@@ -67,18 +67,18 @@ class ImagePreprocessor:
         return self._pipeline
     
     @property
-    def configuration_handler(self):
-        return self._configuration_handler
+    def class_instance_serializer(self):
+        return self._class_instance_serializer
     
-    def _initialize_configuration_handler(self, step_class_mapping):
-        """ Checks if `step_class_mapping` is a dictionary and mapps to subclasses of `StepBase`, if successfull instanciates the `ConfigurationHandler` for pipeline serialization and deserialization."""
+    def _initialize_class_instance_serializer(self, step_class_mapping):
+        """ Checks if `step_class_mapping` is a dictionary and mapps to subclasses of `StepBase`, if successfull instanciates the `ClassInstanceSerializer` for pipeline serialization and deserialization."""
         if not type(step_class_mapping) is dict:
             raise TypeError(f"'step_class_mapping' must be of type dict not {type(step_class_mapping)}.")
         else:
             for mapped_class in step_class_mapping.values():
                 if not issubclass(mapped_class, StepBase):
                     raise ValueError("At least one mapped class is not a class or subclass of StepBase.")
-            self._configuration_handler = ConfigurationHandler(step_class_mapping)
+            self._class_instance_serializer = ClassInstanceSerializer(step_class_mapping)
 
     def set_pipe(self, pipeline):
         """  Sets the preprocessing pipeline with a deep copy of the provided steps ensuring each step is an instance of a StepBase subclass."""
@@ -121,19 +121,19 @@ class ImagePreprocessor:
 
     def save_pipe_to_json(self, json_path):
         "Serializes the preprocessing pipeline to the specified JSON file, saving the step configurations."
-        if self.configuration_handler:
-            self.configuration_handler.save_instance_list_to_json(self.pipeline, json_path)
+        if self.class_instance_serializer:
+            self.class_instance_serializer.save_instance_list_to_json(self.pipeline, json_path)
         else:
-            raise AttributeError(f"Not None Instance Attribute 'configuration_handler' is required to save pipe.")
+            raise AttributeError(f"Not None Instance Attribute 'class_instance_serializer' is required to save pipe.")
     
         
     def load_pipe_from_json(self, json_path):
         """  Loads and reconstructs a preprocessing pipeline from the specified JSON file.
         """
         
-        if self.configuration_handler:
-             self._pipeline = self.configuration_handler.get_instance_list_from_json(json_path)
+        if self.class_instance_serializer:
+             self._pipeline = self.class_instance_serializer.get_instance_list_from_json(json_path)
         else:
-            raise AttributeError(f"Not None Instance Attribute 'configuration_handler' is required to save pipe.")
+            raise AttributeError(f"Not None Instance Attribute 'class_instance_serializer' is required to save pipe.")
 
 
