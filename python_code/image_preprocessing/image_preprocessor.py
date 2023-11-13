@@ -1,8 +1,4 @@
-import json
-import re
-
 from copy import deepcopy
-import tensorflow as tf
 
 from python_code.image_preprocessing.preprocessing_steps.step_base import StepBase
 from python_code.image_preprocessing.preprocessing_steps.step_class_mapping import STEP_CLASS_MAPPING
@@ -72,13 +68,14 @@ class ImagePreprocessor:
     
     def _initialize_class_instance_serializer(self, step_class_mapping):
         """ Checks if `step_class_mapping` is a dictionary and mapps to subclasses of `StepBase`, if successfull instanciates the `ClassInstanceSerializer` for pipeline serialization and deserialization."""
-        if not type(step_class_mapping) is dict:
+
+        if isinstance(step_class_mapping, dict):
             raise TypeError(f"'step_class_mapping' must be of type dict not {type(step_class_mapping)}.")
-        else:
-            for mapped_class in step_class_mapping.values():
-                if not issubclass(mapped_class, StepBase):
-                    raise ValueError("At least one mapped class is not a class or subclass of StepBase.")
-            self._class_instance_serializer = ClassInstanceSerializer(step_class_mapping)
+        
+        for mapped_class in step_class_mapping.values():
+            if not issubclass(mapped_class, StepBase):
+                raise ValueError("At least one mapped class is not a class or subclass of StepBase.")
+        self._class_instance_serializer = ClassInstanceSerializer(step_class_mapping)
 
     def set_pipe(self, pipeline):
         """  Sets the preprocessing pipeline with a deep copy of the provided steps ensuring each step is an instance of a StepBase subclass."""
@@ -110,6 +107,8 @@ class ImagePreprocessor:
                     print(f"An error occurred in step {step.name}: {str(e)}")
                     return None
 
+        self._consume_tf_dataset(processed_dataset)
+
         return processed_dataset
     
     def _consume_tf_dataset(self, tf_dataset):
@@ -124,7 +123,7 @@ class ImagePreprocessor:
         if self.class_instance_serializer:
             self.class_instance_serializer.save_instance_list_to_json(self.pipeline, json_path)
         else:
-            raise AttributeError(f"Not None Instance Attribute 'class_instance_serializer' is required to save pipe.")
+            raise AttributeError("Not None Instance Attribute 'class_instance_serializer' is required to save pipe.")
     
         
     def load_pipe_from_json(self, json_path):
@@ -134,6 +133,6 @@ class ImagePreprocessor:
         if self.class_instance_serializer:
              self._pipeline = self.class_instance_serializer.get_instance_list_from_json(json_path)
         else:
-            raise AttributeError(f"Not None Instance Attribute 'class_instance_serializer' is required to save pipe.")
+            raise AttributeError("Not None Instance Attribute 'class_instance_serializer' is required to save pipe.")
 
 

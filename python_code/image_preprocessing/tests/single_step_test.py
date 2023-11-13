@@ -8,7 +8,6 @@ import unittest
 from unittest.mock import patch
 
 import tensorflow as tf
-import cv2
 
 # Select Step to test here!
 from python_code.image_preprocessing.preprocessing_steps import AdaptiveHistogramEqualization as TestStep

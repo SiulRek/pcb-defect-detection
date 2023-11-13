@@ -1,6 +1,4 @@
 import unittest
-import os
-import json
 
 import tensorflow as tf
 import cv2
@@ -61,24 +59,24 @@ class TestStepBase(unittest.TestCase):
         self.assertEqual(self.tf_preprocessing_step.params, {'param1': 10, 'param2': (10,10), 'param3': True})
 
     def test_correct_shape_gray(self):
-        tf_image = [x for x in TestStepBase.image_dataset.take(1)][0][0]
+        tf_image = list(TestStepBase.image_dataset.take(1))[0][0]
         tf_image_grayscale = tf.image.rgb_to_grayscale(tf_image)
         reshaped_image = correct_tf_image_shape(tf_image_grayscale)
         self.assertEqual(reshaped_image.shape, [2464, 3056, 1])
 
     def test_correct_shape_rgb(self):
-        tf_image = [x for x in TestStepBase.image_dataset.take(1)][0][0]
+        tf_image = list(TestStepBase.image_dataset.take(1))[0][0]
         reshaped_image = correct_tf_image_shape(tf_image)
         self.assertEqual(reshaped_image.shape, [2464, 3056, 3])
 
     def test_tf_function_decorator(self):
         tf_dataset = self.tf_preprocessing_step.process_step(self.image_dataset)
-        tf_image = [x for x in tf_dataset.take(1)][0][0]
+        tf_image = list(tf_dataset.take(1))[0][0]
         self.assertEqual(tf_image.shape, [2464, 3056, 1])
 
     def test_py_function_decorator(self):
         tf_dataset = self.py_preprocessing_step.process_step(self.image_dataset)
-        tf_image = [x for x in tf_dataset.take(1)][0][0]
+        tf_image = list(tf_dataset.take(1))[0][0]
         self.assertEqual(tf_image.shape, [2464, 3056, 1])
     
     def test_equal_objects(self):

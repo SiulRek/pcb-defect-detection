@@ -1,7 +1,5 @@
-import random
-import json
+from abc import ABC, abstractmethod
 import os
-
 import tensorflow as tf
 
 from python_code.utils.recursive_type_conversion import recursive_type_conversion
@@ -11,7 +9,7 @@ JSON_DEFAULT_PATH = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/con
 
 #TODO Change documentation according to last changes.
 
-class StepBase:
+class StepBase(ABC):
     """  Base class for defining preprocessing steps for images.
 
     Public Class Method:
@@ -97,6 +95,8 @@ class StepBase:
         json_string = f'    "{self._name}": {{\n{params_str}\n    }}'
         print(json_string)
         
+        return json_string
+        
     def _extract_params(self, local_vars):
         """  Extracts parameters needed for the preprocessing step based on local variables. It considers if parameters should be randomized or extracted directly from `local_vars`."""
 
@@ -110,7 +110,8 @@ class StepBase:
         # Child class can overwrite this method, otherwise defaults to the following:
         self._output_datatypes['image'] = tf.uint8
         self._output_datatypes['target'] = tf.int8
-        
+
+    @abstractmethod    
     def process_step(self, tf_image, tf_target):
         # Child class must implement this method.
         pass
