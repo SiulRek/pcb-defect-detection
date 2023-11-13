@@ -1,11 +1,12 @@
 import unittest
 import os
+import json
 import shutil
 
 from python_code.utils.configuration_handler import ConfigurationHandler
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..')
-TEST_DIR = os.path.join(ROOT_DIR, r'python_code/utils/test/')
+TEST_DIR = os.path.join(ROOT_DIR, r'python_code/utils/tests/outputs')
 
 
 class MockClass1:
@@ -52,7 +53,7 @@ class TestConfigurationHandler(unittest.TestCase):
         self.handler = ConfigurationHandler(self.instance_mapping)
         self.instance_list = [
             MockClass1(param1 = 'hallo', param2 = 20, param3 = {'key1': 30, 'key2':(3.2, True)}),
-            MockClass1(param1 = 'tschüss', param3 = {'key1': 40, 'key2':(55.3, False)}), # param2 is expected to be initialized to default value.
+            MockClass1(param1 = 'tschuess', param3 = {'key1': 40, 'key2':(55.3, False)}), # param2 is expected to be initialized to default value.
             MockClass2(param1 = 'win') # All is expected to be initialized to default value.
             ]
     
@@ -78,6 +79,26 @@ class TestConfigurationHandler(unittest.TestCase):
         self.handler.instance_mapping = {'MockClass1': MockClass1}   # Missing mapping for 'MockClass2'.
         with self.assertRaises(KeyError):
             self.handler.save_instance_list_to_json(self.instance_list, self.json_path)
+
+    def test_load_from_json(self):
+        
+        mock_class_params_1 = {'param1': ['tschuess','hallo'], 'param2': [20,30,40]}     
+        mock_class_params_2 = {'param1': ['servus', 'ciao'], 'param2': {'distribution': 'uniform', 'low': 1, 'high':10}}   
+        temp_key = 'MockClass2' + ConfigurationHandler.KEY_SEPARATOR + '2'              # As two keys of the same name are not allowed.
+        json_data = {'MockClass2': mock_class_params_1, temp_key:mock_class_params_2}
+        
+        with open(self.json_path, 'w') as file:
+            json.dump(json_data, file)
+
+        loaded_instance_list = self.handler.get_instance_list_from_json(self.json_path)
+        
+        self.assertIn(loaded_instance_list[0].params['param1'], mock_class_params_1['param1'])
+        self.assertIn(loaded_instance_list[0].params['param2'], mock_class_params_1['param2'])
+        self.assertIn(loaded_instance_list[1].params['param1'], mock_class_params_2['param1'])
+        self.assertTrue(isinstance(loaded_instance_list[1].params['param2'], int))
+        self.assertTrue(1 <= loaded_instance_list[1].params['param2'] <= 10)
+
+
 
     def test_serialize_success_1(self):
         self.assertEqual(self.handler._serialize_to_json_value([1, 2, 3]), [1, 2, 3])

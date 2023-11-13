@@ -4,6 +4,7 @@ import json
 import random
 
 from python_code.utils import recursive_type_conversion
+from python_code.utils.get_sample_from_distribution import get_sample_from_distribution
 
 class ConfigurationHandler:
     """
@@ -65,7 +66,7 @@ class ConfigurationHandler:
     
     @instance_mapping.setter
     def instance_mapping(self, value):
-        if not isinstance(value, dict):
+        if not type(value) is dict:
             raise ValueError(f"The specified instance mapping is not of type dict: {value}.")
         self._instance_mapping = value
 
@@ -124,11 +125,11 @@ class ConfigurationHandler:
             unique_name = self._generate_unique_key_name(class_name, json_data)   
             json_data[unique_name] = converted_params
 
-        # Write 'json_data' to JSON file
+        # Write 'json_data' to JSON file in a readable way.
         json_string = json.dumps(json_data, indent=4)
         json_string = json_string.replace('},', '},\n')
         pattern = r'\[[^\[\]]*(?:\[[^\[\]]*\][^\[\]]*)*\]'   
-        result = re.sub(pattern, self._remove_newlines, json_string)  # Replace newlines and spaces within square brackets (improves readability).
+        result = re.sub(pattern, self._remove_newlines, json_string)  # Replace newlines and spaces within square brackets.
         with open(json_path, 'w') as file:
             file.write(result)
     
@@ -153,9 +154,9 @@ class ConfigurationHandler:
             object: The JSON-serializable representation of `obj`.
 
         """
-        if isinstance(obj, tuple) or isinstance(obj, list):
+        if type(obj) is tuple or type(obj) is list:
             return [self._serialize_to_json_value(item) for item in obj]
-        elif isinstance(obj, dict):
+        elif type(obj) is dict:
             return {key: self._serialize_to_json_value(value) for key, value in obj.items()}
         elif type(obj) in {int, float, str, bool}:
             return obj
@@ -174,7 +175,7 @@ class ConfigurationHandler:
             str: A unique key name for the dictionary.
         """
         key = current_key
-        i = 2             
+        i = 2             # Starts from 2 as 1 is the case of key name without identification.
         while key in dictionary.keys():              # Same namining of entries are not allowed in json.
             key = key.split(ConfigurationHandler.KEY_SEPARATOR)[0] + ConfigurationHandler.KEY_SEPARATOR + str(i) 
             i += 1
@@ -244,7 +245,7 @@ class ConfigurationHandler:
                 raise AttributeError(f"The class attribute '_init_params_datatypes' of class {mapped_class} must be of type dict. This allows to create a class instance.")
                 
             init_params_datatypes = mapped_class._init_params_datatypes
-            init_params = {init_param: random.choice(range) for init_param, range in init_params.items()}
+            init_params = self._deserialize_json_params(init_params, init_params_datatypes)
             init_params = recursive_type_conversion(init_params, init_params_datatypes)
         else:
             print(f"Configuration Handler Warning: class '{mapped_class}' has no attribute '_init_params_datatypes', this can lead to faulty instanciation.")
@@ -258,3 +259,17 @@ class ConfigurationHandler:
             raise ValueError(f"Incorrect initialization of class {mapped_class}, probably initialization parameters mismatch with JSON file.") from e
         except TypeError as e:
             raise ValueError(f"Incorrect initialization of class {mapped_class}, probably initialization parameters mismatch with JSON file.") from e
+
+    def _deserialize_json_params(self, json_params, params_datatypes):
+
+        deserialized_params = {}
+        for param_name, param_val in json_params.items():
+            # If param_val is list it indicates a range of parameter values, else if a dict it indicates a distribution.
+            if isinstance(param_val, list):
+                deserialized_params[param_name] = random.choice(param_val)
+            elif isinstance(param_val, dict):
+                deserialized_params[param_name] = get_sample_from_distribution(param_val)
+            else:
+                raise ValueError(f"The value of JSON parameter '{param_name}' must be of type dict or list, not {type(param_val)}.")
+
+        return deserialized_params
