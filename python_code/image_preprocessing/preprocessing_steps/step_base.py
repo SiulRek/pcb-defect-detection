@@ -15,12 +15,12 @@ class StepBase(ABC):
     TensorFlow image processing pipeline.
 
     Child classes should implement the `process_step` method according to their specific processing requirements and
-    specifie the value of the class attributes: `init_params_datatypes` and `name`.
+    specify the value of the class attributes: `arguments_datatype` and `name`.
     Decorators `_tf_function_decorator` and `_py_function_decorator` are provided for flexibility in implementing 
     TensorFlow and Python functions, respectively.
 
     Public Class Attribute (read-ony):
-    - init_params_datatypes (dict):  A dictionary containing the specification of the argument datatypes.
+    - arguments_datatype (dict):  A dictionary containing the specification of the argument datatypes.
     - name (str): The base identifier for the preprocessing step.
 
     Public Instance Attribute (read-ony):
@@ -34,7 +34,7 @@ class StepBase(ABC):
     Child Class Template:
         class StepTemplate(StepBase):
 
-            init_params_datatypes = <dictionary specifieng the argument datatypes>
+            arguments_datatype = <dictionary specifying the argument datatypes>
             name = <Preprocessing step identifier>
             def __init__(self, **processing_step_specific_args):
                 super().__init__(locals())
@@ -52,7 +52,7 @@ class StepBase(ABC):
         4. Execute single_step_test.py over this class.
     """
     
-    init_params_datatypes = None   
+    arguments_datatype = None   
     name = None
 
     def __init__(self, local_vars):
@@ -90,9 +90,7 @@ class StepBase(ABC):
             conv_params[key] = [value]
 
         params_str = ',\n'.join([f'        "{k}": {str(v).replace("True", "true").replace("False", "false")}' for k, v in conv_params.items()])
-        json_string = f'    "{self._name}": {{\n{params_str}\n    }}'
-        print(json_string)
-        
+        json_string = f'    "{self.name}": {{\n{params_str}\n    }}' 
         return json_string
         
     def _extract_params(self, local_vars):

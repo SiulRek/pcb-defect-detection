@@ -11,7 +11,7 @@ TEST_DIR = os.path.join(ROOT_DIR, r'python_code/utils/tests/outputs')
 
 class MockClass1:
     
-    init_params_datatypes = {'param1': str, 'param2': int, 'param3': {'key1': int, 'key2':(float, bool)}}
+    arguments_datatype = {'param1': str, 'param2': int, 'param3': {'key1': int, 'key2':(float, bool)}}
     def __init__(self, param1, param3, param2=20):
         self.params = {'param1': param1, 'param2': param2, 'param3': param3}
     
@@ -20,7 +20,7 @@ class MockClass1:
     
 class MockClass2:
     
-    init_params_datatypes = {'param1': str, 'param2': int}
+    arguments_datatype = {'param1': str, 'param2': int}
     def __init__(self, param1, param2=20):
         self.params = {'param1': param1, 'param2': param2}
     

@@ -18,7 +18,7 @@ class TestStepBase(unittest.TestCase):
     """
     class TfTestStep(StepBase):
 
-        init_params_datatypes = {'param1': int, 'param2':(int,int), 'param3':bool}
+        arguments_datatype = {'param1': int, 'param2':(int,int), 'param3':bool}
         name = 'Test_Step'
         
         def __init__(self, param1=10 , param2=(10,10), param3=True):
@@ -32,7 +32,7 @@ class TestStepBase(unittest.TestCase):
 
     class PyTestStep(StepBase):
         
-        init_params_datatypes = {'param1': int, 'param2':(int,int), 'param3':bool}
+        arguments_datatype = {'param1': int, 'param2':(int,int), 'param3':bool}
         name = 'Test_Step'
         
         def __init__(self, param1=10 , param2=(10,10), param3=True):

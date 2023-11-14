@@ -7,9 +7,9 @@ from python_code.image_preprocessing.preprocessing_steps.step_utils import corre
 
 class AdaptiveHistogramEqualization(StepBase):
 
-    init_params_datatypes = {'clip_limit': float, 'tile_gridsize': (int, int)}
+    arguments_datatype = {'clip_limit': float, 'tile_gridsize': (int, int)}
     name = 'Adaptive Histogram Equalization'
-    
+
     def __init__(self, clip_limit=2.0, tile_gridsize=(8,8)):
         super().__init__(locals())
 
@@ -35,7 +35,7 @@ class AdaptiveHistogramEqualization(StepBase):
 
 if __name__ == '__main__':
     step = AdaptiveHistogramEqualization()
-    step.print_json_entry()
+    print(step)
     
 
 

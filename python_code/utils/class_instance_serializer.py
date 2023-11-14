@@ -36,7 +36,7 @@ class ClassInstanceSerializer:
                                                                              a list of class instances.
         
     The class relies on the presence of a `params` attribute for instances to manage serialization,
-    and an optional `init_params_datatypes` class attribute for guided deserialization with type conversion.
+    and an optional `arguments_datatype` class attribute for guided deserialization with type conversion.
     An `instance_mapping` dictionary is expected to map from identifiable class names to actual classes.
     """
 
@@ -239,16 +239,16 @@ class ClassInstanceSerializer:
         mapped_class = self.instance_mapping[class_name_parts[0]]
         init_params = json_data.get(class_name)
         
-        if hasattr(mapped_class, 'init_params_datatypes'):
+        if hasattr(mapped_class, 'arguments_datatype'):
 
-            if type(mapped_class.init_params_datatypes) is not dict:
-                raise AttributeError(f"The class attribute 'init_params_datatypes' of class {mapped_class} must be of type dict. This allows to create a class instance.")
+            if type(mapped_class.arguments_datatype) is not dict:
+                raise AttributeError(f"The class attribute 'arguments_datatype' of class {mapped_class} must be of type dict. This allows to create a class instance.")
                 
-            init_params_datatypes = mapped_class.init_params_datatypes
+            arguments_datatype = mapped_class.arguments_datatype
             init_params = self._deserialize_json_params(init_params)
-            init_params = recursive_type_conversion(init_params, init_params_datatypes)
+            init_params = recursive_type_conversion(init_params, arguments_datatype)
         else:
-            print(f"Configuration Handler Warning: class '{mapped_class}' has no attribute 'init_params_datatypes', this can lead to faulty instanciation.")
+            print(f"Configuration Handler Warning: class '{mapped_class}' has no attribute 'arguments_datatype', this can lead to faulty instanciation.")
 
         try:
             if additional_init_params:

@@ -31,7 +31,7 @@ class TestStepBase(unittest.TestCase):
 
     class GrayscaleToRGB(StepBase):
 
-        init_params_datatypes = {'param1': int, 'param2':(int,int), 'param3':bool}
+        arguments_datatype = {'param1': int, 'param2':(int,int), 'param3':bool}
         name = 'Grayscale_to_RGB'
 
         def __init__(self, param1=10 , param2=(10,10), param3=True):
@@ -45,7 +45,7 @@ class TestStepBase(unittest.TestCase):
 
     class RGBToGrayscale(StepBase):
         
-        init_params_datatypes = {'param1': int, 'param2':(int,int), 'param3':bool}
+        arguments_datatype = {'param1': int, 'param2':(int,int), 'param3':bool}
         name = 'RGB_to_Grayscale'
         
         def __init__(self, param1=10 , param2=(10,10), param3=True):

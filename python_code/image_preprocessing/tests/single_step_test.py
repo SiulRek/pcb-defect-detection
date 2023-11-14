@@ -36,7 +36,7 @@ class TestSingleStep(unittest.TestCase):
     """
 
     class RGBToGrayscale(StepBase):
-        init_params_datatypes = {}
+        arguments_datatype = {}
         name = 'RGB_to_Grayscale'
 
         def __init__(self):
@@ -49,7 +49,7 @@ class TestSingleStep(unittest.TestCase):
             return tf_image_grayscale, tf_target
         
     class GrayscaleToRGB(StepBase):
-        init_params_datatypes = {}
+        arguments_datatype = {}
         name = 'Grayscale_to_RGB'
 
         def __init__(self):
@@ -68,7 +68,7 @@ class TestSingleStep(unittest.TestCase):
     
     def setUp(self):
         with open(JSON_TEST_PATH, 'a'): pass
-        # TestStep.init_params_datatypes
+        # TestStep.arguments_datatype
         self.params = {'clip_limit': 1.2, 'tile_gridsize': (8, 8)}
         self.test_step = TestStep(**self.params)
 
@@ -122,14 +122,14 @@ class TestSingleStep(unittest.TestCase):
         for old_step, new_step in zip(old_preprocessor._pipeline, new_preprocessor._pipeline):
             self.assertEqual(old_step, new_step, 'Pipeline steps are not equal.')
 
-    def test_init_params_datatypes(self):
+    def test_arguments_datatype(self):
         """ 
         Test to verify that the datatype specifications for TestStep instance parameters are correct.
         Ensures that the actual parameters match the expected datatypes specified in the class.
         """
 
         params = self.test_step.params
-        init_params_datatype = TestStep.init_params_datatypes
+        init_params_datatype = TestStep.arguments_datatype
         
         self.assertEqual(params.keys(), init_params_datatype.keys(), "'init_params_datatype' keys does not match with 'params' attribute.")
 
