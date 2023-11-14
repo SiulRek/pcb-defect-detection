@@ -245,7 +245,7 @@ class ClassInstanceSerializer:
                 raise AttributeError(f"The class attribute 'init_params_datatypes' of class {mapped_class} must be of type dict. This allows to create a class instance.")
                 
             init_params_datatypes = mapped_class.init_params_datatypes
-            init_params = self._deserialize_json_params(init_params, init_params_datatypes)
+            init_params = self._deserialize_json_params(init_params)
             init_params = recursive_type_conversion(init_params, init_params_datatypes)
         else:
             print(f"Configuration Handler Warning: class '{mapped_class}' has no attribute 'init_params_datatypes', this can lead to faulty instanciation.")
@@ -260,7 +260,7 @@ class ClassInstanceSerializer:
         except TypeError as e:
             raise ValueError(f"Incorrect initialization of class {mapped_class}, probably initialization parameters mismatch with JSON file.") from e
 
-    def _deserialize_json_params(self, json_params, params_datatypes):
+    def _deserialize_json_params(self, json_params):
 
         deserialized_params = {}
         for param_name, param_val in json_params.items():

@@ -50,7 +50,7 @@ class TestClassInstanceSerializer(unittest.TestCase):
         self.json_path = os.path.join(TEST_DIR, 'test_config.json')
         with open(self.json_path, 'a'):    pass
         self.instance_mapping = {'MockClass1': MockClass1,'MockClass2': MockClass2}
-        self.handler = ClassInstanceSerializer(self.instance_mapping)
+        self.serializer = ClassInstanceSerializer(self.instance_mapping)
         self.instance_list = [
             MockClass1(param1 = 'hallo', param2 = 20, param3 = {'key1': 30, 'key2':(3.2, True)}),
             MockClass1(param1 = 'tschuess', param3 = {'key1': 40, 'key2':(55.3, False)}), # param2 is expected to be initialized to default value.
@@ -58,27 +58,27 @@ class TestClassInstanceSerializer(unittest.TestCase):
             ]
     
     def tearDown(self):
-        self.handler.instance_mapping = {'MockClass1': MockClass1,'MockClass2': MockClass2}
+        self.serializer.instance_mapping = {'MockClass1': MockClass1,'MockClass2': MockClass2}
         os.remove(self.json_path)
     
     def test_save_instance_list_to_json(self):
-        self.handler.save_instance_list_to_json(self.instance_list, self.json_path)
-        loaded_instance_list = self.handler.get_instance_list_from_json(self.json_path)
+        self.serializer.save_instance_list_to_json(self.instance_list, self.json_path)
+        loaded_instance_list = self.serializer.get_instance_list_from_json(self.json_path)
         self.assertEqual(loaded_instance_list, self.instance_list)
     
     def test_mismatch_json_and_class_1(self): 
 
         with self.assertRaises(ValueError):
-            self.handler.save_instance_list_to_json(self.instance_list, self.json_path)
-            self.handler.instance_mapping = {'MockClass1': MockClass1,'MockClass2': MockClass1}   # Purposly wrong mapping for init params mismatch.
-            loaded_instance_list = self.handler.get_instance_list_from_json(self.json_path)
+            self.serializer.save_instance_list_to_json(self.instance_list, self.json_path)
+            self.serializer.instance_mapping = {'MockClass1': MockClass1,'MockClass2': MockClass1}   # Purposly wrong mapping for init params mismatch.
+            loaded_instance_list = self.serializer.get_instance_list_from_json(self.json_path)
             self.assertEqual(loaded_instance_list, self.instance_list)
    
     def test_mismatch_json_and_class_2(self): 
 
-        self.handler.instance_mapping = {'MockClass1': MockClass1}   # Missing mapping for 'MockClass2'.
+        self.serializer.instance_mapping = {'MockClass1': MockClass1}   # Missing mapping for 'MockClass2'.
         with self.assertRaises(KeyError):
-            self.handler.save_instance_list_to_json(self.instance_list, self.json_path)
+            self.serializer.save_instance_list_to_json(self.instance_list, self.json_path)
 
     def test_load_from_json(self):
         
@@ -90,7 +90,7 @@ class TestClassInstanceSerializer(unittest.TestCase):
         with open(self.json_path, 'w') as file:
             json.dump(json_data, file)
 
-        loaded_instance_list = self.handler.get_instance_list_from_json(self.json_path)
+        loaded_instance_list = self.serializer.get_instance_list_from_json(self.json_path)
         
         self.assertIn(loaded_instance_list[0].params['param1'], mock_class_params_1['param1'])
         self.assertIn(loaded_instance_list[0].params['param2'], mock_class_params_1['param2'])
@@ -99,13 +99,13 @@ class TestClassInstanceSerializer(unittest.TestCase):
         self.assertTrue(1 <= loaded_instance_list[1].params['param2'] <= 10)
 
     def test_serialize_success_1(self):
-        self.assertEqual(self.handler._serialize_to_json_value([1, 2, 3]), [1, 2, 3])
-        self.assertEqual(self.handler._serialize_to_json_value((1, 2, 3)), [1, 2, 3])
-        self.assertEqual(self.handler._serialize_to_json_value({'a': 1, 'b': 2}), {'a': 1, 'b': 2})
-        self.assertEqual(self.handler._serialize_to_json_value(1), 1)
-        self.assertEqual(self.handler._serialize_to_json_value(1.0), 1.0)
-        self.assertEqual(self.handler._serialize_to_json_value("test"), "test")
-        self.assertEqual(self.handler._serialize_to_json_value(True), True)
+        self.assertEqual(self.serializer._serialize_to_json_value([1, 2, 3]), [1, 2, 3])
+        self.assertEqual(self.serializer._serialize_to_json_value((1, 2, 3)), [1, 2, 3])
+        self.assertEqual(self.serializer._serialize_to_json_value({'a': 1, 'b': 2}), {'a': 1, 'b': 2})
+        self.assertEqual(self.serializer._serialize_to_json_value(1), 1)
+        self.assertEqual(self.serializer._serialize_to_json_value(1.0), 1.0)
+        self.assertEqual(self.serializer._serialize_to_json_value("test"), "test")
+        self.assertEqual(self.serializer._serialize_to_json_value(True), True)
 
     def test_serialize_success_2(self):
         nested_structure = {
@@ -118,17 +118,48 @@ class TestClassInstanceSerializer(unittest.TestCase):
             'tuple': [1, 2, 3],
             'dict': {'nested_list': [4, 5, '30']}
         }
-        self.assertEqual(self.handler._serialize_to_json_value(nested_structure), expected)
+        self.assertEqual(self.serializer._serialize_to_json_value(nested_structure), expected)
 
     def test_serialize_failed(self):
         with self.assertRaises(TypeError):
-            self.handler._serialize_to_json_value(set([1, 2, 3]))
+            self.serializer._serialize_to_json_value(set([1, 2, 3]))
         class CustomObject:
             pass
         with self.assertRaises(TypeError):
-            self.handler._serialize_to_json_value(CustomObject())
+            self.serializer._serialize_to_json_value(CustomObject())
 
+    def test_deserialize_json_params_1(self):
+        source = {
+            "number_str": ["123"],
+            "list_of_int": [[1, 2, 3]],
+            "nested_dict": [{
+                "bool_str": True
+            }],
+            "tuple_of_mixed": [('30','',['30',10])]
+        }
+        expected = {
+            "number_str": "123",
+            "list_of_int": [1, 2, 3],
+            "nested_dict": {
+                "bool_str": True
+            },
+            "tuple_of_mixed": ('30','',['30',10])
+        }
 
+        output = self.serializer._deserialize_json_params(source)
+        self.assertEqual(output, expected)
+        
+    def test_deserialize_json_params_2(self):
+        source = {
+            "num_1": {'distribution': 'uniform', 'low': 2, 'high': 10},
+            "num_2": {'distribution': 'uniform', 'low': 0, 'high': 5},
+            "num_3" : {'distribution': 'uniform', 'low': -10, 'high': 2}
+        }
+
+        output = self.serializer._deserialize_json_params(source)
+        self.assertTrue(2 <= output['num_1'] <= 10)
+        self.assertTrue(0 <= output['num_2'] <= 5)
+        self.assertTrue(-10 <= output['num_3'] <= 2)
         
 
 if __name__ == '__main__':
