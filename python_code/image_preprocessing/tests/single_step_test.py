@@ -10,7 +10,7 @@ from unittest.mock import patch
 import tensorflow as tf
 
 # Select Step to test here!
-from python_code.image_preprocessing.preprocessing_steps import AdaptiveHistogramEqualization as TestStep
+from python_code.image_preprocessing.preprocessing_steps import GlobalHistogramEqualization as TestStep
 
 from python_code.image_preprocessing.image_preprocessor import ImagePreprocessor
 from python_code.image_preprocessing.preprocessing_steps.step_base import StepBase
@@ -69,7 +69,7 @@ class TestSingleStep(unittest.TestCase):
     def setUp(self):
         with open(JSON_TEST_PATH, 'a'): pass
         # TestStep.arguments_datatype
-        self.params = {'clip_limit': 1.2, 'tile_gridsize': (8, 8)}
+        self.params = {}
         self.test_step = TestStep(**self.params)
 
     def tearDown(self):
@@ -152,7 +152,7 @@ class TestSingleStep(unittest.TestCase):
         with open(CONFIG_TEMP_PATH, 'r') as file:
             json_data = json.load(file)
 
-        self.assertIn(step_name, json_data.keys())
+        self.assertIn(step_name, json_data.keys(), 'TestStep has no entry in JSON template.')
         
         preprocessor = ImagePreprocessor()
         preprocessor.load_pipe_from_json(CONFIG_TEMP_PATH)
