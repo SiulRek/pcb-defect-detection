@@ -12,7 +12,7 @@ from python_code.load_raw_data.kaggle_dataset import load_tf_record
 
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
-JSON_TEST_PATH = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/config/test_image_preprocessor.json')
+JSON_TEST_PATH = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/configuration/test_image_preprocessor.json')
 
 
 class TestStepBase(unittest.TestCase):
@@ -32,9 +32,10 @@ class TestStepBase(unittest.TestCase):
     class GrayscaleToRGB(StepBase):
 
         init_params_datatypes = {'param1': int, 'param2':(int,int), 'param3':bool}
+        name = 'Grayscale_to_RGB'
 
         def __init__(self, param1=10 , param2=(10,10), param3=True):
-            super().__init__('Grayscale_to_RGB', locals())
+            super().__init__(locals())
 
         @StepBase._tf_function_decorator
         def process_step(self, tf_image, tf_target):
@@ -45,9 +46,10 @@ class TestStepBase(unittest.TestCase):
     class RGBToGrayscale(StepBase):
         
         init_params_datatypes = {'param1': int, 'param2':(int,int), 'param3':bool}
+        name = 'RGB_to_Grayscale'
         
         def __init__(self, param1=10 , param2=(10,10), param3=True):
-            super().__init__('RGB_to_Grayscale', locals())
+            super().__init__(locals())
             
         @StepBase._py_function_decorator
         def process_step(self, tf_image, tf_target):
@@ -59,8 +61,11 @@ class TestStepBase(unittest.TestCase):
             return (tf_image_grayscale, tf_target)
         
     class ErrorStep(StepBase):
+
+        name = 'ErrorStep'
+        
         def __init__(self):
-            super().__init__('Error_Step', locals())
+            super().__init__(locals())
             
         @StepBase._py_function_decorator
         def process_step(self, tf_image, tf_target):

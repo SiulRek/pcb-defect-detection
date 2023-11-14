@@ -2,7 +2,7 @@
 This module contains a suite of tests designed to validate image preprocessing steps before their integration into an image preprocessing pipeline. Each preprocessing step must successfully pass all the tests specified in this module to ensure its functionality, compatibility, and reliability within the pipeline!
 """
 
-
+import json
 import os
 import unittest
 from unittest.mock import patch
@@ -21,7 +21,8 @@ from python_code.utils import recursive_type_conversion
 
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
-JSON_TEST_PATH = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/config/test_image_preprocessor.json')
+JSON_TEST_PATH = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/configuration/test_image_preprocessor.json')
+CONFIG_TEMP_PATH = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/configuration/template.json')
 
 
 class TestSingleStep(unittest.TestCase):
@@ -36,9 +37,10 @@ class TestSingleStep(unittest.TestCase):
 
     class RGBToGrayscale(StepBase):
         init_params_datatypes = {}
+        name = 'RGB_to_Grayscale'
 
         def __init__(self):
-            super().__init__('RGB_to_Grayscale', locals())
+            super().__init__(locals())
 
         @StepBase._tf_function_decorator
         def process_step(self, tf_image, tf_target):
@@ -48,9 +50,10 @@ class TestSingleStep(unittest.TestCase):
         
     class GrayscaleToRGB(StepBase):
         init_params_datatypes = {}
+        name = 'Grayscale_to_RGB'
 
         def __init__(self):
-            super().__init__('Grayscale_to_RGB', locals())
+            super().__init__(locals())
 
         @StepBase._tf_function_decorator
         def process_step(self, tf_image, tf_target):
@@ -142,6 +145,20 @@ class TestSingleStep(unittest.TestCase):
         step_name = self.test_step.name
         self.assertIn(step_name, STEP_CLASS_MAPPING.keys(), 'No mapping is specified for the tested step.')
         self.assertIs(STEP_CLASS_MAPPING[step_name], TestStep, 'Mapped value of tested step is not the tested step class itself.')
+    
+    def test_load_from_json(self):
+        step_name = self.test_step.name
+
+        with open(CONFIG_TEMP_PATH, 'r') as file:
+            json_data = json.load(file)
+
+        self.assertIn(step_name, json_data.keys())
+        
+        preprocessor = ImagePreprocessor()
+        preprocessor.load_pipe_from_json(CONFIG_TEMP_PATH)
+
+        step_is_instance = [isinstance(step, TestStep) for step in preprocessor.pipeline]
+        self.assertIn(True, step_is_instance)
 
     def _verify_image_shapes(self, processed_dataset, original_dataset, color_channel_expected):
         """ 

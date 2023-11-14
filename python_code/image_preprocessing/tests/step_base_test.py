@@ -19,9 +19,10 @@ class TestStepBase(unittest.TestCase):
     class TfTestStep(StepBase):
 
         init_params_datatypes = {'param1': int, 'param2':(int,int), 'param3':bool}
+        name = 'Test_Step'
         
         def __init__(self, param1=10 , param2=(10,10), param3=True):
-            super().__init__('Test_Step', locals())
+            super().__init__(locals())
 
         @StepBase._tf_function_decorator
         def process_step(self, tf_image, tf_target):
@@ -32,9 +33,10 @@ class TestStepBase(unittest.TestCase):
     class PyTestStep(StepBase):
         
         init_params_datatypes = {'param1': int, 'param2':(int,int), 'param3':bool}
+        name = 'Test_Step'
         
         def __init__(self, param1=10 , param2=(10,10), param3=True):
-            super().__init__('Test_Step', locals())
+            super().__init__(locals())
 
         @StepBase._py_function_decorator
         def process_step(self, tf_image, tf_target):

@@ -8,8 +8,10 @@ from python_code.image_preprocessing.preprocessing_steps.step_utils import corre
 class AdaptiveHistogramEqualization(StepBase):
 
     init_params_datatypes = {'clip_limit': float, 'tile_gridsize': (int, int)}
+    name = 'Adaptive Histogram Equalization'
+    
     def __init__(self, clip_limit=2.0, tile_gridsize=(8,8)):
-        super().__init__('Adaptive Histogram Equalization', locals())
+        super().__init__(locals())
 
     @StepBase._py_function_decorator
     def process_step(self, tf_image, tf_target):
