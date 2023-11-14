@@ -5,4 +5,5 @@ __pycache__/
 test.py
 batch_scripts/
 **/test.*
+**/annotation_summary.csv
 **/*.tfrecord
