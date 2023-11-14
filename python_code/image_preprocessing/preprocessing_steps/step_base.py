@@ -47,7 +47,7 @@ class StepBase(ABC):
         3. Add JSON entry of the class to parameter_ranges.json
     """
     
-    _init_params_datatypes = None   
+    init_params_datatypes = None   
 
     def __init__(self, name,  local_vars):
         """    Constructs the base preprocessing step with a customizable name and set of parameters.

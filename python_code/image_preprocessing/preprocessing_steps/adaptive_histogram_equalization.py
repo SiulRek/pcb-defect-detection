@@ -7,7 +7,7 @@ from python_code.image_preprocessing.preprocessing_steps.step_utils import corre
 
 class AdaptiveHistogramEqualization(StepBase):
 
-    _init_params_datatypes = {'clip_limit': float, 'tile_gridsize': (int, int)}
+    init_params_datatypes = {'clip_limit': float, 'tile_gridsize': (int, int)}
     def __init__(self, clip_limit=2.0, tile_gridsize=(8,8)):
         super().__init__('Adaptive Histogram Equalization', locals())
 

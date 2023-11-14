@@ -35,7 +35,7 @@ class TestSingleStep(unittest.TestCase):
     """
 
     class RGBToGrayscale(StepBase):
-        _init_params_datatypes = {}
+        init_params_datatypes = {}
 
         def __init__(self):
             super().__init__('RGB_to_Grayscale', locals())
@@ -47,7 +47,7 @@ class TestSingleStep(unittest.TestCase):
             return tf_image_grayscale, tf_target
         
     class GrayscaleToRGB(StepBase):
-        _init_params_datatypes = {}
+        init_params_datatypes = {}
 
         def __init__(self):
             super().__init__('Grayscale_to_RGB', locals())
@@ -65,7 +65,7 @@ class TestSingleStep(unittest.TestCase):
     
     def setUp(self):
         with open(JSON_TEST_PATH, 'a'): pass
-        # TestStep._init_params_datatypes
+        # TestStep.init_params_datatypes
         self.params = {'clip_limit': 1.2, 'tile_gridsize': (8, 8)}
         self.test_step = TestStep(**self.params)
 
@@ -126,7 +126,7 @@ class TestSingleStep(unittest.TestCase):
         """
 
         params = self.test_step.params
-        init_params_datatype = TestStep._init_params_datatypes
+        init_params_datatype = TestStep.init_params_datatypes
         
         self.assertEqual(params.keys(), init_params_datatype.keys(), "'init_params_datatype' keys does not match with 'params' attribute.")
 
