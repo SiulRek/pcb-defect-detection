@@ -1,3 +1,4 @@
+from abc import ABC
 from copy import deepcopy
 
 import cv2
@@ -6,7 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import tensorflow as tf
 
-class PCBVisualizerBase:
+class PCBVisualizerBase(ABC):
     """ This class represents the base for the PCBVisualizer child classes."""
 
     def __init__(self, show_plot=True):
