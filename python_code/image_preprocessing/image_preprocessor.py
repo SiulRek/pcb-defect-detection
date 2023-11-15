@@ -27,9 +27,12 @@ class ImagePreprocessor:
             Sets the preprocessing pipeline with a deep copy of the provided steps,
             ensuring each step is an instance of a StepBase subclass.
 
-        add_step(self, step: StepBase):
-            Adds a new step to the pipeline, verifying that it is a subclass of StepBase.
+        pipe_push(self, step: StepBase):
+            Pushes a new step to the pipeline, verifying that it is a subclass of StepBase.
 
+        pipe_pops(self) -> StepBase:
+            Pops a step from pipeline.
+            
         process(self, image_dataset: tf.data.Dataset) -> tf.data.Dataset:
             Applies each preprocessing step to the provided dataset and returns the processed dataset.
 
