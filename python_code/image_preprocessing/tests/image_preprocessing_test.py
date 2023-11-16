@@ -9,11 +9,10 @@ from python_code.image_preprocessing.image_preprocessor import ImagePreprocessor
 from python_code.image_preprocessing.preprocessing_steps.step_base import StepBase
 from python_code.image_preprocessing.preprocessing_steps.step_utils import correct_tf_image_shape
 from python_code.load_raw_data.kaggle_dataset import load_tf_record
-from python_code.utils import ConfigurationHandler
 
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
-JSON_TEST_PATH = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/config/test_image_preprocessor.json')
+JSON_TEST_PATH = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/configuration/test_image_preprocessor.json')
 
 
 class TestStepBase(unittest.TestCase):
@@ -32,10 +31,11 @@ class TestStepBase(unittest.TestCase):
 
     class GrayscaleToRGB(StepBase):
 
-        _init_params_datatypes = {'param1': int, 'param2':(int,int), 'param3':bool}
+        arguments_datatype = {'param1': int, 'param2':(int,int), 'param3':bool}
+        name = 'Grayscale_to_RGB'
 
         def __init__(self, param1=10 , param2=(10,10), param3=True):
-            super().__init__('Grayscale_to_RGB', locals())
+            super().__init__(locals())
 
         @StepBase._tf_function_decorator
         def process_step(self, tf_image, tf_target):
@@ -45,10 +45,11 @@ class TestStepBase(unittest.TestCase):
 
     class RGBToGrayscale(StepBase):
         
-        _init_params_datatypes = {'param1': int, 'param2':(int,int), 'param3':bool}
+        arguments_datatype = {'param1': int, 'param2':(int,int), 'param3':bool}
+        name = 'RGB_to_Grayscale'
         
         def __init__(self, param1=10 , param2=(10,10), param3=True):
-            super().__init__('RGB_to_Grayscale', locals())
+            super().__init__(locals())
             
         @StepBase._py_function_decorator
         def process_step(self, tf_image, tf_target):
@@ -60,8 +61,11 @@ class TestStepBase(unittest.TestCase):
             return (tf_image_grayscale, tf_target)
         
     class ErrorStep(StepBase):
+
+        name = 'ErrorStep'
+        
         def __init__(self):
-            super().__init__('Error_Step', locals())
+            super().__init__(locals())
             
         @StepBase._py_function_decorator
         def process_step(self, tf_image, tf_target):
@@ -124,13 +128,6 @@ class TestStepBase(unittest.TestCase):
         
         processed_dataset = new_preprocessor.process(self.image_dataset)
         self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=1)
-
-    def _verify_image_shapes(self, processed_dataset, original_dataset, color_channel_expected):
-
-        for original_data, processed_data in zip(original_dataset, processed_dataset):
-            self.assertEqual(processed_data[1], original_data[1])   # Check if targets are equal.
-            self.assertEqual(processed_data[0].shape[:1], original_data[0].shape[:1]) # Check if height and width are equal.
-            self.assertEqual(color_channel_expected, processed_data[0].shape[2])     
     
     def test_not_raised_step_process_exception_1(self):
         """   Test case for ensuring that the ErrorStep subclass, when processing an image
@@ -163,6 +160,35 @@ class TestStepBase(unittest.TestCase):
         preprocessor.set_pipe(pipeline)
         processed_dataset = preprocessor.process(self.image_dataset)
         self.assertIsNone(processed_dataset)
+    
+    def test_pipe_pop_and_push(self):
+        """
+        Tests the functionality of popping and pushing steps in the image preprocessing pipeline.
+        
+        This test case first populates the pipeline with specific steps, then pops the last step, 
+        and finally pushes it back. It verifies both the popped step and the integrity of the 
+        pipeline after these operations.
+        """
+        pipeline = [
+             TestStepBase.RGBToGrayscale(param1=20,param2=(20,20),param3=False),
+             TestStepBase.GrayscaleToRGB(param1=40,param2=(30,30),param3=False),     
+        ]
+        preprocessor = ImagePreprocessor(raise_step_process_exception=False)
+        preprocessor.set_pipe(pipeline)
+        popped_step = preprocessor.pipe_pop()
+
+        self.assertEqual(popped_step, TestStepBase.GrayscaleToRGB(param1=40,param2=(30,30),param3=False))
+        self.assertEqual(preprocessor._pipeline, pipeline[:1])
+
+        preprocessor.pipe_push(popped_step)
+        self.assertEqual(preprocessor._pipeline, pipeline)
+
+    def _verify_image_shapes(self, processed_dataset, original_dataset, color_channel_expected):
+
+        for original_data, processed_data in zip(original_dataset, processed_dataset):
+            self.assertEqual(processed_data[1], original_data[1])   # Check if targets are equal.
+            self.assertEqual(processed_data[0].shape[:1], original_data[0].shape[:1]) # Check if height and width are equal.
+            self.assertEqual(color_channel_expected, processed_data[0].shape[2])     
 
 
 if __name__ == '__main__':

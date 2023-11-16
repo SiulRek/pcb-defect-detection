@@ -158,7 +158,7 @@ def get_tf_datasets(dataset_dir=DATASET_DIR, create_annotation_summary=False, ra
 def save_tf_records():
     """    Generates and saves TensorFlow dataset to the TFRecord file.
     """
-    train_tf_dataset, test_tf_dataset = get_tf_datasets()
+    train_tf_dataset, test_tf_dataset = get_tf_datasets(create_annotation_summary=True)
     save_tfrecord_to_file(train_tf_dataset, PATH_TRAIN_RECORD)
     save_tfrecord_to_file(test_tf_dataset, PATH_TEST_RECORD)
 
