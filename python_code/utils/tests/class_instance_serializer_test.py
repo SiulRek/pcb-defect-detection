@@ -160,6 +160,23 @@ class TestClassInstanceSerializer(unittest.TestCase):
         self.assertTrue(2 <= output['num_1'] <= 10)
         self.assertTrue(0 <= output['num_2'] <= 5)
         self.assertTrue(-10 <= output['num_3'] <= 2)
+
+    def test_deserialize_json_params_3(self):
+        source = {
+            "param_1": '[8]*2 + [10]*1',
+            "param_2": '[1]*3 + [4]*2 + [True] + ["String"]',
+            "param_3" : '[""] + ["World", "True"]*2 + [["World", "True"]]*2'
+        }
+        expected = {
+            "param_1": [8,8,10],
+            "param_2": [1, 1, 1, 4, 4, True, "String"],
+            "param_3" : ['',"World", "True","World", "True",["World", "True"], ["World", "True"]]
+        }
+
+        output = self.serializer._deserialize_json_params(source)
+        self.assertIn(output['param_1'], expected['param_1'])
+        self.assertIn(output['param_2'], expected['param_2'])
+        self.assertIn(output['param_3'], expected['param_3'])
         
 
 if __name__ == '__main__':

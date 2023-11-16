@@ -3,8 +3,9 @@ import re
 import json
 import random
 
-from python_code.utils import recursive_type_conversion
+from python_code.utils.recursive_type_conversion import recursive_type_conversion
 from python_code.utils.get_sample_from_distribution import get_sample_from_distribution
+from python_code.utils.parse_and_repeat import parse_and_repeat
 
 class ClassInstanceSerializer:
     """
@@ -269,6 +270,9 @@ class ClassInstanceSerializer:
                 deserialized_params[param_name] = random.choice(param_val)
             elif isinstance(param_val, dict):
                 deserialized_params[param_name] = get_sample_from_distribution(param_val)
+            elif isinstance(param_val, str):
+                param_range = parse_and_repeat(param_val)
+                deserialized_params[param_name] = random.choice(param_range)
             else:
                 raise ValueError(f"The value of JSON parameter '{param_name}' must be of type dict or list, not {type(param_val)}.")
 
