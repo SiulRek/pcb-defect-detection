@@ -21,8 +21,8 @@ from python_code.utils import recursive_type_conversion,  PCBVisualizerforTF, Si
 
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
-JSON_TEST_PATH = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/configuration/test_image_preprocessor.json')
-CONFIG_TEMP_PATH = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/configuration/template.json')
+JSON_TEST_FILE = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/configuration/test_image_preprocessor.json')
+CONFIG_TEMP_FILE = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/configuration/template.json')
 STEP_NAME_EDITED = TestStep.name.replace(' ', '_').lower()
 OUTPUT_DIR = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/tests/outputs', STEP_NAME_EDITED)
 
@@ -77,14 +77,14 @@ class TestSingleStep(unittest.TestCase):
             cls.visual_inspection = cls.popup_handler.ask_yes_no_question('Do you want to make a visual inspection?')
                 
     def setUp(self):
-        with open(JSON_TEST_PATH, 'a'): pass
+        with open(JSON_TEST_FILE, 'a'): pass
         #TestStep.arguments_datatype
         self.params = {'kernel_size': (5,5), 'sigma': 0.2}
         self.test_step = TestStep(**self.params)
 
     def tearDown(self):
-        if os.path.exists(JSON_TEST_PATH):
-            os.remove(JSON_TEST_PATH)   
+        if os.path.exists(JSON_TEST_FILE):
+            os.remove(JSON_TEST_FILE)   
     
     def test_process_rgb_images(self):
         """ 
@@ -124,9 +124,9 @@ class TestSingleStep(unittest.TestCase):
             old_preprocessor = ImagePreprocessor()
             pipeline = [TestSingleStep.RGBToGrayscale(), self.test_step]
             old_preprocessor.set_pipe(pipeline)
-            old_preprocessor.save_pipe_to_json(JSON_TEST_PATH)
+            old_preprocessor.save_pipe_to_json(JSON_TEST_FILE)
             new_preprocessor = ImagePreprocessor()
-            new_preprocessor.load_pipe_from_json(JSON_TEST_PATH)
+            new_preprocessor.load_pipe_from_json(JSON_TEST_FILE)
 
         self.assertEqual(len(old_preprocessor._pipeline), len(new_preprocessor._pipeline), 'Pipeline lengths are not equal.')
         for old_step, new_step in zip(old_preprocessor._pipeline, new_preprocessor._pipeline):
@@ -162,13 +162,13 @@ class TestSingleStep(unittest.TestCase):
 
         step_name = self.test_step.name
 
-        with open(CONFIG_TEMP_PATH, 'r') as file:
+        with open(CONFIG_TEMP_FILE, 'r') as file:
             json_data = json.load(file)
 
         self.assertIn(step_name, json_data.keys(), 'TestStep has no entry in JSON template.')
         
         preprocessor = ImagePreprocessor()
-        preprocessor.load_pipe_from_json(CONFIG_TEMP_PATH)
+        preprocessor.load_pipe_from_json(CONFIG_TEMP_FILE)
 
         step_is_instance = [isinstance(step, TestStep) for step in preprocessor.pipeline]
         self.assertIn(True, step_is_instance)

@@ -9,7 +9,7 @@ ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 
 PATH_ANNOTATIONS = os.path.join(ROOT_DIR, r"data\pcb_defects_kaggle\Annotations") # Path to annotations.
 PATH_IMAGE = os.path.join(ROOT_DIR, r"data\pcb_defects_kaggle\images") # Path to .jpg images.
-PATH_RECORD = os.path.join(ROOT_DIR, r"data\tensorflow_records\pcb_defects_kaggle.tfrecord")
+RECORD_FILE = os.path.join(ROOT_DIR, r"data\tensorflow_records\pcb_defects_kaggle.tfrecord")
 
 def get_dataframe(path_an=PATH_ANNOTATIONS, path_im=PATH_IMAGE, create_annotation_summary=True):
     """
@@ -167,7 +167,7 @@ def get_tf_dataset(path_an=PATH_ANNOTATIONS, path_im=PATH_IMAGE, create_annotati
 def save_tf_record():
     """    Saves TensorFlow dataset to the TFRecord file.
     """
-    save_tfrecord_to_file(get_tf_dataset(create_annotation_summary=True), PATH_RECORD)
+    save_tfrecord_to_file(get_tf_dataset(create_annotation_summary=True), RECORD_FILE)
 
 def load_tf_record():
     """    Loads the specific TFRecord file and returns a parsed TensorFlow dataset.
@@ -175,7 +175,7 @@ def load_tf_record():
     Returns:
     - tf.data.Dataset: A parsed and optimized TensorFlow dataset containing shuffled paths and corresponding targets.
     """
-    return load_tfrecord_from_file(PATH_RECORD)
+    return load_tfrecord_from_file(RECORD_FILE)
 
 if __name__ == '__main__':
     save_tf_record()

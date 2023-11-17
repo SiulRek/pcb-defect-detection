@@ -7,8 +7,8 @@ from python_code.load_raw_data.dataset_serialization import load_tfrecord_from_f
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 DATASET_DIR = os.path.join(ROOT_DIR, 'data', 'deep_pcb_tangsali5201')
-PATH_TRAIN_RECORD = os.path.join(ROOT_DIR, r"data\tensorflow_records\deep_pcb_train.tfrecord")
-PATH_TEST_RECORD = os.path.join(ROOT_DIR, r"data\tensorflow_records\deep_pcb_test.tfrecord")
+TRAIN_RECORD_FILE = os.path.join(ROOT_DIR, r"data\tensorflow_records\deep_pcb_train.tfrecord")
+TEST_RECORD_FILE = os.path.join(ROOT_DIR, r"data\tensorflow_records\deep_pcb_test.tfrecord")
 
 class LoadDataError(Exception): pass
 
@@ -159,8 +159,8 @@ def save_tf_records():
     """    Generates and saves TensorFlow dataset to the TFRecord file.
     """
     train_tf_dataset, test_tf_dataset = get_tf_datasets(create_annotation_summary=True)
-    save_tfrecord_to_file(train_tf_dataset, PATH_TRAIN_RECORD)
-    save_tfrecord_to_file(test_tf_dataset, PATH_TEST_RECORD)
+    save_tfrecord_to_file(train_tf_dataset, TRAIN_RECORD_FILE)
+    save_tfrecord_to_file(test_tf_dataset, TEST_RECORD_FILE)
 
 def load_tf_records():
     """    Loads the specific TFRecord file and returns a parsed TensorFlow dataset.
@@ -168,7 +168,7 @@ def load_tf_records():
     Returns:
     - tf.data.Dataset: A parsed and optimized TensorFlow dataset containing shuffled paths and corresponding targets.
     """
-    return load_tfrecord_from_file(PATH_TRAIN_RECORD, PATH_TEST_RECORD)
+    return load_tfrecord_from_file(TRAIN_RECORD_FILE, TEST_RECORD_FILE)
 
 
 if __name__ == '__main__':

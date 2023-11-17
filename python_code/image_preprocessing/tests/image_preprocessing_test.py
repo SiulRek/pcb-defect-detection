@@ -12,7 +12,7 @@ from python_code.load_raw_data.kaggle_dataset import load_tf_record
 
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
-JSON_TEST_PATH = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/configuration/test_image_preprocessor.json')
+JSON_TEST_FILE = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/configuration/test_image_preprocessor.json')
 
 
 class TestStepBase(unittest.TestCase):
@@ -80,7 +80,7 @@ class TestStepBase(unittest.TestCase):
         cls.image_dataset = load_tf_record().take(9)        # To reduce testing time test cases share this attribute. Do not change this attribute!
     
     def setUp(self):
-        with open(JSON_TEST_PATH, 'a'): pass
+        with open(JSON_TEST_FILE, 'a'): pass
         self.pipeline = [
             TestStepBase.RGBToGrayscale(param1=20,param2=(20,20),param3=False),
             TestStepBase.GrayscaleToRGB(param1=40,param2=(30,30),param3=False),
@@ -90,8 +90,8 @@ class TestStepBase(unittest.TestCase):
         ]
 
     def tearDown(self):
-        if os.path.exists(JSON_TEST_PATH):
-            os.remove(JSON_TEST_PATH)
+        if os.path.exists(JSON_TEST_FILE):
+            os.remove(JSON_TEST_FILE)
     
     def test_process_pipeline(self):
         """    Tests the functionality of the image preprocessing pipeline.
@@ -118,9 +118,9 @@ class TestStepBase(unittest.TestCase):
         with patch('python_code.image_preprocessing.image_preprocessor.STEP_CLASS_MAPPING', mock_mapping):
             old_preprocessor = ImagePreprocessor()
             old_preprocessor.set_pipe(self.pipeline)
-            old_preprocessor.save_pipe_to_json(JSON_TEST_PATH)
+            old_preprocessor.save_pipe_to_json(JSON_TEST_FILE)
             new_preprocessor = ImagePreprocessor()
-            new_preprocessor.load_pipe_from_json(JSON_TEST_PATH)
+            new_preprocessor.load_pipe_from_json(JSON_TEST_FILE)
 
         self.assertEqual(len(old_preprocessor._pipeline), len(new_preprocessor._pipeline), 'Pipeline lengths are not equal.')
         for old_step, new_step in zip(old_preprocessor._pipeline, new_preprocessor._pipeline):
