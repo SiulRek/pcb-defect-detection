@@ -61,25 +61,6 @@ class TestClassInstanceSerializer(unittest.TestCase):
         self.serializer.instance_mapping = {'MockClass1': MockClass1,'MockClass2': MockClass2}
         os.remove(self.json_path)
     
-    def test_save_instance_list_to_json(self):
-        self.serializer.save_instance_list_to_json(self.instance_list, self.json_path)
-        loaded_instance_list = self.serializer.get_instance_list_from_json(self.json_path)
-        self.assertEqual(loaded_instance_list, self.instance_list)
-    
-    def test_mismatch_json_and_class_1(self): 
-
-        with self.assertRaises(ValueError):
-            self.serializer.save_instance_list_to_json(self.instance_list, self.json_path)
-            self.serializer.instance_mapping = {'MockClass1': MockClass1,'MockClass2': MockClass1}   # Purposly wrong mapping for init params mismatch.
-            loaded_instance_list = self.serializer.get_instance_list_from_json(self.json_path)
-            self.assertEqual(loaded_instance_list, self.instance_list)
-   
-    def test_mismatch_json_and_class_2(self): 
-
-        self.serializer.instance_mapping = {'MockClass1': MockClass1}   # Missing mapping for 'MockClass2'.
-        with self.assertRaises(KeyError):
-            self.serializer.save_instance_list_to_json(self.instance_list, self.json_path)
-
     def test_load_from_json(self):
         
         mock_class_params_1 = {'param1': ['tschuess','hallo'], 'param2': [20,30,40]}     
@@ -97,6 +78,23 @@ class TestClassInstanceSerializer(unittest.TestCase):
         self.assertIn(loaded_instance_list[1].params['param1'], mock_class_params_2['param1'])
         self.assertTrue(isinstance(loaded_instance_list[1].params['param2'], int))
         self.assertTrue(1 <= loaded_instance_list[1].params['param2'] <= 10)
+
+    def test_save_instance_list_to_json(self):
+        self.serializer.save_instance_list_to_json(self.instance_list, self.json_path)
+        loaded_instance_list = self.serializer.get_instance_list_from_json(self.json_path)
+        self.assertEqual(loaded_instance_list, self.instance_list)
+    
+    def test_mismatch_json_and_class_1(self): 
+        with self.assertRaises(ValueError):
+            self.serializer.save_instance_list_to_json(self.instance_list, self.json_path)
+            self.serializer.instance_mapping = {'MockClass1': MockClass1,'MockClass2': MockClass1}   # Purposly wrong mapping for init params mismatch.
+            loaded_instance_list = self.serializer.get_instance_list_from_json(self.json_path)
+            self.assertEqual(loaded_instance_list, self.instance_list)
+   
+    def test_mismatch_json_and_class_2(self): 
+        self.serializer.instance_mapping = {'MockClass1': MockClass1}   # Missing mapping for 'MockClass2'.
+        with self.assertRaises(KeyError):
+            self.serializer.save_instance_list_to_json(self.instance_list, self.json_path)
 
     def test_serialize_success_1(self):
         self.assertEqual(self.serializer._serialize_to_json_value([1, 2, 3]), [1, 2, 3])

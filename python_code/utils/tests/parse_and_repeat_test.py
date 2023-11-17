@@ -29,7 +29,6 @@ class TestParseAndRepeat(unittest.TestCase):
                          [{"key": 3},{"key": 3},{"key": 1}])
 
     def test_invalid_formatting(self):
-   
         with self.assertRaises(ValueError):
             parse_and_repeat('[1, 2, 3]*a')
         with self.assertRaises(ValueError):
@@ -52,6 +51,7 @@ class TestParseAndRepeat(unittest.TestCase):
             parse_and_repeat('[[1,2+3]]*2 + [[3,True]]*3 ')
         with self.assertRaises(ValueError):
             parse_and_repeat('[[1,2,"3.22"]]*2 + [[3,True,,]]*3 ')
-# Run the tests
+
+
 if __name__ == '__main__':
     unittest.main()

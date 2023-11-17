@@ -29,6 +29,8 @@ def recursive_type_conversion(source_value, target_datatype_template):
             source_value = list(source_value)
         elif not isinstance(source_value, list):
             raise TypeError(f"Value '{source_value}' cannot be recursivly converted to {target_datatype_template}.")
+        if len(source_value) != len(target_datatype_template):
+            raise TypeError(f"Value '{source_value}' cannot be recursivly converted to {target_datatype_template}.")
         converted_list = []
         for source_item, target_item in zip(source_value, target_datatype_template):
             converted_item = recursive_type_conversion(source_item, target_item)
@@ -39,6 +41,8 @@ def recursive_type_conversion(source_value, target_datatype_template):
         if isinstance(source_value, list):
             source_value = tuple(source_value)
         elif not isinstance(source_value, tuple):
+            raise TypeError(f"Value '{source_value}' cannot be recursivly converted to {target_datatype_template}.")
+        if len(source_value) != len(target_datatype_template):
             raise TypeError(f"Value '{source_value}' cannot be recursivly converted to {target_datatype_template}.")
         converted_list = []
         for source_item, target_item in zip(source_value, target_datatype_template):

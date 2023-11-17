@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import tensorflow as tf
 
-# Select Step to test here!
+#TODO Select Step to test here!
 from python_code.image_preprocessing.preprocessing_steps import GaussianBlurring as TestStep
 
 from python_code.image_preprocessing.image_preprocessor import ImagePreprocessor
@@ -27,6 +27,34 @@ STEP_NAME_EDITED = TestStep.name.replace(' ', '_').lower()
 OUTPUT_DIR = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/tests/outputs', STEP_NAME_EDITED)
 
 
+class RGBToGrayscale(StepBase):
+    arguments_datatype = {}
+    name = 'RGB_to_Grayscale'
+
+    def __init__(self):
+        super().__init__(locals())
+
+    @StepBase._tf_function_decorator
+    def process_step(self, tf_image, tf_target):
+        tf_image_grayscale = tf.image.rgb_to_grayscale(tf_image)
+        tf_image_grayscale = correct_tf_image_shape(tf_image_grayscale)
+        return tf_image_grayscale, tf_target
+
+
+class GrayscaleToRGB(StepBase):
+    arguments_datatype = {}
+    name = 'Grayscale_to_RGB'
+
+    def __init__(self):
+        super().__init__(locals())
+
+    @StepBase._tf_function_decorator
+    def process_step(self, tf_image, tf_target):
+        tf_image_grayscale = tf.image.grayscale_to_rgb(tf_image)
+        tf_image_grayscale = correct_tf_image_shape(tf_image_grayscale)
+        return tf_image_grayscale, tf_target
+
+
 class TestSingleStep(unittest.TestCase):
     """
     A unit test class for testing individual image preprocessing steps in a 
@@ -36,33 +64,6 @@ class TestSingleStep(unittest.TestCase):
     saving and loading of the pipeline configuration, and validation of instance 
     argument data types.
     """
-
-    class RGBToGrayscale(StepBase):
-        arguments_datatype = {}
-        name = 'RGB_to_Grayscale'
-
-        def __init__(self):
-            super().__init__(locals())
-
-        @StepBase._tf_function_decorator
-        def process_step(self, tf_image, tf_target):
-            tf_image_grayscale = tf.image.rgb_to_grayscale(tf_image)
-            tf_image_grayscale = correct_tf_image_shape(tf_image_grayscale)
-            return tf_image_grayscale, tf_target
-        
-    class GrayscaleToRGB(StepBase):
-        arguments_datatype = {}
-        name = 'Grayscale_to_RGB'
-
-        def __init__(self):
-            super().__init__(locals())
-
-        @StepBase._tf_function_decorator
-        def process_step(self, tf_image, tf_target):
-            tf_image_grayscale = tf.image.grayscale_to_rgb(tf_image)
-            tf_image_grayscale = correct_tf_image_shape(tf_image_grayscale)
-            return tf_image_grayscale, tf_target
-
 
     @classmethod
     def setUpClass(cls):
@@ -85,52 +86,17 @@ class TestSingleStep(unittest.TestCase):
     def tearDown(self):
         if os.path.exists(JSON_TEST_FILE):
             os.remove(JSON_TEST_FILE)   
-    
-    def test_process_rgb_images(self):
+
+    def _verify_image_shapes(self, processed_dataset, original_dataset, color_channel_expected):
         """ 
-        Test to ensure that RGB images are processed correctly. 
-        Verifies that the RGB images, after processing, have the expected color channel dimensions.
+        Helper method to verify the image dimensions and color channels in a processed dataset.
+        Compares the processed images to the original dataset to ensure correct height, width, 
+        and color channel transformations.
         """
-
-        pipeline = [self.test_step, TestSingleStep.RGBToGrayscale()]
-        preprocessor = ImagePreprocessor()
-        preprocessor.set_pipe(pipeline)
-        processed_dataset = preprocessor.process(self.image_dataset)
-        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=1)
-  
-    def test_process_grayscaled_images(self):
-        """ 
-        Test to ensure that grayscale images are processed correctly.
-        Checks if the grayscale images maintain their dimensions after processing and 
-        verifies the color channel transformation correctness.
-        """
-
-        pipeline = [TestSingleStep.RGBToGrayscale(), self.test_step]
-        preprocessor = ImagePreprocessor()
-        preprocessor.set_pipe(pipeline)
-        processed_dataset = preprocessor.process(self.image_dataset)
-        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=1)
-        processed_dataset = TestSingleStep.GrayscaleToRGB().process_step(processed_dataset)
-        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=3)
-
-    def test_save_and_load_pipeline(self):
-        """ 
-        Test to ensure the functionality of saving and loading the preprocessing pipeline.
-        Confirms that the pipeline configuration is correctly preserved across save and load operations.
-        """
-        
-        mock_mapping = {'RGB_to_Grayscale': TestSingleStep.RGBToGrayscale, 'Test_Step': TestStep}
-        with patch('python_code.image_preprocessing.image_preprocessor.STEP_CLASS_MAPPING', mock_mapping):
-            old_preprocessor = ImagePreprocessor()
-            pipeline = [TestSingleStep.RGBToGrayscale(), self.test_step]
-            old_preprocessor.set_pipe(pipeline)
-            old_preprocessor.save_pipe_to_json(JSON_TEST_FILE)
-            new_preprocessor = ImagePreprocessor()
-            new_preprocessor.load_pipe_from_json(JSON_TEST_FILE)
-
-        self.assertEqual(len(old_preprocessor._pipeline), len(new_preprocessor._pipeline), 'Pipeline lengths are not equal.')
-        for old_step, new_step in zip(old_preprocessor._pipeline, new_preprocessor._pipeline):
-            self.assertEqual(old_step, new_step, 'Pipeline steps are not equal.')
+        for original_data, processed_data in zip(original_dataset, processed_dataset):
+            self.assertEqual(processed_data[1], original_data[1], 'Targets are not equal.')  
+            self.assertEqual(processed_data[0].shape[:1], original_data[0].shape[:1], 'height and/or width are not equal.') 
+            self.assertEqual(color_channel_expected, processed_data[0].shape[2], 'Color channels are not equal.')     
 
     def test_arguments_datatype(self):
         """ 
@@ -156,6 +122,33 @@ class TestSingleStep(unittest.TestCase):
         self.assertIn(step_name, STEP_CLASS_MAPPING.keys(), 'No mapping is specified for the tested step.')
         self.assertIs(STEP_CLASS_MAPPING[step_name], TestStep, 'Mapped value of tested step is not the tested step class itself.')
     
+    def test_process_rgb_images(self):
+        """ 
+        Test to ensure that RGB images are processed correctly. 
+        Verifies that the RGB images, after processing, have the expected color channel dimensions.
+        """
+
+        pipeline = [self.test_step, RGBToGrayscale()]
+        preprocessor = ImagePreprocessor()
+        preprocessor.set_pipe(pipeline)
+        processed_dataset = preprocessor.process(self.image_dataset)
+        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=1)
+  
+    def test_process_grayscaled_images(self):
+        """ 
+        Test to ensure that grayscale images are processed correctly.
+        Checks if the grayscale images maintain their dimensions after processing and 
+        verifies the color channel transformation correctness.
+        """
+
+        pipeline = [RGBToGrayscale(), self.test_step]
+        preprocessor = ImagePreprocessor()
+        preprocessor.set_pipe(pipeline)
+        processed_dataset = preprocessor.process(self.image_dataset)
+        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=1)
+        processed_dataset = GrayscaleToRGB().process_step(processed_dataset)
+        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=3)
+    
     def test_load_from_json(self):
         """ This method tests the functionality of loading a preprocessing step from a JSON configuration. It verifies that the specified preprocessing step, TestStep, is correctly instantiated and configured based on the settings provided in the JSON file. This ensures the JSON configuration's compatibility and correctness with the pipeline instantiation process.
         """
@@ -172,44 +165,53 @@ class TestSingleStep(unittest.TestCase):
 
         step_is_instance = [isinstance(step, TestStep) for step in preprocessor.pipeline]
         self.assertIn(True, step_is_instance)
+
+    def test_save_and_load_pipeline(self):
+        """ 
+        Test to ensure the functionality of saving and loading the preprocessing pipeline.
+        Confirms that the pipeline configuration is correctly preserved across save and load operations.
+        """
+        
+        mock_mapping = {'RGB_to_Grayscale': RGBToGrayscale, 'Test_Step': TestStep}
+        with patch('python_code.image_preprocessing.image_preprocessor.STEP_CLASS_MAPPING', mock_mapping):
+            old_preprocessor = ImagePreprocessor()
+            pipeline = [RGBToGrayscale(), self.test_step]
+            old_preprocessor.set_pipe(pipeline)
+            old_preprocessor.save_pipe_to_json(JSON_TEST_FILE)
+            new_preprocessor = ImagePreprocessor()
+            new_preprocessor.load_pipe_from_json(JSON_TEST_FILE)
+
+        self.assertEqual(len(old_preprocessor._pipeline), len(new_preprocessor._pipeline), 'Pipeline lengths are not equal.')
+        for old_step, new_step in zip(old_preprocessor._pipeline, new_preprocessor._pipeline):
+            self.assertEqual(old_step, new_step, 'Pipeline steps are not equal.')
     
     def test_processed_image_visualization(self):
         """ This method evaluates the visualization capabilities for processed images. It processes RGB and grayscale images through the TestStep, visualizes them using PCBVisualizerforTF, and saves these visualizations to files. The method allows processed images to be visually inspected."""
-
+        #TODO allow for condition if grayscaled images can only be processed.
+        
         if self.visual_inspection:
+
             pcb_visualizer = PCBVisualizerforTF(show_plot=False)
             processed_rgb_dataset = self.test_step.process_step(self.image_dataset) 
-            grayscaled_dataset = TestSingleStep.RGBToGrayscale().process_step(self.image_dataset) 
-            processed_grayscaled_dataset = self.test_step.process_step(grayscaled_dataset) 
-            
             pcb_visualizer.plot_images(processed_rgb_dataset, 'Processed RGB Images')
             figure_name = 'processed_rgb_images'
-            pcb_visualizer.save_plot_to_file(os.path.join(OUTPUT_DIR, figure_name))
-            pcb_visualizer.plot_images(processed_grayscaled_dataset, 'Processed Grayscale Images')
-            figure_name = 'processed_grayscaled_images'
-            pcb_visualizer.save_plot_to_file(os.path.join(OUTPUT_DIR, figure_name))
-            
+            pcb_visualizer.save_plot_to_file(os.path.join(OUTPUT_DIR, figure_name)) 
             pcb_visualizer.plot_image_comparison(self.image_dataset, processed_rgb_dataset, 1,'RGB Images comparison')
             figure_name = 'rgb_images_comparison'
+            pcb_visualizer.save_plot_to_file(os.path.join(OUTPUT_DIR, figure_name))
+
+            grayscaled_dataset = RGBToGrayscale().process_step(self.image_dataset) 
+            processed_grayscaled_dataset = self.test_step.process_step(grayscaled_dataset) 
+            pcb_visualizer.plot_images(processed_grayscaled_dataset, 'Processed Grayscale Images')
+            figure_name = 'processed_grayscaled_images'
             pcb_visualizer.save_plot_to_file(os.path.join(OUTPUT_DIR, figure_name))
             pcb_visualizer.plot_image_comparison(grayscaled_dataset, processed_grayscaled_dataset, 1,'Grayscale Images comparison')
             figure_name = 'grayscaled_images_comparison'
             pcb_visualizer.save_plot_to_file(os.path.join(OUTPUT_DIR, figure_name))
+
         else:
             print('Skipped generation of images for visual inspection.')
-
-    def _verify_image_shapes(self, processed_dataset, original_dataset, color_channel_expected):
-        """ 
-        Helper method to verify the image dimensions and color channels in a processed dataset.
-        Compares the processed images to the original dataset to ensure correct height, width, 
-        and color channel transformations.
-        """
-        for original_data, processed_data in zip(original_dataset, processed_dataset):
-            self.assertEqual(processed_data[1], original_data[1], 'Targets are not equal.')  
-            self.assertEqual(processed_data[0].shape[:1], original_data[0].shape[:1], 'height and/or width are not equal.') 
-            self.assertEqual(color_channel_expected, processed_data[0].shape[2], 'Color channels are not equal.')     
     
-
 
 if __name__ == '__main__':
     unittest.main()

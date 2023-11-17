@@ -53,6 +53,12 @@ class TestRecursiveTypeConversion(unittest.TestCase):
             recursive_type_conversion("not a list", [int])
         with self.assertRaises(TypeError):
             recursive_type_conversion("not a tuple", (int, str, bool))
+        with self.assertRaises(TypeError):
+            recursive_type_conversion(["not an int"], int)
+        with self.assertRaises(TypeError):
+            recursive_type_conversion([1,"string but missing bool"], (int, str, bool))
+        with self.assertRaises(TypeError):
+            recursive_type_conversion((1,"string but missing bool"), [int, str, bool])
 
 if __name__ == '__main__':
     unittest.main()
