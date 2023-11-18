@@ -12,9 +12,9 @@ This project is part of my System Test Engineering coursework, supervised by Ms.
 ## Project Structure
 The repository is organized as follows:
 
-- **[python_code](./python_code):** Contains Python scripts and Jupyter notebooks for data analysis, model development, and image preprocessing.
+- **[source](./source):** Contains Python scripts and Jupyter notebooks for data analysis,image preprocessing, model development, hyperparameter tuning and more.
 
-- **[data](./data):** Contains the dataset used for training and testing and processed data.
+- **[data](./data):** Contains the dataset used for training and testing.
 
 - **[documentation](./documentation):** Contains project documentation, reports, and any research materials.
 
@@ -56,6 +56,6 @@ To get started with the PCB Defect Detection project, follow these instructions:
 
 5. **Generate TFRecord Files**  
    Run the script to create the Tensorflow Record files of the repository datasets:  
-   [Create TFRecords Script](./python_code/load_raw_data/create_tf_records_local.py)
+   [Create TFRecords Script](./source/load_raw_data/create_tf_records_local.py)
 
 
