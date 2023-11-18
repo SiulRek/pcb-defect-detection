@@ -4,6 +4,20 @@ This module is designed to facilitate the running of all unit tests across the v
 
 import unittest
 
+<<<<<<< HEAD
+=======
+test_pattern = "test*.py"
+
+def run_all_tests():
+    """
+    Loads and runs all unit tests in the specified submodules of the PCB Defect Detection system.
+
+    Returns:
+        TestResult: An instance of unittest.TestResult containing information about the test run.
+    """
+import unittest
+
+>>>>>>> 23766b434353595070b2ecf1cf36037123d31523
 import python_code.utils.tests.test_runner as utils_tests
 import python_code.image_preprocessing.tests.test_runner as image_preprocessing_tests
 from python_code.utils.simple_popup_handler import SimplePopupHandler
