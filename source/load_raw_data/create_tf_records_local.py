@@ -14,8 +14,8 @@ ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 if __name__ == '__main__':
     popup_handler = SimplePopupHandler()
     try: 
-        kaggle_dataset.save_tf_record()
-        deep_pcb_dataset.save_tf_records()
+        pass#kaggle_dataset.save_tf_record()
+        #deep_pcb_dataset.save_tf_records()
     except Exception as exc:
         popup_handler.display_popup_message(f'An error occurred: {str(exc)}')
         raise exc
@@ -29,9 +29,9 @@ if __name__ == '__main__':
 
     if successfully_created:
         message = 'Tensorflow Records have been successfully created!\n'
-        test_runner_abs_paths = search_files_with_name(ROOT_DIR, 'test_runner.py')
+        test_runner_abs_paths = search_files_with_name(ROOT_DIR, 'all_test_runner.py')
         test_runner_paths = ['\n - ' + absolute_path[len(ROOT_DIR):] for absolute_path in test_runner_abs_paths]
-        paths_message = '\nPlease execute the following files to verify the setup:'
+        paths_message = '\nPlease execute the following file to verify the setup:'
         paths_message += ''.join(test_runner_paths)
         final_message = f"{message}{paths_message}"
         print(final_message)
