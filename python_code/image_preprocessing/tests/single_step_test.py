@@ -21,8 +21,8 @@ from python_code.utils import recursive_type_conversion,  PCBVisualizerforTF, Si
 
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
-JSON_TEST_FILE = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/configuration/test_image_preprocessor.json')
-CONFIG_TEMP_FILE = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/configuration/template.json')
+JSON_TEST_FILE = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/pipelines/test_pipe.json')
+JSON_TEMP_FILE = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/pipelines/template.json')
 STEP_NAME_EDITED = TestStep.name.replace(' ', '_').lower()
 OUTPUT_DIR = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/tests/outputs', STEP_NAME_EDITED)
 
@@ -61,7 +61,7 @@ class TestSingleStep(unittest.TestCase):
     TensorFlow image processing pipeline. The class focuses on ensuring the correct 
     functioning of these steps, both in isolation and when integrated into a pipeline. 
     The tests cover: processing of RGB and grayscale images, 
-    saving and loading of the pipeline configuration, and validation of instance 
+    saving and loading of the pipeline pipelines, and validation of instance 
     argument data types.
     """
 
@@ -150,18 +150,18 @@ class TestSingleStep(unittest.TestCase):
         self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=3)
     
     def test_load_from_json(self):
-        """ This method tests the functionality of loading a preprocessing step from a JSON configuration. It verifies that the specified preprocessing step, TestStep, is correctly instantiated and configured based on the settings provided in the JSON file. This ensures the JSON configuration's compatibility and correctness with the pipeline instantiation process.
+        """ This method tests the functionality of loading a preprocessing step from a JSON File. It verifies that the specified preprocessing step, TestStep, is correctly instantiated and configured based on the settings provided in the JSON file. This ensures the JSON Files's compatibility and correctness with the pipeline instantiation process.
         """
 
         step_name = self.test_step.name
 
-        with open(CONFIG_TEMP_FILE, 'r') as file:
+        with open(JSON_TEMP_FILE, 'r') as file:
             json_data = json.load(file)
 
         self.assertIn(step_name, json_data.keys(), 'TestStep has no entry in JSON template.')
         
         preprocessor = ImagePreprocessor()
-        preprocessor.load_pipe_from_json(CONFIG_TEMP_FILE)
+        preprocessor.load_pipe_from_json(JSON_TEMP_FILE)
 
         step_is_instance = [isinstance(step, TestStep) for step in preprocessor.pipeline]
         self.assertIn(True, step_is_instance)

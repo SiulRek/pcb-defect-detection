@@ -9,7 +9,7 @@ from python_code.utils.parse_and_repeat import parse_and_repeat
 
 class ClassInstanceSerializer:
     """
-    A class dedicated to managing configuration for different class instances.
+    A class dedicated to managing s for different class instances.
 
     This handler is designed for the serialization and deserialization of class instances
     to and from JSON format. It supports saving class instances with their parameters
@@ -24,8 +24,8 @@ class ClassInstanceSerializer:
     will be randomly selected during instantiation.
 
     Attributes:
-        KEY_SEPARATOR (str): A constant separating unique keys in JSON configuration,
-                             especially when dealing with multiple instances of the same class.
+        KEY_SEPARATOR (str): A constant separating unique keys in JSON Files,
+                             relevant when dealing with multiple instances of the same class.
         instance_mapping (dict): A mapping of class name strings to actual class objects,
                                  used for instantiation from JSON.
 
@@ -94,7 +94,7 @@ class ClassInstanceSerializer:
             configs (dict): The dictionary to which the instance's config will be added.
 
         Returns:
-            dict: Updated configurations with the new instance's config added.
+            dict: Updated class instance configurations with the new instance's config added.
         """
         for class_name, mapped_class in self.instance_mapping.items():
             if isinstance(instance, mapped_class):
@@ -108,10 +108,10 @@ class ClassInstanceSerializer:
     
     def save_configs_to_json(self, configs, json_path): 
         """
-        Saves configurations to a JSON file after serializing and formatting.
+        Saves class instance configuration to a JSON file after serializing and formatting.
 
         Args:
-            configs (dict): Dictionary containing class configurations.
+            configs (dict): Dictionary containing the class instance configuration.
             json_path (str): The file path where the JSON will be saved.
         """
 
@@ -203,7 +203,7 @@ class ClassInstanceSerializer:
             additional_init_params (dict, optional): Additional initialization parameters to pass to the class constructors.
 
         Returns:
-            list: A list of class instances created from the JSON configuration.
+            list: A list of class instances created from the JSON File.
         """
 
         self._verify_json_path(json_path)
@@ -249,7 +249,7 @@ class ClassInstanceSerializer:
             init_params = self._deserialize_json_params(init_params)
             init_params = recursive_type_conversion(init_params, arguments_datatype)
         else:
-            print(f"Configuration Handler Warning: class '{mapped_class}' has no attribute 'arguments_datatype', this can lead to faulty instanciation.")
+            print(f"Class Instance Serializer Warning: class '{mapped_class}' has no attribute 'arguments_datatype', this can lead to faulty instanciation.")
 
         try:
             if additional_init_params:

@@ -36,7 +36,7 @@ class ImagePreprocessor:
             Applies each preprocessing step to the provided dataset and returns the processed dataset.
 
         save_pipe_to_json(self, filepath: str):
-            Serializes the preprocessing pipeline to a JSON file, saving the step configurations.
+            Serializes the preprocessing pipeline to a JSON file, saving the steps and hyperparameter configurations.
 
         load_pipe_from_json(self, filepath: str):
             Loads and reconstructs a preprocessing pipeline from a JSON file.
@@ -126,7 +126,7 @@ class ImagePreprocessor:
             pass
 
     def save_pipe_to_json(self, json_path):
-        "Serializes the preprocessing pipeline to the specified JSON file, saving the step configurations."
+        "Serializes the preprocessing pipeline to the specified JSON file, saving the step hyperparameter configurations."
         if self.class_instance_serializer:
             self.class_instance_serializer.save_instance_list_to_json(self.pipeline, json_path)
         else:

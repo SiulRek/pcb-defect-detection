@@ -4,7 +4,6 @@ import tensorflow as tf
 
 from python_code.utils.recursive_type_conversion import recursive_type_conversion
 
-#TODO Change documentation according to last changes.
 
 class StepBase(ABC):
     """  Base class for defining preprocessing steps for images in a image preprocessing pipeline.
@@ -48,7 +47,7 @@ class StepBase(ABC):
     TODOs when integrating a new preprocessing step in the framework:
         1. Create preprocessing step class inheriting from `StepBase` according to template.
         2. Add mapping of the class to the constant `STEP_CLASS_MAPPING` {<self._name>:type(self)}.
-        3. Add JSON entry of the class to .python_code/image_preprocessing/configuration/template.json
+        3. Add JSON entry of the class to .python_code/image_preprocessing/pipeline/template.json
         4. Execute single_step_test.py over this class.
     """
     
@@ -65,7 +64,7 @@ class StepBase(ABC):
         characteristics and operational parameters.
 
         Args:
-            local_vars (dict): A collection of variables provided by the child class instantiation that includes configurations and a potential name postfix to append to the step's base name. Note: `local_vars` dict MUST contain the keys 'set_params_from_range' (value boolean) and 'name_postfix' (value string).
+            local_vars (dict): A collection of variables provided by the child class instantiation that includes hyperparameter configurations and.
         """
         self._params = self._extract_params(local_vars)
         self._output_datatypes = {'image': None, 'target': None}

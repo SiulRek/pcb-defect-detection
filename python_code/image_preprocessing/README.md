@@ -1,12 +1,12 @@
 # Image Preprocessing for PCB Analysis
 
-This folder is dedicated to the preprocessing of PCB (Printed Circuit Board) images as part of a larger machine learning pipeline. It includes various components such as preprocessing steps, configuration and test suites.
+This folder is dedicated to the preprocessing of PCB (Printed Circuit Board) images as part of a larger machine learning pipeline. It includes various components such as preprocessing steps, pipelines and test suites.
 
 ## Structure
 
 The `image_preprocessing` folder consists of the following subdirectories and files:
 
-- [configuration](./configuration): Files for the configuration of the image preprocessor.
+- [pipelines](./pipelines): Pipelines with exact Hyperparameters and Hyperparameter ranges of the image preprocessor.
 - [notebooks](./notebooks): Jupyter notebooks for image preprocessing evaluation and experimenting.
 - [preprocessing_steps](./preprocessing_steps): Modules defining the preprocessing steps to be applied to images.
 - [tests](./tests): Test cases for verification of the functionality of the preprocessing steps.

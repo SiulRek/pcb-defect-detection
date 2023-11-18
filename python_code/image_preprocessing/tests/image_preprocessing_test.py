@@ -12,7 +12,7 @@ from python_code.load_raw_data.kaggle_dataset import load_tf_record
 
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
-JSON_TEST_FILE = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/configuration/test_image_preprocessor.json')
+JSON_TEST_FILE = os.path.join(ROOT_DIR, r'python_code/image_preprocessing/pipelines/test_pipe.json')
 
 
 class GrayscaleToRGB(StepBase):
@@ -141,7 +141,7 @@ class TestStepBase(unittest.TestCase):
         """    Ensures the image preprocessing pipeline can be saved and subsequently loaded.
 
         This test case checks the pipeline's persistence mechanism, verifying that the
-        pipeline can be serialized to a JSON configuration and reloaded to create an
+        pipeline can be serialized to JSON and reloaded to create an
         identical pipeline setup.
         """
         
