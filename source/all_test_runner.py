@@ -17,12 +17,13 @@ def run_tests():
     
     result = unittest.TextTestRunner(verbosity=2).run(test_suite)
     
-    num_passed_tests = result.testsRun - len(result.errors) - len(result.failures)
+    num_passed_tests = result.testsRun - len(result.errors) - len(result.failures) - len(result.skipped)
+    runned_tests = result.testsRun - len(result.skipped)
     
-    if num_passed_tests == result.testsRun:
-        message = f'All tests passed! ({num_passed_tests}/{result.testsRun})'
+    if num_passed_tests == runned_tests:
+        message = f'All tests passed! ({num_passed_tests}/{runned_tests})'
     else:
-        message = (f'{num_passed_tests} out of {result.testsRun} tests passed.\n'
+        message = (f'{num_passed_tests} out of {runned_tests} tests passed.\n'
                    f'Failures: {len(result.failures)}\n'
                    f'Errors: {len(result.errors)}')
     
