@@ -21,7 +21,7 @@ class TestRecursiveTypeConversion(unittest.TestCase):
     def test_dict_conversion(self):
         self.assertEqual(recursive_type_conversion({"key1": "123", "key2": 456}, {"key1": int, "key2": str}), {"key1": 123, "key2": '456'})
 
-    def test_recursive_conversion(self):
+    def test_dict_conversion_1(self):
         source = {
             "number_str": "123",
             "list_of_str": ["1", "2", "3"],
@@ -45,6 +45,23 @@ class TestRecursiveTypeConversion(unittest.TestCase):
                 "bool_str": True
             },
             "tuple_of_mixed": (30,False,[30,'10'])
+        }
+        self.assertEqual(recursive_type_conversion(source, template), expected)
+
+    def test_dict_conversion_2(self):
+        # Missing Key
+        source = {
+            "number_str": "123",
+            "list_of_str": ["1", "2", "3"],
+        }
+        template = {
+            "number_str": int,
+            "list_of_str": [int,int,int],
+            "tuple_of_mixed": (int,bool,[int, str])
+        }
+        expected = {
+            "number_str": 123,
+            "list_of_str": [1, 2, 3],
         }
         self.assertEqual(recursive_type_conversion(source, template), expected)
 
