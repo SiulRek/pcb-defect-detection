@@ -43,7 +43,7 @@ class ImagePreprocessor:
 
     Notes:
         - The pipeline should only contain instances of classes that inherit from StepBase.
-        - The `set_pipe` and `add_step` methods include type checks to enforce this.
+        - The `set_pipe` and `pipe_push` methods include type checks to enforce this.
         - The JSON serialization and deserialization methods (`save_pipe_to_json` and `load_pipe_from_json`)
           handle the conversion and reconstruction of the pipeline steps, respectively.
         - The `process` method's behavior changes based on the `raise_step_process_exception` flag,
@@ -60,6 +60,7 @@ class ImagePreprocessor:
         self._class_instance_serializer = None
         self._initialize_class_instance_serializer(STEP_CLASS_MAPPING)
         self._raise_step_process_exception = raise_step_process_exception
+        self._occurred_exception_message = ''
 
     @property
     def pipeline(self):
@@ -68,6 +69,10 @@ class ImagePreprocessor:
     @property
     def class_instance_serializer(self):
         return self._class_instance_serializer
+    
+    @property
+    def occurred_exception_message(self):
+        return self._occurred_exception_message
     
     def _initialize_class_instance_serializer(self, step_class_mapping):
         """ Checks if `step_class_mapping` is a dictionary and mapps to subclasses of `StepBase`, if successfull instanciates the `ClassInstanceSerializer` for pipeline serialization and deserialization."""
@@ -88,42 +93,14 @@ class ImagePreprocessor:
         self._pipeline = deepcopy(pipeline)
 
     def pipe_pop(self):
-        """ Adds a new step to the pipeline, verifying that it is a subclass of StepBase."""
+        """ Pops the last step of to the pipeline."""
         return self._pipeline.pop()
 
     def pipe_push(self, step):
-        """ Adds a new step to the pipeline, verifying that it is a subclass of StepBase."""
+        """ Pushes a new step to the pipeline, verifying that it is a subclass of StepBase."""
         if not isinstance(step, StepBase):  
                     raise ValueError(f'Expecting a Child of StepBase, got {type(step)} instead.')
         self._pipeline.append(deepcopy(step))
-
-    def process(self, image_dataset):
-        """  Applies each preprocessing step to the provided dataset and returns the processed dataset.
-            If `_raise_step_process_exception` is True, exceptions in processing a step will be caught and logged,
-            and the process will return None. If False, it will proceed without exception handling.
-        """
-        processed_dataset = image_dataset
-        for step in self.pipeline:
-            if self._raise_step_process_exception:
-                processed_dataset = step.process_step(processed_dataset)
-            else:
-                try:
-                    processed_dataset = step.process_step(processed_dataset)
-                    self._consume_tf_dataset(processed_dataset)
-                except Exception as e:
-                    print(f"An error occurred in step {step.name}: {str(e)}")
-                    return None
-
-        self._consume_tf_dataset(processed_dataset)
-
-        return processed_dataset
-    
-    def _consume_tf_dataset(self, tf_dataset):
-        """
-        Consumes a TensorFlow dataset to force the execution of the computation graph.
-        """
-        for _, _ in tf_dataset.take(1): 
-            pass
 
     def save_pipe_to_json(self, json_path):
         "Serializes the preprocessing pipeline to the specified JSON file, saving the step hyperparameter configurations."
@@ -141,5 +118,55 @@ class ImagePreprocessor:
              self._pipeline = self.class_instance_serializer.get_instance_list_from_json(json_path)
         else:
             raise AttributeError("Not None Instance Attribute 'class_instance_serializer' is required to save pipe.")
+        
+    def get_pipeline_code_representation(self):
+        """
+        Generates a text representation of the pipeline's configuration.
+
+        This method returns a string that closely resembles the code used to create
+        the current pipeline, showing each step with its parameters in a list format.
+
+        Returns:
+            str: A string representation of the pipeline in a code-like format.
+        """
+        if not self.pipeline:
+            return "[]"
+
+        description = "[\n"
+        for step in self.pipeline:
+            step_description = "{}({})".format(step.__class__.__name__, ', '.join(f"{k}={v}" for k, v in step.params.items()))
+            description += "    {},\n".format(step_description)
+        description = description[:-2] + "\n]"
+        return description
+
+    def _consume_tf_dataset(self, tf_dataset):
+        """
+        Consumes a TensorFlow dataset to force the execution of the computation graph.
+        """
+        for _, _ in tf_dataset.take(1): 
+            pass
+
+    def process(self, image_dataset):
+        """  Applies each preprocessing step to the provided dataset and returns the processed dataset.
+            If `_raise_step_process_exception` is True, exceptions in processing a step will be caught and logged,
+            and the process will return None. If False, it will proceed without exception handling.
+        """
+        processed_dataset = image_dataset
+        for step in self.pipeline:
+            if self._raise_step_process_exception:
+                processed_dataset = step.process_step(processed_dataset)
+            else:
+                try:
+                    processed_dataset = step.process_step(processed_dataset)
+                    self._consume_tf_dataset(processed_dataset)
+                except Exception as e:
+                    self._occurred_exception_message = f"An error occurred in step {step.name}: {str(e)}"
+                    print(self._occurred_exception_message)
+                    return None
+
+        self._consume_tf_dataset(processed_dataset)
+
+        return processed_dataset
+    
 
 
