@@ -10,7 +10,7 @@ from unittest.mock import patch
 import tensorflow as tf
 
 #TODO Select Step to test here!
-from source.image_preprocessing.preprocessing_steps import GaussianBlurring as StepToTest
+from source.image_preprocessing.preprocessing_steps import GaussianBlurrFilter as StepToTest
 
 from source.image_preprocessing.image_preprocessor import ImagePreprocessor
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase

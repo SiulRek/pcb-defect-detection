@@ -3,7 +3,7 @@
 import unittest
 
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
-from source.image_preprocessing.preprocessing_steps import AdaptiveHistogramEqualization as ExampleStep
+from source.image_preprocessing.preprocessing_steps import AdaptiveHistogramEqualizer as ExampleStep
 from source.image_preprocessing.tests.multiple_steps_test import create_test_class_for_step
 from source.image_preprocessing.tests.single_step_test import TestSingleStep
 
@@ -11,7 +11,7 @@ from source.image_preprocessing.tests.single_step_test import TestSingleStep
 class TestTestFramework(unittest.TestCase):
     def test_dynamic_class_creation(self):
         TestClass = create_test_class_for_step(ExampleStep, {'clip_limit': 1.0, 'tile_gridsize': (5, 5)})
-        self.assertEqual(TestClass.__name__, 'TestAdaptiveHistogramEqualization')
+        self.assertEqual(TestClass.__name__, 'TestAdaptiveHistogramEqualizer')
         self.assertTrue(issubclass(TestClass, TestSingleStep))
         self.assertTrue(hasattr(TestClass, 'StepClass'))
         self.assertTrue(hasattr(TestClass, 'params'))

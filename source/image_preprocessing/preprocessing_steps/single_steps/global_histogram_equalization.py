@@ -5,13 +5,13 @@ from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 from source.image_preprocessing.preprocessing_steps.step_utils import correct_tf_image_shape
 
 
-class GlobalHistogramEqualization(StepBase):
+class GlobalHistogramEqualizer(StepBase):
     """  A preprocessing step that applies Contrast Limited Global Histogram Equalization to an image."""
     arguments_datatype = {}
     name = 'Global Histogram Equalization'
 
     def __init__(self):
-        """ Initializes the GlobalHistogramEqualization object that can be integrated in an image preprocessing pipeline."""
+        """ Initializes the GlobalHistogramEqualizer object that can be integrated in an image preprocessing pipeline."""
         super().__init__(locals())
 
     @StepBase._py_function_decorator
@@ -30,7 +30,7 @@ class GlobalHistogramEqualization(StepBase):
     
 
 if __name__ == '__main__':
-    step = GlobalHistogramEqualization()
+    step = GlobalHistogramEqualizer()
     print(step)
     
 
