@@ -1,6 +1,7 @@
 """This module contains tests for validating the functionality of the image preprocessing test framework and focuses on dynamically generated test classes. It provides tests to ensure that test classes are correctly created for one example preprocessing step and that conditional test logic (skipping certain tests) functions as expected."""
 
 import unittest
+from unittest.mock import patch
 
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 from source.image_preprocessing.preprocessing_steps import AdaptiveHistogramEqualizer as ExampleStep
@@ -21,10 +22,10 @@ class TestTestFramework(unittest.TestCase):
 
 
 class TestConditionalSkipping(unittest.TestCase):
+
     def test_visual_inspection_skipping(self):
-        global CREATE_VISUAL_INSPECTION
-        CREATE_VISUAL_INSPECTION = False
-        TestClass = create_test_class_for_step(ExampleStep, {'clip_limit': 1.0, 'tile_gridsize': (5, 5)}, grayscale_only=True)
+        with patch('source.image_preprocessing.tests.multiple_steps_test.CREATE_VISUAL_INSPECTION', False):
+            TestClass = create_test_class_for_step(ExampleStep, {'clip_limit': 1.0, 'tile_gridsize': (5, 5)}, grayscale_only=True)
         suite = unittest.TestLoader().loadTestsFromTestCase(TestClass)
         result = unittest.TextTestRunner().run(suite)
         skipped_test_names = [test[0].id().split('.')[-1] for test in result.skipped]
@@ -37,6 +38,22 @@ class TestConditionalSkipping(unittest.TestCase):
         result = unittest.TextTestRunner().run(suite)
         skipped_test_names = [test[0].id().split('.')[-1] for test in result.skipped]
         self.assertIn('test_process_rgb_images', skipped_test_names)
+
+    def test_visual_inspection_not_skipping(self):
+        with patch('source.image_preprocessing.tests.multiple_steps_test.CREATE_VISUAL_INSPECTION', True):
+            TestClass = create_test_class_for_step(ExampleStep, {'clip_limit': 1.0, 'tile_gridsize': (5, 5)}, grayscale_only=True)
+        suite = unittest.TestLoader().loadTestsFromTestCase(TestClass)
+        result = unittest.TextTestRunner().run(suite)
+        skipped_test_names = [test[0].id().split('.')[-1] for test in result.skipped]
+        self.assertNotIn('test_processed_image_visualization', skipped_test_names)
+        TestClass = create_test_class_for_step(ExampleStep, {})
+
+    def test_grayscale_only_not_skipping(self):
+        TestClass = create_test_class_for_step(ExampleStep, {'clip_limit': 1.0, 'tile_gridsize': (5, 5)}, grayscale_only=False)
+        suite = unittest.TestLoader().loadTestsFromTestCase(TestClass)
+        result = unittest.TextTestRunner().run(suite)
+        skipped_test_names = [test[0].id().split('.')[-1] for test in result.skipped]
+        self.assertNotIn('test_process_rgb_images', skipped_test_names)
 
 if __name__ == '__main__':
     unittest.main()
