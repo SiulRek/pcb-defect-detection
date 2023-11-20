@@ -10,7 +10,7 @@ from unittest.mock import patch
 import tensorflow as tf
 
 #TODO Select Step to test here!
-from source.image_preprocessing.preprocessing_steps import BilateralFilter as StepToTest
+from source.image_preprocessing.preprocessing_steps import AverageBlurFilter as StepToTest
 
 from source.image_preprocessing.image_preprocessor import ImagePreprocessor
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
@@ -65,11 +65,7 @@ class TestSingleStep(unittest.TestCase):
     """
 
     # Class Attributes (overwritten when class is dynamically loaded -> multiple_steps_test.py)
-    params = {
-        'diameter': 9,
-        'sigma_color':75, 
-        'sigma_space':75
-        }
+    params = {'kernel_size': (8,8)}
     StepClass = StepToTest
     process_grayscale_only = False
 

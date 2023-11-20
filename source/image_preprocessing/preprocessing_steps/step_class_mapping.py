@@ -7,4 +7,5 @@ STEP_CLASS_MAPPING = {
     'Gaussian Blur Filter': steps.GaussianBlurFilter,
     'Median Blur Filter': steps.MedianBlurFilter,
     'Bilateral Filter': steps.BilateralFilter,
+    'Average Blur Filter': steps.AverageBlurFilter,
 }

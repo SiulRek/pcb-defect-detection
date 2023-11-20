@@ -3,3 +3,4 @@ from source.image_preprocessing.preprocessing_steps.single_steps.global_histogra
 from source.image_preprocessing.preprocessing_steps.single_steps.gaussian_blurring import GaussianBlurFilter
 from source.image_preprocessing.preprocessing_steps.single_steps.median_blurring import MedianBlurFilter
 from source.image_preprocessing.preprocessing_steps.single_steps.bilateral_filtering import BilateralFilter
+from source.image_preprocessing.preprocessing_steps.single_steps.average_blurring import AverageBlurFilter

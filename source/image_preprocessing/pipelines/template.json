@@ -15,5 +15,8 @@
         "diameter": [9],
         "sigma_color": [75],
         "sigma_space": [75]
+    },
+    "Average Blur Filter": {
+        "kernel_size": [[8,8]]
     }
 }
