@@ -2,8 +2,8 @@
 import source.image_preprocessing.preprocessing_steps as steps 
 
 STEP_CLASS_MAPPING = {
-    'Adaptive Histogram Equalization': steps.AdaptiveHistogramEqualizer,
-    'Global Histogram Equalization': steps.GlobalHistogramEqualizer,
-    'Gaussian Blurring': steps.GaussianBlurFilter,
-    'Median Blurring': steps.MedianBlurFilter
+    'Adaptive Histogram Equalizer': steps.AdaptiveHistogramEqualizer,
+    'Global Histogram Equalizer': steps.GlobalHistogramEqualizer,
+    'Gaussian Blur Filter': steps.GaussianBlurFilter,
+    'Median Blur Filter': steps.MedianBlurFilter
 }

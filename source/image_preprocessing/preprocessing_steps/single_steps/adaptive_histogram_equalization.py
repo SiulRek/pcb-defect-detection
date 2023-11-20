@@ -6,10 +6,10 @@ from source.image_preprocessing.preprocessing_steps.step_utils import correct_tf
 
 
 class AdaptiveHistogramEqualizer(StepBase):
-    """ A preprocessing step that applies Contrast Limited Adaptive Histogram Equalization (CLAHE) to an image."""
+    """ A preprocessing step that applies Contrast Limited Adaptive Histogram Equalizer (CLAHE) to an image."""
 
     arguments_datatype = {'clip_limit': float, 'tile_gridsize': (int, int)}
-    name = 'Adaptive Histogram Equalization'
+    name = 'Adaptive Histogram Equalizer'
 
     def __init__(self, clip_limit=2.0, tile_gridsize=(8,8)):
         """ Initializes the AdaptiveHistogramEqualizer object that can be integrated in an image preprocessing pipeline.

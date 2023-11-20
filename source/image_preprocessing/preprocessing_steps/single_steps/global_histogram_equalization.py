@@ -6,9 +6,9 @@ from source.image_preprocessing.preprocessing_steps.step_utils import correct_tf
 
 
 class GlobalHistogramEqualizer(StepBase):
-    """  A preprocessing step that applies Contrast Limited Global Histogram Equalization to an image."""
+    """  A preprocessing step that applies Contrast Limited Global Histogram Equalizer to an image."""
     arguments_datatype = {}
-    name = 'Global Histogram Equalization'
+    name = 'Global Histogram Equalizer'
 
     def __init__(self):
         """ Initializes the GlobalHistogramEqualizer object that can be integrated in an image preprocessing pipeline."""

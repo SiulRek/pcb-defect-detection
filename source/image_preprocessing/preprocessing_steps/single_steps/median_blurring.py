@@ -8,7 +8,7 @@ from source.image_preprocessing.preprocessing_steps.step_utils import correct_tf
 class MedianBlurFilter(StepBase):
     """ A preprocessing step that applies median filter to an image."""
     arguments_datatype = {'kernel_size': int}
-    name = 'Median Blurring'
+    name = 'Median Blur Filter'
 
     def __init__(self, kernel_size=5):
         """ Initializes the `MedianBlurFilter` object that can be integrated in an image preprocessing pipeline."""

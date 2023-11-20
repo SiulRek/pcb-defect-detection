@@ -1,14 +1,14 @@
 {
-    "Adaptive Histogram Equalization": {
+    "Adaptive Histogram Equalizer": {
         "clip_limit": [1.0, 2.0, 2.0, 3.0, 4.0],
         "tile_gridsize": [[4,4], [6,6], [8,8], [10,10]]
     },
-    "Global Histogram Equalization": {},
-    "Gaussian Blurring": {
+    "Global Histogram Equalizer": {},
+    "Gaussian Blur Filter": {
         "kernel_size": [[5, 5]],
         "sigma": [0.3]
     },
-    "Median Blurring": {
+    "Median Blur Filter": {
         "kernel_size": [5]
     }
 }

@@ -6,9 +6,9 @@ from source.image_preprocessing.preprocessing_steps.step_utils import correct_tf
 
 
 class GaussianBlurFilter(StepBase):
-    """ A preprocessing step that applies Contrast Limited Gaussian Blurring to an image."""
+    """ A preprocessing step that applies Contrast Limited Gaussian Blur Filter to an image."""
     arguments_datatype = {'kernel_size': (int,int), 'sigma': float}
-    name = 'Gaussian Blurring'
+    name = 'Gaussian Blur Filter'
 
     def __init__(self, kernel_size=(5,5), sigma=0.3):
         """ Initializes the GaussianBlurFilter object that can be integrated in an image preprocessing pipeline."""
