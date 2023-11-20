@@ -72,17 +72,20 @@ class TestResultLogger:
             for error in result.errors:
                 if error[0]._testMethodName == test_method_name:
                     success = False
-                    self.logger.error('Test raised Error: %s', test_method_name)
+                    message = 'Test raised exc: {}'.format(test_method_name)
                     if error[1] is not None:
-                        self.logger.info('Message: %s', error[1])
+                        message += '\n' + 'Message: {}'.format(error[1])
+                    self.logger.error(message)
                     break
+
 
             for failure in result.failures:
                 if failure[0]._testMethodName == test_method_name:
                     success = False
-                    self.logger.error('Test Failed: %s', test_method_name)
+                    message = 'Test Failed: {}'.format(test_method_name)
                     if failure[1] is not None:
-                        self.logger.info('Message: %s', failure[1])
+                        message += '\n' + 'Message: {}'.format(failure[1])
+                    self.logger.error(message)
                     break
 
             if success: 
