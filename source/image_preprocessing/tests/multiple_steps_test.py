@@ -10,7 +10,7 @@ Note:
 import unittest
 from unittest import skip
 
-from source.image_preprocessing.preprocessing_steps import AdaptiveHistogramEqualizer, GaussianBlurrFilter, GlobalHistogramEqualizer
+from source.image_preprocessing.preprocessing_steps import AdaptiveHistogramEqualizer, GaussianBlurFilter, GlobalHistogramEqualizer
 from source.image_preprocessing.tests.single_step_test import TestSingleStep
 
 
@@ -43,7 +43,7 @@ def create_test_class_for_step(step_class, arguments, grayscale_only=False):
 steps_data = [
     (AdaptiveHistogramEqualizer, {'clip_limit': 1.0, 'tile_gridsize': (5, 5)}),
     (GlobalHistogramEqualizer, {}, True),
-    (GaussianBlurrFilter, {'kernel_size': (5,5), 'sigma': 2.0})
+    (GaussianBlurFilter, {'kernel_size': (5,5), 'sigma': 2.0})
 ]
 
 # Test Class creation

@@ -5,13 +5,13 @@ from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 from source.image_preprocessing.preprocessing_steps.step_utils import correct_tf_image_shape
 
 
-class GaussianBlurrFilter(StepBase):
-    """  #TODO A preprocessing step that applies Contrast Limited Gaussian Blurring to an image."""
+class GaussianBlurFilter(StepBase):
+    """ A preprocessing step that applies Contrast Limited Gaussian Blurring to an image."""
     arguments_datatype = {'kernel_size': (int,int), 'sigma': float}
     name = 'Gaussian Blurring'
 
     def __init__(self, kernel_size=(5,5), sigma=0.3):
-        """ Initializes the GaussianBlurrFilter object that can be integrated in an image preprocessing pipeline."""
+        """ Initializes the GaussianBlurFilter object that can be integrated in an image preprocessing pipeline."""
         super().__init__(locals())
 
     @StepBase._py_function_decorator
@@ -30,7 +30,7 @@ class GaussianBlurrFilter(StepBase):
     
 
 if __name__ == '__main__':
-    step = GaussianBlurrFilter()
+    step = GaussianBlurFilter()
     print(step)
     
 
