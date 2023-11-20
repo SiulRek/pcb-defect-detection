@@ -10,5 +10,10 @@
     },
     "Median Blur Filter": {
         "kernel_size": [5]
+    },
+    "Bilateral Filter": {
+        "diameter": [9],
+        "sigma_color": [75],
+        "sigma_space": [75]
     }
 }
