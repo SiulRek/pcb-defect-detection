@@ -72,6 +72,18 @@ class TestStepBase(unittest.TestCase):
         tf_image = list(TestStepBase.image_dataset.take(1))[0][0]
         reshaped_image = correct_tf_image_shape(tf_image)
         self.assertEqual(reshaped_image.shape, [2464, 3056, 3])
+    
+    def _remove_new_lines_and_spaces(self, string):
+        string = string.replace('\n','')
+        string = string.replace(' ','')
+        return string
+    
+    def test_get_step_json_representation(self):
+        json_repr_output = self.tf_preprocessing_step.get_step_json_representation()
+        json_repr_expected = '"Test_Step": {"param1": [10], "param2": [[10,10]], "param3": [true]}'
+        json_repr_output = self._remove_new_lines_and_spaces(json_repr_output)
+        json_repr_expected = self._remove_new_lines_and_spaces(json_repr_expected)
+        self.assertEqual(json_repr_output,json_repr_expected)
 
     def test_tf_function_decorator(self):
         tf_dataset = self.tf_preprocessing_step.process_step(self.image_dataset)

@@ -77,20 +77,6 @@ class StepBase(ABC):
     
     def __eq__(self, obj: 'StepBase') -> bool:
         return self.name.split('__')[0] == obj.name.split('__')[0] and self._params == obj.params
-
-    def __str__(self):
-        """The string representation of the class is at the same time the JSON entry text to be added to a JSON file."""
-
-        # Convert datatype of values of params to match JSON format
-        conv_params = {}
-        for key, value in self._params.items():
-            if isinstance(value, tuple):
-                value = list(value)
-            conv_params[key] = [value]
-
-        params_str = ',\n'.join([f'        "{k}": {str(v).replace("True", "true").replace("False", "false")}' for k, v in conv_params.items()])
-        json_string = f'    "{self.name}": {{\n{params_str}\n    }}' 
-        return json_string
         
     def _extract_params(self, local_vars):
         """  Extracts parameters needed for the preprocessing step based on local variables. It considers if parameters should be randomized or extracted directly from `local_vars`."""
@@ -106,10 +92,19 @@ class StepBase(ABC):
         self._output_datatypes['image'] = tf.uint8
         self._output_datatypes['target'] = tf.int8
 
-    @abstractmethod    
-    def process_step(self, tf_image, tf_target):
-        # Child class must implement this method.
-        pass
+    def get_step_json_representation(self):
+        """Returns strings that corresponds to JSON entry text to be added to a JSON file."""
+
+        # Convert datatype of values of params to match JSON format
+        conv_params = {}
+        for key, value in self._params.items():
+            if isinstance(value, tuple):
+                value = list(value)
+            conv_params[key] = [value]
+
+        params_str = ',\n'.join([f'        "{k}": {str(v).replace("True", "true").replace("False", "false")}' for k, v in conv_params.items()])
+        json_string = f'    "{self.name}": {{\n{params_str}\n    }}' 
+        return json_string
     
     @staticmethod
     def _tf_function_decorator(func):       
@@ -134,3 +129,7 @@ class StepBase(ABC):
             return image_dataset.map(mapped_function)
         return wrapper
 
+    @abstractmethod    
+    def process_step(self, tf_image, tf_target):
+        # Child class must implement this method.
+        pass
