@@ -119,10 +119,29 @@ class TestStepBase(unittest.TestCase):
         popped_step = preprocessor.pipe_pop()
 
         self.assertEqual(popped_step, GrayscaleToRGB(param1=40,param2=(30,30),param3=False))
-        self.assertEqual(preprocessor._pipeline, pipeline[:1])
+        self.assertEqual(preprocessor.pipeline, pipeline[:1])
 
         preprocessor.pipe_push(popped_step)
-        self.assertEqual(preprocessor._pipeline, pipeline)
+        self.assertEqual(preprocessor.pipeline, pipeline)
+
+    def test_deepcopy_of_pipeline(self):
+        """
+        This test ensures that the ImagePreprocessor maintains a consistent and isolated state of its preprocessing pipeline.
+
+        Assert is equal implies, that the internal pipeline was successfully deep-copied. 
+        """
+        pipeline = [
+             RGBToGrayscale(param1=20,param2=(20,20),param3=False),
+             GrayscaleToRGB(param1=40,param2=(30,30),param3=False),     
+        ]
+        pipeline_expected = [
+             RGBToGrayscale(param1=20,param2=(20,20),param3=False),
+             GrayscaleToRGB(param1=40,param2=(30,30),param3=False),     
+        ]
+        preprocessor = ImagePreprocessor(raise_step_process_exception=False)
+        preprocessor.set_pipe(pipeline)
+        pipeline.append('Changing pipeline by appending invalid element to it.')
+        self.assertEqual(preprocessor.pipeline, pipeline_expected)
     
     def test_process_pipeline(self):
         """    Tests the functionality of the image preprocessing pipeline.
@@ -153,8 +172,8 @@ class TestStepBase(unittest.TestCase):
             new_preprocessor = ImagePreprocessor()
             new_preprocessor.load_pipe_from_json(JSON_TEST_FILE)
 
-        self.assertEqual(len(old_preprocessor._pipeline), len(new_preprocessor._pipeline), 'Pipeline lengths are not equal.')
-        for old_step, new_step in zip(old_preprocessor._pipeline, new_preprocessor._pipeline):
+        self.assertEqual(len(old_preprocessor.pipeline), len(new_preprocessor.pipeline), 'Pipeline lengths are not equal.')
+        for old_step, new_step in zip(old_preprocessor.pipeline, new_preprocessor.pipeline):
             self.assertEqual(old_step, new_step, 'Pipeline steps are not equal.')
         
         processed_dataset = new_preprocessor.process(self.image_dataset)
