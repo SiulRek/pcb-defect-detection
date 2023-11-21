@@ -1,7 +1,7 @@
 import unittest
 import logging
 
-from source.utils.general_logger import Logger
+from source.utils.logger import Logger
 
 class TestResultLogger(Logger):
     """ A logger class for logging the results of unittest executions.
@@ -12,14 +12,18 @@ class TestResultLogger(Logger):
     This class inherits from the parent class `Logger`
     """
     
-    def __init__(self, log_file='./test_results.log'):
+    def __init__(self, log_file='./test_results.log', title=''):
         """
-        Initialize the TestResultLogger with a specified log file.
+        Initialize the `TestResultLogger` with a specified log file.
 
         Args:
             log_file (str): The path to the log file. Defaults to 'test_results.log'.
+            title (str): The Title to be logged when `TestResultLogger` is initialized.
+            Defaults to '' (no title).
         """
         super().__init__(log_file)
+        if title:
+            self.log_title(title)
 
     def setup_logger(self):
         """

@@ -49,7 +49,6 @@ class Logger:
         """Writes an error message to the log."""
         self.logger.error(message)
 
-    
     def log_title(self, title):
         """
         Logs a title string with a specific format.
