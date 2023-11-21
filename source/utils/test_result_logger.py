@@ -1,29 +1,34 @@
 import unittest
 import logging
 
-class TestResultLogger:
+from source.utils.general_logger import Logger
+
+class TestResultLogger(Logger):
     """ A logger class for logging the results of unittest executions.
 
     This class is designed to log the outcome of tests run using Python's unittest framework. 
     It can log test passes, failures, and errors to a specified log file.
+
+    This class inherits from the parent class `Logger`
     """
     
-    def __init__(self, log_file='test_results.log'):
+    def __init__(self, log_file='./test_results.log'):
         """
         Initialize the TestResultLogger with a specified log file.
 
         Args:
             log_file (str): The path to the log file. Defaults to 'test_results.log'.
         """
-        self.log_file = log_file
-        self.setup_logger()
+        super().__init__(log_file)
 
     def setup_logger(self):
         """
         Set up the logger with a file handler and a standard logging format.
 
         This method configures the logger to write to the log file specified in 
-        the `log_file` attribute. If the logger already has handlers, it doesn't add new ones.
+        the `log_file` attribute. If the logger already has handlers, it doesn't add new ones. 
+        Additionally exception are printed but not raised to ensure the running of tests without 
+        interruption. Because of the aforementioned features the parent child method is overwritten.
         """
         try:
             self.logger = logging.getLogger('TestResultLogger')
@@ -35,17 +40,6 @@ class TestResultLogger:
         except Exception as exc:
              print(f"Logging error: {exc}")
     
-    def close_logger(self):
-        """
-        Close and remove all handlers attached to the logger.
-
-        This method is useful for releasing resources and preventing logging conflicts
-        at the end of the test suite execution.
-        """
-        for handler in self.logger.handlers[:]:
-            handler.close()
-            self.logger.removeHandler(handler)
-
     def log_test_outcome(self, result, test_method_name):
         """ Log the outcome of a single test case.
 
@@ -99,6 +93,7 @@ class MyTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.logger = TestResultLogger()
+        cls.logger.log_title('servus')
 
     def tearDown(self):
         # Use the logger to log the outcome of each test
