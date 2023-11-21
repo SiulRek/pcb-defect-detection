@@ -1,7 +1,23 @@
+import os
 import unittest
+
 from source.utils import parse_and_repeat
+from source.utils.test_result_logger import TestResultLogger
+
+
+ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
+OUTPUT_DIR = os.path.join(ROOT_DIR, r'source/utils/tests/outputs')
+LOG_FILE = os.path.join(OUTPUT_DIR, 'test_result.log')
+
 
 class TestParseAndRepeat(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.logger = TestResultLogger(LOG_FILE, 'Parse and Repeat Test')
+
+    def tearDown(self):
+        self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
 
     def test_basic_functionality(self):
         self.assertEqual(parse_and_repeat('[1]*3 + [4]*2 + [True] + ["String"]'), [1, 1, 1, 4, 4, True, "String"])

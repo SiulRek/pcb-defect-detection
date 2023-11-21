@@ -4,4 +4,5 @@ from source.utils.class_instance_serializer import ClassInstanceSerializer
 from source.utils.simple_popup_handler import SimplePopupHandler
 from source.utils.parse_and_repeat import parse_and_repeat
 from source.utils.get_sample_from_distribution import get_sample_from_distribution
+from source.utils.logger import Logger
 from source.utils.test_result_logger import TestResultLogger

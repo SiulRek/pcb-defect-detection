@@ -1,8 +1,23 @@
+import os
 import unittest
 
 from source.utils.recursive_type_conversion import recursive_type_conversion
+from source.utils.test_result_logger import TestResultLogger
+
+
+ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
+OUTPUT_DIR = os.path.join(ROOT_DIR, r'source/utils/tests/outputs')
+LOG_FILE = os.path.join(OUTPUT_DIR, 'test_result.log')
+
 
 class TestRecursiveTypeConversion(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.logger = TestResultLogger(LOG_FILE, 'Recursive Type Conversion Test')
+
+    def tearDown(self):
+        self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
 
     def test_primitive_conversion(self):
         self.assertEqual(recursive_type_conversion("123", int), 123)

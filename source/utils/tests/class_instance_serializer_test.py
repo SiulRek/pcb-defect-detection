@@ -1,12 +1,14 @@
 import unittest
 import os
 import json
-import shutil
 
 from source.utils.class_instance_serializer import ClassInstanceSerializer
+from source.utils.test_result_logger import TestResultLogger
 
-ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..')
-TEST_DIR = os.path.join(ROOT_DIR, r'source/utils/tests/outputs')
+
+ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
+OUTPUT_DIR = os.path.join(ROOT_DIR, r'source/utils/tests/outputs')
+LOG_FILE = os.path.join(OUTPUT_DIR, 'test_result.log')
 
 
 class MockClass1:
@@ -38,16 +40,11 @@ class TestClassInstanceSerializer(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        if not os.path.exists(TEST_DIR):
-            os.mkdir(TEST_DIR)
-
-    @classmethod
-    def tearDownClass(cls):
-        if os.path.exists(TEST_DIR):
-            shutil.rmtree(TEST_DIR)
+        cls.logger = TestResultLogger(LOG_FILE, 'class Instance Serializer Test')
 
     def setUp(self):
-        self.json_path = os.path.join(TEST_DIR, 'test_config.json')
+        os.makedirs(OUTPUT_DIR, exist_ok=True)
+        self.json_path = os.path.join(OUTPUT_DIR, 'test_config.json')
         with open(self.json_path, 'a'):    pass
         self.instance_mapping = {'MockClass1': MockClass1,'MockClass2': MockClass2}
         self.serializer = ClassInstanceSerializer(self.instance_mapping)
@@ -60,6 +57,7 @@ class TestClassInstanceSerializer(unittest.TestCase):
     def tearDown(self):
         self.serializer.instance_mapping = {'MockClass1': MockClass1,'MockClass2': MockClass2}
         os.remove(self.json_path)
+        self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
     
     def test_load_from_json(self):
         

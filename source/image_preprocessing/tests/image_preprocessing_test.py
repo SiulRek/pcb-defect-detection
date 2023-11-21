@@ -9,11 +9,12 @@ from source.image_preprocessing.image_preprocessor import ImagePreprocessor
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 from source.image_preprocessing.preprocessing_steps.step_utils import correct_tf_image_shape
 from source.load_raw_data.kaggle_dataset import load_tf_record
-
+from source.utils import TestResultLogger
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
 JSON_TEST_FILE = os.path.join(ROOT_DIR, r'source/image_preprocessing/pipelines/test_pipe.json')
-
+OUTPUT_DIR = os.path.join(ROOT_DIR, r'source/image_preprocessing/tests/outputs')
+LOG_FILE = os.path.join(OUTPUT_DIR, 'test_result.log')
 
 class GrayscaleToRGB(StepBase):
 
@@ -80,6 +81,7 @@ class TestStepBase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.image_dataset = load_tf_record().take(9)        # To reduce testing time test cases share this attribute Do not change this attribute.
+        cls.logger = TestResultLogger(LOG_FILE, 'Image Preprocessor Test')
     
     def setUp(self):
         with open(JSON_TEST_FILE, 'a'): pass
@@ -94,6 +96,7 @@ class TestStepBase(unittest.TestCase):
     def tearDown(self):
         if os.path.exists(JSON_TEST_FILE):
             os.remove(JSON_TEST_FILE)
+        self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
 
     def _verify_image_shapes(self, processed_dataset, original_dataset, color_channel_expected):
 

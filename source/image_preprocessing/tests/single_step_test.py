@@ -17,13 +17,15 @@ from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 from source.image_preprocessing.preprocessing_steps.step_utils import correct_tf_image_shape
 from source.image_preprocessing.preprocessing_steps.step_class_mapping import STEP_CLASS_MAPPING
 from source.load_raw_data.kaggle_dataset import load_tf_record
-from source.utils import recursive_type_conversion,  PCBVisualizerforTF, SimplePopupHandler
+from source.utils import recursive_type_conversion,  PCBVisualizerforTF
+from source.utils import SimplePopupHandler, TestResultLogger
 
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
 JSON_TEST_FILE = os.path.join(ROOT_DIR, r'source/image_preprocessing/pipelines/test_pipe.json')
 JSON_TEMP_FILE = os.path.join(ROOT_DIR, r'source/image_preprocessing/pipelines/template.json')
 OUTPUT_DIR = os.path.join(ROOT_DIR, r'source/image_preprocessing/tests/outputs')
+LOG_FILE = os.path.join(OUTPUT_DIR, 'test_result.log')
 
 
 class RGBToGrayscale(StepBase):
@@ -73,7 +75,10 @@ class TestSingleStep(unittest.TestCase):
     def setUpClass(cls):
 
         cls.image_dataset = load_tf_record().take(9)        
+        
         cls.popup_handler = SimplePopupHandler()
+        cls.logger = TestResultLogger(LOG_FILE, f'{StepToTest.name} Test')
+
         step_name_edit = cls.StepClass.name.replace(' ', '_').lower()
         cls.step_output_dir = os.path.join(OUTPUT_DIR, step_name_edit)
         if __name__ == '__main__':
@@ -81,7 +86,6 @@ class TestSingleStep(unittest.TestCase):
 
         if not os.path.isdir(cls.step_output_dir):
             os.makedirs(cls.step_output_dir)
-        
                 
     def setUp(self):
         with open(JSON_TEST_FILE, 'a'): pass
@@ -90,6 +94,7 @@ class TestSingleStep(unittest.TestCase):
     def tearDown(self):
         if os.path.exists(JSON_TEST_FILE):
             os.remove(JSON_TEST_FILE)   
+        self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
 
     def _verify_image_shapes(self, processed_dataset, original_dataset, color_channel_expected):
         """ 

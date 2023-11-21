@@ -42,12 +42,13 @@ def create_test_class_for_step(step_class, arguments, grayscale_only=False):
 
 steps_data = [
     (steps.AdaptiveHistogramEqualizer, {'clip_limit': 1.0, 'tile_gridsize': (5, 5)}),
-    (steps.GlobalHistogramEqualizer, {}, True),
+    (steps.GlobalHistogramEqualizer, {}),
     (steps.GaussianBlurFilter, {'kernel_size': (5,5), 'sigma': 2.0}),
     (steps.MedianBlurFilter, {'kernel_size': 5}),
     (steps.BilateralFilter, {'diameter': 9, 'sigma_color':75, 'sigma_space':75}),
     (steps.AverageBlurFilter, {'kernel_size': (8,8)}),
 ]
+
 
 # Test Class creation
 for step_data in steps_data:

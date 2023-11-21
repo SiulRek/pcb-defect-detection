@@ -1,11 +1,17 @@
+import os
 import unittest
 
 import tensorflow as tf
 import cv2
 
+from source.load_raw_data.kaggle_dataset import load_tf_record
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 from source.image_preprocessing.preprocessing_steps.step_utils import correct_tf_image_shape
-from source.load_raw_data.kaggle_dataset import load_tf_record
+from source.utils import TestResultLogger
+
+ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
+OUTPUT_DIR = os.path.join(ROOT_DIR, r'source/image_preprocessing/tests/outputs')
+LOG_FILE = os.path.join(OUTPUT_DIR, 'test_result.log')
 
 
 class TfTestStep(StepBase):
@@ -52,12 +58,16 @@ class TestStepBase(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.image_dataset = load_tf_record().take(9)
+        cls.logger = TestResultLogger(LOG_FILE, 'Step Base Test')
     
     def setUp(self):
         self.local_vars = {'param1': 10, 'param2': (10,10), 'param3': True}
         self.tf_preprocessing_step = TfTestStep(**self.local_vars)
         self.py_preprocessing_step = PyTestStep(**self.local_vars)
-    
+
+    def tearDown(self):
+        self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
+        
     def test_initialization(self):
         self.assertEqual(self.tf_preprocessing_step.name, "Test_Step")
         self.assertEqual(self.tf_preprocessing_step.params, {'param1': 10, 'param2': (10,10), 'param3': True})
