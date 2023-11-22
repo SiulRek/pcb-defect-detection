@@ -194,7 +194,6 @@ class ClassInstanceSerializer:
             configs = self._add_instance_to_configs(instance, configs) 
         
         self._save_configs_to_json(configs, json_path)
-    
 
     def _deserialize_json_params(self, json_params):
 
