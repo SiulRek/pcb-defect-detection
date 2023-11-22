@@ -36,10 +36,10 @@ class RGBToGrayscale(StepBase):
         super().__init__(locals())
 
     @StepBase._tf_function_decorator
-    def process_step(self, tf_image, tf_target):
-        tf_image_grayscale = tf.image.rgb_to_grayscale(tf_image)
-        tf_image_grayscale = correct_tf_image_shape(tf_image_grayscale)
-        return tf_image_grayscale, tf_target
+    def process_step(self, image_tensor):
+        image_grayscale_tensor = tf.image.rgb_to_grayscale(image_tensor)
+        image_grayscale_tensor = correct_tf_image_shape(image_grayscale_tensor)
+        return image_grayscale_tensor
 
 
 class GrayscaleToRGB(StepBase):
@@ -50,10 +50,10 @@ class GrayscaleToRGB(StepBase):
         super().__init__(locals())
 
     @StepBase._tf_function_decorator
-    def process_step(self, tf_image, tf_target):
-        tf_image_grayscale = tf.image.grayscale_to_rgb(tf_image)
-        tf_image_grayscale = correct_tf_image_shape(tf_image_grayscale)
-        return tf_image_grayscale, tf_target
+    def process_step(self, image_tensor):
+        image_tensor = tf.image.grayscale_to_rgb(image_tensor)
+        image_grayscale_tensor = correct_tf_image_shape(image_tensor)
+        return image_grayscale_tensor
 
 
 class TestSingleStep(unittest.TestCase):

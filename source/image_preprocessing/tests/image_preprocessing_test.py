@@ -16,6 +16,7 @@ JSON_TEST_FILE = os.path.join(ROOT_DIR, r'source/image_preprocessing/pipelines/t
 OUTPUT_DIR = os.path.join(ROOT_DIR, r'source/image_preprocessing/tests/outputs')
 LOG_FILE = os.path.join(OUTPUT_DIR, 'test_results.log')
 
+
 class GrayscaleToRGB(StepBase):
 
     arguments_datatype = {'param1': int, 'param2':(int,int), 'param3':bool}
@@ -25,10 +26,10 @@ class GrayscaleToRGB(StepBase):
         super().__init__(locals())
 
     @StepBase._tf_function_decorator
-    def process_step(self, tf_image, tf_target):
-        tf_image_grayscale = tf.image.grayscale_to_rgb(tf_image)
-        tf_image_grayscale = correct_tf_image_shape(tf_image_grayscale)
-        return tf_image_grayscale, tf_target
+    def process_step(self, image_tensor):
+        image_rgb_tensor = tf.image.grayscale_to_rgb(image_tensor)
+        image_rgb_tensor = correct_tf_image_shape(image_rgb_tensor)
+        return image_rgb_tensor
 
 
 class RGBToGrayscale(StepBase):
@@ -40,14 +41,14 @@ class RGBToGrayscale(StepBase):
         super().__init__(locals())
         
     @StepBase._py_function_decorator
-    def process_step(self, tf_image, tf_target):
-        cv_img = (tf_image.numpy()).astype('uint8')
-        cv_blurred_image = cv2.GaussianBlur(cv_img, ksize=(5,5), sigmaX=2)  # Randomly choosen action.
-        tf_blurred_image = tf.convert_to_tensor(cv_blurred_image, dtype=tf.uint8)
-        tf_image_grayscale = tf.image.rgb_to_grayscale(tf_blurred_image)
-        tf_blurred_image = correct_tf_image_shape(tf_blurred_image)
-        return (tf_image_grayscale, tf_target)
-
+    def process_step(self, image_nparray):
+        blurred_image = cv2.GaussianBlur(image_nparray, ksize=(5,5), sigmaX=2)  # Randomly choosen action.
+        blurred_image = tf.convert_to_tensor(blurred_image, dtype=tf.uint8)
+        image_grayscale_tensor = tf.image.rgb_to_grayscale(blurred_image)
+        image_grayscale_tensor = correct_tf_image_shape(image_grayscale_tensor)
+        processed_image_nparray = (image_grayscale_tensor.numpy()).astype('uint8')
+        return processed_image_nparray
+    # Note in real usage conversion of np.array to tensor and viceversa in one process_step is not recommended.
 
 class ErrorStep(StepBase):
 
@@ -57,11 +58,9 @@ class ErrorStep(StepBase):
         super().__init__(locals())
         
     @StepBase._py_function_decorator
-    def process_step(self, tf_image, tf_target):
-        cv_img = (tf_image.numpy()).astype('uint8')
-        cv_blurred_image = cv2.GaussianBlur(cv_img, oops_unknown_parameter_here='sorry')  
-        tf_blurred_image = tf.convert_to_tensor(cv_blurred_image, dtype=tf.uint8)
-        return (tf_blurred_image, tf_target)
+    def process_step(self, image_nparray):
+        processed_image = cv2.GaussianBlur(image_nparray, oops_unknown_parameter_here='sorry')  
+        return (processed_image)
 
 
 class TestStepBase(unittest.TestCase):

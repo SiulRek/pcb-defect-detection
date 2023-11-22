@@ -1,8 +1,6 @@
 import cv2
-import tensorflow as tf
 
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
-from source.image_preprocessing.preprocessing_steps.step_utils import correct_tf_image_shape
 
 
 class GaussianBlurFilter(StepBase):
@@ -15,23 +13,16 @@ class GaussianBlurFilter(StepBase):
         super().__init__(locals())
 
     @StepBase._py_function_decorator
-    def process_step(self, tf_image, tf_target):
-
-        cv_img = tf_image.numpy().astype('uint8')
-
+    def process_step(self, image_nparray):
         k = self.params['kernel_size']
         sigma = self.params['sigma']
-        cv_blurred_image = cv2.GaussianBlur(cv_img, k, sigma)
-
-        tf_blurred_image = tf.convert_to_tensor(cv_blurred_image, dtype=tf.uint8)
-        tf_blurred_image = correct_tf_image_shape(tf_blurred_image)
-
-        return (tf_blurred_image, tf_target)
+        blurred_image= cv2.GaussianBlur(image_nparray, k, sigma)
+        return blurred_image
     
 
 if __name__ == '__main__':
     step = GaussianBlurFilter()
-    print(step)
+    print(step.get_step_json_representation)
     
 
 
