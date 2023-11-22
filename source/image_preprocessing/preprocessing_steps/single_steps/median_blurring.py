@@ -4,12 +4,17 @@ from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 
 
 class MedianBlurFilter(StepBase):
-    """ A preprocessing step that applies median filter to an image."""
+    """A preprocessing step that applies median filter to an image."""
     arguments_datatype = {'kernel_size': int}
     name = 'Median Blur Filter'
 
     def __init__(self, kernel_size=5):
-        """ Initializes the `MedianBlurFilter` object that can be integrated in an image preprocessing pipeline."""
+        """ 
+        Initializes the `MedianBlurFilter` object that can be integrated in an image preprocessing pipeline    
+        
+        Args:
+            kernel_size (int): The size of the kernel. It must be an odd and positive integer.
+        """
         super().__init__(locals())
 
     @StepBase._py_function_decorator

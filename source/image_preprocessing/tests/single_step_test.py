@@ -10,7 +10,7 @@ from unittest.mock import patch
 import tensorflow as tf
 
 #TODO Select Step to test here!
-from source.image_preprocessing.preprocessing_steps import AverageBlurFilter as StepToTest
+from source.image_preprocessing.preprocessing_steps import NLMeanDenoiser as StepToTest
 
 from source.image_preprocessing.image_preprocessor import ImagePreprocessor
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
@@ -67,7 +67,7 @@ class TestSingleStep(unittest.TestCase):
     """
 
     # Class Attributes (overwritten when class is dynamically loaded -> multiple_steps_test.py)
-    params = {'kernel_size': (8,8)}
+    params = {'h': 1.0, 'template_window_size': 7, 'search_window_size': 21}
     StepClass = StepToTest
     process_grayscale_only = False
 

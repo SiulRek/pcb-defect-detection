@@ -13,7 +13,13 @@ class BilateralFilter(StepBase):
     name = 'Bilateral Filter'
 
     def __init__(self, diameter=9, sigma_color=75, sigma_space=75):
-        """ Initializes the `BilateralFilter` object that can be integrated in an image preprocessing pipeline."""
+        """
+        Initializes the `BilateralFilter` object that can be integrated in an image preprocessing pipeline.
+        
+        Args:
+            kernel_size ((int, int)): The size of the Gaussian kernel. Both values should be odd numbers.
+            sigma (float): The standard deviation of the Gaussian kernel. A higher sigma means more blur.
+        """
         super().__init__(locals())
 
     @StepBase._py_function_decorator

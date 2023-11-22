@@ -8,4 +8,5 @@ STEP_CLASS_MAPPING = {
     'Median Blur Filter': steps.MedianBlurFilter,
     'Bilateral Filter': steps.BilateralFilter,
     'Average Blur Filter': steps.AverageBlurFilter,
+    'Non Local Mean Denoiser': steps.NLMeanDenoiser,
 }
