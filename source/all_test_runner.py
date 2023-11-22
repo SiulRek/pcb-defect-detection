@@ -11,7 +11,7 @@ from source.utils import SimplePopupHandler
 from source.utils import TestResultLogger
 
 FILE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)))
-LOG_FILE = os.path.join(FILE_DIR, 'test_result.log')
+LOG_FILE = os.path.join(FILE_DIR, 'test_results.log')
 
 def run_tests():
     test_suite = unittest.TestSuite()

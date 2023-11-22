@@ -7,7 +7,7 @@ from source.utils.test_result_logger import TestResultLogger
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
 OUTPUT_DIR = os.path.join(ROOT_DIR, r'source/utils/tests/outputs')
-LOG_FILE = os.path.join(OUTPUT_DIR, 'test_result.log')
+LOG_FILE = os.path.join(OUTPUT_DIR, 'test_results.log')
 
 
 class TestParseAndRepeat(unittest.TestCase):

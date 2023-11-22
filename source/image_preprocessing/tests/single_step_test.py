@@ -25,7 +25,7 @@ ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','
 JSON_TEST_FILE = os.path.join(ROOT_DIR, r'source/image_preprocessing/pipelines/test_pipe.json')
 JSON_TEMP_FILE = os.path.join(ROOT_DIR, r'source/image_preprocessing/pipelines/template.json')
 OUTPUT_DIR = os.path.join(ROOT_DIR, r'source/image_preprocessing/tests/outputs')
-LOG_FILE = os.path.join(OUTPUT_DIR, 'test_result.log')
+LOG_FILE = os.path.join(OUTPUT_DIR, 'test_results.log')
 
 
 class RGBToGrayscale(StepBase):
