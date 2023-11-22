@@ -26,10 +26,10 @@ class ImagePreprocessor:
             Sets the preprocessing pipeline with a deep copy of the provided steps,
             ensuring each step is an instance of a StepBase subclass.
 
-        pipe_push(self, step: StepBase):
-            Pushes a new step to the pipeline, verifying that it is a subclass of StepBase.
+        pipe_append(self, step: StepBase):
+            appendes a new step to the pipeline, verifying that it is a subclass of StepBase.
 
-        pipe_pops(self) -> StepBase:
+        pipe_pop(self) -> StepBase:
             Pops a step from pipeline.
             
         process(self, image_dataset: tf.data.Dataset) -> tf.data.Dataset:
@@ -43,7 +43,7 @@ class ImagePreprocessor:
 
     Notes:
         - The pipeline should only contain instances of classes that inherit from StepBase.
-        - The `set_pipe` and `pipe_push` methods include type checks to enforce this.
+        - The `set_pipe` and `pipe_append` methods include type checks to enforce this.
         - The JSON serialization and deserialization methods (`save_pipe_to_json` and `load_pipe_from_json`)
           handle the conversion and reconstruction of the pipeline steps, respectively.
         - The `process` method's behavior changes based on the `raise_step_process_exception` flag,
@@ -96,8 +96,8 @@ class ImagePreprocessor:
         """ Pops the last step of to the pipeline."""
         return self._pipeline.pop()
 
-    def pipe_push(self, step):
-        """ Pushes a new step to the pipeline, verifying that it is a subclass of StepBase."""
+    def pipe_append(self, step):
+        """ appendes a new step to the pipeline, verifying that it is a subclass of StepBase."""
         if not isinstance(step, StepBase):  
                     raise ValueError(f'Expecting a Child of StepBase, got {type(step)} instead.')
         self._pipeline.append(deepcopy(step))

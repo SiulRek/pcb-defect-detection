@@ -104,12 +104,12 @@ class TestStepBase(unittest.TestCase):
             self.assertEqual(processed_data[0].shape[:1], original_data[0].shape[:1]) # Check if height and width are equal.
             self.assertEqual(color_channel_expected, processed_data[0].shape[2])     
     
-    def test_pipe_pop_and_push(self):
+    def test_pipe_pop_and_append(self):
         """
-        Tests the functionality of popping and pushing steps in the image preprocessing pipeline.
+        Tests the functionality of popping and appending steps in the image preprocessing pipeline.
         
         This test case first populates the pipeline with specific steps, then pops the last step, 
-        and finally pushes it back. It verifies both the popped step and the integrity of the 
+        and finally appendes it back. It verifies both the popped step and the integrity of the 
         pipeline after these operations.
         """
         pipeline = [
@@ -123,7 +123,7 @@ class TestStepBase(unittest.TestCase):
         self.assertEqual(popped_step, GrayscaleToRGB(param1=40,param2=(30,30),param3=False))
         self.assertEqual(preprocessor.pipeline, pipeline[:1])
 
-        preprocessor.pipe_push(popped_step)
+        preprocessor.pipe_append(popped_step)
         self.assertEqual(preprocessor.pipeline, pipeline)
 
     def test_pipeline_clear(self):
@@ -141,8 +141,8 @@ class TestStepBase(unittest.TestCase):
         preprocessor.set_pipe(pipeline)
         preprocessor.pipe_clear()
         self.assertEqual(preprocessor.pipeline, [])
-        preprocessor.pipe_push(pipeline[0])
-        preprocessor.pipe_push(pipeline[1])
+        preprocessor.pipe_append(pipeline[0])
+        preprocessor.pipe_append(pipeline[1])
         self.assertEqual(preprocessor.pipeline, pipeline)
         preprocessor.pipe_clear()
         self.assertEqual(preprocessor.pipeline, [])
