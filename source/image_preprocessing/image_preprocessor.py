@@ -101,25 +101,21 @@ class ImagePreprocessor:
         if not isinstance(step, StepBase):  
                     raise ValueError(f'Expecting a Child of StepBase, got {type(step)} instead.')
         self._pipeline.append(deepcopy(step))
+    
+    def pipe_clear(self):
+        """ Clears all steps from the pipeline"""
+        self._pipeline.clear()
 
     def save_pipe_to_json(self, json_path):
         "Serializes the preprocessing pipeline to the specified JSON file, saving the step hyperparameter configurations."
-        if self.class_instance_serializer:
-            self.class_instance_serializer.save_instance_list_to_json(self.pipeline, json_path)
-        else:
-            raise AttributeError("Not None Instance Attribute 'class_instance_serializer' is required to save pipe.")
-    
+        self.class_instance_serializer.save_instance_list_to_json(self.pipeline, json_path)
         
     def load_pipe_from_json(self, json_path):
         """  Loads and reconstructs a preprocessing pipeline from the specified JSON file.
         """
+        self._pipeline = self.class_instance_serializer.get_instance_list_from_json(json_path)
         
-        if self.class_instance_serializer:
-             self._pipeline = self.class_instance_serializer.get_instance_list_from_json(json_path)
-        else:
-            raise AttributeError("Not None Instance Attribute 'class_instance_serializer' is required to save pipe.")
-        
-    def get_pipeline_code_representation(self):
+    def get_pipe_code_representation(self):
         """
         Generates a text representation of the pipeline's configuration.
 

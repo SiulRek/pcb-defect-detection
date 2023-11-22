@@ -14,7 +14,7 @@ from source.utils import TestResultLogger
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
 JSON_TEST_FILE = os.path.join(ROOT_DIR, r'source/image_preprocessing/pipelines/test_pipe.json')
 OUTPUT_DIR = os.path.join(ROOT_DIR, r'source/image_preprocessing/tests/outputs')
-LOG_FILE = os.path.join(OUTPUT_DIR, 'test_result.log')
+LOG_FILE = os.path.join(OUTPUT_DIR, 'test_results.log')
 
 class GrayscaleToRGB(StepBase):
 
@@ -127,6 +127,29 @@ class TestStepBase(unittest.TestCase):
         preprocessor.pipe_push(popped_step)
         self.assertEqual(preprocessor.pipeline, pipeline)
 
+    def test_pipeline_clear(self):
+        """
+        Tests the functionality of clearing and reinitializing the image preprocessing pipeline.
+
+        This test case verifies that the `pipe_clear` method of the ImagePreprocessor class effectively clears the 
+        existing pipeline and allows to rebuild the pipeline from start. 
+        """
+        pipeline = [
+             RGBToGrayscale(param1=20,param2=(20,20),param3=False),
+             GrayscaleToRGB(param1=40,param2=(30,30),param3=False),     
+        ]
+        preprocessor = ImagePreprocessor()
+        preprocessor.set_pipe(pipeline)
+        preprocessor.pipe_clear()
+        self.assertEqual(preprocessor.pipeline, [])
+        preprocessor.pipe_push(pipeline[0])
+        preprocessor.pipe_push(pipeline[1])
+        self.assertEqual(preprocessor.pipeline, pipeline)
+        preprocessor.pipe_clear()
+        self.assertEqual(preprocessor.pipeline, [])
+        preprocessor.set_pipe(pipeline)
+        self.assertEqual(preprocessor.pipeline, pipeline)
+
     def test_deepcopy_of_pipeline(self):
         """
         This test ensures that the ImagePreprocessor maintains a consistent and isolated state of its preprocessing pipeline.
@@ -180,7 +203,7 @@ class TestStepBase(unittest.TestCase):
         ]"""
         preprocessor = ImagePreprocessor(raise_step_process_exception=False)
         preprocessor.set_pipe(pipeline)
-        representation_output = preprocessor.get_pipeline_code_representation()
+        representation_output = preprocessor.get_pipe_code_representation()
         representation_output = self._remove_new_lines_and_spaces(representation_output)
         representation_expected = self._remove_new_lines_and_spaces(representation_expected)
         self.assertEqual(representation_output, representation_expected)
