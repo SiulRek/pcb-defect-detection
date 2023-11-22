@@ -18,5 +18,10 @@
     },
     "Average Blur Filter": {
         "kernel_size": [[8,8]]
+    },
+    "Non Local Mean Denoiser": {
+        "h": [1.0],
+        "template_window_size": [7],
+        "search_window_size": [21]
     }
 }
