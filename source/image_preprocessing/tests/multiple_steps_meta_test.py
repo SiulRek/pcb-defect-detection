@@ -24,7 +24,7 @@ class TestTestFramework(unittest.TestCase):
 class TestConditionalSkipping(unittest.TestCase):
 
     def test_visual_inspection_skipping(self):
-        with patch('source.image_preprocessing.tests.multiple_steps_test.CREATE_VISUAL_INSPECTION', False):
+        with patch('source.image_preprocessing.tests.multiple_steps_test.ENABLE_VISUAL_INSPECTION', False):
             TestClass = create_test_class_for_step(ExampleStep, {'clip_limit': 1.0, 'tile_gridsize': (5, 5)}, grayscale_only=True)
         suite = unittest.TestLoader().loadTestsFromTestCase(TestClass)
         result = unittest.TextTestRunner().run(suite)
@@ -40,7 +40,7 @@ class TestConditionalSkipping(unittest.TestCase):
         self.assertIn('test_process_rgb_images', skipped_test_names)
 
     def test_visual_inspection_not_skipping(self):
-        with patch('source.image_preprocessing.tests.multiple_steps_test.CREATE_VISUAL_INSPECTION', True):
+        with patch('source.image_preprocessing.tests.multiple_steps_test.ENABLE_VISUAL_INSPECTION', True):
             TestClass = create_test_class_for_step(ExampleStep, {'clip_limit': 1.0, 'tile_gridsize': (5, 5)}, grayscale_only=True)
         suite = unittest.TestLoader().loadTestsFromTestCase(TestClass)
         result = unittest.TextTestRunner().run(suite)

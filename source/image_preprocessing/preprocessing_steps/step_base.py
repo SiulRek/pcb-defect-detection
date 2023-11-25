@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
-import os
 import tensorflow as tf
 
-from source.utils.recursive_type_conversion import recursive_type_conversion
 from source.image_preprocessing.preprocessing_steps.step_utils import correct_tf_image_shape
 
 class StepBase(ABC):

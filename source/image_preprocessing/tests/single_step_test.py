@@ -10,7 +10,7 @@ from unittest.mock import patch
 import tensorflow as tf
 
 #TODO Select Step to test here!
-from source.image_preprocessing.preprocessing_steps import NLMeanDenoiser as StepToTest
+from source.image_preprocessing.preprocessing_steps import GlobalHistogramEqualizer as StepToTest
 
 from source.image_preprocessing.image_preprocessor import ImagePreprocessor
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
@@ -67,8 +67,8 @@ class TestSingleStep(unittest.TestCase):
     """
 
     # Class Attributes (overwritten when class is dynamically loaded -> multiple_steps_test.py)
-    params = {'h': 1.0, 'template_window_size': 7, 'search_window_size': 21}
-    StepClass = StepToTest
+    params = {}
+    TestStep = StepToTest
     process_grayscale_only = False
 
     @classmethod
@@ -77,9 +77,9 @@ class TestSingleStep(unittest.TestCase):
         cls.image_dataset = load_tf_record().take(9)        
         
         cls.popup_handler = SimplePopupHandler()
-        cls.logger = TestResultLogger(LOG_FILE, f'{StepToTest.name} Test')
+        cls.logger = TestResultLogger(LOG_FILE, f'{cls.TestStep.name} Test')
 
-        step_name_edit = cls.StepClass.name.replace(' ', '_').lower()
+        step_name_edit = cls.TestStep.name.replace(' ', '_').lower()
         cls.step_output_dir = os.path.join(OUTPUT_DIR, step_name_edit)
         if __name__ == '__main__':
             cls.visual_inspection = cls.popup_handler.ask_yes_no_question('Do you want to make a visual inspection?')
@@ -89,7 +89,7 @@ class TestSingleStep(unittest.TestCase):
                 
     def setUp(self):
         with open(JSON_TEST_FILE, 'a'): pass
-        self.test_step = self.StepClass(**self.params)
+        self.test_step = self.TestStep(**self.params)
 
     def tearDown(self):
         if os.path.exists(JSON_TEST_FILE):
@@ -114,7 +114,7 @@ class TestSingleStep(unittest.TestCase):
         """
 
         params = self.test_step.params
-        init_params_datatype = self.StepClass.arguments_datatype
+        init_params_datatype = self.TestStep.arguments_datatype
         
         self.assertEqual(params.keys(), init_params_datatype.keys(), "'init_params_datatype' keys does not match with 'params' attribute.")
 
@@ -129,7 +129,7 @@ class TestSingleStep(unittest.TestCase):
         """
         step_name = self.test_step.name
         self.assertIn(step_name, STEP_CLASS_MAPPING.keys(), 'No mapping is specified for the tested step.')
-        self.assertIs(STEP_CLASS_MAPPING[step_name], self.StepClass, 'Mapped value of tested step is not the tested step class itself.')
+        self.assertIs(STEP_CLASS_MAPPING[step_name], self.TestStep, 'Mapped value of tested step is not the tested step class itself.')
     
     def test_process_rgb_images(self):
         """ 
@@ -170,7 +170,7 @@ class TestSingleStep(unittest.TestCase):
         preprocessor = ImagePreprocessor()
         preprocessor.load_pipe_from_json(JSON_TEMP_FILE)
 
-        step_is_instance = [isinstance(step, self.StepClass) for step in preprocessor.pipeline]
+        step_is_instance = [isinstance(step, self.TestStep) for step in preprocessor.pipeline]
         self.assertIn(True, step_is_instance)
 
     def test_save_and_load_pipeline(self):
@@ -179,7 +179,7 @@ class TestSingleStep(unittest.TestCase):
         Confirms that the pipeline configuration is correctly preserved across save and load operations.
         """
         
-        mock_mapping = {'RGB_to_Grayscale': RGBToGrayscale, 'Test_Step': self.StepClass}
+        mock_mapping = {'RGB_to_Grayscale': RGBToGrayscale, 'Test_Step': self.TestStep}
         with patch('source.image_preprocessing.image_preprocessor.STEP_CLASS_MAPPING', mock_mapping):
             old_preprocessor = ImagePreprocessor()
             pipeline = [RGBToGrayscale(), self.test_step]
@@ -213,7 +213,7 @@ class TestSingleStep(unittest.TestCase):
         pcb_visualizer.save_plot_to_file(os.path.join(self.step_output_dir, figure_name))
         pcb_visualizer.plot_image_comparison(grayscaled_dataset, processed_grayscaled_dataset, 1,'Grayscale Images comparison')
         figure_name = 'grayscaled_images_comparison'
-        pcb_visualizer.save_plot_to_file(os.path.join(self.step_output_dir, figure_name))
+        pcb_visualizer.save_plot_to_file(os.path.join(self.step_output_dir, figure_name))    
     
 
 if __name__ == '__main__':
