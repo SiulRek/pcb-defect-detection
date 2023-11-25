@@ -79,11 +79,22 @@ class TestGrayscaleToRGB(TestSingleStep):
             pass        
 
 
-if __name__ == '__main__':
+def load_channel_conversion_tests():
+    """
+    Loads and combines test suites for RGBToGrayscale and GrayscaleToRGB preprocessing steps into a single test suite.
+
+    This function specifically creates test suites for testing the RGBToGrayscale and GrayscaleToRGB steps in an image 
+    preprocessing pipeline.
+
+    Returns:
+        unittest.TestSuite: A unified test suite containing all the test cases from the RGBToGrayscale and GrayscaleToRGB test classes.
+    """
     loader = unittest.TestLoader()
     suite1 = loader.loadTestsFromTestCase(TestRGBToGrayscale)
     suite2 = loader.loadTestsFromTestCase(TestGrayscaleToRGB)
+    test_suite = unittest.TestSuite([suite1, suite2])  # Combine the suites
+    return test_suite
 
-    combined_suite = unittest.TestSuite([suite1, suite2])  # Combine the suites
+if __name__ == '__main__':
     runner = unittest.TextTestRunner()
-    runner.run(combined_suite)
+    runner.run(load_channel_conversion_tests())
