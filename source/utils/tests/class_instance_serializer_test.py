@@ -2,7 +2,7 @@ import unittest
 import os
 import json
 
-from source.utils.class_instance_serializer import ClassInstanceSerializer
+from source.utils.class_instances_serializer import ClassInstancesSerializer
 from source.utils.test_result_logger import TestResultLogger
 
 
@@ -49,12 +49,12 @@ class MockClassInvalidParamsAttr:
         self.params = param1
 
 
-class TestClassInstanceSerializer(unittest.TestCase):
-    """    Test suite for the ClassInstanceSerializer class.
+class TestClassInstancesSerializer(unittest.TestCase):
+    """    Test suite for the ClassInstancesSerializer class.
 
     This suite contains a set of unit tests that are designed to ensure the proper 
-    functionality of the ClassInstanceSerializer's methods. It tests the ability of 
-    the ClassInstanceSerializer to serialize and deserialize instance configurations, 
+    functionality of the ClassInstancesSerializer's methods. It tests the ability of 
+    the ClassInstancesSerializer to serialize and deserialize instance configurations, 
     handle different types of inputs, and manage errors and edge cases appropriately.
     """
 
@@ -67,7 +67,7 @@ class TestClassInstanceSerializer(unittest.TestCase):
         self.json_path = os.path.join(OUTPUT_DIR, 'test_config.json')
         with open(self.json_path, 'a'):    pass
         self.instance_mapping = {'MockClass1': MockClass1,'MockClass2': MockClass2}
-        self.serializer = ClassInstanceSerializer(self.instance_mapping)
+        self.serializer = ClassInstancesSerializer(self.instance_mapping)
         self.instance_list = [
             MockClass1(param1 = 'hallo', param2 = 20, param3 = {'key1': 30, 'key2':(3.2, True)}),
             MockClass1(param1 = 'tschuess', param3 = {'key1': 40, 'key2':(55.3, False)}), # param2 is expected to be initialized to default value.
@@ -170,13 +170,13 @@ class TestClassInstanceSerializer(unittest.TestCase):
                 with self.assertRaises(expected_exception):
                     self.serializer._verify_json_path(path)
                 with self.assertRaises(expected_exception):
-                    self.serializer.get_instance_list_from_json(path)
+                    self.serializer.generate_instance_list_from_json(path)
                 with self.assertRaises(expected_exception):
                     self.serializer.save_instance_list_to_json([], path)
         
         with self.assertRaises(FileNotFoundError):
             path_dir_exists_file_not = 'source/utils/not_existing_file.json'
-            self.serializer.get_instance_list_from_json(path_dir_exists_file_not)
+            self.serializer.generate_instance_list_from_json(path_dir_exists_file_not)
         self.serializer.save_instance_list_to_json([],path_dir_exists_file_not) # Now File is created.
         os.remove(path_dir_exists_file_not)
     
@@ -184,12 +184,12 @@ class TestClassInstanceSerializer(unittest.TestCase):
         
         mock_class_params_1 = {'param1': ['tschuess','hallo'], 'param2': [20,30,40]}     
         mock_class_params_2 = {'param1': ['servus', 'ciao'], 'param2': {'distribution': 'uniform', 'low': 1, 'high':10}}   
-        temp_key = 'MockClass2' + ClassInstanceSerializer.KEY_SEPARATOR + '2'              # As two keys of the same name are not allowed.
+        temp_key = 'MockClass2' + ClassInstancesSerializer.KEY_SEPARATOR + '2'              # As two keys of the same name are not allowed.
         json_data = {'MockClass2': mock_class_params_1, temp_key:mock_class_params_2}
         
         with open(self.json_path, 'w') as file:
             json.dump(json_data, file)
-        loaded_instance_list = self.serializer.get_instance_list_from_json(self.json_path)
+        loaded_instance_list = self.serializer.generate_instance_list_from_json(self.json_path)
         
         self.assertIn(loaded_instance_list[0].params['param1'], mock_class_params_1['param1'])
         self.assertIn(loaded_instance_list[0].params['param2'], mock_class_params_1['param2'])
@@ -199,7 +199,7 @@ class TestClassInstanceSerializer(unittest.TestCase):
 
     def test_save_instance_list_to_json(self):
         self.serializer.save_instance_list_to_json(self.instance_list, self.json_path)
-        loaded_instance_list = self.serializer.get_instance_list_from_json(self.json_path)
+        loaded_instance_list = self.serializer.generate_instance_list_from_json(self.json_path)
         self.assertEqual(loaded_instance_list, self.instance_list)
    
     def test_missing_mapping(self): 
@@ -210,12 +210,12 @@ class TestClassInstanceSerializer(unittest.TestCase):
     def test_instanciation_with_default_from_json(self):
         mock_class_params_1 = {'param1': ['tschuess']}     # 'param2' is not specified in JSON, initialization to default is expected.
         mock_class_params_2 = {'param1': ['servus']}   
-        temp_key = 'MockClass2' + ClassInstanceSerializer.KEY_SEPARATOR + '2'              # As two keys of the same name are not allowed.
+        temp_key = 'MockClass2' + ClassInstancesSerializer.KEY_SEPARATOR + '2'              # As two keys of the same name are not allowed.
         json_data = {'MockClass2': mock_class_params_1, temp_key:mock_class_params_2}
         
         with open(self.json_path, 'w') as file:
             json.dump(json_data, file)
-        loaded_instance_list = self.serializer.get_instance_list_from_json(self.json_path)
+        loaded_instance_list = self.serializer.generate_instance_list_from_json(self.json_path)
         
         self.assertIn(loaded_instance_list[0].params['param1'], mock_class_params_1['param1'])
         self.assertIn(loaded_instance_list[1].params['param1'], mock_class_params_2['param1'])
@@ -224,19 +224,19 @@ class TestClassInstanceSerializer(unittest.TestCase):
     def test_invalid_parameter_in_json(self):
         mock_class_params_1 = {'param1': ['tschuess'], 'param2': [20], 'invalid_param': 10}     
         mock_class_params_2 = {'param1': ['servus'], 'param2': [30]}   
-        temp_key = 'MockClass2' + ClassInstanceSerializer.KEY_SEPARATOR + '2'              # As two keys of the same name are not allowed.
+        temp_key = 'MockClass2' + ClassInstancesSerializer.KEY_SEPARATOR + '2'              # As two keys of the same name are not allowed.
         json_data = {'MockClass2': mock_class_params_1, temp_key:mock_class_params_2}
         
         with open(self.json_path, 'w') as file:
             json.dump(json_data, file)
         with self.assertRaises(ValueError):
-            self.serializer.get_instance_list_from_json(self.json_path)
+            self.serializer.generate_instance_list_from_json(self.json_path)
 
     def test_no_argument_specification(self):
         instance_list = [MockClassWithoutArgsSpec(param1=1)]
         self.serializer.instance_mapping = {'MockClassWithoutArgsSpec': MockClassWithoutArgsSpec}   
         self.serializer.save_instance_list_to_json(instance_list, self.json_path)
-        loaded_instance_list = self.serializer.get_instance_list_from_json(self.json_path)
+        loaded_instance_list = self.serializer.generate_instance_list_from_json(self.json_path)
         self.assertEqual(loaded_instance_list, instance_list)       
 
     def test_missing_attribute_params(self):

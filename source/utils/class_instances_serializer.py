@@ -7,9 +7,10 @@ from source.utils.recursive_type_conversion import recursive_type_conversion
 from source.utils.get_sample_from_distribution import get_sample_from_distribution
 from source.utils.parse_and_repeat import parse_and_repeat
 
-class ClassInstanceSerializer:
+class ClassInstancesSerializer:
     """
-    A class dedicated to managing s for different class instances.
+    Manages the serialization and deserialization of multiple class instances. Allows for parameter
+    randomization in deserialization.
 
     This handler is designed for the serialization and deserialization of class instances
     to and from JSON format. It supports saving class instances with their parameters
@@ -17,7 +18,7 @@ class ClassInstanceSerializer:
     typed based on custom mappings and attributes, and initialization parameters are stored
     as ranges, allowing for manual extension or variation for purposes like hyperparameter tuning.
 
-    When the `ClassInstanceSerializer` loads from the JSON file, it randomly selects an element from
+    When the `ClassInstancesSerializer` loads from the JSON file, it randomly selects an element from
     the parameter's range to initialize a class instance. This feature facilitates experimentation
     with different parameter combinations to identify optimal configurations. For example, a parameter
     defined with a range [10] in the JSON can be manually adjusted to [10, 5, 20], from which a value
@@ -29,7 +30,8 @@ class ClassInstanceSerializer:
 
     Public Methods:
         save_instance_list_to_json(instance_list, json_path): Serializes a list of class instances to a JSON file.
-        get_instance_list_from_json(json_path, additional_arguments=None): Deserializes and instantiates classes from a JSON file.
+        generate_instance_list_from_json(json_path, additional_arguments=None): Deserializes and instantiates classes from a JSON file
+        allowing for randomization of arguments.
 
     Conventions:
         - 'configs' refers to a dictionary with class names as keys and instance initialization arguments as values.
@@ -44,7 +46,7 @@ class ClassInstanceSerializer:
 
     def __init__(self, instance_mapping): 
         """
-        Initializes a new instance of the ClassInstanceSerializer class.
+        Initializes a new instance of the ClassInstancesSerializer class.
 
         This handler manages serialization and deserialization of class instance configurations 
         to and from JSON files. It ensures that class instances are appropriately instantiated
@@ -138,7 +140,7 @@ class ClassInstanceSerializer:
         key = current_key
         i = 2             # Starts from 2 as 1 is the case of key name without identification.
         while key in dictionary.keys():              # Same namining of entries are not allowed in json.
-            key = key.split(ClassInstanceSerializer.KEY_SEPARATOR)[0] + ClassInstanceSerializer.KEY_SEPARATOR + str(i) 
+            key = key.split(ClassInstancesSerializer.KEY_SEPARATOR)[0] + ClassInstancesSerializer.KEY_SEPARATOR + str(i) 
             i += 1
         return key
     
@@ -252,7 +254,7 @@ class ClassInstanceSerializer:
             object: An instance of the class specified by 'class_name'.
         """
 
-        class_name_parts = class_name.split(ClassInstanceSerializer.KEY_SEPARATOR)
+        class_name_parts = class_name.split(ClassInstancesSerializer.KEY_SEPARATOR)
 
         if class_name_parts[0] not in self.instance_mapping.keys():
             raise KeyError(f"Class Name '{class_name_parts[0]}' from json file has no instance mapping.")
@@ -266,13 +268,17 @@ class ClassInstanceSerializer:
             else: 
                 return mapped_class(**arguments)
         except ValueError as e:
-            raise ValueError(f"Incorrect initialization of class {mapped_class}, probably initialization parameters mismatch with JSON file.") from e
+            raise ValueError(f"Incorrect instanciation of class {mapped_class}, probably due to arguments mismatch with JSON file or incorrect mapping.") from e
         except TypeError as e:
-            raise ValueError(f"Incorrect initialization of class {mapped_class}, probably initialization parameters mismatch with JSON file.") from e
+            raise ValueError(f"Incorrect instanciation of class {mapped_class}, probably due to arguments mismatch with JSON file or incorrect mapping.") from e
         
-    def get_instance_list_from_json(self, json_path, additional_arguments=None): 
+    def generate_instance_list_from_json(self, json_path, additional_arguments=None): 
         """
-        Deserializes class instances from a JSON file.
+        Deserializes class instances from a JSON file with randomly selected parameters.
+
+        This method reads class configurations from a JSON file and instantiates each class with parameters 
+        randomly chosen from specified ranges. For parameters with a single value in the range, that value is consistently used, 
+        providing deterministic behavior. 
 
         Args:
             json_path (str): The file path of the JSON to deserialize.
