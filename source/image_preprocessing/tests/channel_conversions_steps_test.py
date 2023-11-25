@@ -1,0 +1,89 @@
+"""This module provides test suites for the RGBToGrayscale and GrayscaleToRGB 
+preprocessing steps within an image preprocessing pipeline. """
+
+import unittest
+from unittest import skip
+
+from source.image_preprocessing.preprocessing_steps import RGBToGrayscale
+from source.image_preprocessing.preprocessing_steps import GrayscaleToRGB
+
+from source.image_preprocessing.image_preprocessor import ImagePreprocessor
+from source.image_preprocessing.tests.single_step_test import TestSingleStep
+
+
+ENABLE_VISUAL_INSPECTION = False
+
+
+class TestRGBToGrayscale(TestSingleStep):
+    """ 
+    A test suite for verifying the functionality of the `RGBToGrayscale` preprocessing step.
+    
+    This class inherits from `TestSingleStep` and overrides specific tests as the expected behaviour is slightly different 
+    compared to general steps, due to the channel conversion. The `TestSingleStep` class focuses on ensuring the correct 
+    functioning of these steps, both in isolation and when integrated into a pipeline.
+    """
+    params = {}
+    TestStep = RGBToGrayscale
+    process_grayscale_only = False
+
+    def test_process_rgb_images(self):
+        pipeline = [self.test_step]
+        preprocessor = ImagePreprocessor()
+        preprocessor.set_pipe(pipeline)
+        processed_dataset = preprocessor.process(self.image_dataset)
+        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=1)
+
+    if not ENABLE_VISUAL_INSPECTION:
+        @skip("Visual inspection not enabled")
+        def test_processed_image_visualization(self):
+                pass
+
+class TestGrayscaleToRGB(TestSingleStep):
+    """ 
+    A test suite for verifying the functionality of the `GrayscaleToRGB` preprocessing step.
+    
+    This class inherits from `TestSingleStep` and overrides specific tests as the expected behaviour is slightly different 
+    compared to general steps, due to the channel conversion. The `TestSingleStep` class focuses on ensuring the correct 
+    functioning of these steps, both in isolation and when integrated into a pipeline. It further evaluates
+    the interoperability of `GrayscaleToRGB` with `RGBToGrayscale` to confirm that sequential conversions within a pipeline 
+    yield expected results.
+
+    Note:
+        The suite depends on `RGBToGrayscale` for full pipeline testing. Visual inspection
+        is optional and can be enabled through the `ENABLE_VISUAL_INSPECTION` flag.
+    
+    """
+    params = {}
+    TestStep = GrayscaleToRGB
+    process_grayscale_only = False
+    
+    def test_process_rgb_images(self):
+        pipeline = [self.test_step, RGBToGrayscale()]
+        preprocessor = ImagePreprocessor()
+        preprocessor.set_pipe(pipeline)
+        processed_dataset = preprocessor.process(self.image_dataset)
+        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=1)
+  
+    def test_process_grayscaled_images(self):
+        pipeline = [RGBToGrayscale(), self.test_step]
+        preprocessor = ImagePreprocessor()
+        preprocessor.set_pipe(pipeline)
+        processed_dataset = preprocessor.process(self.image_dataset)
+        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=3)
+        preprocessor.process(processed_dataset)
+        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=3)
+        	
+    if not ENABLE_VISUAL_INSPECTION:
+        @skip("Visual inspection not enabled")
+        def test_processed_image_visualization(self):
+            pass        
+
+
+if __name__ == '__main__':
+    loader = unittest.TestLoader()
+    suite1 = loader.loadTestsFromTestCase(TestRGBToGrayscale)
+    suite2 = loader.loadTestsFromTestCase(TestGrayscaleToRGB)
+
+    combined_suite = unittest.TestSuite([suite1, suite2])  # Combine the suites
+    runner = unittest.TextTestRunner()
+    runner.run(combined_suite)

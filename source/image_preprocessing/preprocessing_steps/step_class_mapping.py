@@ -9,4 +9,6 @@ STEP_CLASS_MAPPING = {
     'Bilateral Filter': steps.BilateralFilter,
     'Average Blur Filter': steps.AverageBlurFilter,
     'Non Local Mean Denoiser': steps.NLMeanDenoiser,
+    'RGB To Grayscale': steps.RGBToGrayscale,
+    'Grayscale To RGB': steps.GrayscaleToRGB,
 }

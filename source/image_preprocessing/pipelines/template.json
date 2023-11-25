@@ -23,5 +23,7 @@
         "h": [1.0],
         "template_window_size": [7],
         "search_window_size": [21]
-    }
+    },
+    "RGB To Grayscale": {},
+    "Grayscale To RGB": {}
 }
