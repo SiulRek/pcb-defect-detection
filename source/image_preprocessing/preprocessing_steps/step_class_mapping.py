@@ -17,4 +17,5 @@ STEP_CLASS_MAPPING = {
     'Truncated Thresholding': steps.TruncatedThresholder,
     'Threshold to Zero': steps.ZeroThreshold,
     'Erosion Filter': steps.ErosionFilter,
+    'Dilation Filter': steps.DilationFilter,
 }

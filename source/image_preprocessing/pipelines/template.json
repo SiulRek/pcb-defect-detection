@@ -43,5 +43,9 @@
     "Erosion Filter": {
         "kernel_size": [3],
         "iterations": [1]
+    },
+    "Dilation Filter": {
+        "kernel_size": [3],
+        "iterations": [1]
     }
 }

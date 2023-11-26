@@ -58,6 +58,7 @@ steps_data = [
     (steps.ZeroThreshold,  {'thresh': 128}),
     (steps.ZeroThreshold,  {'thresh': 128}),
     (steps.ErosionFilter, {'kernel_size': 3, 'iterations': 1}),
+    (steps.DilationFilter, {'kernel_size': 3, 'iterations': 1}),
 ]
 
 
