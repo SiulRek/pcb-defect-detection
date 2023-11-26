@@ -25,5 +25,6 @@
         "search_window_size": [21]
     },
     "RGB To Grayscale": {},
-    "Grayscale To RGB": {}
+    "Grayscale To RGB": {},
+    "Otsu Tresholding": {}
 }

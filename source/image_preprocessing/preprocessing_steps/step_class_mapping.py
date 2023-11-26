@@ -11,4 +11,5 @@ STEP_CLASS_MAPPING = {
     'Non Local Mean Denoiser': steps.NLMeanDenoiser,
     'RGB To Grayscale': steps.RGBToGrayscale,
     'Grayscale To RGB': steps.GrayscaleToRGB,
+    'Otsu Tresholding': steps.OstuTresholder,
 }

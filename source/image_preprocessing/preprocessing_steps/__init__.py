@@ -7,3 +7,4 @@ from source.image_preprocessing.preprocessing_steps.single_steps.average_blurrin
 from source.image_preprocessing.preprocessing_steps.single_steps.nl_mean_denoising import NLMeanDenoiser
 from source.image_preprocessing.preprocessing_steps.single_steps.rgb_to_grayscale import RGBToGrayscale
 from source.image_preprocessing.preprocessing_steps.single_steps.grayscale_to_rgb import GrayscaleToRGB
+from source.image_preprocessing.preprocessing_steps.single_steps.otsu_tresholding import OstuTresholder
