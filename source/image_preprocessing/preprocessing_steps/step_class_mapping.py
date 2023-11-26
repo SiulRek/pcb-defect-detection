@@ -16,4 +16,5 @@ STEP_CLASS_MAPPING = {
     'Binary Thresholding': steps.BinaryThresholder,
     'Truncated Thresholding': steps.TruncatedThresholder,
     'Threshold to Zero': steps.ZeroThreshold,
+    'Erosion Filter': steps.ErosionFilter,
 }

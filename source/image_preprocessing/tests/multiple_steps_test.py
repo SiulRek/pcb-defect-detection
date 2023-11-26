@@ -56,6 +56,8 @@ steps_data = [
     (steps.AdaptiveThresholder,  {'block_size': 15, 'c':-2}),
     (steps.TruncatedThresholder,  {'thresh': 128}),
     (steps.ZeroThreshold,  {'thresh': 128}),
+    (steps.ZeroThreshold,  {'thresh': 128}),
+    (steps.ErosionFilter, {'kernel_size': 3, 'iterations': 1}),
 ]
 
 
