@@ -53,5 +53,8 @@
         "sequence": ["de"],
         "iterations": [-1],
         "erosion_probability": [0.5]
+    },
+    "Square Shape Padder": {
+        "padding_pixel_value": [0]
     }
 }
