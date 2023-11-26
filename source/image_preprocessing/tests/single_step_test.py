@@ -18,7 +18,7 @@ from unittest.mock import patch
 import tensorflow as tf
 
 #TODO Select Step to test here!
-from source.image_preprocessing.preprocessing_steps import TruncatedTresholder as StepToTest
+from source.image_preprocessing.preprocessing_steps import TruncatedThresholder as StepToTest
 
 from source.image_preprocessing.image_preprocessor import ImagePreprocessor
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
@@ -75,7 +75,7 @@ class TestSingleStep(unittest.TestCase):
     """
 
     # Class Attributes (overwritten when class is dynamically loaded -> multiple_steps_test.py)
-    params = {'tresh': 128}
+    params = {'thresh': 128}
     TestStep = StepToTest
     process_grayscale_only = False
 

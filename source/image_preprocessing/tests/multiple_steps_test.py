@@ -51,10 +51,10 @@ steps_data = [
     (steps.MedianBlurFilter, {'kernel_size': 5}),
     (steps.BilateralFilter, {'diameter': 9, 'sigma_color':75, 'sigma_space':75}),
     (steps.AverageBlurFilter, {'kernel_size': (8,8)}),
-    (steps.BinaryTresholder,  {'tresh': 128}),
-    (steps.OstuTresholder, {}),
-    (steps.AdaptiveTresholder,  {'block_size': 15, 'c':-2}),
-    (steps.TruncatedTresholder,  {'tresh': 128}),
+    (steps.BinaryThresholder,  {'thresh': 128}),
+    (steps.OstuThresholder, {}),
+    (steps.AdaptiveThresholder,  {'block_size': 15, 'c':-2}),
+    (steps.TruncatedThresholder,  {'thresh': 128}),
 ]
 
 

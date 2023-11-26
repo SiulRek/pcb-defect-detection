@@ -3,17 +3,17 @@ import cv2
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 
 
-class BinaryTresholder(StepBase):
-    """ A preprocessing step that applies binary Tresholding to an image."""
+class BinaryThresholder(StepBase):
+    """ A preprocessing step that applies binary Thresholding to an image."""
 
-    arguments_datatype = {'tresh': int}
-    name = 'Binary Tresholding'
+    arguments_datatype = {'thresh': int}
+    name = 'Binary Thresholding'
 
-    def __init__(self, tresh=128):
-        """ Initializes the BinaryTresholder object that can be integrated in an image preprocessing pipeline.
+    def __init__(self, thresh=128):
+        """ Initializes the BinaryThresholder object that can be integrated in an image preprocessing pipeline.
         
         Args:
-            tresh (int, optional): The threshold value used for binary thresholding. Pixel values greater than 
+            thresh (int, optional): The threshold value used for binary thresholding. Pixel values greater than 
                                this threshold are set to the maximum value (255, white), and values less than 
                                or equal to the threshold are set to 0 (black). Defaults to 128.
 
@@ -25,28 +25,28 @@ class BinaryTresholder(StepBase):
     @StepBase._py_function_decorator
     def process_step(self, image_nparray):
         
-        def apply_binary_treshold(np_array):
+        def apply_binary_threshold(np_array):
             _, thresholded_np_array= cv2.threshold(
                 src=np_array, 
-                thresh=self.params['tresh'], 
+                thresh=self.params['thresh'], 
                 maxval=255, 
                 type=cv2.THRESH_BINARY
                 )    
             return thresholded_np_array
         
         if image_nparray.shape[2] == 1:
-            thresholded_image = apply_binary_treshold(image_nparray)
+            thresholded_image = apply_binary_threshold(image_nparray)
         else:
             R, G, B = cv2.split(image_nparray)
-            R_thresholded = apply_binary_treshold(R)
-            G_thresholded = apply_binary_treshold(G)
-            B_thresholded = apply_binary_treshold(B)
+            R_thresholded = apply_binary_threshold(R)
+            G_thresholded = apply_binary_threshold(G)
+            B_thresholded = apply_binary_threshold(B)
             thresholded_image = cv2.merge([R_thresholded, G_thresholded, B_thresholded])
 
         return thresholded_image
     
 
 if __name__ == '__main__':
-    step = BinaryTresholder()
+    step = BinaryThresholder()
     print(step.get_step_json_representation())
     

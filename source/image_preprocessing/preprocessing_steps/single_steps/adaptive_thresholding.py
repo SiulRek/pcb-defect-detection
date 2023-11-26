@@ -3,14 +3,14 @@ import cv2
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 
 
-class AdaptiveTresholder(StepBase):
-    """ A preprocessing step that applies adaptive Tresholding to an image."""
+class AdaptiveThresholder(StepBase):
+    """ A preprocessing step that applies adaptive Thresholding to an image."""
 
     arguments_datatype = {'block_size': int, 'c': float}
-    name = 'Adaptive Tresholding'
+    name = 'Adaptive Thresholding'
 
     def __init__(self, block_size=15, c=-2):
-        """ Initializes the AdaptiveTresholder object that can be integrated in an image preprocessing pipeline."""
+        """ Initializes the AdaptiveThresholder object that can be integrated in an image preprocessing pipeline."""
         super().__init__(locals())
 
     @StepBase._py_function_decorator
@@ -37,6 +37,6 @@ class AdaptiveTresholder(StepBase):
     
 
 if __name__ == '__main__':
-    step = AdaptiveTresholder()
+    step = AdaptiveThresholder()
     print(step.get_step_json_representation())
     

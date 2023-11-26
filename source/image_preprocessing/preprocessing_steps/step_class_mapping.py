@@ -11,8 +11,8 @@ STEP_CLASS_MAPPING = {
     'Non Local Mean Denoiser': steps.NLMeanDenoiser,
     'RGB To Grayscale': steps.RGBToGrayscale,
     'Grayscale To RGB': steps.GrayscaleToRGB,
-    'Otsu Tresholding': steps.OstuTresholder,
-    'Adaptive Tresholding': steps.AdaptiveTresholder,
-    'Binary Tresholding': steps.BinaryTresholder,
-    'Truncated Thresholding': steps.TruncatedTresholder,
+    'Otsu Thresholding': steps.OstuThresholder,
+    'Adaptive Thresholding': steps.AdaptiveThresholder,
+    'Binary Thresholding': steps.BinaryThresholder,
+    'Truncated Thresholding': steps.TruncatedThresholder,
 }

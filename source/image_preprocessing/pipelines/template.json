@@ -26,12 +26,15 @@
     },
     "RGB To Grayscale": {},
     "Grayscale To RGB": {},
-    "Otsu Tresholding": {},
-    "Adaptive Tresholding": {
+    "Otsu Thresholding": {},
+    "Adaptive Thresholding": {
         "block_size": [15],
         "c": [-2]
     },
-    "Binary Tresholding": {
-        "tresh": [128]
+    "Binary Thresholding": {
+        "thresh": [128]
+    },
+    "Truncated Thresholding": {
+        "thresh": [128]
     }
 }

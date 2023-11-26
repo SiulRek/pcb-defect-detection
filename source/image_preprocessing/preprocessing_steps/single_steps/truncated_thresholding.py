@@ -3,15 +3,15 @@ import cv2
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 
 
-class TruncatedTresholder(StepBase):
+class TruncatedThresholder(StepBase):
     """ A preprocessing step that applies truncated thresholding to an image. """
 
-    arguments_datatype = {'tresh': int}
+    arguments_datatype = {'thresh': int}
     name = 'Truncated Thresholding'
 
-    def __init__(self, tresh=128):
+    def __init__(self, thresh=128):
         """ 
-        Initializes the TruncatedTresholder object that can be integrated into an image preprocessing pipeline.
+        Initializes the TruncatedThresholder object that can be integrated into an image preprocessing pipeline.
 
         Args:
             thresh (int, optional): The threshold value used for truncated thresholding. Pixel values greater than 
@@ -26,7 +26,7 @@ class TruncatedTresholder(StepBase):
         def apply_truncated_threshold(np_array):
             _, thresholded_np_array = cv2.threshold(
                 src=np_array, 
-                thresh=self.params['tresh'], 
+                thresh=self.params['thresh'], 
                 maxval=255, 
                 type=cv2.THRESH_TRUNC
             )    
@@ -45,5 +45,5 @@ class TruncatedTresholder(StepBase):
     
 
 if __name__ == '__main__':
-    step = TruncatedTresholder()
+    step = TruncatedThresholder()
     print(step.get_step_json_representation())

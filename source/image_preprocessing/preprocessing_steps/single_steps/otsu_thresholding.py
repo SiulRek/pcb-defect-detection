@@ -3,14 +3,14 @@ import cv2
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 
 
-class OstuTresholder(StepBase):
-    """ A preprocessing step that applies Otsu's Tresholding to an image."""
+class OstuThresholder(StepBase):
+    """ A preprocessing step that applies Otsu's Thresholding to an image."""
 
     arguments_datatype = {}
-    name = 'Otsu Tresholding'
+    name = 'Otsu Thresholding'
 
     def __init__(self):
-        """ Initializes the OstuTresholder object that can be integrated in an image preprocessing pipeline."""
+        """ Initializes the OstuThresholder object that can be integrated in an image preprocessing pipeline."""
         super().__init__(locals())
 
     @StepBase._py_function_decorator
@@ -29,6 +29,6 @@ class OstuTresholder(StepBase):
     
 
 if __name__ == '__main__':
-    step = OstuTresholder()
+    step = OstuThresholder()
     print(step.get_step_json_representation())
     
