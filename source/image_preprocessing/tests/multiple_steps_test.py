@@ -1,12 +1,16 @@
 """
-This module dynamically creates and manages unittest classes for testing most of the image preprocessing steps. It utilizes the dynamic class creation in Python to generate test cases for different preprocessing steps. This module allows additionally some tests to be skipped based on configuration flags.
+This module dynamically creates and manages unittest classes for testing variuous of the image preprocessing steps. 
+It utilizes the dynamic class creation in Python to generate test cases for different preprocessing steps. 
+This module allows additionally some tests to be skipped based on configuration flags.
+
+Key Components:
+    - DynamicTestStep: A class that dynamically generates test cases for each specific image preprocessing step.
+    - ENABLE_VISUAL_INSPECTION: A flag used to enable or disable tests that require visual inspection of processed images.
+    - steps_data: A collection of tuples (step_class, arguments, grayscale_only), representing the different image preprocessing steps and their parameters to be tested.
 
 Note:
-    DynamicTestStep: A dynamically generated test class for a specific image preprocessing step.
-    ENABLE_VISUAL_INSPECTION:  Flag to enable or disable tests for visual inspection of processed images.
-    steps_data: Contains the tuples <(step_class, arguments, grayscale_only)> of the image preprocessing steps to be tested.
+    - The module accommodates variations in preprocessing steps, recognizing that not all test cases in `TestSingleStep` are universally applicable. Certain steps may necessitate customized modifications to the standard test cases, reflecting the diverse nature of image preprocessing challenges.
 """
-
 import unittest
 from unittest import skip
 
@@ -50,11 +54,28 @@ steps_data = [
 ]
 
 
-# Test Class creation
-for step_data in steps_data:
-    name = step_data[0].name.replace(' ','')
-    globals()[f'Test{name}'] = create_test_class_for_step(*step_data)
+def load_multiple_step_tests():
+    """
+
+    Dynamically loads and aggregates individual test suites for multiple image preprocessing steps into a unified test suite.
+
+    This function iterates over a predefined list of image preprocessing steps and their corresponding arguments. For each step, 
+    it dynamically creates a test class using `create_test_class_for_step` and then loads the test cases from these classes into 
+    individual test suites. These suites are then combined into a single comprehensive test suite.
+
+    Returns:
+        unittest.TestSuite: A combined test suite that aggregates tests for multiple image preprocessing step test classes.
+    """
+    test_suites = []
+    loader = unittest.TestLoader()
+    for step_data in steps_data:
+        test_class = create_test_class_for_step(*step_data)
+        test_suites.append(loader.loadTestsFromTestCase(test_class))
+    test_suite = unittest.TestSuite(test_suites)  # Combine the suites
+    return test_suite
 
 
 if __name__ == '__main__':
-    unittest.main()
+    """ Main execution block for running the loaded test suite."""
+    runner = unittest.TextTestRunner()
+    runner.run(load_multiple_step_tests())
