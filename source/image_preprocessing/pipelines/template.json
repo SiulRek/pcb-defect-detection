@@ -26,5 +26,9 @@
     },
     "RGB To Grayscale": {},
     "Grayscale To RGB": {},
-    "Otsu Tresholding": {}
+    "Otsu Tresholding": {},
+    "Adaptive Tresholding": {
+        "block_size": [15],
+        "c": [-2]
+    }
 }

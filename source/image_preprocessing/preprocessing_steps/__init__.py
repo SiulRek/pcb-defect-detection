@@ -8,3 +8,4 @@ from source.image_preprocessing.preprocessing_steps.single_steps.nl_mean_denoisi
 from source.image_preprocessing.preprocessing_steps.single_steps.rgb_to_grayscale import RGBToGrayscale
 from source.image_preprocessing.preprocessing_steps.single_steps.grayscale_to_rgb import GrayscaleToRGB
 from source.image_preprocessing.preprocessing_steps.single_steps.otsu_tresholding import OstuTresholder
+from source.image_preprocessing.preprocessing_steps.single_steps.adaptive_tresholding import AdaptiveTresholder

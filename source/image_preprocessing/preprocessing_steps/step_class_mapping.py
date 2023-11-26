@@ -12,4 +12,5 @@ STEP_CLASS_MAPPING = {
     'RGB To Grayscale': steps.RGBToGrayscale,
     'Grayscale To RGB': steps.GrayscaleToRGB,
     'Otsu Tresholding': steps.OstuTresholder,
+    'Adaptive Tresholding': steps.AdaptiveTresholder,
 }
