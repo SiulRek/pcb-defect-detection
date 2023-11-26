@@ -18,4 +18,5 @@ STEP_CLASS_MAPPING = {
     'Threshold to Zero': steps.ZeroThreshold,
     'Erosion Filter': steps.ErosionFilter,
     'Dilation Filter': steps.DilationFilter,
+    'Dilate Erode Sequencer': steps.DilateErodeSequencer,
 }

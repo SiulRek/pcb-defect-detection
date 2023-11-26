@@ -47,5 +47,11 @@
     "Dilation Filter": {
         "kernel_size": [3],
         "iterations": [1]
+    },
+    "Dilate Erode Sequencer": {
+        "kernel_size": [3],
+        "sequence": ["de"],
+        "iterations": [-1],
+        "erosion_probability": [0.5]
     }
 }

@@ -14,3 +14,4 @@ from source.image_preprocessing.preprocessing_steps.single_steps.truncated_thres
 from source.image_preprocessing.preprocessing_steps.single_steps.to_zero_thresholding import ZeroThreshold
 from source.image_preprocessing.preprocessing_steps.single_steps.erosion_filtering import ErosionFilter
 from source.image_preprocessing.preprocessing_steps.single_steps.dilation_filtering import DilationFilter
+from source.image_preprocessing.preprocessing_steps.single_steps.dilate_erode_sequencing import DilateErodeSequencer
