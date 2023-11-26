@@ -1,6 +1,14 @@
 """
-This module contains a suite of tests designed to validate image preprocessing steps before their integration into an image preprocessing pipeline. Each preprocessing step must successfully pass all the tests specified in this module to ensure its functionality, compatibility, and reliability within the pipeline!
+This module contains a suite of tests designed to validate image preprocessing steps before their integration into 
+an image preprocessing pipeline. Each preprocessing step must successfully pass all the tests specified in this module or costumized
+tests to ensure its functionality, compatibility, and reliability within the pipeline!
+
+Note:
+    - Test Adaptability: The module acknowledges that not all tests in `TestSingleStep` are universally applicable. Therefore, 
+    it accommodates the need for customized modifications in test cases to effectively challenge and validate the diversity of
+    image preprocessing steps.    
 """
+
 
 import json
 import os
@@ -10,7 +18,7 @@ from unittest.mock import patch
 import tensorflow as tf
 
 #TODO Select Step to test here!
-from source.image_preprocessing.preprocessing_steps import GlobalHistogramEqualizer as StepToTest
+from source.image_preprocessing.preprocessing_steps import TruncatedTresholder as StepToTest
 
 from source.image_preprocessing.image_preprocessor import ImagePreprocessor
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
@@ -67,7 +75,7 @@ class TestSingleStep(unittest.TestCase):
     """
 
     # Class Attributes (overwritten when class is dynamically loaded -> multiple_steps_test.py)
-    params = {}
+    params = {'tresh': 128}
     TestStep = StepToTest
     process_grayscale_only = False
 

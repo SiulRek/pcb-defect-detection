@@ -54,6 +54,7 @@ steps_data = [
     (steps.BinaryTresholder,  {'tresh': 128}),
     (steps.OstuTresholder, {}),
     (steps.AdaptiveTresholder,  {'block_size': 15, 'c':-2}),
+    (steps.TruncatedTresholder,  {'tresh': 128}),
 ]
 
 
