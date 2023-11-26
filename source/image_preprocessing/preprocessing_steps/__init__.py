@@ -9,3 +9,4 @@ from source.image_preprocessing.preprocessing_steps.single_steps.rgb_to_grayscal
 from source.image_preprocessing.preprocessing_steps.single_steps.grayscale_to_rgb import GrayscaleToRGB
 from source.image_preprocessing.preprocessing_steps.single_steps.otsu_tresholding import OstuTresholder
 from source.image_preprocessing.preprocessing_steps.single_steps.adaptive_tresholding import AdaptiveTresholder
+from source.image_preprocessing.preprocessing_steps.single_steps.binary_tresholding import BinaryTresholder

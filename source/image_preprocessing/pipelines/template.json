@@ -30,5 +30,8 @@
     "Adaptive Tresholding": {
         "block_size": [15],
         "c": [-2]
+    },
+    "Binary Tresholding": {
+        "tresh": [128]
     }
 }
