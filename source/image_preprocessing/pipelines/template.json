@@ -36,5 +36,8 @@
     },
     "Truncated Thresholding": {
         "thresh": [128]
+    },
+    "Threshold to Zero": {
+        "thresh": [128]
     }
 }

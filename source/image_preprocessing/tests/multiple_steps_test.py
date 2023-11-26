@@ -55,6 +55,7 @@ steps_data = [
     (steps.OstuThresholder, {}),
     (steps.AdaptiveThresholder,  {'block_size': 15, 'c':-2}),
     (steps.TruncatedThresholder,  {'thresh': 128}),
+    (steps.ZeroThreshold,  {'thresh': 128}),
 ]
 
 

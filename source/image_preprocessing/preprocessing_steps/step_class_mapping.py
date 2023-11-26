@@ -15,4 +15,5 @@ STEP_CLASS_MAPPING = {
     'Adaptive Thresholding': steps.AdaptiveThresholder,
     'Binary Thresholding': steps.BinaryThresholder,
     'Truncated Thresholding': steps.TruncatedThresholder,
+    'Threshold to Zero': steps.ZeroThreshold,
 }
