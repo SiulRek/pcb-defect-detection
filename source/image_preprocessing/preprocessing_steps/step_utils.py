@@ -40,3 +40,20 @@ def reduce_std(tensor):
     variance = tf.reduce_mean(squared_deviations)
     std_dev = tf.sqrt(variance)
     return std_dev 
+
+import tensorflow as tf
+
+def squared_difference(tensor_a, tensor_b):
+    """
+    Compute the squared difference of a tensor and a scalar or another tensor.
+
+    Parameters:
+    tensor_a (Tensor): A `Tensor`.
+    tensor_b (scalar or Tensor): A scalar or a `Tensor` with the same type and shape as `tensor_a`.
+
+    Returns:
+    Tensor: A `Tensor` containing the squared difference of the input tensor and the scalar or tensor.
+    """
+    difference = tensor_a - tensor_b  # Broadcasting happens here if tensor_b is a scalar
+    squared_diff = tf.square(difference)
+    return squared_diff
