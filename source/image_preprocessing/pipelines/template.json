@@ -61,5 +61,6 @@
         "desired_shape": [[2000, 2000]],
         "resize_method": ["bilinear"]
     },
-    "Min Max Normalizer": {}
+    "Min Max Normalizer": {},
+    "Standard Normalizer": {}
 }

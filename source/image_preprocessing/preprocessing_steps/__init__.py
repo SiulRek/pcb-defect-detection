@@ -18,3 +18,4 @@ from source.image_preprocessing.preprocessing_steps.single_steps.dilate_erode_se
 from source.image_preprocessing.preprocessing_steps.single_steps.square_shape_padding import SquareShapePadder
 from source.image_preprocessing.preprocessing_steps.single_steps.shape_resizing import ShapeResizer
 from source.image_preprocessing.preprocessing_steps.single_steps.min_max_normalizing import MinMaxNormalizer
+from source.image_preprocessing.preprocessing_steps.single_steps.standard_normalizing import StandardNormalizer

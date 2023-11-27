@@ -58,6 +58,7 @@ steps_data = [
     (steps.ErosionFilter, {'kernel_size': 3, 'iterations': 1}),
     (steps.DilationFilter, {'kernel_size': 3, 'iterations': 1}),
     (steps.MinMaxNormalizer, {}, True),
+    (steps.StandardNormalizer, {}, True),
 ]
 
 

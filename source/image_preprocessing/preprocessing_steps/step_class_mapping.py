@@ -22,4 +22,5 @@ STEP_CLASS_MAPPING = {
     'Square Shape Padder': steps.SquareShapePadder,
     'Shape Resizer': steps.ShapeResizer,
     'Min Max Normalizer': steps.MinMaxNormalizer,
+    'Standard Normalizer': steps.StandardNormalizer,
 }
