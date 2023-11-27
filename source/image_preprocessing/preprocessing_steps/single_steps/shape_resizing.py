@@ -30,7 +30,7 @@ class ShapeResizer(StepBase):
     
     def _set_output_datatypes(self):
         super()._set_output_datatypes()
-        self._output_datatypes['image'] = tf.float16
+        self._output_datatypes['image'] = tf.float32
 
     def check_resize_method(self, resize_method):
         if resize_method not in self.resize_methods:

@@ -21,4 +21,5 @@ STEP_CLASS_MAPPING = {
     'Dilate Erode Sequencer': steps.DilateErodeSequencer,
     'Square Shape Padder': steps.SquareShapePadder,
     'Shape Resizer': steps.ShapeResizer,
+    'Min Max Normalizer': steps.MinMaxNormalizer,
 }
