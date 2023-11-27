@@ -19,3 +19,4 @@ from source.image_preprocessing.preprocessing_steps.single_steps.square_shape_pa
 from source.image_preprocessing.preprocessing_steps.single_steps.shape_resizing import ShapeResizer
 from source.image_preprocessing.preprocessing_steps.single_steps.min_max_normalizing import MinMaxNormalizer
 from source.image_preprocessing.preprocessing_steps.single_steps.standard_normalizing import StandardNormalizer
+from source.image_preprocessing.preprocessing_steps.single_steps.mean_normalizing import MeanNormalizer

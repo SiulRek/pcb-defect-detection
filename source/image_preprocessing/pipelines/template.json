@@ -62,5 +62,6 @@
         "resize_method": ["bilinear"]
     },
     "Min Max Normalizer": {},
-    "Standard Normalizer": {}
+    "Standard Normalizer": {},
+    "Mean Normalizer": {}
 }

@@ -23,4 +23,5 @@ STEP_CLASS_MAPPING = {
     'Shape Resizer': steps.ShapeResizer,
     'Min Max Normalizer': steps.MinMaxNormalizer,
     'Standard Normalizer': steps.StandardNormalizer,
+    'Mean Normalizer': steps.MeanNormalizer
 }

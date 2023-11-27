@@ -59,6 +59,7 @@ steps_data = [
     (steps.DilationFilter, {'kernel_size': 3, 'iterations': 1}),
     (steps.MinMaxNormalizer, {}, True),
     (steps.StandardNormalizer, {}, True),
+    (steps.MeanNormalizer, {}, True),
 ]
 
 
