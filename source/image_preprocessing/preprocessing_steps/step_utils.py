@@ -26,6 +26,15 @@ def correct_tf_image_shape(tf_image):
     return reshaped_image   
 
 def reduce_std(tensor):
+    """
+    Computes the standard deviation of a tensor.
+
+    Parameters:
+    tensor (tf.Tensor): The input tensor.
+
+    Returns:
+    tf.Tensor: The standard deviation of elements in the tensor as a scalar.
+    """
     mean = tf.reduce_mean(tensor)
     squared_deviations = tf.square(tensor - mean)
     variance = tf.reduce_mean(squared_deviations)
