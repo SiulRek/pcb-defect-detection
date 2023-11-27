@@ -20,4 +20,5 @@ STEP_CLASS_MAPPING = {
     'Dilation Filter': steps.DilationFilter,
     'Dilate Erode Sequencer': steps.DilateErodeSequencer,
     'Square Shape Padder': steps.SquareShapePadder,
+    'Shape Resizer': steps.ShapeResizer,
 }

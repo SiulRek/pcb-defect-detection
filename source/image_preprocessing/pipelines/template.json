@@ -56,5 +56,9 @@
     },
     "Square Shape Padder": {
         "padding_pixel_value": [0]
+    },
+    "Shape Resizer": {
+        "desired_shape": [[2000, 2000]],
+        "resize_method": ["bilinear"]
     }
 }

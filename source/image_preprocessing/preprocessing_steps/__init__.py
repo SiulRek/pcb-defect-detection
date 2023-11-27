@@ -16,3 +16,4 @@ from source.image_preprocessing.preprocessing_steps.single_steps.erosion_filteri
 from source.image_preprocessing.preprocessing_steps.single_steps.dilation_filtering import DilationFilter
 from source.image_preprocessing.preprocessing_steps.single_steps.dilate_erode_sequencing import DilateErodeSequencer
 from source.image_preprocessing.preprocessing_steps.single_steps.square_shape_padding import SquareShapePadder
+from source.image_preprocessing.preprocessing_steps.single_steps.shape_resizing import ShapeResizer
