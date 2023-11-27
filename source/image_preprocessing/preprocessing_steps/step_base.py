@@ -114,7 +114,9 @@ class StepBase(ABC):
         """
         def wrapper(self, image_dataset):
             def mapped_function(image_tensor, tgt):
-                return func(self, image_tensor), tgt
+                processed_image = func(self, image_tensor)
+                processed_image = tf.cast(processed_image,dtype=self._output_datatypes['image'])
+                return processed_image, tgt
             return image_dataset.map(mapped_function)
         return wrapper
 
