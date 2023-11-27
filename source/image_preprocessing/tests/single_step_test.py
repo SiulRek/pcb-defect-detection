@@ -17,9 +17,6 @@ from unittest.mock import patch
 
 import tensorflow as tf
 
-#TODO Select Step to test here!
-from source.image_preprocessing.preprocessing_steps import TruncatedThresholder as StepToTest
-
 from source.image_preprocessing.image_preprocessor import ImagePreprocessor
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 from source.image_preprocessing.preprocessing_steps.step_utils import correct_tf_image_shape
@@ -28,6 +25,9 @@ from source.load_raw_data.kaggle_dataset import load_tf_record
 from source.utils import recursive_type_conversion,  PCBVisualizerforTF
 from source.utils import SimplePopupHandler, TestResultLogger
 
+#TODO Select Step to test here!
+from source.image_preprocessing.preprocessing_steps import MinMaxNormalizer as StepToTest
+STEP_PARAMETERS = {}
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
 JSON_TEST_FILE = os.path.join(ROOT_DIR, r'source/image_preprocessing/pipelines/test_pipe.json')
@@ -74,10 +74,9 @@ class TestSingleStep(unittest.TestCase):
     argument data types.
     """
 
-    # Class Attributes (overwritten when class is dynamically loaded -> multiple_steps_test.py)
-    params = {'thresh': 128}
+    # Class Attributes (overwritten when class is dynamically loaded (eg. multiple_steps_test.py) or costumized (channel_conversion_steps_test.py))
+    params = STEP_PARAMETERS
     TestStep = StepToTest
-    process_grayscale_only = False
 
     @classmethod
     def setUpClass(cls):
@@ -112,7 +111,7 @@ class TestSingleStep(unittest.TestCase):
         """
         for original_data, processed_data in zip(original_dataset, processed_dataset):
             self.assertEqual(processed_data[1], original_data[1], 'Targets are not equal.')  
-            self.assertEqual(processed_data[0].shape[:1], original_data[0].shape[:1], 'height and/or width are not equal.') 
+            self.assertEqual(processed_data[0].shape[:2], original_data[0].shape[:2], 'heights and/or widths are not equal.') 
             self.assertEqual(color_channel_expected, processed_data[0].shape[2], 'Color channels are not equal.')     
 
     def test_arguments_datatype(self):
@@ -200,19 +199,17 @@ class TestSingleStep(unittest.TestCase):
         for old_step, new_step in zip(old_preprocessor._pipeline, new_preprocessor._pipeline):
             self.assertEqual(old_step, new_step, 'Pipeline steps are not equal.')
     
-    #@unittest.skip("Visual inspection not enabled")
     def test_processed_image_visualization(self):
         """ This method evaluates the visualization capabilities for processed images. It processes RGB and grayscale images through the StepToTest, visualizes them using PCBVisualizerforTF, and saves these visualizations to files. The method allows processed images to be visually inspected."""
         
         pcb_visualizer = PCBVisualizerforTF(show_plot=False)
-        if not self.process_grayscale_only:
-            processed_rgb_dataset = self.test_step.process_step(self.image_dataset) 
-            pcb_visualizer.plot_images(processed_rgb_dataset, 'Processed RGB Images')
-            figure_name = 'processed_rgb_images'
-            pcb_visualizer.save_plot_to_file(os.path.join(self.step_output_dir, figure_name)) 
-            pcb_visualizer.plot_image_comparison(self.image_dataset, processed_rgb_dataset, 1,'RGB Images comparison')
-            figure_name = 'rgb_images_comparison'
-            pcb_visualizer.save_plot_to_file(os.path.join(self.step_output_dir, figure_name))
+        processed_rgb_dataset = self.test_step.process_step(self.image_dataset) 
+        pcb_visualizer.plot_images(processed_rgb_dataset, 'Processed RGB Images')
+        figure_name = 'processed_rgb_images'
+        pcb_visualizer.save_plot_to_file(os.path.join(self.step_output_dir, figure_name)) 
+        pcb_visualizer.plot_image_comparison(self.image_dataset, processed_rgb_dataset, 1,'RGB Images comparison')
+        figure_name = 'rgb_images_comparison'
+        pcb_visualizer.save_plot_to_file(os.path.join(self.step_output_dir, figure_name))
 
         grayscaled_dataset = RGBToGrayscale().process_step(self.image_dataset) 
         processed_grayscaled_dataset = self.test_step.process_step(grayscaled_dataset) 

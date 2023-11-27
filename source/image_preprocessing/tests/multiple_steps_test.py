@@ -6,7 +6,7 @@ This module allows additionally some tests to be skipped based on configuration 
 Key Components:
     - DynamicTestStep: A class that dynamically generates test cases for each specific image preprocessing step.
     - ENABLE_VISUAL_INSPECTION: A flag used to enable or disable tests that require visual inspection of processed images.
-    - steps_data: A collection of tuples (step_class, arguments, grayscale_only), representing the different image preprocessing steps and their parameters to be tested.
+    - steps_data: A collection of tuples (step_class, arguments, visual_inspection_always_disable), representing the different image preprocessing steps and their parameters to be tested.
 
 Note:
     - The module accommodates variations in preprocessing steps, recognizing that not all test cases in `TestSingleStep` are universally applicable. Certain steps may necessitate customized modifications to the standard test cases, reflecting the diverse nature of image preprocessing challenges.
@@ -21,19 +21,17 @@ from source.image_preprocessing.tests.single_step_test import TestSingleStep
 ENABLE_VISUAL_INSPECTION = False
 
 
-def create_test_class_for_step(step_class, arguments, grayscale_only=False):
+def create_test_class_for_step(step_class, arguments, visual_inspection_always_disable=False):
 
     class DynamicTestStep(TestSingleStep):
         TestStep = step_class
         params = arguments
-        process_grayscale_only = grayscale_only
 
-        if grayscale_only:
-            @skip("Processing of RGB images not enabled")
-            def test_process_rgb_images(self):
-                pass  
-
-        if not ENABLE_VISUAL_INSPECTION:
+        if visual_inspection_always_disable:
+            @skip("Visual inspection not enabled")
+            def test_processed_image_visualization(self):
+                pass
+        elif not ENABLE_VISUAL_INSPECTION:
             @skip("Visual inspection not enabled")
             def test_processed_image_visualization(self):
                 pass
