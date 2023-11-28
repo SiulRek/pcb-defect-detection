@@ -72,6 +72,11 @@ class TestGrayscaleToRGB(TestSingleStep):
         self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=3)
         preprocessor.process(processed_dataset)
         self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=3)
+    
+    def test_process_execution(self):
+        processed_dataset = self.test_step.process_step(self.image_dataset)
+        for _, _ in processed_dataset.take(1):  # Consumes the dataset to force execution of the step.
+            pass
         	
     if not ENABLE_VISUAL_INSPECTION:
         @skip("Visual inspection not enabled")
@@ -94,6 +99,7 @@ def load_channel_conversion_tests():
     suite2 = loader.loadTestsFromTestCase(TestGrayscaleToRGB)
     test_suite = unittest.TestSuite([suite1, suite2])  # Combine the suites
     return test_suite
+
 
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()
