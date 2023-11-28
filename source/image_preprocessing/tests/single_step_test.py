@@ -26,8 +26,13 @@ from source.utils import recursive_type_conversion,  PCBVisualizerforTF
 from source.utils import SimplePopupHandler, TestResultLogger
 
 #TODO Select Step to test here!
-from source.image_preprocessing.preprocessing_steps import MinMaxNormalizer as StepToTest
-STEP_PARAMETERS = {}
+from source.image_preprocessing.preprocessing_steps import LocalContrastNormalizer as StepToTest
+STEP_PARAMETERS = {
+        'depth_radius': 5,
+        'bias': 1.0,
+        'alpha': 0.0001,
+        'beta': 0.75
+    }
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
 JSON_TEST_FILE = os.path.join(ROOT_DIR, r'source/image_preprocessing/pipelines/test_pipe.json')
@@ -88,6 +93,7 @@ class TestSingleStep(unittest.TestCase):
 
         step_name_edit = cls.TestStep.name.replace(' ', '_').lower()
         cls.step_output_dir = os.path.join(OUTPUT_DIR, step_name_edit)
+        cls.visual_inspection = True
         if __name__ == '__main__':
             cls.visual_inspection = cls.popup_handler.ask_yes_no_question('Do you want to make a visual inspection?')
 
@@ -137,6 +143,38 @@ class TestSingleStep(unittest.TestCase):
         step_name = self.test_step.name
         self.assertIn(step_name, STEP_CLASS_MAPPING.keys(), 'No mapping is specified for the tested step.')
         self.assertIs(STEP_CLASS_MAPPING[step_name], self.TestStep, 'Mapped value of tested step is not the tested step class itself.')
+
+    def test_process_execution(self):
+        """ 
+        Ensures the preprocessing step executes without errors and correctly transforms the image data.
+        This test checks that the processing step can be applied to a dataset of images and 
+        that the processed images differ from the original, indicating effective transformation.
+        """
+        processed_dataset = self.test_step.process_step(self.image_dataset)
+        for _, _ in processed_dataset.take(1):  # Consumes the dataset to force execution of the step.
+            pass
+        original_images = list(zip(*self.image_dataset))[0]
+        processed_images = list(zip(*processed_dataset))[0]
+        for ori_img, prc_img in zip(original_images, processed_images):
+            equal_flag = True
+            prc_img = tf.cast(prc_img, dtype=ori_img.dtype)
+            if ori_img.shape != prc_img.shape:
+                equal_flag = False
+            elif not tf.reduce_all(tf.equal(ori_img, prc_img)).numpy():
+                equal_flag = False
+            self.assertFalse(equal_flag)
+
+    def test_output_datatype(self):
+        """ 
+        This test ensures that the datatype of the images after processing is consistent with 
+        the datatype defined by the preprocessing step, maintaining data integrity.
+        Verifies that the output datatype of the processed images matches the expected datatype 
+        specified in the preprocessing step's output datatype configuration.
+        """
+        processed_dataset = self.test_step.process_step(self.image_dataset)
+        processed_images = list(zip(*processed_dataset))[0]
+        for image in processed_images:
+            self.assertEqual(image.dtype, self.test_step._output_datatypes['image'])
     
     def test_process_rgb_images(self):
         """ 
@@ -202,24 +240,25 @@ class TestSingleStep(unittest.TestCase):
     def test_processed_image_visualization(self):
         """ This method evaluates the visualization capabilities for processed images. It processes RGB and grayscale images through the StepToTest, visualizes them using PCBVisualizerforTF, and saves these visualizations to files. The method allows processed images to be visually inspected."""
         
-        pcb_visualizer = PCBVisualizerforTF(show_plot=False)
-        processed_rgb_dataset = self.test_step.process_step(self.image_dataset) 
-        pcb_visualizer.plot_images(processed_rgb_dataset, 'Processed RGB Images')
-        figure_name = 'processed_rgb_images'
-        pcb_visualizer.save_plot_to_file(os.path.join(self.step_output_dir, figure_name)) 
-        pcb_visualizer.plot_image_comparison(self.image_dataset, processed_rgb_dataset, 1,'RGB Images comparison')
-        figure_name = 'rgb_images_comparison'
-        pcb_visualizer.save_plot_to_file(os.path.join(self.step_output_dir, figure_name))
+        if self.visual_inspection:
+            pcb_visualizer = PCBVisualizerforTF(show_plot=False)
+            processed_rgb_dataset = self.test_step.process_step(self.image_dataset) 
+            pcb_visualizer.plot_images(processed_rgb_dataset, 'Processed RGB Images')
+            figure_name = 'processed_rgb_images'
+            pcb_visualizer.save_plot_to_file(os.path.join(self.step_output_dir, figure_name)) 
+            pcb_visualizer.plot_image_comparison(self.image_dataset, processed_rgb_dataset, 1,'RGB Images comparison')
+            figure_name = 'rgb_images_comparison'
+            pcb_visualizer.save_plot_to_file(os.path.join(self.step_output_dir, figure_name))
 
-        grayscaled_dataset = RGBToGrayscale().process_step(self.image_dataset) 
-        processed_grayscaled_dataset = self.test_step.process_step(grayscaled_dataset) 
-        pcb_visualizer.plot_images(processed_grayscaled_dataset, 'Processed Grayscale Images')
-        figure_name = 'processed_grayscaled_images'
-        pcb_visualizer.save_plot_to_file(os.path.join(self.step_output_dir, figure_name))
-        pcb_visualizer.plot_image_comparison(grayscaled_dataset, processed_grayscaled_dataset, 1,'Grayscale Images comparison')
-        figure_name = 'grayscaled_images_comparison'
-        pcb_visualizer.save_plot_to_file(os.path.join(self.step_output_dir, figure_name))    
-    
+            grayscaled_dataset = RGBToGrayscale().process_step(self.image_dataset) 
+            processed_grayscaled_dataset = self.test_step.process_step(grayscaled_dataset) 
+            pcb_visualizer.plot_images(processed_grayscaled_dataset, 'Processed Grayscale Images')
+            figure_name = 'processed_grayscaled_images'
+            pcb_visualizer.save_plot_to_file(os.path.join(self.step_output_dir, figure_name))
+            pcb_visualizer.plot_image_comparison(grayscaled_dataset, processed_grayscaled_dataset, 1,'Grayscale Images comparison')
+            figure_name = 'grayscaled_images_comparison'
+            pcb_visualizer.save_plot_to_file(os.path.join(self.step_output_dir, figure_name))    
+        
 
 if __name__ == '__main__':
     unittest.main()
