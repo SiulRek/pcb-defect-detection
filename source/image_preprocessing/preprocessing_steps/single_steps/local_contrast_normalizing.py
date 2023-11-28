@@ -22,6 +22,9 @@ class LocalContrastNormalizer(StepBase):
             bias (float): Bias to avoid division by zero.
             alpha (float): Scale factor.
             beta (float): Exponent for normalization.
+
+        Note: 
+            - This step is ideally applied to images that have already undergone standard normalization. This ensures that the image data is centered and scaled appropriately before local contrast enhancement.
         """
         super().__init__(locals())
     
@@ -31,26 +34,15 @@ class LocalContrastNormalizer(StepBase):
     
     @StepBase._tf_function_decorator
     def process_step(self, image_tensor):
-
-        image_tensor = tf.cast(image_tensor, self._output_datatypes['image'])
        
+        image_tensor = tf.cast(image_tensor, self._output_datatypes['image'])
+
         # Add a batch dimension to image_tensor if it doesn't have one
         if len(image_tensor.shape) == 3:
             image_tensor = tf.expand_dims(image_tensor, axis=0)
 
-        # Subtract local mean
-        local_mean = tf.reduce_mean(image_tensor, axis=[1, 2], keepdims=True)
-        image_zero_mean = image_tensor - local_mean
-
-        # Divide by local standard deviation
-        local_variance = tf.reduce_mean(tf.square(image_zero_mean), axis=[1, 2], keepdims=True)
-        local_std = tf.sqrt(local_variance)
-
-        image_normalized = image_zero_mean / (local_std + self.params['bias'])
-
-        # Apply local response normalization
         image_lcn = tf.nn.local_response_normalization(
-            image_normalized,
+            image_tensor,
             depth_radius=self.params['depth_radius'],
             bias=self.params['bias'],
             alpha=self.params['alpha'],
