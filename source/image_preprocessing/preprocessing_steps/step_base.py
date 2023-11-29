@@ -107,45 +107,52 @@ class StepBase(ABC):
         return json_string
     
     @staticmethod
-    def _tf_function_decorator(func):       
+    def _tf_function_decorator(func):
         """ 
-        A decorator to wrap TensorFlow functions for mapping onto a dataset. Allows image preprocessing step
-        with tensorflow functionality a straigth forward implementation of the child classes.
+        A decorator for mapping TensorFlow tensor-based functions onto a dataset using tf.py_function.
+        This decorator is designed for preprocessing steps implemented as Python functions,
+        where the input to the function is a TensorFlow tensor.
         """
-        def wrapper(self, image_dataset):
-            def mapped_function(image_tensor, tgt):
-                processed_image = func(self, image_tensor)
-                processed_image = tf.cast(processed_image,dtype=self._output_datatypes['image'])
-                return processed_image, tgt
-            return image_dataset.map(mapped_function)
-        return wrapper
+        def tensor_to_py_function_wrapper(self, image_tensor, target_tensor):
+            processed_image = func(self, image_tensor)
+            processed_image = tf.convert_to_tensor(processed_image, dtype=self._output_datatypes['image'])
+            return processed_image, target_tensor
+
+        def dataset_map_function(self, image_dataset):
+            return image_dataset.map(
+                lambda img, tgt: tf.py_function(
+                    func=lambda i, t: tensor_to_py_function_wrapper(self, i, t),
+                    inp=[img, tgt],
+                    Tout=(self._output_datatypes['image'], self._output_datatypes['target'])
+                )
+            )
+
+        return dataset_map_function
 
     @staticmethod
     def _py_function_decorator(func):
         """ 
-        A decorator to wrap Python functions for mapping onto a dataset using tf.py_function. 
-        Simplifies the implementation of image preprocessing steps by handling TensorFlow and numpy conversions.
-        Allows image preprocessing step with python functionality a straigth forward implementation of the
-        child classes.
+        A decorator for mapping Python functions (processing NumPy arrays) onto a TensorFlow dataset using tf.py_function.
+        This decorator is useful for preprocessing steps implemented in Python,
+        converting TensorFlow tensors to NumPy arrays before processing.
         """
-        def tensor_to_numpy_wrapper(self, image_tensor, target_tensor):
+        def numpy_to_py_function_wrapper(self, image_tensor, target_tensor):
             image_nparray = image_tensor.numpy().astype('uint8')
             processed_image = func(self, image_nparray)
-            processed_image = tf.convert_to_tensor(processed_image,dtype=self._output_datatypes['image'])
+            processed_image = tf.convert_to_tensor(processed_image, dtype=self._output_datatypes['image'])
             processed_image = correct_tf_image_shape(processed_image)
             return processed_image, target_tensor
 
-        def py_function_wrapper(self, image_tensor, target_tensor):
-            return tf.py_function(
-                func=lambda image_tensor, target_tensor: tensor_to_numpy_wrapper(self, image_tensor, target_tensor),
-                inp=[image_tensor, target_tensor],
-                Tout=(self._output_datatypes['image'], self._output_datatypes['target'])
+        def py_function_dataset_map(self, image_dataset):
+            return image_dataset.map(
+                lambda img, tgt: tf.py_function(
+                    func=lambda i, t: numpy_to_py_function_wrapper(self, i, t),
+                    inp=[img, tgt],
+                    Tout=(self._output_datatypes['image'], self._output_datatypes['target'])
+                )
             )
 
-        def dataset_map_wrapper(self, image_dataset):
-            return image_dataset.map(lambda img, tgt: py_function_wrapper(self, img, tgt))
-
-        return dataset_map_wrapper
+        return py_function_dataset_map
 
     @abstractmethod    
     def process_step(self, tf_image, tf_target):
