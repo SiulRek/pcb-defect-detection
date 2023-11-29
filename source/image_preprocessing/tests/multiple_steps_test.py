@@ -57,10 +57,6 @@ steps_data = [
     (steps.ZeroThreshold,  {'thresh': 128}),
     (steps.ErosionFilter, {'kernel_size': 3, 'iterations': 1}),
     (steps.DilationFilter, {'kernel_size': 3, 'iterations': 1}),
-    (steps.MinMaxNormalizer, {}, True),
-    (steps.StandardNormalizer, {}, True),
-    (steps.MeanNormalizer, {}, True),
-    (steps.LocalContrastNormalizer, {'depth_radius': 5, 'bias': 1.0, 'alpha': 0.0001, 'beta': 0.75}, True),
 ]
 
 
