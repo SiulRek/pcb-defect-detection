@@ -15,7 +15,7 @@ class MinMaxNormalizer(StepBase):
     
     def _set_output_datatypes(self):
         super()._set_output_datatypes()
-        self._output_datatypes['image'] = tf.tf_float32
+        self._output_datatypes['image'] = tf.float32
 
     @StepBase._tf_function_decorator
     def process_step(self, image_tensor):
