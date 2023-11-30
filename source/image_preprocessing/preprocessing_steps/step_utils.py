@@ -1,7 +1,7 @@
 import tensorflow as tf
 
 
-def correct_tf_image_shape(tf_image):
+def correct_image_tensor_shape(tf_image):
     """
     Corrects the shape of a TensorFlow image tensor based on the inferred dimensions.
     

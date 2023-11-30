@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import tensorflow as tf
 
-from source.image_preprocessing.preprocessing_steps.step_utils import correct_tf_image_shape
+from source.image_preprocessing.preprocessing_steps.step_utils import correct_image_tensor_shape
 
 class StepBase(ABC):
     """  Base class for defining preprocessing steps for images in a image preprocessing pipeline.
@@ -26,7 +26,7 @@ class StepBase(ABC):
     Public Methods:
     - process_step(image: tf.Tensor or np.array) -> tf.Tensor or np.array:
         To be implemented by the child class to define the specific preprocessing functionality. The image datatype depends
-        on the function_decorator used, either `tf_function_decorator`  for processing tensors  or `py_function_decorator`
+        on the function_decorator used, either `_nparray_pyfunc_wrapper`  for processing tensors  or `_tensor_pyfunc_wrapper`
         for processing np.arrays.
 
 
@@ -140,7 +140,7 @@ class StepBase(ABC):
             image_nparray = image_tensor.numpy().astype('uint8')
             processed_image = func(self, image_nparray)
             processed_image = tf.convert_to_tensor(processed_image, dtype=self._output_datatypes['image'])
-            processed_image = correct_tf_image_shape(processed_image)
+            processed_image = correct_image_tensor_shape(processed_image)
             return processed_image, target_tensor
 
         def py_function_dataset_map(self, image_dataset):

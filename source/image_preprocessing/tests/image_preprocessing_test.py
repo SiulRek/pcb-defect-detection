@@ -7,7 +7,7 @@ import cv2
 
 from source.image_preprocessing.image_preprocessor import ImagePreprocessor
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
-from source.image_preprocessing.preprocessing_steps.step_utils import correct_tf_image_shape
+from source.image_preprocessing.preprocessing_steps.step_utils import correct_image_tensor_shape
 from source.load_raw_data.kaggle_dataset import load_tf_record
 from source.utils import TestResultLogger
 
@@ -28,7 +28,7 @@ class GrayscaleToRGB(StepBase):
     @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
         image_rgb_tensor = tf.image.grayscale_to_rgb(image_tensor)
-        image_rgb_tensor = correct_tf_image_shape(image_rgb_tensor)
+        image_rgb_tensor = correct_image_tensor_shape(image_rgb_tensor)
         return image_rgb_tensor
 
 
@@ -45,7 +45,7 @@ class RGBToGrayscale(StepBase):
         blurred_image = cv2.GaussianBlur(image_nparray, ksize=(5,5), sigmaX=2)  # Randomly choosen action.
         blurred_image = tf.convert_to_tensor(blurred_image, dtype=tf.uint8)
         image_grayscale_tensor = tf.image.rgb_to_grayscale(blurred_image)
-        image_grayscale_tensor = correct_tf_image_shape(image_grayscale_tensor)
+        image_grayscale_tensor = correct_image_tensor_shape(image_grayscale_tensor)
         processed_image_nparray = (image_grayscale_tensor.numpy()).astype('uint8')
         return processed_image_nparray
     # Note in real usage conversion of np.array to tensor and viceversa in one process_step is not recommended.

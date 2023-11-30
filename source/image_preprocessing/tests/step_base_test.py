@@ -11,7 +11,7 @@ import cv2
 
 from source.load_raw_data.kaggle_dataset import load_tf_record
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
-from source.image_preprocessing.preprocessing_steps.step_utils import correct_tf_image_shape
+from source.image_preprocessing.preprocessing_steps.step_utils import correct_image_tensor_shape
 from source.utils import TestResultLogger
 
 
@@ -31,7 +31,7 @@ class TfTestStep(StepBase):
     @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
         image_grayscale_tensor = tf.image.rgb_to_grayscale(image_tensor)
-        image_grayscale_tensor = correct_tf_image_shape(image_grayscale_tensor)
+        image_grayscale_tensor = correct_image_tensor_shape(image_grayscale_tensor)
         return image_grayscale_tensor
 
 class PyTestStep(StepBase):
@@ -81,12 +81,12 @@ class TestStepBase(unittest.TestCase):
     def test_correct_shape_gray(self):
         image_tensor = list(TestStepBase.image_dataset.take(1))[0][0]
         image_grayscale_tensor = tf.image.rgb_to_grayscale(image_tensor)
-        reshaped_image = correct_tf_image_shape(image_grayscale_tensor)
+        reshaped_image = correct_image_tensor_shape(image_grayscale_tensor)
         self.assertEqual(reshaped_image.shape, [2464, 3056, 1])
 
     def test_correct_shape_rgb(self):
         image_tensor = list(TestStepBase.image_dataset.take(1))[0][0]
-        reshaped_image = correct_tf_image_shape(image_tensor)
+        reshaped_image = correct_image_tensor_shape(image_tensor)
         self.assertEqual(reshaped_image.shape, [2464, 3056, 3])
     
     def _remove_new_lines_and_spaces(self, string):

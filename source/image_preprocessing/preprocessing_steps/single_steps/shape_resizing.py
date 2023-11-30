@@ -1,7 +1,7 @@
 import tensorflow as tf
 
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
-from source.image_preprocessing.preprocessing_steps.step_utils import correct_tf_image_shape
+from source.image_preprocessing.preprocessing_steps.step_utils import correct_image_tensor_shape
 
 class ShapeResizer(StepBase):
     """ A preprocessing step that resizes an image to a specified shape, potentially altering its aspect ratio. """

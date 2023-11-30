@@ -19,7 +19,7 @@ import tensorflow as tf
 from source.image_preprocessing.image_preprocessor import ImagePreprocessor
 from source.image_preprocessing.image_preprocessor import StepBase
 from source.image_preprocessing.tests.single_step_test import TestSingleStep
-from source.image_preprocessing.preprocessing_steps.step_utils import correct_tf_image_shape
+from source.image_preprocessing.preprocessing_steps.step_utils import correct_image_tensor_shape
 import source.image_preprocessing.preprocessing_steps as steps
 
 
@@ -36,7 +36,7 @@ class RGBToGrayscale(StepBase):
     @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
         image_grayscale_tensor = tf.image.rgb_to_grayscale(image_tensor)
-        image_grayscale_tensor = correct_tf_image_shape(image_grayscale_tensor)
+        image_grayscale_tensor = correct_image_tensor_shape(image_grayscale_tensor)
         return image_grayscale_tensor
 
 
@@ -50,7 +50,7 @@ class GrayscaleToRGB(StepBase):
     @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
         image_tensor = tf.image.grayscale_to_rgb(image_tensor)
-        image_grayscale_tensor = correct_tf_image_shape(image_tensor)
+        image_grayscale_tensor = correct_image_tensor_shape(image_tensor)
         return image_grayscale_tensor
 
 
