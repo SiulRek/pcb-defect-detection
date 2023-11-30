@@ -26,13 +26,8 @@ from source.utils import recursive_type_conversion,  PCBVisualizerforTF
 from source.utils import SimplePopupHandler, TestResultLogger
 
 #TODO Select Step to test here!
-from source.image_preprocessing.preprocessing_steps import LocalContrastNormalizer as StepToTest
-STEP_PARAMETERS = {
-        'depth_radius': 5,
-        'bias': 1.0,
-        'alpha': 0.0001,
-        'beta': 0.75
-    }
+from source.image_preprocessing.preprocessing_steps import GlobalHistogramEqualizer as StepToTest
+STEP_PARAMETERS = {}
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
 JSON_TEST_FILE = os.path.join(ROOT_DIR, r'source/image_preprocessing/pipelines/test_pipe.json')
@@ -48,7 +43,7 @@ class RGBToGrayscale(StepBase):
     def __init__(self):
         super().__init__(locals())
 
-    @StepBase._tf_function_decorator
+    @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
         image_grayscale_tensor = tf.image.rgb_to_grayscale(image_tensor)
         image_grayscale_tensor = correct_tf_image_shape(image_grayscale_tensor)
@@ -62,7 +57,7 @@ class GrayscaleToRGB(StepBase):
     def __init__(self):
         super().__init__(locals())
 
-    @StepBase._tf_function_decorator
+    @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
         image_tensor = tf.image.grayscale_to_rgb(image_tensor)
         image_grayscale_tensor = correct_tf_image_shape(image_tensor)
@@ -117,7 +112,9 @@ class TestSingleStep(unittest.TestCase):
         """
         for original_data, processed_data in zip(original_dataset, processed_dataset):
             self.assertEqual(processed_data[1], original_data[1], 'Targets are not equal.')  
-            self.assertEqual(processed_data[0].shape[:2], original_data[0].shape[:2], 'heights and/or widths are not equal.') 
+            processed_data_shape = tuple(processed_data[0].shape[:2].as_list())
+            original_data_shape = tuple(original_data[0].shape[:2].as_list())
+            self.assertEqual(processed_data_shape, original_data_shape, 'heights and/or widths are not equal.') 
             self.assertEqual(color_channel_expected, processed_data[0].shape[2], 'Color channels are not equal.')     
 
     def test_arguments_datatype(self):

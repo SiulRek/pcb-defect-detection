@@ -20,7 +20,7 @@ class TruncatedThresholder(StepBase):
         """
         super().__init__(locals())
 
-    @StepBase._py_function_decorator
+    @StepBase._nparray_pyfunc_wrapper
     def process_step(self, image_nparray):
         
         def apply_truncated_threshold(np_array):

@@ -1,3 +1,8 @@
+#TODO update according to changes in decorator.
+"""
+This module contains a thorough test suite for validating the StepBase class in the image preprocessing module. It includes tests for both TensorFlow (TfTestStep) and Python (PyTestStep) image preprocessing steps to ensure proper initialization, functionality, and pipeline compatibility. The tests cover a wide range of topics, including image shape transformation, custom object equality logic, and proper JSON representation. The module also tests the efficacy of decorators (_tensor_pyfunc_wrapper and _nparray_pyfunc_wrapper) in processing image datasets. These tests are critical for ensuring the integrity and dependability of the pipeline's image preprocessing steps.
+"""
+
 import os
 import unittest
 
@@ -8,6 +13,7 @@ from source.load_raw_data.kaggle_dataset import load_tf_record
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 from source.image_preprocessing.preprocessing_steps.step_utils import correct_tf_image_shape
 from source.utils import TestResultLogger
+
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
 OUTPUT_DIR = os.path.join(ROOT_DIR, r'source/image_preprocessing/tests/outputs')
@@ -22,7 +28,7 @@ class TfTestStep(StepBase):
     def __init__(self, param1=10 , param2=(10,10), param3=True):
         super().__init__(locals())
 
-    @StepBase._tf_function_decorator
+    @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
         image_grayscale_tensor = tf.image.rgb_to_grayscale(image_tensor)
         image_grayscale_tensor = correct_tf_image_shape(image_grayscale_tensor)
@@ -36,7 +42,7 @@ class PyTestStep(StepBase):
     def __init__(self, param1=10 , param2=(10,10), param3=True):
         super().__init__(locals())
 
-    @StepBase._py_function_decorator
+    @StepBase._nparray_pyfunc_wrapper
     def process_step(self, image_nparray):
         blurred_image = cv2.GaussianBlur(image_nparray, ksize=(5,5), sigmaX=2)  # Randomly choosen action.
         blurred_image_tensor = tf.convert_to_tensor(blurred_image, dtype=tf.uint8)
@@ -95,12 +101,12 @@ class TestStepBase(unittest.TestCase):
         json_repr_expected = self._remove_new_lines_and_spaces(json_repr_expected)
         self.assertEqual(json_repr_output,json_repr_expected)
 
-    def test_tf_function_decorator(self):
+    def test_tensor_pyfunc_wrapper(self):
         tf_dataset = self.tf_preprocessing_step.process_step(self.image_dataset)
         image_tensor = list(tf_dataset.take(1))[0][0]
         self.assertEqual(image_tensor.shape, [2464, 3056, 1])
 
-    def test_py_function_decorator(self):
+    def test_nparray_pyfunc_wrapper(self):
         tf_dataset = self.py_preprocessing_step.process_step(self.image_dataset)
         image_tensor = list(tf_dataset.take(1))[0][0]
         self.assertEqual(image_tensor.shape, [2464, 3056, 1])

@@ -13,7 +13,7 @@ class GrayscaleToRGB(StepBase):
         """ Initializes the GrayscaleToRGB object that can be integrated in an image preprocessing pipeline."""
         super().__init__(locals())
 
-    @StepBase._tf_function_decorator
+    @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
         if image_tensor.shape[2] == 1:
             processed_image =  image.grayscale_to_rgb(image_tensor)

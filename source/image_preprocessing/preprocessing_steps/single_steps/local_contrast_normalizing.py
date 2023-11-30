@@ -32,7 +32,7 @@ class LocalContrastNormalizer(StepBase):
         super()._set_output_datatypes()
         self._output_datatypes['image'] = tf.float32
     
-    @StepBase._tf_function_decorator
+    @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
        
         image_tensor = tf.cast(image_tensor, self._output_datatypes['image'])

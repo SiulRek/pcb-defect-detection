@@ -18,7 +18,7 @@ class GaussianBlurFilter(StepBase):
         """
         super().__init__(locals())
 
-    @StepBase._py_function_decorator
+    @StepBase._nparray_pyfunc_wrapper
     def process_step(self, image_nparray):
         k = self.params['kernel_size']
         sigma = self.params['sigma']

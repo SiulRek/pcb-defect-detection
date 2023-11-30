@@ -22,7 +22,7 @@ class BilateralFilter(StepBase):
         """
         super().__init__(locals())
 
-    @StepBase._py_function_decorator
+    @StepBase._nparray_pyfunc_wrapper
     def process_step(self, image_nparray):
         blurred_image = cv2.bilateralFilter(
             src=image_nparray,

@@ -33,7 +33,7 @@ class RGBToGrayscale(StepBase):
     def __init__(self):
         super().__init__(locals())
 
-    @StepBase._tf_function_decorator
+    @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
         image_grayscale_tensor = tf.image.rgb_to_grayscale(image_tensor)
         image_grayscale_tensor = correct_tf_image_shape(image_grayscale_tensor)
@@ -47,7 +47,7 @@ class GrayscaleToRGB(StepBase):
     def __init__(self):
         super().__init__(locals())
 
-    @StepBase._tf_function_decorator
+    @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
         image_tensor = tf.image.grayscale_to_rgb(image_tensor)
         image_grayscale_tensor = correct_tf_image_shape(image_tensor)

@@ -17,7 +17,7 @@ class MedianBlurFilter(StepBase):
         """
         super().__init__(locals())
 
-    @StepBase._py_function_decorator
+    @StepBase._nparray_pyfunc_wrapper
     def process_step(self, image_nparray):
         ksize = self.params['kernel_size'] 
         blurred_image = cv2.medianBlur(image_nparray, ksize)

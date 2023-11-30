@@ -13,7 +13,7 @@ class OstuThresholder(StepBase):
         """ Initializes the OstuThresholder object that can be integrated in an image preprocessing pipeline."""
         super().__init__(locals())
 
-    @StepBase._py_function_decorator
+    @StepBase._nparray_pyfunc_wrapper
     def process_step(self, image_nparray):
         
         if image_nparray.shape[2] == 1:

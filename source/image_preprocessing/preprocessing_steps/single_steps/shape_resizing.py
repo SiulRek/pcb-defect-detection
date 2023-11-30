@@ -36,7 +36,7 @@ class ShapeResizer(StepBase):
         if resize_method not in self.resize_methods:
             raise ValueError(f"Resize method '{resize_method}' is not supported. Choose from {list(self.resize_methods.keys())}.")
 
-    @StepBase._tf_function_decorator
+    @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
         method = self.resize_methods[self.params['resize_method']]
         resized_image = tf.image.resize(image_tensor, self.params['desired_shape'], method=method)

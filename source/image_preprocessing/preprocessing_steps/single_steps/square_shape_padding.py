@@ -15,7 +15,7 @@ class SquareShapePadder(StepBase):
         """
         super().__init__(locals())
 
-    @StepBase._tf_function_decorator
+    @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
         shape = tf.shape(image_tensor)
         height, width = shape[0], shape[1]

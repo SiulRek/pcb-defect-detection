@@ -13,7 +13,7 @@ class StepBase(ABC):
 
     Child classes should implement the `process_step` method according to their specific processing requirements and
     specify the value of the class attributes: `arguments_datatype` and `name`.
-    Decorators `_tf_function_decorator` and `_py_function_decorator` are provided for flexibility in implementing 
+    Decorators `_tensor_pyfunc_wrapper` and `_nparray_pyfunc_wrapper` are provided for flexibility in implementing 
     TensorFlow and Python functions, respectively.
 
     Public Class Attribute (read-ony):
@@ -38,7 +38,7 @@ class StepBase(ABC):
             def __init__(self, **processing_step_specific_args):
                 super().__init__(locals())
 
-            @StepBase._py_function_decorator # or @StepBase._tf_function_decorator depending on use case.
+            @StepBase._nparray_pyfunc_wrapper # or @StepBase._tensor_pyfunc_wrapper depending on use case.
             def process_step(self, image_tensor):
                 # TODO
                 image_tensor_processed = ...
@@ -107,7 +107,7 @@ class StepBase(ABC):
         return json_string
     
     @staticmethod
-    def _tf_function_decorator(func):
+    def _tensor_pyfunc_wrapper(func):
         """ 
         A decorator for mapping TensorFlow tensor-based functions onto a dataset using tf.py_function.
         This decorator is designed for preprocessing steps implemented as Python functions,
@@ -130,7 +130,7 @@ class StepBase(ABC):
         return dataset_map_function
 
     @staticmethod
-    def _py_function_decorator(func):
+    def _nparray_pyfunc_wrapper(func):
         """ 
         A decorator for mapping Python functions (processing NumPy arrays) onto a TensorFlow dataset using tf.py_function.
         This decorator is useful for preprocessing steps implemented in Python,

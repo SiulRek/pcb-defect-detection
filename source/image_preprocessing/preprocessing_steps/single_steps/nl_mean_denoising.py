@@ -20,7 +20,7 @@ class NLMeanDenoiser(StepBase):
         """
         super().__init__(locals())
 
-    @StepBase._py_function_decorator
+    @StepBase._nparray_pyfunc_wrapper
     def process_step(self, image_nparray):
         denoised_image = cv2.fastNlMeansDenoising(
                 src=image_nparray,

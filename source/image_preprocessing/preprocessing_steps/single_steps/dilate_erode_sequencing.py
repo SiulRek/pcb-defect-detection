@@ -68,7 +68,7 @@ class DilateErodeSequencer(StepBase):
         """
         return 'e' if random.random() < erosion_probability else 'd'
 
-    @StepBase._py_function_decorator
+    @StepBase._nparray_pyfunc_wrapper
     def process_step(self, image_nparray):
         """
         Applies the preprocessing steps to the given image.

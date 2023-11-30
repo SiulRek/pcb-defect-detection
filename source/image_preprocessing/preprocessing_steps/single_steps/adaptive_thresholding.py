@@ -13,7 +13,7 @@ class AdaptiveThresholder(StepBase):
         """ Initializes the AdaptiveThresholder object that can be integrated in an image preprocessing pipeline."""
         super().__init__(locals())
 
-    @StepBase._py_function_decorator
+    @StepBase._nparray_pyfunc_wrapper
     def process_step(self, image_nparray):
         
         def apply_adaptive_threshold(np_array):

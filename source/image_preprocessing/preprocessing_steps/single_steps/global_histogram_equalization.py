@@ -12,7 +12,7 @@ class GlobalHistogramEqualizer(StepBase):
         """ Initializes the GlobalHistogramEqualizer object that can be integrated in an image preprocessing pipeline."""
         super().__init__(locals())
 
-    @StepBase._py_function_decorator
+    @StepBase._nparray_pyfunc_wrapper
     def process_step(self, image_nparray):
         channels = cv2.split(image_nparray)
         eq_channels = [cv2.equalizeHist(ch) for ch in channels]  
