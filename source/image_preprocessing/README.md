@@ -26,6 +26,11 @@ pipeline = [
 
 # Set pipeline
 preprocessor.set_pipe(pipeline)
-
+ 
 # Process a dataset
 processed_dataset = preprocessor.process(image_dataset)
+```
+
+## Interactive Demonstration
+For a hands-on experience and insights into how each preprocessing step affects PCB images, check out the interactive Jupyter notebook: [image_preprocessor_documentation.ipynb](./notebooks/image_preprocessor_documentation.ipynb)
+
