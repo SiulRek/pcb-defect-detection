@@ -10,3 +10,4 @@ batch_scripts/
 source/image_preprocessing/tests/outputs/
 source/utils/test_result_logger.py
 **/test_results.log
+**/TODO.txt
