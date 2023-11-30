@@ -155,6 +155,6 @@ class StepBase(ABC):
         return py_function_dataset_map
 
     @abstractmethod    
-    def process_step(self, tf_image, tf_target):
+    def process_step(self, image_tensor, tf_target):
         # Child class must implement this method.
         pass

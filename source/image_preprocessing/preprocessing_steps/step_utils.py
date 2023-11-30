@@ -1,27 +1,27 @@
 import tensorflow as tf
 
 
-def correct_image_tensor_shape(tf_image):
+def correct_image_tensor_shape(image_tensor):
     """
     Corrects the shape of a TensorFlow image tensor based on the inferred dimensions.
     
     Parameters:
-    - tf_image (tf.Tensor): The input image tensor.
+    - image_tensor (tf.Tensor): The input image tensor.
     
     Returns:
     - tf.Tensor: A reshaped tensor based on inferred dimensions.
     """
     
-    dims = tf.shape(tf_image)
+    dims = tf.shape(image_tensor)
     height = dims[0]
     width = dims[1]
 
     # Check if the image is grayscale (2D) and if so, reshape it to 3D with 1 channel.
     if len(dims) == 2:
-        reshaped_image = tf.reshape(tf_image, [height, width, 1])
+        reshaped_image = tf.reshape(image_tensor, [height, width, 1])
     else:
         channel_num = dims[2]
-        reshaped_image = tf.reshape(tf_image, [height, width, channel_num])
+        reshaped_image = tf.reshape(image_tensor, [height, width, channel_num])
     
     return reshaped_image   
 
