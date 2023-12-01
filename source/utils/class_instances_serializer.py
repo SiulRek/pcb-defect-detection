@@ -34,7 +34,7 @@ class ClassInstancesSerializer:
         allowing for randomization of arguments.
 
     Conventions:
-        - 'configs' refers to a dictionary with class names as keys and instance initialization arguments as values.
+        - 'configurations' refers to a dictionary with class names as keys and instance initialization arguments as values.
         - 'params' attribute in class instances and 'arguments_datatype' in classes are essential for serialization and deserialization.
     
     Note: 
@@ -104,26 +104,26 @@ class ClassInstancesSerializer:
         else:
             raise TypeError(f"Object with value '{obj} cannot not be serialized to JSON format.")
 
-    def _add_instance_to_configs(self, instance, configs):
+    def _add_instance_to_configurations(self, instance, configurations):
         """
-        Adds an instance's configuration to the configs dictionary.
+        Adds an instance's configuration to the configurations dictionary.
 
         Args:
             instance (object): The class instance to add.
-            configs (dict): The dictionary to which the instance's config will be added.
+            configurations (dict): The dictionary to which the instance's config will be added.
 
         Returns:
             dict: Updated class instance configurations with the new instance's config added.
         """
         for class_name, mapped_class in self.instance_mapping.items():
             if isinstance(instance, mapped_class):
-                class_name = self._generate_unique_key_name(class_name, configs)
+                class_name = self._generate_unique_key_name(class_name, configurations)
                 if not hasattr(instance, 'params'):
                     raise AttributeError(f"Mapped class: '{mapped_class}' does not have the attribute 'params'.")
                 if not isinstance(instance.params, dict):
                     raise AttributeError(f"Mapped class: '{mapped_class}' attribute 'params' is not of type dict.")
-                configs[class_name] = instance.params
-                return configs
+                configurations[class_name] = instance.params
+                return configurations
         raise KeyError(f"Instance '{instance}' is not a value in 'instance_mapping' dict.")
     
     def _generate_unique_key_name(self, current_key, dictionary):        
@@ -155,21 +155,21 @@ class ClassInstancesSerializer:
         """
         return match.group().replace('\n', '').replace(' ', '')    
     
-    def _save_configs_to_json(self, configs, json_path): 
+    def _save_configurations_to_json(self, configurations, json_path): 
         """
         Saves configurations of the class instances to a JSON file after serializing and formatting.
 
         Args:
-            configs (dict): Dictionary containing the class instance configuration.
+            configurations (dict): Dictionary containing the class instance configuration.
             json_path (str): The file path where the JSON will be saved.
         """
 
         self._verify_json_path(json_path)
         json_data = {}
-        for class_name in configs.keys():
+        for class_name in configurations.keys():
 
             converted_params = {}
-            for key, value in configs[class_name].items():
+            for key, value in configurations[class_name].items():
                 converted_params[key] = [self._serialize_to_json_value(value)] # Square Brackets required as parameter ranges are expected instead of values.
         
             unique_name = self._generate_unique_key_name(class_name, json_data)   
@@ -191,11 +191,11 @@ class ClassInstancesSerializer:
             instance_list (list): A list of class instances to serialize.
             json_path (str): The file path where the JSON will be saved.
         """
-        configs = {}
+        configurations = {}
         for instance in instance_list:
-            configs = self._add_instance_to_configs(instance, configs) 
+            configurations = self._add_instance_to_configurations(instance, configurations) 
         
-        self._save_configs_to_json(configs, json_path)
+        self._save_configurations_to_json(configurations, json_path)
 
     def _deserialize_json_params(self, json_params):
 
