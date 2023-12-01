@@ -22,7 +22,7 @@ class TestRGBToGrayscale(TestSingleStep):
     compared to general steps, due to the channel conversion. The `TestSingleStep` class focuses on ensuring the correct 
     functioning of these steps, both in isolation and when integrated into a pipeline.
     """
-    params = {}
+    parameters = {}
     TestStep = RGBToGrayscale
     process_grayscale_only = False
 
@@ -53,7 +53,7 @@ class TestGrayscaleToRGB(TestSingleStep):
         is optional and can be enabled through the `ENABLE_VISUAL_INSPECTION` flag.
     
     """
-    params = {}
+    parameters = {}
     TestStep = GrayscaleToRGB
     process_grayscale_only = False
     

@@ -31,7 +31,7 @@ class SquareShapePadder(StepBase):
             pad_left = 0
             pad_right = 0
 
-        tf_padded_img = tf.pad(image_tensor, [[pad_top, pad_bottom], [pad_left, pad_right], [0, 0]], constant_values=self.params['padding_pixel_value'])
+        tf_padded_img = tf.pad(image_tensor, [[pad_top, pad_bottom], [pad_left, pad_right], [0, 0]], constant_values=self.parameters['padding_pixel_value'])
 
         return tf_padded_img
 

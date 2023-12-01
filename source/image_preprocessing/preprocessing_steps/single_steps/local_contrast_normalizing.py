@@ -43,10 +43,10 @@ class LocalContrastNormalizer(StepBase):
 
         image_lcn = tf.nn.local_response_normalization(
             image_tensor,
-            depth_radius=self.params['depth_radius'],
-            bias=self.params['bias'],
-            alpha=self.params['alpha'],
-            beta=self.params['beta']
+            depth_radius=self.parameters['depth_radius'],
+            bias=self.parameters['bias'],
+            alpha=self.parameters['alpha'],
+            beta=self.parameters['beta']
         )
 
         # Remove the batch dimension if it was added earlier

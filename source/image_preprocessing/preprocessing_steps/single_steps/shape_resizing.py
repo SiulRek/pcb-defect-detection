@@ -38,8 +38,8 @@ class ShapeResizer(StepBase):
 
     @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
-        method = self.resize_methods[self.params['resize_method']]
-        resized_image = tf.image.resize(image_tensor, self.params['desired_shape'], method=method)
+        method = self.resize_methods[self.parameters['resize_method']]
+        resized_image = tf.image.resize(image_tensor, self.parameters['desired_shape'], method=method)
         return resized_image
 
 if __name__ == '__main__':

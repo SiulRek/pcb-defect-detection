@@ -15,38 +15,38 @@ class MockClass1:
     
     arguments_datatype = {'param1': str, 'param2': int, 'param3': {'key1': int, 'key2':(float, bool)}}
     def __init__(self, param1, param3, param2=20):
-        self.params = {'param1': param1, 'param2': param2, 'param3': param3}
+        self.parameters = {'param1': param1, 'param2': param2, 'param3': param3}
     
     def __eq__(self, obj):
-        return self.params == obj.params
+        return self.parameters == obj.parameters
     
     
 class MockClass2:
     
     arguments_datatype = {'param1': str, 'param2': int}
     def __init__(self, param1, param2=20):
-        self.params = {'param1': param1, 'param2': param2}
+        self.parameters = {'param1': param1, 'param2': param2}
     
     def __eq__(self, obj):
-        return self.params == obj.params
+        return self.parameters == obj.parameters
 
 
 class MockClassWithoutArgsSpec:
     
     def __init__(self, param1 = 3):
-        self.params = {'param1': param1}
+        self.parameters = {'param1': param1}
 
     def __eq__(self, obj):
-        return self.params == obj.params
+        return self.parameters == obj.parameters
 
 
-class MockClassWithoutParamsAttr: pass
+class MockClassWithoutparametersAttr: pass
 
 
-class MockClassInvalidParamsAttr:
+class MockClassInvalidparametersAttr:
 
     def __init__(self, param1 = 3):
-        self.params = param1
+        self.parameters = param1
 
 
 class TestClassInstancesSerializer(unittest.TestCase):
@@ -108,7 +108,7 @@ class TestClassInstancesSerializer(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.serializer._serialize_to_json_value(CustomObject())
 
-    def test_deserialize_json_params_1(self):
+    def test_deserialize_json_parameters_1(self):
         source = {
             "number_str": ["123"],
             "list_of_int": [[1, 2, 3]],
@@ -126,22 +126,22 @@ class TestClassInstancesSerializer(unittest.TestCase):
             "tuple_of_mixed": ('30','',['30',10])
         }
 
-        output = self.serializer._deserialize_json_params(source)
+        output = self.serializer._deserialize_json_parameters(source)
         self.assertEqual(output, expected)
         
-    def test_deserialize_json_params_2(self):
+    def test_deserialize_json_parameters_2(self):
         source = {
             "num_1": {'distribution': 'uniform', 'low': 2, 'high': 10},
             "num_2": {'distribution': 'uniform', 'low': 0, 'high': 5},
             "num_3" : {'distribution': 'uniform', 'low': -10, 'high': 2}
         }
 
-        output = self.serializer._deserialize_json_params(source)
+        output = self.serializer._deserialize_json_parameters(source)
         self.assertTrue(2 <= output['num_1'] <= 10)
         self.assertTrue(0 <= output['num_2'] <= 5)
         self.assertTrue(-10 <= output['num_3'] <= 2)
 
-    def test_deserialize_json_params_3(self):
+    def test_deserialize_json_parameters_3(self):
         source = {
             "param_1": '[8]*2 + [10]*1',
             "param_2": '[1]*3 + [4]*2 + [True] + ["String"]',
@@ -153,7 +153,7 @@ class TestClassInstancesSerializer(unittest.TestCase):
             "param_3" : ['',"World", "True","World", "True",["World", "True"], ["World", "True"]]
         }
 
-        output = self.serializer._deserialize_json_params(source)
+        output = self.serializer._deserialize_json_parameters(source)
         self.assertIn(output['param_1'], expected['param_1'])
         self.assertIn(output['param_2'], expected['param_2'])
         self.assertIn(output['param_3'], expected['param_3'])
@@ -182,20 +182,20 @@ class TestClassInstancesSerializer(unittest.TestCase):
     
     def test_load_from_json(self):
         
-        mock_class_params_1 = {'param1': ['tschuess','hallo'], 'param2': [20,30,40]}     
-        mock_class_params_2 = {'param1': ['servus', 'ciao'], 'param2': {'distribution': 'uniform', 'low': 1, 'high':10}}   
+        mock_class_parameters_1 = {'param1': ['tschuess','hallo'], 'param2': [20,30,40]}     
+        mock_class_parameters_2 = {'param1': ['servus', 'ciao'], 'param2': {'distribution': 'uniform', 'low': 1, 'high':10}}   
         temp_key = 'MockClass2' + ClassInstancesSerializer.KEY_SEPARATOR + '2'              # As two keys of the same name are not allowed.
-        json_data = {'MockClass2': mock_class_params_1, temp_key:mock_class_params_2}
+        json_data = {'MockClass2': mock_class_parameters_1, temp_key:mock_class_parameters_2}
         
         with open(self.json_path, 'w') as file:
             json.dump(json_data, file)
         loaded_instance_list = self.serializer.generate_instance_list_from_json(self.json_path)
         
-        self.assertIn(loaded_instance_list[0].params['param1'], mock_class_params_1['param1'])
-        self.assertIn(loaded_instance_list[0].params['param2'], mock_class_params_1['param2'])
-        self.assertIn(loaded_instance_list[1].params['param1'], mock_class_params_2['param1'])
-        self.assertTrue(isinstance(loaded_instance_list[1].params['param2'], int))
-        self.assertTrue(1 <= loaded_instance_list[1].params['param2'] <= 10)
+        self.assertIn(loaded_instance_list[0].parameters['param1'], mock_class_parameters_1['param1'])
+        self.assertIn(loaded_instance_list[0].parameters['param2'], mock_class_parameters_1['param2'])
+        self.assertIn(loaded_instance_list[1].parameters['param1'], mock_class_parameters_2['param1'])
+        self.assertTrue(isinstance(loaded_instance_list[1].parameters['param2'], int))
+        self.assertTrue(1 <= loaded_instance_list[1].parameters['param2'] <= 10)
 
     def test_save_instance_list_to_json(self):
         self.serializer.save_instance_list_to_json(self.instance_list, self.json_path)
@@ -208,24 +208,24 @@ class TestClassInstancesSerializer(unittest.TestCase):
             self.serializer.save_instance_list_to_json(self.instance_list, self.json_path) 
     
     def test_instanciation_with_default_from_json(self):
-        mock_class_params_1 = {'param1': ['tschuess']}     # 'param2' is not specified in JSON, initialization to default is expected.
-        mock_class_params_2 = {'param1': ['servus']}   
+        mock_class_parameters_1 = {'param1': ['tschuess']}     # 'param2' is not specified in JSON, initialization to default is expected.
+        mock_class_parameters_2 = {'param1': ['servus']}   
         temp_key = 'MockClass2' + ClassInstancesSerializer.KEY_SEPARATOR + '2'              # As two keys of the same name are not allowed.
-        json_data = {'MockClass2': mock_class_params_1, temp_key:mock_class_params_2}
+        json_data = {'MockClass2': mock_class_parameters_1, temp_key:mock_class_parameters_2}
         
         with open(self.json_path, 'w') as file:
             json.dump(json_data, file)
         loaded_instance_list = self.serializer.generate_instance_list_from_json(self.json_path)
         
-        self.assertIn(loaded_instance_list[0].params['param1'], mock_class_params_1['param1'])
-        self.assertIn(loaded_instance_list[1].params['param1'], mock_class_params_2['param1'])
-        self.assertTrue(isinstance(loaded_instance_list[1].params['param2'], int))
+        self.assertIn(loaded_instance_list[0].parameters['param1'], mock_class_parameters_1['param1'])
+        self.assertIn(loaded_instance_list[1].parameters['param1'], mock_class_parameters_2['param1'])
+        self.assertTrue(isinstance(loaded_instance_list[1].parameters['param2'], int))
 
     def test_invalid_parameter_in_json(self):
-        mock_class_params_1 = {'param1': ['tschuess'], 'param2': [20], 'invalid_param': 10}     
-        mock_class_params_2 = {'param1': ['servus'], 'param2': [30]}   
+        mock_class_parameters_1 = {'param1': ['tschuess'], 'param2': [20], 'invalid_param': 10}     
+        mock_class_parameters_2 = {'param1': ['servus'], 'param2': [30]}   
         temp_key = 'MockClass2' + ClassInstancesSerializer.KEY_SEPARATOR + '2'              # As two keys of the same name are not allowed.
-        json_data = {'MockClass2': mock_class_params_1, temp_key:mock_class_params_2}
+        json_data = {'MockClass2': mock_class_parameters_1, temp_key:mock_class_parameters_2}
         
         with open(self.json_path, 'w') as file:
             json.dump(json_data, file)
@@ -239,15 +239,15 @@ class TestClassInstancesSerializer(unittest.TestCase):
         loaded_instance_list = self.serializer.generate_instance_list_from_json(self.json_path)
         self.assertEqual(loaded_instance_list, instance_list)       
 
-    def test_missing_attribute_params(self):
-        instance_list = [MockClassWithoutParamsAttr()]
-        self.serializer.instance_mapping = {'MockClassWithoutParamsAttr': MockClassWithoutParamsAttr}   
+    def test_missing_attribute_parameters(self):
+        instance_list = [MockClassWithoutparametersAttr()]
+        self.serializer.instance_mapping = {'MockClassWithoutparametersAttr': MockClassWithoutparametersAttr}   
         with self.assertRaises(AttributeError):
             self.serializer.save_instance_list_to_json(instance_list, self.json_path)
     
-    def test_invalid_attribute_params(self): 
-        instance_list = [MockClassInvalidParamsAttr(param1=1)]
-        self.serializer.instance_mapping = {'MockClassInvalidParamsAttr': MockClassInvalidParamsAttr}   
+    def test_invalid_attribute_parameters(self): 
+        instance_list = [MockClassInvalidparametersAttr(param1=1)]
+        self.serializer.instance_mapping = {'MockClassInvalidparametersAttr': MockClassInvalidparametersAttr}   
         with self.assertRaises(AttributeError):
             self.serializer.save_instance_list_to_json(instance_list, self.json_path)
 

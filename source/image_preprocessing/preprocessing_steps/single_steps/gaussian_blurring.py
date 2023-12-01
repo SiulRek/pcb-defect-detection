@@ -20,8 +20,8 @@ class GaussianBlurFilter(StepBase):
 
     @StepBase._nparray_pyfunc_wrapper
     def process_step(self, image_nparray):
-        k = self.params['kernel_size']
-        sigma = self.params['sigma']
+        k = self.parameters['kernel_size']
+        sigma = self.parameters['sigma']
         blurred_image= cv2.GaussianBlur(image_nparray, k, sigma)
         return blurred_image
     

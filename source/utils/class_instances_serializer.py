@@ -35,10 +35,10 @@ class ClassInstancesSerializer:
 
     Conventions:
         - 'configurations' refers to a dictionary with class names as keys and instance initialization arguments as values.
-        - 'params' attribute in class instances and 'arguments_datatype' in classes are essential for serialization and deserialization.
+        - 'parameters' attribute in class instances and 'arguments_datatype' in classes are essential for serialization and deserialization.
     
     Note: 
-    This class is dependent on specific attributes ('params' and optionally 'arguments_datatype') in class instances for managing 
+    This class is dependent on specific attributes ('parameters' and optionally 'arguments_datatype') in class instances for managing 
     serialization and deserialization. The 'instance_mapping' dictionary is essential for mapping class names to actual classes.
     """
 
@@ -118,11 +118,11 @@ class ClassInstancesSerializer:
         for class_name, mapped_class in self.instance_mapping.items():
             if isinstance(instance, mapped_class):
                 class_name = self._generate_unique_key_name(class_name, configurations)
-                if not hasattr(instance, 'params'):
-                    raise AttributeError(f"Mapped class: '{mapped_class}' does not have the attribute 'params'.")
-                if not isinstance(instance.params, dict):
-                    raise AttributeError(f"Mapped class: '{mapped_class}' attribute 'params' is not of type dict.")
-                configurations[class_name] = instance.params
+                if not hasattr(instance, 'parameters'):
+                    raise AttributeError(f"Mapped class: '{mapped_class}' does not have the attribute 'parameters'.")
+                if not isinstance(instance.parameters, dict):
+                    raise AttributeError(f"Mapped class: '{mapped_class}' attribute 'parameters' is not of type dict.")
+                configurations[class_name] = instance.parameters
                 return configurations
         raise KeyError(f"Instance '{instance}' is not a value in 'instance_mapping' dict.")
     
@@ -168,12 +168,12 @@ class ClassInstancesSerializer:
         json_data = {}
         for class_name in configurations.keys():
 
-            converted_params = {}
+            converted_parameters = {}
             for key, value in configurations[class_name].items():
-                converted_params[key] = [self._serialize_to_json_value(value)] # Square Brackets required as parameter ranges are expected instead of values.
+                converted_parameters[key] = [self._serialize_to_json_value(value)] # Square Brackets required as parameter ranges are expected instead of values.
         
             unique_name = self._generate_unique_key_name(class_name, json_data)   
-            json_data[unique_name] = converted_params
+            json_data[unique_name] = converted_parameters
 
         # Write 'json_data' to JSON file in a readable way.
         json_string = json.dumps(json_data, indent=4)
@@ -197,22 +197,22 @@ class ClassInstancesSerializer:
         
         self._save_configurations_to_json(configurations, json_path)
 
-    def _deserialize_json_params(self, json_params):
+    def _deserialize_json_parameters(self, json_parameters):
 
-        deserialized_params = {}
-        for param_name, param_val in json_params.items():
+        deserialized_parameters = {}
+        for param_name, param_val in json_parameters.items():
             # If param_val is list it indicates a range of parameter values, else if a dict it indicates a distribution.
             if isinstance(param_val, list):
-                deserialized_params[param_name] = random.choice(param_val)
+                deserialized_parameters[param_name] = random.choice(param_val)
             elif isinstance(param_val, dict):
-                deserialized_params[param_name] = get_sample_from_distribution(param_val)
+                deserialized_parameters[param_name] = get_sample_from_distribution(param_val)
             elif isinstance(param_val, str):
                 param_range = parse_and_repeat(param_val)
-                deserialized_params[param_name] = random.choice(param_range)
+                deserialized_parameters[param_name] = random.choice(param_range)
             else:
                 raise ValueError(f"The value of JSON parameter '{param_name}' must be of type dict, list or str not {type(param_val)}.")
 
-        return deserialized_params
+        return deserialized_parameters
 
     def _extract_arguments(self, json_data, class_name, mapped_class):
         """    Extracts and converts initialization parameters for a class instance from JSON data.
@@ -226,8 +226,8 @@ class ClassInstancesSerializer:
             dict: A dictionary of deserialized and type-converted initialization parameters for the class.
         """
 
-        json_params = json_data.get(class_name)
-        arguments = self._deserialize_json_params(json_params)
+        json_parameters = json_data.get(class_name)
+        arguments = self._deserialize_json_parameters(json_parameters)
 
         if hasattr(mapped_class, 'arguments_datatype'):
 

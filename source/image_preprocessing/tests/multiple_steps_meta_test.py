@@ -15,10 +15,10 @@ class TestTestFramework(unittest.TestCase):
         self.assertEqual(TestClass.__name__, 'TestAdaptiveHistogramEqualizer')
         self.assertTrue(issubclass(TestClass, TestSingleStep))
         self.assertTrue(hasattr(TestClass, 'TestStep'))
-        self.assertTrue(hasattr(TestClass, 'params'))
+        self.assertTrue(hasattr(TestClass, 'parameters'))
         test_instance = TestClass('test_load_from_json')  # 'test_load_from_json' can be any existing test method name
         self.assertEqual(test_instance.TestStep, ExampleStep)
-        self.assertEqual(test_instance.params,{'clip_limit': 1.0, 'tile_gridsize': (5, 5)})
+        self.assertEqual(test_instance.parameters,{'clip_limit': 1.0, 'tile_gridsize': (5, 5)})
 
 
 class TestConditionalSkipping(unittest.TestCase):

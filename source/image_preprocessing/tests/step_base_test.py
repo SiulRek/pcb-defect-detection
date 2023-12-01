@@ -76,7 +76,7 @@ class TestStepBase(unittest.TestCase):
         
     def test_initialization(self):
         self.assertEqual(self.tf_preprocessing_step.name, "Test_Step")
-        self.assertEqual(self.tf_preprocessing_step.params, {'param1': 10, 'param2': (10,10), 'param3': True})
+        self.assertEqual(self.tf_preprocessing_step.parameters, {'param1': 10, 'param2': (10,10), 'param3': True})
 
     def test_correct_shape_gray(self):
         image_tensor = list(TestStepBase.image_dataset.take(1))[0][0]

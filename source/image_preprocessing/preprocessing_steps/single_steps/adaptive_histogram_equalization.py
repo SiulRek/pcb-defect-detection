@@ -23,7 +23,7 @@ class AdaptiveHistogramEqualizer(StepBase):
     @StepBase._nparray_pyfunc_wrapper
     def process_step(self, image_nparray):
         channels = cv2.split(image_nparray)
-        clahe = cv2.createCLAHE(clipLimit=self.params['clip_limit'], tileGridSize=self.params['tile_gridsize'])
+        clahe = cv2.createCLAHE(clipLimit=self.parameters['clip_limit'], tileGridSize=self.parameters['tile_gridsize'])
         clahe_channels = [clahe.apply(ch) for ch in channels]
         clahe_image = cv2.merge(clahe_channels)
         return clahe_image

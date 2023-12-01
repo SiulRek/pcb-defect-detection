@@ -19,8 +19,8 @@ class DilationFilter(StepBase):
 
     @StepBase._nparray_pyfunc_wrapper
     def process_step(self, image_nparray):
-        kernel = np.ones((self.params['kernel_size'], self.params['kernel_size']), np.uint8)
-        dilated_image = cv2.dilate(image_nparray, kernel, iterations=self.params['iterations'])
+        kernel = np.ones((self.parameters['kernel_size'], self.parameters['kernel_size']), np.uint8)
+        dilated_image = cv2.dilate(image_nparray, kernel, iterations=self.parameters['iterations'])
         return dilated_image
 
 if __name__ == '__main__':

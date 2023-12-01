@@ -24,9 +24,9 @@ class NLMeanDenoiser(StepBase):
     def process_step(self, image_nparray):
         denoised_image = cv2.fastNlMeansDenoising(
                 src=image_nparray,
-                h=self.params['h'], 
-                templateWindowSize=self.params['template_window_size'], 
-                searchWindowSize=self.params['search_window_size'])
+                h=self.parameters['h'], 
+                templateWindowSize=self.parameters['template_window_size'], 
+                searchWindowSize=self.parameters['search_window_size'])
         return denoised_image
     
 

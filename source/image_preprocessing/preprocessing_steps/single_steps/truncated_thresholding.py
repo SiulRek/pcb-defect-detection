@@ -26,7 +26,7 @@ class TruncatedThresholder(StepBase):
         def apply_truncated_threshold(np_array):
             _, thresholded_np_array = cv2.threshold(
                 src=np_array, 
-                thresh=self.params['thresh'], 
+                thresh=self.parameters['thresh'], 
                 maxval=255, 
                 type=cv2.THRESH_TRUNC
             )    

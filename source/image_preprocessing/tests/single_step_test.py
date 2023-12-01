@@ -75,7 +75,7 @@ class TestSingleStep(unittest.TestCase):
     """
 
     # Class Attributes (overwritten when class is dynamically loaded (eg. multiple_steps_test.py) or costumized (channel_conversion_steps_test.py))
-    params = STEP_PARAMETERS
+    parameters = STEP_PARAMETERS
     TestStep = StepToTest
 
     @classmethod
@@ -97,7 +97,7 @@ class TestSingleStep(unittest.TestCase):
                 
     def setUp(self):
         with open(JSON_TEST_FILE, 'a'): pass
-        self.test_step = self.TestStep(**self.params)
+        self.test_step = self.TestStep(**self.parameters)
 
     def tearDown(self):
         if os.path.exists(JSON_TEST_FILE):
@@ -123,14 +123,14 @@ class TestSingleStep(unittest.TestCase):
         Ensures that the actual parameters match the expected datatypes specified in the class.
         """
 
-        params = self.test_step.params
-        init_params_datatype = self.TestStep.arguments_datatype
+        parameters = self.test_step.parameters
+        init_parameters_datatype = self.TestStep.arguments_datatype
         
-        self.assertEqual(params.keys(), init_params_datatype.keys(), "'init_params_datatype' keys does not match with 'params' attribute.")
+        self.assertEqual(parameters.keys(), init_parameters_datatype.keys(), "'init_parameters_datatype' keys does not match with 'parameters' attribute.")
 
-        for key in params.keys():
-            param_converted = recursive_type_conversion(params[key], init_params_datatype[key]) # When everything goes right, no conversion is done.
-            self.assertEqual(param_converted, params[key], "'init_params_datatype' specification is incorrect.")
+        for key in parameters.keys():
+            param_converted = recursive_type_conversion(parameters[key], init_parameters_datatype[key]) # When everything goes right, no conversion is done.
+            self.assertEqual(param_converted, parameters[key], "'init_parameters_datatype' specification is incorrect.")
     
     def test_mapping_entry_of_step(self):
         """ 

@@ -58,7 +58,7 @@ def create_test_class_for_step(step_class, arguments):
 
     class DynamicTestStep(TestSingleStep):
         TestStep = step_class
-        params = arguments
+        parameters = arguments
 
         if not ENABLE_VISUAL_INSPECTION:
             @skip("Visual inspection not enabled")

@@ -19,7 +19,7 @@ class AverageBlurFilter(StepBase):
 
     @StepBase._nparray_pyfunc_wrapper
     def process_step(self, image_nparray):
-        ksize = self.params['kernel_size'] 
+        ksize = self.parameters['kernel_size'] 
         blurred_image = cv2.blur(image_nparray, ksize)
         return blurred_image
     

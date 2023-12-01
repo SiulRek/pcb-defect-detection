@@ -130,7 +130,7 @@ class ImagePreprocessor:
 
         description = "[\n"
         for step in self.pipeline:
-            step_description = "{}({})".format(step.__class__.__name__, ', '.join(f"{k}={v}" for k, v in step.params.items()))
+            step_description = "{}({})".format(step.__class__.__name__, ', '.join(f"{k}={v}" for k, v in step.parameters.items()))
             description += "    {},\n".format(step_description)
         description = description[:-2] + "\n]"
         return description

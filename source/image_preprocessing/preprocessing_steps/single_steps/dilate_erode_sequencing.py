@@ -30,14 +30,14 @@ class DilateErodeSequencer(StepBase):
 
         sequence = self.generate_sequence(sequence, iterations, erosion_probability)
 
-        params = {
+        parameters = {
             'kernel_size': kernel_size,
             'sequence': sequence,
             'iterations': iterations,
             'erosion_probability': erosion_probability
         }
 
-        super().__init__(params)
+        super().__init__(parameters)
 
     def generate_sequence(self, sequence, iterations, erosion_probability):
         """
@@ -79,14 +79,14 @@ class DilateErodeSequencer(StepBase):
         Returns:
             np.array: The processed image.
         """
-        kernel = np.ones((self.params['kernel_size'], self.params['kernel_size']), np.uint8)
+        kernel = np.ones((self.parameters['kernel_size'], self.parameters['kernel_size']), np.uint8)
         processed_image = image_nparray
 
-        for operation in self.params['sequence']:
+        for operation in self.parameters['sequence']:
             if operation == 'd':
-                processed_image = cv2.dilate(processed_image, kernel, iterations=self.params['iterations'])
+                processed_image = cv2.dilate(processed_image, kernel, iterations=self.parameters['iterations'])
             elif operation == 'e':
-                processed_image = cv2.erode(processed_image, kernel, iterations=self.params['iterations'])
+                processed_image = cv2.erode(processed_image, kernel, iterations=self.parameters['iterations'])
             else:
                 raise ValueError("Invalid operation in sequence. Only 'd' (dilation) and 'e' (erosion) are allowed.")
 

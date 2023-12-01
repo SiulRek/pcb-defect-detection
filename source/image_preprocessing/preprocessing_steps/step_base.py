@@ -21,7 +21,7 @@ class StepBase(ABC):
     - name (str): The base identifier for the preprocessing step.
 
     Public Instance Attribute (read-ony):
-    - params (dict):  A dictionary containing parameters needed for the preprocessing step.
+    - parameters (dict):  A dictionary containing parameters needed for the preprocessing step.
 
     Public Methods:
     - process_step(image: tf.Tensor or np.array) -> tf.Tensor or np.array:
@@ -66,25 +66,25 @@ class StepBase(ABC):
         Args:
             local_vars (dict): A collection of variables provided by the child class instantiation that includes hyperparameter configurations and.
         """
-        self._params = self._extract_params(local_vars)
+        self._parameters = self._extract_parameters(local_vars)
         self._output_datatypes = {'image': None, 'target': None}
         self._set_output_datatypes()
         
     @property
-    def params(self):
-        """The params property is read-only."""
-        return self._params
+    def parameters(self):
+        """The parameters property is read-only."""
+        return self._parameters
     
     def __eq__(self, obj: 'StepBase') -> bool:
-        return self.name.split('__')[0] == obj.name.split('__')[0] and self._params == obj.params
+        return self.name.split('__')[0] == obj.name.split('__')[0] and self._parameters == obj.parameters
         
-    def _extract_params(self, local_vars):
+    def _extract_parameters(self, local_vars):
         """  Extracts parameters needed for the preprocessing step based on local variables. It considers if parameters should be randomized or extracted directly from `local_vars`."""
 
-        excluded_params = ['self', '__class__']
-        initialization_params =  {key: value for key, value in local_vars.items() if key not in excluded_params}
+        excluded_parameters = ['self', '__class__']
+        initialization_parameters =  {key: value for key, value in local_vars.items() if key not in excluded_parameters}
 
-        return initialization_params
+        return initialization_parameters
     
     def _set_output_datatypes(self):
         """ Sets the output datatypes of the step process."""
@@ -95,15 +95,15 @@ class StepBase(ABC):
     def get_step_json_representation(self):
         """Returns strings that corresponds to JSON entry text to be added to a JSON file."""
 
-        # Convert datatype of values of params to match JSON format
-        conv_params = {}
-        for key, value in self._params.items():
+        # Convert datatype of values of parameters to match JSON format
+        conv_parameters = {}
+        for key, value in self._parameters.items():
             if isinstance(value, tuple):
                 value = list(value)
-            conv_params[key] = [value]
+            conv_parameters[key] = [value]
 
-        params_str = ',\n'.join([f'        "{k}": {str(v).replace("True", "true").replace("False", "false")}' for k, v in conv_params.items()])
-        json_string = f'    "{self.name}": {{\n{params_str}\n    }}' 
+        parameters_str = ',\n'.join([f'        "{k}": {str(v).replace("True", "true").replace("False", "false")}' for k, v in conv_parameters.items()])
+        json_string = f'    "{self.name}": {{\n{parameters_str}\n    }}' 
         return json_string
     
     @staticmethod

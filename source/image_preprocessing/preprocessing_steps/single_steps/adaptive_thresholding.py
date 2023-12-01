@@ -21,8 +21,8 @@ class AdaptiveThresholder(StepBase):
                                          255, 
                                          cv2.ADAPTIVE_THRESH_MEAN_C, 
                                          cv2.THRESH_BINARY,
-                                         blockSize=self.params['block_size'], # Block size.
-                                         C=self.params['c']) 
+                                         blockSize=self.parameters['block_size'], # Block size.
+                                         C=self.parameters['c']) 
         
         if image_nparray.shape[2] == 1:
             thresholded_image = apply_adaptive_threshold(image_nparray)

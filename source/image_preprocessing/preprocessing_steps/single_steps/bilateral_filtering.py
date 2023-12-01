@@ -26,9 +26,9 @@ class BilateralFilter(StepBase):
     def process_step(self, image_nparray):
         blurred_image = cv2.bilateralFilter(
             src=image_nparray,
-            d=self.params['diameter'], 
-            sigmaColor=self.params['sigma_color'], 
-            sigmaSpace=self.params['sigma_space'])
+            d=self.parameters['diameter'], 
+            sigmaColor=self.parameters['sigma_color'], 
+            sigmaSpace=self.parameters['sigma_space'])
         return blurred_image
     
 
