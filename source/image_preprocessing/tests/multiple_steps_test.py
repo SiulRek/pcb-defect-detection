@@ -79,7 +79,7 @@ steps_data = [
 ]
 
 
-def load_multiple_step_tests():
+def load_multiple_steps_tests():
     """
 
     Dynamically loads and aggregates individual test suites for multiple image preprocessing steps into a unified test suite.
@@ -103,4 +103,4 @@ def load_multiple_step_tests():
 if __name__ == '__main__':
     """ Main execution block for running the loaded test suite."""
     runner = unittest.TextTestRunner()
-    runner.run(load_multiple_step_tests())
+    runner.run(load_multiple_steps_tests())

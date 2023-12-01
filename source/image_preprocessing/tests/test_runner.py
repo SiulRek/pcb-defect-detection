@@ -1,9 +1,9 @@
 import unittest
 
 from source.image_preprocessing.tests import step_base_test, image_preprocessing_test
-from source.image_preprocessing.tests.channel_conversions_steps_test import load_channel_conversion_tests
-from source.image_preprocessing.tests.multiple_steps_test import load_multiple_step_tests
-from source.image_preprocessing.tests.resize_operations_steps_test import load_resize_operations_tests
+from source.image_preprocessing.tests.channel_conversions_steps_test import load_channel_conversion_steps_tests
+from source.image_preprocessing.tests.multiple_steps_test import load_multiple_steps_tests
+from source.image_preprocessing.tests.resize_operations_steps_test import load_resize_operations_steps_tests
 from source.image_preprocessing.tests.normalization_steps_test import load_normalization_steps_tests
 
 
@@ -21,10 +21,10 @@ def load_tests(test_suite):
         unittest.TestSuite: The test suite populated with a range of tests from different modules.
     """
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(step_base_test))
-    test_suite.addTest(load_multiple_step_tests())
+    test_suite.addTest(load_multiple_steps_tests())
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(image_preprocessing_test))
-    test_suite.addTest(load_channel_conversion_tests())
-    #test_suite.addTest(load_resize_operations_tests()) #TODO Uncomment after the Testing Framework is refactored.
+    test_suite.addTest(load_channel_conversion_steps_tests())
+    #test_suite.addTest(load_resize_operations_steps_tests()) #TODO Uncomment after the Testing Framework is refactored.
     test_suite.addTest(load_normalization_steps_tests())
     return test_suite
 

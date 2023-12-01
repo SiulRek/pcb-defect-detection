@@ -84,7 +84,7 @@ class TestGrayscaleToRGB(TestSingleStep):
             pass        
 
 
-def load_channel_conversion_tests():
+def load_channel_conversion_steps_tests():
     """
     Loads and combines test suites for RGBToGrayscale and GrayscaleToRGB preprocessing steps into a single test suite.
 
@@ -103,4 +103,4 @@ def load_channel_conversion_tests():
 
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()
-    runner.run(load_channel_conversion_tests())
+    runner.run(load_channel_conversion_steps_tests())
