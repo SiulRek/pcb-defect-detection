@@ -27,15 +27,12 @@ class LocalContrastNormalizer(StepBase):
             - This step is ideally applied to images that have already undergone standard normalization. This ensures that the image data is centered and scaled appropriately before local contrast enhancement.
         """
         super().__init__(locals())
-    
-    def _set_output_datatypes(self):
-        super()._set_output_datatypes()
-        self._output_datatypes['image'] = tf.float32
+        self.output_datatypes['image'] = tf.float16
     
     @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
        
-        image_tensor = tf.cast(image_tensor, self._output_datatypes['image'])
+        image_tensor = tf.cast(image_tensor, tf.float16)
 
         # Add a batch dimension to image_tensor if it doesn't have one
         if len(image_tensor.shape) == 3:

@@ -67,8 +67,7 @@ class StepBase(ABC):
             local_vars (dict): A collection of variables provided by the child class instantiation that includes hyperparameter configurations and.
         """
         self._parameters = self._extract_parameters(local_vars)
-        self._output_datatypes = {'image': None, 'target': None}
-        self._set_output_datatypes()
+        self.output_datatypes = {'image': tf.uint8, 'target': tf.int8} # Can be overwritten by child classes
         
     @property
     def parameters(self):
@@ -86,12 +85,6 @@ class StepBase(ABC):
 
         return initialization_parameters
     
-    def _set_output_datatypes(self):
-        """ Sets the output datatypes of the step process."""
-        # Child class can overwrite this method, otherwise defaults to the following:
-        self._output_datatypes['image'] = tf.uint8
-        self._output_datatypes['target'] = tf.int8
-
     def get_step_json_representation(self):
         """Returns strings that corresponds to JSON entry text to be added to a JSON file."""
 
@@ -115,7 +108,7 @@ class StepBase(ABC):
         """
         def tensor_to_py_function_wrapper(self, image_tensor, target_tensor):
             processed_image = func(self, image_tensor)
-            processed_image = tf.convert_to_tensor(processed_image, dtype=self._output_datatypes['image'])
+            processed_image = tf.convert_to_tensor(processed_image, dtype=self.output_datatypes['image'])
             return processed_image, target_tensor
 
         def dataset_map_function(self, image_dataset):
@@ -123,7 +116,7 @@ class StepBase(ABC):
                 lambda img, tgt: tf.py_function(
                     func=lambda i, t: tensor_to_py_function_wrapper(self, i, t),
                     inp=[img, tgt],
-                    Tout=(self._output_datatypes['image'], self._output_datatypes['target'])
+                    Tout=(self.output_datatypes['image'], self.output_datatypes['target'])
                 )
             )
 
@@ -139,7 +132,7 @@ class StepBase(ABC):
         def numpy_to_py_function_wrapper(self, image_tensor, target_tensor):
             image_nparray = image_tensor.numpy().astype('uint8')
             processed_image = func(self, image_nparray)
-            processed_image = tf.convert_to_tensor(processed_image, dtype=self._output_datatypes['image'])
+            processed_image = tf.convert_to_tensor(processed_image, dtype=self.output_datatypes['image'])
             processed_image = correct_image_tensor_shape(processed_image)
             return processed_image, target_tensor
 
@@ -148,7 +141,7 @@ class StepBase(ABC):
                 lambda img, tgt: tf.py_function(
                     func=lambda i, t: numpy_to_py_function_wrapper(self, i, t),
                     inp=[img, tgt],
-                    Tout=(self._output_datatypes['image'], self._output_datatypes['target'])
+                    Tout=(self.output_datatypes['image'], self.output_datatypes['target'])
                 )
             )
 

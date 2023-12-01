@@ -171,7 +171,7 @@ class TestSingleStep(unittest.TestCase):
         processed_dataset = self.test_step.process_step(self.image_dataset)
         processed_images = list(zip(*processed_dataset))[0]
         for image in processed_images:
-            self.assertEqual(image.dtype, self.test_step._output_datatypes['image'])
+            self.assertEqual(image.dtype, self.test_step.output_datatypes['image'])
     
     def test_process_rgb_images(self):
         """ 

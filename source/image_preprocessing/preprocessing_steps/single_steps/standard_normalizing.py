@@ -13,14 +13,11 @@ class StandardNormalizer(StepBase):
     def __init__(self):
         """Initializes the StandardNormalizer object for integration into an image preprocessing pipeline."""
         super().__init__({})
+        self.output_datatypes['image'] = tf.float16
     
-    def _set_output_datatypes(self):
-        super()._set_output_datatypes()
-        self._output_datatypes['image'] = tf.float32
-
     @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
-        image_tensor = tf.cast(image_tensor, self._output_datatypes['image'])
+        image_tensor = tf.cast(image_tensor, self.output_datatypes['image'])
         mean_val = tf.reduce_mean(image_tensor)
         std_val = reduce_std(image_tensor)
         normalized_image = (image_tensor - mean_val) / (std_val + 1e-8)  # Added epsilon to avoid division by zero

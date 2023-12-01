@@ -1,13 +1,13 @@
 """
 This module comprises a suite of tests tailored for evaluating normalization steps within the 
 image preprocessing pipeline. Unlike other preprocessing steps typically using tf.uint8 as the output 
-datatype, normalization steps often use tf.float32. This module addresses the unique testing requirements for 
+datatype, normalization steps often use tf.float16. This module addresses the unique testing requirements for 
 normalization steps, ensuring their correct integration into the pipeline.
 
 Key features include:
 
 Note:
-Helper steps, RGBToGrayscale and GrayscaleToRGB, are modified to support tf.float32, facilitating the assessment of 
+Helper steps, RGBToGrayscale and GrayscaleToRGB, are modified to support tf.float16, facilitating the assessment of 
 normalization steps in diverse scenarios.
 """
 
@@ -71,7 +71,7 @@ def create_test_class_for_step(step_class, arguments):
             Verifies that the RGB images, after processing, have the expected color channel dimensions.
             """
             rgb_to_grayscale_step = RGBToGrayscale()
-            rgb_to_grayscale_step._output_datatypes['image'] = tf.float32
+            rgb_to_grayscale_step.output_datatypes['image'] = tf.float16
             pipeline = [self.test_step, rgb_to_grayscale_step]
             preprocessor = ImagePreprocessor()
             preprocessor.set_pipe(pipeline)
@@ -90,7 +90,7 @@ def create_test_class_for_step(step_class, arguments):
             processed_dataset = preprocessor.process(self.image_dataset)
             self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=1)
             grayscale_to_rgb_step = GrayscaleToRGB()
-            grayscale_to_rgb_step._output_datatypes['image'] = tf.float32
+            grayscale_to_rgb_step.output_datatypes['image'] = tf.float16
             processed_dataset = grayscale_to_rgb_step.process_step(processed_dataset)
             self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=3)
 
