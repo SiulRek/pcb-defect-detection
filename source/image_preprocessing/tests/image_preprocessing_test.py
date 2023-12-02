@@ -1,3 +1,4 @@
+import json
 import os
 import unittest
 from unittest.mock import patch
@@ -242,6 +243,29 @@ class TestStepBase(unittest.TestCase):
         
         processed_dataset = new_preprocessor.process(self.image_dataset)
         self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=1)
+    
+    def test_load_randomized_pipeline(self):
+        mock_class_parameters = {
+            'param1': {'distribution': 'uniform', 'low': 2, 'high': 10}, 
+            'param2':'[(3,3)]*10 + [(5,5)]*10 + [(8,8)]', 
+            'param3': [True, True]
+            }  
+        json_data = {'RGB_to_Grayscale': mock_class_parameters}
+        
+        with open(JSON_TEST_FILE, 'w') as file:
+            json.dump(json_data, file)
+
+        mock_mapping = {'RGB_to_Grayscale': RGBToGrayscale}
+        with patch('source.image_preprocessing.image_preprocessor.STEP_CLASS_MAPPING', mock_mapping):
+            preprocessor = ImagePreprocessor()
+            preprocessor.load_randomized_pipe_from_json(JSON_TEST_FILE)
+            pipeline = preprocessor.pipeline
+
+        self.assertIsInstance(pipeline[0], RGBToGrayscale)
+        self.assertTrue(2 <= pipeline[0].parameters['param1'] <= 10)
+        self.assertIn(pipeline[0].parameters['param2'], [(3,3),(5,5),(8,8)])
+        self.assertTrue(pipeline[0].parameters['param3'])
+        # TODO here
     
     def test_not_raised_step_process_exception_1(self):
         """   Test case for ensuring that the ErrorStep subclass, when processing an image
