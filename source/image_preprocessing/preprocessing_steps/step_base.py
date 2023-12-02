@@ -51,6 +51,8 @@ class StepBase(ABC):
         4. Execute single_step_test.py over this class.
     """
     
+    default_output_datatypes = {'image': tf.uint8, 'target': tf.int8} 
+    # Child Classes have to overwrite this attributes
     arguments_datatype = None   
     name = None
 
@@ -67,7 +69,7 @@ class StepBase(ABC):
             local_vars (dict): A collection of variables provided by the child class instantiation that includes hyperparameter configurations and.
         """
         self._parameters = self._extract_parameters(local_vars)
-        self.output_datatypes = {'image': tf.uint8, 'target': tf.int8} # Can be overwritten by child classes
+        self.output_datatypes = self.default_output_datatypes # Can be overwritten by child classes
         
     @property
     def parameters(self):
