@@ -24,7 +24,7 @@ def load_tests(test_suite):
     test_suite.addTest(load_multiple_steps_tests())
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(image_preprocessing_test))
     test_suite.addTest(load_channel_conversion_steps_tests())
-    #test_suite.addTest(load_resize_operations_steps_tests()) #TODO Uncomment after the Testing Framework is refactored.
+    test_suite.addTest(load_resize_operations_steps_tests()) #TODO Uncomment after the Testing Framework is refactored.
     test_suite.addTest(load_normalization_steps_tests())
     return test_suite
 

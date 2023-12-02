@@ -37,6 +37,7 @@ class ShapeResizer(StepBase):
     def process_step(self, image_tensor):
         method = self.resize_methods[self.parameters['resize_method']]
         resized_image = tf.image.resize(image_tensor, self.parameters['desired_shape'], method=method)
+        resized_image = tf.cast(resized_image, self.output_datatypes['image'])
         return resized_image
 
 if __name__ == '__main__':
