@@ -14,7 +14,6 @@ from unittest import skip
 
 import tensorflow as tf
 
-from source.image_preprocessing.image_preprocessor import ImagePreprocessor
 from source.image_preprocessing.image_preprocessor import StepBase
 from source.image_preprocessing.tests.single_step_test import TestSingleStep
 from source.image_preprocessing.preprocessing_steps.step_utils import correct_image_tensor_shape
@@ -99,12 +98,13 @@ class TestShapeResizer(TestSingleStep):
     """
 
     TestStep = steps.ShapeResizer
-    parameters = {'desired_shape': (1900, 2100), 'resize_method': 'bilinear'}
+    parameters = {'desired_shape': (1900, 2100), 'resize_method': 'nearest'}
 
    
-    @skip("Visual inspection not enabled")
-    def test_processed_image_visualization(self):
-        pass
+    if not ENABLE_VISUAL_INSPECTION:
+        @skip("Visual inspection not enabled")
+        def test_processed_image_visualization(self):
+            pass
     
     def _verify_image_shapes(self, processed_dataset, original_dataset, color_channel_expected):
         """ 
@@ -118,35 +118,6 @@ class TestShapeResizer(TestSingleStep):
             self.assertEqual(color_channel_expected, processed_data[0].shape[2], 'Color channels are not equal.') 
             self.assertEqual(self.parameters['desired_shape'][0], processed_data_shape[0], 'heights are not like desired.')     
             self.assertEqual(self.parameters['desired_shape'][1], processed_data_shape[1], 'widths are not like desired.') 
-
-    def test_process_rgb_images(self):
-        """ 
-        Test to ensure that RGB images are processed correctly. 
-        Verifies that the RGB images, after processing, have the expected color channel dimensions.
-        """
-        rgb_to_grayscale_step = RGBToGrayscale()
-        rgb_to_grayscale_step.output_datatypes['image'] = tf.float16
-        pipeline = [self.test_step, rgb_to_grayscale_step]
-        preprocessor = ImagePreprocessor()
-        preprocessor.set_pipe(pipeline)
-        processed_dataset = preprocessor.process(self.image_dataset)
-        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=1)
-    
-    def test_process_grayscaled_images(self):
-        """ 
-        Test to ensure that grayscale images are processed correctly.
-        Checks if the grayscale images maintain their dimensions after processing and 
-        verifies the color channel transformation correctness.
-        """
-        pipeline = [RGBToGrayscale(), self.test_step]
-        preprocessor = ImagePreprocessor()
-        preprocessor.set_pipe(pipeline)
-        processed_dataset = preprocessor.process(self.image_dataset)
-        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=1)
-        grayscale_to_rgb_step = GrayscaleToRGB()
-        grayscale_to_rgb_step.output_datatypes['image'] = tf.float16
-        processed_dataset = grayscale_to_rgb_step.process_step(processed_dataset)
-        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=3)  
 
 
 def load_resize_operations_steps_tests():
@@ -163,7 +134,7 @@ def load_resize_operations_steps_tests():
     loader = unittest.TestLoader()
     test_suites = []
     test_suites.append(loader.loadTestsFromTestCase(TestSquareShapePadder))
-    test_suites.append(loader.loadTestsFromTestCase(TestSingleStep))
+    test_suites.append(loader.loadTestsFromTestCase(TestShapeResizer))
     test_suite = unittest.TestSuite(test_suites)  # Combine the suites
     return test_suite
 

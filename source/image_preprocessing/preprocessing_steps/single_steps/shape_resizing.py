@@ -27,7 +27,6 @@ class ShapeResizer(StepBase):
         """
         self.check_resize_method(resize_method)
         super().__init__(locals())
-        self.output_datatypes['image'] = tf.float16
 
     def check_resize_method(self, resize_method):
         if resize_method not in self.resize_methods:
@@ -35,9 +34,19 @@ class ShapeResizer(StepBase):
 
     @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
+    
+        image_tensor_with_batch = tf.expand_dims(image_tensor, axis=0)
+        
         method = self.resize_methods[self.parameters['resize_method']]
-        resized_image = tf.image.resize(image_tensor, self.parameters['desired_shape'], method=method)
+        resized_image_with_batch = tf.image.resize(
+            image_tensor_with_batch, 
+            self.parameters['desired_shape'], 
+            method=method
+        )
+        
+        resized_image = tf.squeeze(resized_image_with_batch, axis=0)
         resized_image = tf.cast(resized_image, self.output_datatypes['image'])
+        
         return resized_image
 
 if __name__ == '__main__':
