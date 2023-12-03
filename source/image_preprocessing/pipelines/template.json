@@ -72,5 +72,8 @@
     },
     "Reverse Scaler": {
         "scale_factor": [255]
+    },
+    "Type Caster": {
+        "output_dtype": ["float16"]
     }
 }

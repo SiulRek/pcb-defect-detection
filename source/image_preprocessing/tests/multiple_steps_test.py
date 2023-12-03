@@ -53,6 +53,11 @@ def create_test_class_for_step(step_class, arguments, visual_inspection_always_d
                 # Check if erosion count is approximately 80% of the sequence
                 self.assertAlmostEqual(erosion_count / iterations, erosion_probability, delta=0.1)
 
+        if isinstance(step_class(), steps.TypeCaster):
+            @skip("No value or shape changes are to be expected when Type Casting.")
+            def test_process_execution(self):
+                pass
+
 
     name = step_class.name.replace(' ', '')
     DynamicTestStep.__name__ = f'Test{name}'
@@ -75,7 +80,8 @@ steps_data = [
     (steps.ZeroThreshold,  {'thresh': 128}),
     (steps.ErosionFilter, {'kernel_size': 3, 'iterations': 1}),
     (steps.DilationFilter, {'kernel_size': 3, 'iterations': 1}),
-    (steps.DilateErodeSequencer, {'kernel_size': 5, 'sequence': 'ded'})
+    (steps.DilateErodeSequencer, {'kernel_size': 5, 'sequence': 'ded'}),
+    (steps.TypeCaster, {"output_dtype": 'float16'}, True)
 ]
 
 
