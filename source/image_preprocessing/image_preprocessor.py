@@ -41,6 +41,9 @@ class ImagePreprocessor:
         load_pipe_from_json(self, filepath: str):
             Loads and reconstructs a preprocessing pipeline from a JSON file.
 
+        load_randomized_pipe_from_json(self, filepath: str):
+            Loads and reconstructs a preprocessing pipeline from a JSON file. 
+
     Notes:
         - The pipeline should only contain instances of classes that inherit from StepBase.
         - The `set_pipe` and `pipe_append` methods include type checks to enforce this.
@@ -142,7 +145,7 @@ class ImagePreprocessor:
     def load_randomized_pipe_from_json(self, json_path):
         """
         Loads and reconstructs a preprocessing pipeline from the specified JSON file.
-        The parameters of preprocessing steps are randomized.
+        The parameters of preprocessing steps are randomized from the specified range in the JSON file.
 
         Args:
             json_path (str): File path from where the pipeline configuration will be loaded.
