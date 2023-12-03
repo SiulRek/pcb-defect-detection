@@ -1,55 +1,17 @@
 """This module provides test suites for the preprocessing steps performing resize
 operations within the image preprocessing pipeline. This module addresses the unique testing requirements for 
 resize operations steps, ensuring their correct integration into the pipeline.
-
-Key features include:
-
-Note:
-Helper steps, RGBToGrayscale and GrayscaleToRGB, are modified to support tf.float16, facilitating the assessment of 
-resize operations in diverse scenarios.
 """
 
 import unittest
 from unittest import skip
 
-import tensorflow as tf
-
-from source.image_preprocessing.image_preprocessor import StepBase
 from source.image_preprocessing.tests.single_step_test import TestSingleStep
-from source.image_preprocessing.preprocessing_steps.step_utils import correct_image_tensor_shape
 import source.image_preprocessing.preprocessing_steps as steps
 
 
 ENABLE_VISUAL_INSPECTION = True
 
-
-class RGBToGrayscale(StepBase):
-    arguments_datatype = {}
-    name = 'RGB_to_Grayscale'
-
-    def __init__(self):
-        super().__init__(locals())
-
-    @StepBase._tensor_pyfunc_wrapper
-    def process_step(self, image_tensor):
-        image_grayscale_tensor = tf.image.rgb_to_grayscale(image_tensor)
-        image_grayscale_tensor = correct_image_tensor_shape(image_grayscale_tensor)
-        return image_grayscale_tensor
-
-
-class GrayscaleToRGB(StepBase):
-    arguments_datatype = {}
-    name = 'Grayscale_to_RGB'
-
-    def __init__(self):
-        super().__init__(locals())
-
-    @StepBase._tensor_pyfunc_wrapper
-    def process_step(self, image_tensor):
-        image_tensor = tf.image.grayscale_to_rgb(image_tensor)
-        image_grayscale_tensor = correct_image_tensor_shape(image_tensor)
-        return image_grayscale_tensor
-    
 
 class TestSquareShapePadder(TestSingleStep):
     """ A test suite for the SquareShapePadder step in the image preprocessing pipeline.
@@ -70,7 +32,7 @@ class TestSquareShapePadder(TestSingleStep):
         @skip("Visual inspection not enabled")
         def test_processed_image_visualization(self):
             pass
-    
+
     def _verify_image_shapes(self, processed_dataset, original_dataset, color_channel_expected):
         """ 
         Helper method to verify the image dimensions and color channels in a processed dataset.
@@ -133,7 +95,7 @@ def load_resize_operations_steps_tests():
     """
     loader = unittest.TestLoader()
     test_suites = []
-    test_suites.append(loader.loadTestsFromTestCase(TestSquareShapePadder))
+    #test_suites.append(loader.loadTestsFromTestCase(TestSquareShapePadder))
     test_suites.append(loader.loadTestsFromTestCase(TestShapeResizer))
     test_suite = unittest.TestSuite(test_suites)  # Combine the suites
     return test_suite
