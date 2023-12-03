@@ -105,6 +105,7 @@ steps_data = [
     (steps.StandardNormalizer, {}),
     (steps.MeanNormalizer, {}),
     (steps.LocalContrastNormalizer, {'depth_radius': 5, 'bias': 1.0, 'alpha': 0.0001, 'beta': 0.75}),
+    (steps.ReverseScaler, {'scale_factor': 255}),
 ]
 
 
