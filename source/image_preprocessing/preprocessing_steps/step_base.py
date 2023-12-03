@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
+from copy import deepcopy
 import tensorflow as tf
+
 
 from source.image_preprocessing.preprocessing_steps.step_utils import correct_image_tensor_shape
 
@@ -69,7 +71,7 @@ class StepBase(ABC):
             local_vars (dict): A collection of variables provided by the child class instantiation that includes hyperparameter configurations and.
         """
         self._parameters = self._extract_parameters(local_vars)
-        self.output_datatypes = self.default_output_datatypes # Can be overwritten by child classes
+        self.output_datatypes = deepcopy(self.default_output_datatypes) # Can be overwritten by child classes
         
     @property
     def parameters(self):
@@ -102,15 +104,15 @@ class StepBase(ABC):
         return json_string
     
     @staticmethod
-    def _tensor_pyfunc_wrapper(func):
+    def _tensor_pyfunc_wrapper(function):
         """ 
         A decorator for mapping TensorFlow tensor-based functions onto a dataset using tf.py_function.
         This decorator is designed for preprocessing steps implemented as Python functions,
         where the input to the function is a TensorFlow tensor.
         """
         def tensor_to_py_function_wrapper(self, image_tensor, target_tensor):
-            processed_image = func(self, image_tensor)
-            processed_image = tf.convert_to_tensor(processed_image, dtype=self.output_datatypes['image'])
+            processed_image = function(self, image_tensor)
+            processed_image = tf.cast(processed_image, dtype=self.output_datatypes['image'])
             return processed_image, target_tensor
 
         def dataset_map_function(self, image_dataset):
@@ -125,7 +127,7 @@ class StepBase(ABC):
         return dataset_map_function
 
     @staticmethod
-    def _nparray_pyfunc_wrapper(func):
+    def _nparray_pyfunc_wrapper(function):
         """ 
         A decorator for mapping Python functions (processing NumPy arrays) onto a TensorFlow dataset using tf.py_function.
         This decorator is useful for preprocessing steps implemented in Python,
@@ -133,7 +135,7 @@ class StepBase(ABC):
         """
         def numpy_to_py_function_wrapper(self, image_tensor, target_tensor):
             image_nparray = image_tensor.numpy().astype('uint8')
-            processed_image = func(self, image_nparray)
+            processed_image = function(self, image_nparray)
             processed_image = tf.convert_to_tensor(processed_image, dtype=self.output_datatypes['image'])
             processed_image = correct_image_tensor_shape(processed_image)
             return processed_image, target_tensor
@@ -153,3 +155,7 @@ class StepBase(ABC):
     def process_step(self, image_tensor, tf_target):
         # Child class must implement this method.
         pass
+
+
+if __name__ == '__main__':
+    print(StepBase.default_output_datatypes)
