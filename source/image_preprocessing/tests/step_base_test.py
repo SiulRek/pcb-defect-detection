@@ -110,6 +110,31 @@ class TestStepBase(unittest.TestCase):
         tf_dataset = self.py_preprocessing_step.process_step(self.image_dataset)
         image_tensor = list(tf_dataset.take(1))[0][0]
         self.assertEqual(image_tensor.shape, [2464, 3056, 1])
+
+    def test_output_datatype_conversion(self):
+        self.py_preprocessing_step.output_datatypes['image'] = tf.uint8
+        tf_dataset = self.py_preprocessing_step.process_step(self.image_dataset)
+        for img, _ in tf_dataset.take(1):
+            self.assertEqual(img.dtype, tf.uint8)
+        self.py_preprocessing_step.output_datatypes['image'] = tf.float16
+        tf_dataset = self.py_preprocessing_step.process_step(self.image_dataset)
+        for img, _ in tf_dataset.take(1):
+            self.assertEqual(img.dtype, tf.float16)
+
+    def test_output_datatype_default(self):
+        StepBase.default_output_datatypes['image'] = tf.uint8
+        tf_preprocessing_step = TfTestStep(**self.local_vars)
+        tf_dataset = tf_preprocessing_step.process_step(self.image_dataset)
+        for img, _ in tf_dataset.take(1):
+            self.assertEqual(img.dtype, tf.uint8)
+        StepBase.default_output_datatypes['image'] = tf.float16
+        tf_preprocessing_step = TfTestStep(**self.local_vars)
+        tf_dataset = tf_preprocessing_step.process_step(self.image_dataset)
+        for img, _ in tf_dataset.take(1):
+            self.assertEqual(img.dtype, tf.float16)
+        # Check if 'default_output_datatypes' in 'StepBase' remains unchanged, when Child Class changes 'output_datatypes' attribute.
+        tf_preprocessing_step.output_datatypes['image'] = tf.uint8
+        self.assertEqual(StepBase.default_output_datatypes['image'], tf.float16)
     
     def test_equal_objects(self):
         self.assertEqual(self.py_preprocessing_step, self.tf_preprocessing_step)
