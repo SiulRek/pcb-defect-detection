@@ -19,7 +19,9 @@ class StepBase(ABC):
     TensorFlow and Python functions, respectively.
 
     Public Class Attribute (read-ony):
-    - arguments_datatype (dict):  A dictionary containing the specification of the argument datatypes.
+    - defaults_output_datatypes (dict):  A dictionary containing the defaults values of the argument datatypes.
+    - arguments_datatype (dict):  A dictionary containing the preprocessing step
+    specific values of the argument datatypes. Defaults to defaults_output_datatypes.
     - name (str): The base identifier for the preprocessing step.
 
     Public Instance Attribute (read-ony):
