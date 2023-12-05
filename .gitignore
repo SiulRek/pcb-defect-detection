@@ -12,3 +12,4 @@ source/utils/test_result_logger.py
 **/test_results.log
 **/test_results_simple.log
 **/TODO.txt
+source/image_preprocessing/notebooks/related/pipeline.json
