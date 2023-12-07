@@ -131,7 +131,7 @@ class ImagePreprocessor:
         Args:
             json_path (str): File path where the pipeline configuration will be saved.
         """
-        self.serializer.save_instance_list_to_json(self.pipeline, json_path)
+        self.serializer.save_instances_to_json(self.pipeline, json_path)
         
     def load_pipe_from_json(self, json_path):
         """

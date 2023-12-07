@@ -18,7 +18,7 @@ class ClassInstancesSerializer:
         instance_mapping (dict): Maps class names to actual class objects.
 
     Public Methods:
-        save_instance_list_to_json(instance_list, json_path): Serializes class instances to JSON.
+        save_instances_to_json(instance_list, json_path): Serializes class instances to JSON.
         get_instances_from_json(json_path): Deserializes instances from JSON with specific parameters.
         get_randomized_instances_from_json(json_path): Deserializes instances from JSON with randomized parameters.
 
@@ -165,7 +165,7 @@ class ClassInstancesSerializer:
         with open(json_path, 'w') as file:
             file.write(result)
     
-    def save_instance_list_to_json(self, instance_list, json_path):
+    def save_instances_to_json(self, instance_list, json_path):
         """
         Serializes a list of class instances to a JSON file.
 
