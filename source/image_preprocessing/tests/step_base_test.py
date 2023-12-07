@@ -96,7 +96,7 @@ class TestStepBase(unittest.TestCase):
     
     def test_get_step_json_representation(self):
         json_repr_output = self.tf_preprocessing_step.get_step_json_representation()
-        json_repr_expected = '"Test_Step": {"param1": [10], "param2": [[10,10]], "param3": [true]}'
+        json_repr_expected = '"Test_Step": {"param1": 10, "param2": [10,10], "param3": true}'
         json_repr_output = self._remove_new_lines_and_spaces(json_repr_output)
         json_repr_expected = self._remove_new_lines_and_spaces(json_repr_expected)
         self.assertEqual(json_repr_output,json_repr_expected)
