@@ -122,6 +122,7 @@ class TestStepBase(unittest.TestCase):
             self.assertEqual(img.dtype, tf.float16)
 
     def test_output_datatype_default(self):
+        image_datatype_kept = StepBase.default_output_datatypes['image'] 
         StepBase.default_output_datatypes['image'] = tf.uint8
         tf_preprocessing_step = TfTestStep(**self.local_vars)
         tf_dataset = tf_preprocessing_step.process_step(self.image_dataset)
@@ -135,6 +136,7 @@ class TestStepBase(unittest.TestCase):
         # Check if 'default_output_datatypes' in 'StepBase' remains unchanged, when Child Class changes 'output_datatypes' attribute.
         tf_preprocessing_step.output_datatypes['image'] = tf.uint8
         self.assertEqual(StepBase.default_output_datatypes['image'], tf.float16)
+        StepBase.default_output_datatypes['image'] = image_datatype_kept 
     
     def test_equal_objects(self):
         self.assertEqual(self.py_preprocessing_step, self.tf_preprocessing_step)
