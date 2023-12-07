@@ -195,11 +195,11 @@ class TestStepBase(unittest.TestCase):
         """
         pipeline = [
              RGBToGrayscale(param1=20,param2=(20,20),param3=False),
-             GrayscaleToRGB(param1=40,param2=(30,30),param3=False),     
+             GrayscaleToRGB(param1=40,param2=(30,30),param3='a nice str'),     
         ]
         representation_expected = """[
         RGBToGrayscale(param1=20,param2=(20,20),param3=False),
-        GrayscaleToRGB(param1=40, param2=(30,30),param3=False)
+        GrayscaleToRGB(param1=40, param2=(30,30),param3='a nice str')
         ]"""
         preprocessor = ImagePreprocessor(raise_step_process_exception=False)
         preprocessor.set_pipe(pipeline)
