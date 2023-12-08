@@ -99,7 +99,7 @@ class StepBase(ABC):
         for key, value in self._parameters.items():
             if isinstance(value, tuple):
                 value = list(value)
-            conv_parameters[key] = [value]
+            conv_parameters[key] = value
 
         parameters_str = ',\n'.join([f'        "{k}": {str(v).replace("True", "true").replace("False", "false")}' for k, v in conv_parameters.items()])
         json_string = f'    "{self.name}": {{\n{parameters_str}\n    }}' 

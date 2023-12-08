@@ -131,7 +131,7 @@ class ImagePreprocessor:
         Args:
             json_path (str): File path where the pipeline configuration will be saved.
         """
-        self.serializer.save_instance_list_to_json(self.pipeline, json_path)
+        self.serializer.save_instances_to_json(self.pipeline, json_path)
         
     def load_pipe_from_json(self, json_path):
         """
@@ -159,15 +159,18 @@ class ImagePreprocessor:
         Returns:
             str: A string representation of the pipeline in a code-like format.
         """
+        
         if not self.pipeline:
             return "[]"
 
-        description = "[\n"
+        repr = "[\n"
         for step in self.pipeline:
-            step_description = "{}({})".format(step.__class__.__name__, ', '.join(f"{k}={v}" for k, v in step.parameters.items()))
-            description += "    {},\n".format(step_description)
-        description = description[:-2] + "\n]"
-        return description
+            q = "'" 
+            parameters = ", ".join(f"{k}={q + v + q if isinstance(v, str) else v}" for k, v in step.parameters.items()) 
+            step_repr = f"{step.__class__.__name__}({parameters})"
+            repr += f"    {step_repr},\n"
+        repr = repr[:-2] + "\n]"
+        return repr
 
     def _consume_tf_dataset(self, tf_dataset):
         """

@@ -210,7 +210,7 @@ class TestSingleStep(unittest.TestCase):
         self.assertIn(step_name, json_data.keys(), 'StepToTest has no entry in JSON template.')
         
         preprocessor = ImagePreprocessor()
-        preprocessor.load_randomized_pipe_from_json(JSON_TEMP_FILE)
+        preprocessor.load_pipe_from_json(JSON_TEMP_FILE)
 
         step_is_instance = [isinstance(step, self.TestStep) for step in preprocessor.pipeline]
         self.assertIn(True, step_is_instance)

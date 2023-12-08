@@ -19,6 +19,7 @@ class PCBVisualizerBase(ABC):
             self.last_fig.savefig(filename)
         else:
             print("No plot to save!")
+        plt.close()
 
     def _generate_plot(self, fig, title, y_title=0.95, wspace=0.01, hspace=0.01):
         fig.suptitle(title, fontsize=20, fontweight='bold', y=y_title)

@@ -195,7 +195,7 @@ class TestClassInstancesSerializer(unittest.TestCase):
                 with self.assertRaises(expected_exception):
                     self.serializer.get_randomized_instances_from_json(path)
                 with self.assertRaises(expected_exception):
-                    self.serializer.save_instance_list_to_json([], path)
+                    self.serializer.save_instances_to_json([], path)
         
         path_dir_exists_file_not = 'source/utils/not_existing_file.json'
         with self.assertRaises(FileNotFoundError):
@@ -205,7 +205,7 @@ class TestClassInstancesSerializer(unittest.TestCase):
     
     def test_creation_of_json(self):
         json = os.path.join(OUTPUT_DIR, 'serializer_test_file.json')
-        self.serializer.save_instance_list_to_json([],json) # Now a File is created.
+        self.serializer.save_instances_to_json([],json) # Now a File is created.
         os.remove(json)
     
     def test_load_from_json(self):
@@ -242,15 +242,15 @@ class TestClassInstancesSerializer(unittest.TestCase):
         self.assertIn(loaded_instance_list[1].parameters['param1'], mock_class_parameters_2['param1'])
         self.assertTrue(1 <= loaded_instance_list[1].parameters['param2'] <= 10)
 
-    def test_save_instance_list_to_json(self):
-        self.serializer.save_instance_list_to_json(self.instance_list, self.json_path)
+    def test_save_instances_to_json(self):
+        self.serializer.save_instances_to_json(self.instance_list, self.json_path)
         loaded_instance_list = self.serializer.get_instances_from_json(self.json_path)
         self.assertEqual(loaded_instance_list, self.instance_list)
    
     def test_missing_mapping_in_save(self): 
         with self.assertRaises(KeyError):
             self.serializer.instance_mapping = {'MockClass1': MockClass1}   # Missing mapping for 'MockClass2'.
-            self.serializer.save_instance_list_to_json(self.instance_list, self.json_path) 
+            self.serializer.save_instances_to_json(self.instance_list, self.json_path) 
 
     def test_missing_mapping_in_load(self): 
 
@@ -294,7 +294,7 @@ class TestClassInstancesSerializer(unittest.TestCase):
     def test_no_argument_specification(self):
         instance_list = [MockClassWithoutArgsSpec(param1=1)]
         self.serializer.instance_mapping = {'MockClassWithoutArgsSpec': MockClassWithoutArgsSpec}   
-        self.serializer.save_instance_list_to_json(instance_list, self.json_path)
+        self.serializer.save_instances_to_json(instance_list, self.json_path)
         loaded_instance_list = self.serializer._build_instances_from_json(self.json_path, randomized=False)
         self.assertEqual(loaded_instance_list, instance_list)       
 
@@ -302,13 +302,13 @@ class TestClassInstancesSerializer(unittest.TestCase):
         instance_list = [MockClassWithoutparametersAttr()]
         self.serializer.instance_mapping = {'MockClassWithoutparametersAttr': MockClassWithoutparametersAttr}   
         with self.assertRaises(AttributeError):
-            self.serializer.save_instance_list_to_json(instance_list, self.json_path)
+            self.serializer.save_instances_to_json(instance_list, self.json_path)
     
     def test_invalid_attribute_parameters(self): 
         instance_list = [MockClassInvalidparametersAttr(param1=1)]
         self.serializer.instance_mapping = {'MockClassInvalidparametersAttr': MockClassInvalidparametersAttr}   
         with self.assertRaises(AttributeError):
-            self.serializer.save_instance_list_to_json(instance_list, self.json_path)
+            self.serializer.save_instances_to_json(instance_list, self.json_path)
 
     
         
