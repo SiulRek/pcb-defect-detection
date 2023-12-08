@@ -61,7 +61,7 @@ class ErrorStep(StepBase):
     @StepBase._nparray_pyfunc_wrapper
     def process_step(self, image_nparray):
         processed_image = cv2.GaussianBlur(image_nparray, oops_unknown_parameter_here='sorry')  
-        return (processed_image)
+        return processed_image
 
 
 class TestStepBase(unittest.TestCase):
@@ -84,7 +84,8 @@ class TestStepBase(unittest.TestCase):
         cls.logger = TestResultLogger(LOG_FILE, 'Image Preprocessor Test')
     
     def setUp(self):
-        with open(JSON_TEST_FILE, 'a'): pass
+        with open(JSON_TEST_FILE, 'a'):
+            pass
         self.pipeline = [
             RGBToGrayscale(param1=20,param2=(20,20),param3=False),
             GrayscaleToRGB(param1=40,param2=(30,30),param3=False),
@@ -175,7 +176,8 @@ class TestStepBase(unittest.TestCase):
         This test ensures that the ImagePreprocessor class correctly identifies and rejects any objects 
         added to its pipeline that are not a subclass of StepBase. 
         """
-        class StepNotOfStepBase: pass
+        class StepNotOfStepBase: 
+            pass
         pipeline = [
              RGBToGrayscale(param1=20,param2=(20,20),param3=False),
              StepNotOfStepBase,     
@@ -245,27 +247,34 @@ class TestStepBase(unittest.TestCase):
         self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=1)
     
     def test_load_randomized_pipeline(self):
+        """
+        Tests loading a pipeline with randomized settings from a JSON file.
+
+        Ensures that the pipeline correctly uses random parameters for its steps as defined in the JSON file.
+        """
+
         mock_class_parameters = {
             'param1': {'distribution': 'uniform', 'low': 2, 'high': 10}, 
             'param2':'[(3,3)]*10 + [(5,5)]*10 + [(8,8)]', 
             'param3': [True, True]
             }  
-        json_data = {'RGB_to_Grayscale': mock_class_parameters}
+        json_data = {'RGB_to_Grayscale': mock_class_parameters, 'Grayscale_to_RGB' : mock_class_parameters}
         
         with open(JSON_TEST_FILE, 'w') as file:
             json.dump(json_data, file)
 
-        mock_mapping = {'RGB_to_Grayscale': RGBToGrayscale}
+        mock_mapping = {'RGB_to_Grayscale': RGBToGrayscale, 'Grayscale_to_RGB': GrayscaleToRGB}
         with patch('source.image_preprocessing.image_preprocessor.STEP_CLASS_MAPPING', mock_mapping):
             preprocessor = ImagePreprocessor()
             preprocessor.load_randomized_pipe_from_json(JSON_TEST_FILE)
             pipeline = preprocessor.pipeline
 
         self.assertIsInstance(pipeline[0], RGBToGrayscale)
-        self.assertTrue(2 <= pipeline[0].parameters['param1'] <= 10)
-        self.assertIn(pipeline[0].parameters['param2'], [(3,3),(5,5),(8,8)])
-        self.assertTrue(pipeline[0].parameters['param3'])
-        # TODO here
+        self.assertIsInstance(pipeline[1], GrayscaleToRGB)
+        for i in range(2):
+            self.assertTrue(2 <= pipeline[i].parameters['param1'] <= 10)
+            self.assertIn(pipeline[i].parameters['param2'], [(3,3),(5,5),(8,8)])
+            self.assertTrue(pipeline[i].parameters['param3'])
     
     def test_not_raised_step_process_exception_1(self):
         """   Test case for ensuring that the ErrorStep subclass, when processing an image
