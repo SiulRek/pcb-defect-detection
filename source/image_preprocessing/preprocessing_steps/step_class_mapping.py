@@ -27,4 +27,5 @@ STEP_CLASS_MAPPING = {
     'Local Contrast Normalizer': steps.LocalContrastNormalizer,
     'Reverse Scaler': steps.ReverseScaler,
     'Type Caster': steps.TypeCaster,
+    'Mirrorer': steps.Mirrorer,
 }

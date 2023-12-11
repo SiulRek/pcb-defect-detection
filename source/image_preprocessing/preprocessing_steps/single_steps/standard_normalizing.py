@@ -5,8 +5,11 @@ from source.image_preprocessing.preprocessing_steps.step_utils import reduce_std
 
 
 class StandardNormalizer(StepBase):
-    """A preprocessing step that applies standard normalization (Z-score normalization) to an image tensor."""
-
+    """
+    A preprocessing step that applies standard normalization (Z-score normalization) to an image tensor.
+    
+    Note: The data type of the output image tensor is tf.float16.
+    """
     arguments_datatype = {}
     name = 'Standard Normalizer'
 

@@ -4,7 +4,12 @@ from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 
 
 class GlobalHistogramEqualizer(StepBase):
-    """  A preprocessing step that applies Contrast Limited Global Histogram Equalizer to an image."""
+    """  
+    A preprocessing step that applies Contrast Limited Global Histogram Equalizer to an image.
+    
+    Note:     In the case of RGB images, it processes each color channel (Red, Green, Blue) 
+    separately.
+    """
     arguments_datatype = {}
     name = 'Global Histogram Equalizer'
 

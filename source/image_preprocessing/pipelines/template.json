@@ -99,5 +99,8 @@
 
     "Type Caster": {
         "output_dtype": "float16"
+    },
+    "Mirrorer": {
+        "mirror_direction": "horizontal"
     }
 }

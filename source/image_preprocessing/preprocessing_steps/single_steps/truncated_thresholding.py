@@ -4,14 +4,19 @@ from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 
 
 class TruncatedThresholder(StepBase):
-    """ A preprocessing step that applies truncated thresholding to an image. """
+    """ 
+    A preprocessing step that applies truncated thresholding to an image. 
+    
+    Note: In the case of RGB images, it processes each color channel (Red, Green, Blue) 
+    separately.
+    """
 
     arguments_datatype = {'thresh': int}
     name = 'Truncated Thresholding'
 
     def __init__(self, thresh=128):
         """ 
-        Initializes the TruncatedThresholder object that can be integrated into an image preprocessing pipeline.
+        Initializes the TruncatedThresholder object that can be integrated into an image preprocessing pipeline. 
 
         Args:
             thresh (int, optional): The threshold value used for truncated thresholding. Pixel values greater than 

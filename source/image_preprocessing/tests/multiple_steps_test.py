@@ -81,7 +81,12 @@ steps_data = [
     (steps.ErosionFilter, {'kernel_size': 3, 'iterations': 1}),
     (steps.DilationFilter, {'kernel_size': 3, 'iterations': 1}),
     (steps.DilateErodeSequencer, {'kernel_size': 5, 'sequence': 'ded'}),
-    (steps.TypeCaster, {"output_dtype": 'float16'}, True)
+    (steps.TypeCaster, {"output_dtype": 'float16'}, True),
+    (steps.MinMaxNormalizer, {}, True),
+    (steps.StandardNormalizer, {}, True),
+    (steps.MeanNormalizer, {}, True),
+    (steps.LocalContrastNormalizer, {'depth_radius': 5, 'bias': 1.0, 'alpha': 0.0001, 'beta': 0.75}, True),
+    (steps.ReverseScaler, {'scale_factor': 255}, True),
 ]
 
 

@@ -26,8 +26,8 @@ from source.utils import recursive_type_conversion,  PCBVisualizerforTF
 from source.utils import SimplePopupHandler, TestResultLogger
 
 #TODO Select Step to test here!
-from source.image_preprocessing.preprocessing_steps import GlobalHistogramEqualizer as StepToTest
-STEP_PARAMETERS = {}
+from source.image_preprocessing.preprocessing_steps import Mirrorer as StepToTest
+STEP_PARAMETERS = {"mirror_direction": 'horizontal'}
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
 JSON_TEST_FILE = os.path.join(ROOT_DIR, r'source/image_preprocessing/pipelines/test_pipe.json')

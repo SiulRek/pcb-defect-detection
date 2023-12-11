@@ -4,7 +4,11 @@ from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 
 
 class MeanNormalizer(StepBase):
-    """A preprocessing step that applies mean normalization to an image tensor."""
+    """
+    A preprocessing step that applies mean normalization to an image tensor.
+    
+    Note: The data type of the output image tensor is tf.float16.
+    """
 
     arguments_datatype = {}
     name = 'Mean Normalizer'
