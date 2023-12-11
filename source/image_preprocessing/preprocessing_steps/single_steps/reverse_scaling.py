@@ -2,8 +2,13 @@ import tensorflow as tf
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 
 class ReverseScaler(StepBase):
-    """A preprocessing step that scales an image tensor by a specified factor.
-       The default scale factor is 255, commonly used to normalize 0-255 RGB images to a 0-1 range."""
+    """
+    A preprocessing step that scales an image tensor by a specified factor.
+       The default scale factor is 255, commonly used to normalize 0-255 RGB images to a 0-1 range.
+       
+           
+    Note: The data type of the output image tensor is tf.float16.
+    """
 
     arguments_datatype = {'scale_factor': float}
     name = 'Reverse Scaler'

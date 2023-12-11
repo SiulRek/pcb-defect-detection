@@ -3,7 +3,11 @@ import tensorflow as tf
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 
 class MinMaxNormalizer(StepBase):
-    """A preprocessing step that applies a min max normalization an image tensor."""
+    """
+    A preprocessing step that applies a min max normalization an image tensor.
+    
+    Note: The data type of the output image tensor is tf.float16.
+    """
 
     arguments_datatype = {}
     name = 'Min Max Normalizer'
