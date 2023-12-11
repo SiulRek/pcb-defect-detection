@@ -23,3 +23,4 @@ from source.image_preprocessing.preprocessing_steps.single_steps.mean_normalizin
 from source.image_preprocessing.preprocessing_steps.single_steps.local_contrast_normalizing import LocalContrastNormalizer
 from source.image_preprocessing.preprocessing_steps.single_steps.reverse_scaling import ReverseScaler
 from source.image_preprocessing.preprocessing_steps.single_steps.type_casting import TypeCaster
+from source.image_preprocessing.preprocessing_steps.single_steps.mirroring import Mirrorer
