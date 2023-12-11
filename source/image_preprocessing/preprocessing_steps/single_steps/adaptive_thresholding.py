@@ -4,7 +4,12 @@ from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 
 
 class AdaptiveThresholder(StepBase):
-    """ A preprocessing step that applies adaptive Thresholding to an image."""
+    """ 
+    A preprocessing step that applies adaptive Thresholding to an image. 
+    
+    Note: In the case of RGB images, it processes each color channel (Red, Green, Blue) 
+    separately.
+    """
 
     arguments_datatype = {'block_size': int, 'c': float}
     name = 'Adaptive Thresholding'
