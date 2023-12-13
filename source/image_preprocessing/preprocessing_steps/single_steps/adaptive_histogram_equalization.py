@@ -27,8 +27,6 @@ class AdaptiveHistogramEqualizer(StepBase):
 
     @StepBase._nparray_pyfunc_wrapper
     def process_step(self, image_nparray):
-        # image_nparray is of color channel RGB
-        # ChatGPT Do you think it is useful to apply histogram equalization equally on each channel for PCB Defect Detection in ML?
         channels = cv2.split(image_nparray)
         clahe = cv2.createCLAHE(clipLimit=self.parameters['clip_limit'], tileGridSize=self.parameters['tile_gridsize'])
         clahe_channels = [clahe.apply(ch) for ch in channels]
