@@ -102,5 +102,8 @@
     },
     "Mirrorer": {
         "mirror_direction": "horizontal"
+    },    
+    "Rotator": {
+        "angle": 90.0
     }
 }
