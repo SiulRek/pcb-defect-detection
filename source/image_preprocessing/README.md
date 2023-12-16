@@ -1,16 +1,16 @@
 # Image Preprocessing for PCB Analysis
 
-This folder is dedicated to the preprocessing of PCB (Printed Circuit Board) images as part of a larger machine learning pipeline. It includes various components such as preprocessing steps, pipelines and test suites.
+This folder is dedicated to the preprocessing of PCB (Printed Circuit Board) images as part of the PCB defect detection project. It includes various components such as preprocessing steps, pipelines and test suites.
 
-## Structure
+## Overview
 
 The `image_preprocessing` folder consists of the following subdirectories and files:
 
-- [pipelines](./pipelines): Pipelines with exact Hyperparameters and Hyperparameter ranges of the image preprocessor.
-- [notebooks](./notebooks): Jupyter notebooks for image preprocessing evaluation and experimenting.
-- [preprocessing_steps](./preprocessing_steps): Modules defining the preprocessing steps to be applied to images.
+- [notebooks](./notebooks): Jupyter notebooks for image preprocessing experimenting, evaluation and documentation.
+- [pipelines](./pipelines): Pipelines with exact hyperparameters and hyperparameter ranges to be loaded with the `ImagePreprocessor`.
+- [preprocessing_steps](./preprocessing_steps): Modules defining the preprocessing steps to be applied to images and to be integrated within the image preprocessing framwork.
 - [tests](./tests): Test cases for verification of the functionality of the preprocessing steps.
-- [image_preprocessor.py](./image_preprocessor.py): The main script that defines the image preprocessing pipeline and integrates the preprocessing steps.
+- [image_preprocessor.py](./image_preprocessor.py): Contains the `ImagePreprocessor` class. The main handler that defines the image preprocessing operations and is able to integrate preprocessing steps to the pipeline.
 
 
 ## Usage
@@ -20,8 +20,8 @@ preprocessor = ImagePreprocessor()
 
 # Make pipeline
 pipeline = [
-    StepOne(params_one),
-    StepTwo(params_two)
+    StepOne(**params_one),
+    StepTwo(**params_two)
 ]
 
 # Set pipeline
@@ -32,5 +32,7 @@ processed_dataset = preprocessor.process(image_dataset)
 ```
 
 ## Interactive Demonstration
-For a hands-on experience and insights into how each preprocessing step affects PCB images, check out the interactive Jupyter notebook: [image_preprocessor_documentation.ipynb](./notebooks/image_preprocessor_documentation.ipynb)
+Please refer to the interactive Jupyter notebook [image_preprocessor_documentation.ipynb](./notebooks/image_preprocessor_documentation.ipynb) that provides an in-depth explanation and practical application insights into the image preprocessing framework.
+
+
 
