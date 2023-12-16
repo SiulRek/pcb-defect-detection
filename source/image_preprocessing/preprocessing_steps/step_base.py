@@ -91,9 +91,22 @@ class StepBase(ABC):
 
         return initialization_parameters
     
-    def get_step_json_representation(self):
-        """Returns strings that corresponds to JSON entry text to be added to a JSON file."""
+    def _format_parameters(self, parameters):
+        """ Formats the parameters dictionary into a string that can be added to a JSON file."""
+        formatted_items = []
+        for k, v in parameters.items():
+            if isinstance(v, str):
+                formatted_value = f'"{v}"'
+            else:
+                formatted_value = str(v).replace("True", "true").replace("False", "false")
+            formatted_item = f'        "{k}": {formatted_value}'
+            formatted_items.append(formatted_item)
 
+        parameters_str = ',\n'.join(formatted_items)
+        return parameters_str
+    
+    def get_step_json_representation(self):
+        """Returns strings that corresponds to JSON entry text of the preprocessing step to be added to a JSON file."""
         # Convert datatype of values of parameters to match JSON format
         conv_parameters = {}
         for key, value in self._parameters.items():
@@ -101,8 +114,9 @@ class StepBase(ABC):
                 value = list(value)
             conv_parameters[key] = value
 
-        parameters_str = ',\n'.join([f'        "{k}": {str(v).replace("True", "true").replace("False", "false")}' for k, v in conv_parameters.items()])
+        parameters_str = self._format_parameters(conv_parameters)
         json_string = f'    "{self.name}": {{\n{parameters_str}\n    }}' 
+
         return json_string
     
     @staticmethod
