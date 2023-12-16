@@ -1,8 +1,3 @@
-#TODO update according to changes in decorator.
-"""
-This module contains a thorough test suite for validating the StepBase class in the image preprocessing module. It includes tests for both TensorFlow (TfTestStep) and Python (PyTestStep) image preprocessing steps to ensure proper initialization, functionality, and pipeline compatibility. The tests cover a wide range of topics, including image shape transformation, custom object equality logic, and proper JSON representation. The module also tests the efficacy of decorators (_tensor_pyfunc_wrapper and _nparray_pyfunc_wrapper) in processing image datasets. These tests are critical for ensuring the integrity and dependability of the pipeline's image preprocessing steps.
-"""
-
 import os
 import unittest
 
@@ -53,12 +48,9 @@ class PyTestStep(StepBase):
     
 
 class TestStepBase(unittest.TestCase):
-    """    Test suite for validating the functionality of the preprocessing steps parent class 'StepBase' in the image preprocessing module.
+    """    Test suite for validating the functionality of the preprocessing steps parent class `StepBase` in the image preprocessing module.
     
-    This suite includes tests to verify the correct initialization of preprocessing steps,  the proper function
-    of both TensorFlow and Python-based image preprocessing steps. Additionally, it ensures that images
-    maintain correct shape transformations throughout the preprocessing pipeline and that the custom object
-    equality logic behaves as expected. The example test steps `TfTestStep` and `PyTestStep` make a simple conversion of the images from RGB to Grayscale, that can be easily verified.
+    This test suite is designed to validate the `StepBase` class, focusing on the correct initialization and functionality of both TensorFlow and Python-based preprocessing steps. It incorporates tests for image shape transformations, object equality logic, JSON representation of steps, wrapper functions for processing image data and output datatype handling. The suite employs TfTestStep and PyTestStep for transforming images from RGB to grayscale, a process chosen for its straightforward verification of step effectiveness. This transformation serves as a reliable indicator; if these steps work correctly, it's likely that other steps with a similar structure will function effectively as well.
     """
 
     @classmethod

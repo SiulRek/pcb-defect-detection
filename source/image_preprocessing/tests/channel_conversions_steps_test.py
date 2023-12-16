@@ -4,8 +4,8 @@ preprocessing steps within an image preprocessing pipeline. """
 import unittest
 from unittest import skip
 
-from source.image_preprocessing.preprocessing_steps import RGBToGrayscale
 from source.image_preprocessing.preprocessing_steps import GrayscaleToRGB
+from source.image_preprocessing.preprocessing_steps import RGBToGrayscale
 
 from source.image_preprocessing.image_preprocessor import ImagePreprocessor
 from source.image_preprocessing.tests.single_step_test import TestSingleStep
@@ -38,6 +38,7 @@ class TestRGBToGrayscale(TestSingleStep):
         def test_processed_image_visualization(self):
                 pass
 
+
 class TestGrayscaleToRGB(TestSingleStep):
     """ 
     A test suite for verifying the functionality of the `GrayscaleToRGB` preprocessing step.
@@ -49,8 +50,7 @@ class TestGrayscaleToRGB(TestSingleStep):
     yield expected results.
 
     Note:
-        The suite depends on `RGBToGrayscale` for full pipeline testing. Visual inspection
-        is optional and can be enabled through the `ENABLE_VISUAL_INSPECTION` flag.
+        The suite depends on `RGBToGrayscale` for full pipeline testing. 
     
     """
     parameters = {}

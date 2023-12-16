@@ -66,12 +66,10 @@ class GrayscaleToRGB(StepBase):
 
 class TestSingleStep(unittest.TestCase):
     """
-    A unit test class for testing individual image preprocessing steps in a 
-    TensorFlow image processing pipeline. The class focuses on ensuring the correct 
+    A unit test class for testing individual image preprocessing steps in to be integrated in the image preprocessing framework. The class focuses on ensuring the correct 
     functioning of these steps, both in isolation and when integrated into a pipeline. 
-    The tests cover: processing of RGB and grayscale images, 
-    saving and loading of the pipeline pipelines, and validation of instance 
-    argument data types.
+
+    This class covers a variety of tests, including validating the correct operation of the tested preprocessing step in isolation and within a pipeline, confirming parameter data types, ensuring step mappings are appropriately configured, and testing the steps' execution and output data types. It also includes tests for loading JSON step configurations, saving and reloading pipeline configurations, and visual inspection of produced images. 
     """
 
     # Class Attributes (overwritten when class is dynamically loaded (eg. multiple_steps_test.py) or costumized (channel_conversion_steps_test.py))

@@ -64,18 +64,13 @@ class ErrorStep(StepBase):
         return processed_image
 
 
-class TestStepBase(unittest.TestCase):
+class TestImagePreprocessor(unittest.TestCase):
     """
-    A test class derived from unittest.TestCase that verifies the functionality of image preprocessing steps.
+    Test suite for evaluating the `ImagePreprocessor` class functionality, specifically focusing on the robustness and reliability of the image preprocessing pipeline operations in various scenarios.
 
-    This test suite checks the integrity and flow of a preprocessing pipeline, making conversions between
-    grayscale and RGB, ensuring that image shapes are maintained and targets remain unaltered after processing.
-    It also verifies the capability to save and load preprocessing pipelines to and from a JSON configuration file.
-    
-    The suite comprises unit tests for individual preprocessing steps and integration tests for the overall
-    preprocessing pipeline with a focus on parameter handling, image data type conversions, and pipeline persistence. Also, 
-    these tests ensure that the step classes correctly process image datasets and handle exceptions as expected when 
-    integrated in the ImagePreprocessing pipeline
+    This suite includes a variety of tests to ensure the proper functioning of the pipeline operations handled by the `ImagePreprocessor`, such as adding and removing steps, validating pipeline execution, and handling exceptions. It thoroughly tests the integrity of the operations, including the requirement to maintain consistent image shapes and correctly process images through multiple preprocessing steps. The suite also covers serialization and deserialization of the pipeline to and from JSON, ensuring the persistence mechanism's effectiveness. Additionally, it verifies the `ImagePreprocessor`'s handling of randomized parameters and its resilience in scenarios where processing exceptions are raised.
+
+    Note: The usage of color channel conversion steps serves as a reliable indicator; if the `ImagePreprocessor` handles these steps correctly, it's likely that other steps with a similar structure will be handled correctly as well.
     """
 
     @classmethod
