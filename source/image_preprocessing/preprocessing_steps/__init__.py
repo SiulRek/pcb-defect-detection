@@ -1,3 +1,6 @@
+""" This module contains all preprocessing steps that can be used in an image preprocessing pipeline."""
+
+from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 from source.image_preprocessing.preprocessing_steps.single_steps.adaptive_histogram_equalization import AdaptiveHistogramEqualizer
 from source.image_preprocessing.preprocessing_steps.single_steps.global_histogram_equalization import GlobalHistogramEqualizer
 from source.image_preprocessing.preprocessing_steps.single_steps.gaussian_blurring import GaussianBlurFilter
