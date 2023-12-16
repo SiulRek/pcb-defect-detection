@@ -1,15 +1,16 @@
 import os
 
 import tensorflow as tf
-from source.utils.pcb_visualization import PCBVisualizerforTF
+
 
 # ------ Save to Record -------------------------------------------------------------
 def _bytes_feature(value):
-    # Helper function to create a TensorFlow Feature containing a list of bytes (required to serialize to a protocol buffer format).
+    """ Returns a bytes_list from a string / byte."""
     return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
+
 def serialize_sample(image, label):
-    # Serialize an image-label pair into a TFRecord-compatible Example object.
+    """ Serializes an image-label pair into a TFRecord-compatible Example object."""
     feature = {
         'image': _bytes_feature(tf.io.encode_jpeg(image).numpy()),
         'label': _bytes_feature(tf.io.serialize_tensor(label).numpy())
@@ -17,7 +18,9 @@ def serialize_sample(image, label):
     sample_proto = tf.train.Example(features=tf.train.Features(feature=feature))
     return sample_proto.SerializeToString()
 
+
 def save_tfrecord_to_file(dataset, filepath):
+    """ Saves a tf.data.Dataset object to a TFRecord file. """
     # Saves a tf.data.Dataset object to a TFRecord file.
     
     if not os.path.exists(os.path.dirname(filepath)):
@@ -28,8 +31,10 @@ def save_tfrecord_to_file(dataset, filepath):
             example = serialize_sample(image, label)
             writer.write(example)
 
+
 # ------ Load to Record -------------------------------------------------------------
 def parse_tfrecord(sample_proto):
+    """ Parses a serialized Example proto. It parses the image and label tensors from the serialized data."""
     feature_description = {
         'image': tf.io.FixedLenFeature([], tf.string),
         'label': tf.io.FixedLenFeature([], tf.string)
@@ -39,8 +44,9 @@ def parse_tfrecord(sample_proto):
     label = tf.io.parse_tensor(sample['label'], out_type=tf.int8)
     return image, label
 
+
 def load_tfrecord_from_file(filepath):
-    
+    """ Loads a TFRecord file into a tf.data.Dataset object."""
     if not os.path.exists(filepath):
         raise FileNotFoundError(f"tfrecord '{filepath}' does not exist.")
     

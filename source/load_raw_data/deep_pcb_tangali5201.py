@@ -10,39 +10,11 @@ DATASET_DIR = os.path.join(ROOT_DIR, 'data', 'deep_pcb_tangsali5201')
 TRAIN_RECORD_FILE = os.path.join(ROOT_DIR, r"data\tensorflow_records\deep_pcb_train.tfrecord")
 TEST_RECORD_FILE = os.path.join(ROOT_DIR, r"data\tensorflow_records\deep_pcb_test.tfrecord")
 
+
 class LoadDataError(Exception): pass
 
-def get_dataframes(dataset_dir=DATASET_DIR, create_annotation_summary=True):
-    """Generates and returns pandas DataFrames for training and testing deepPCB datasets of tangali5201 (https://github.com/tangsanli5201/DeepPCB/tree/master).
 
-    Parameters:
-        dataset_dir (str, optional): Directory path containing the dataset files.
-                                     Defaults to DATASET_DIR.
-        create_annotation_summary (bool, optional): If True, writes a summary CSV file. 
-                                                    Defaults to True.
-
-    Returns:
-        tuple: A tuple containing the training and testing pandas DataFrames.
-
-    The resulting DataFrame contains the following columns:
-    - path', 'path_without', 'group', 'xmin', 'ymin', 'xmax', 'ymax', and 'category_codes'.
-    """
-
-    train_dataset = get_dataset(os.path.join(dataset_dir, 'trainval.txt'))
-    test_dataset = get_dataset(os.path.join(dataset_dir, 'test.txt'))
-
-    train_df = pd.DataFrame(train_dataset)
-    test_df = pd.DataFrame(test_dataset)
-
-    if create_annotation_summary:
-        file_path = os.path.join(DATASET_DIR, 'annotation_summary.csv')
-        df = pd.concat([train_df, test_df])
-        df.to_csv(file_path, sep=';')
-
-
-    return train_df, test_df
-
-def get_dataset(path_to_paths_file, dataset_dir=DATASET_DIR):
+def get_dataset_dictionary(path_to_paths_file, dataset_dir=DATASET_DIR):
     """  Reads dataset information from a given file path and returns a dictionary.
 
     Parameters:
@@ -135,9 +107,41 @@ def get_dataset(path_to_paths_file, dataset_dir=DATASET_DIR):
                 
     return dataset
 
+
+def get_dataframes(dataset_dir=DATASET_DIR, create_annotation_summary=True):
+    """Generates and returns pandas DataFrames for training and testing deepPCB datasets of tangali5201 (https://github.com/tangsanli5201/DeepPCB/tree/master).
+
+    Parameters:
+        dataset_dir (str, optional): Directory path containing the dataset files.
+                                     Defaults to DATASET_DIR.
+        create_annotation_summary (bool, optional): If True, writes a summary CSV file. 
+                                                    Defaults to True.
+
+    Returns:
+        tuple: A tuple containing the training and testing pandas DataFrames.
+
+    The resulting DataFrame contains the following columns:
+    - path', 'path_without', 'group', 'xmin', 'ymin', 'xmax', 'ymax', and 'category_codes'.
+    """
+
+    train_dataset = get_dataset_dictionary(os.path.join(dataset_dir, 'trainval.txt'))
+    test_dataset = get_dataset_dictionary(os.path.join(dataset_dir, 'test.txt'))
+
+    train_df = pd.DataFrame(train_dataset)
+    test_df = pd.DataFrame(test_dataset)
+
+    if create_annotation_summary:
+        file_path = os.path.join(DATASET_DIR, 'annotation_summary.csv')
+        df = pd.concat([train_df, test_df])
+        df.to_csv(file_path, sep=';')
+
+
+    return train_df, test_df
+
+
 def get_tf_datasets(dataset_dir=DATASET_DIR, create_annotation_summary=False, random_seed=89):
     """
-    Creates a TensorFlow Dataset from Kaggle Dataset.
+    Generates and returns TensorFlow datasets for training and testing deepPCB datasets of tangali5201. 
     
     Parameters:
     - dataset_dir (str): Path to the dataset directory.
@@ -155,20 +159,30 @@ def get_tf_datasets(dataset_dir=DATASET_DIR, create_annotation_summary=False, ra
 
     return train_tf_dataset, test_tf_dataset
 
+
 def save_tf_records():
-    """    Generates and saves TensorFlow dataset to the TFRecord file.
+    """    Generates and saves TensorFlow dataset for training and testing deepPCB datasets of tangali5201 to two TFRecord files.
     """
     train_tf_dataset, test_tf_dataset = get_tf_datasets(create_annotation_summary=True)
     save_tfrecord_to_file(train_tf_dataset, TRAIN_RECORD_FILE)
     save_tfrecord_to_file(test_tf_dataset, TEST_RECORD_FILE)
 
+
 def load_tf_records():
-    """    Loads the specific TFRecord file and returns a parsed TensorFlow dataset.
+    """Loads TensorFlow training and test datasets from the TFRecord files of deepPCB datasets of tangali5201.
+
+    This function reads the TFRecord files that were previously saved using the `save_tf_records` function.
+    It then converts the data in these files into TensorFlow Dataset objects. Each object in the dataset
+    is a tuple where the first element is the image and the second element is the category code.
 
     Returns:
-    - tf.data.Dataset: A parsed and optimized TensorFlow dataset containing shuffled paths and corresponding targets.
+        tuple: A tuple containing two TensorFlow Dataset objects. The first one is for the training data
+               and the second one is for the testing data. Both TensorFlow Datasets contain tuples of (image, category_code),
+        where 'image' is the decoded image file and 'category_code' is an integer label.
     """
-    return load_tfrecord_from_file(TRAIN_RECORD_FILE, TEST_RECORD_FILE)
+    tf_train_dataset = load_tfrecord_from_file(TRAIN_RECORD_FILE)
+    tf_test_dataset = load_tfrecord_from_file(TEST_RECORD_FILE)
+    return tf_train_dataset, tf_test_dataset
 
 
 if __name__ == '__main__':
