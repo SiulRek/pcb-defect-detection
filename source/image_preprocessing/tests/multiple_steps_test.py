@@ -1,5 +1,5 @@
 """
-This module dynamically creates and manages unittest classes for testing variuous of the image preprocessing steps. 
+This module dynamically creates and manages unittest classes for testing variuous of the image preprocessing steps, with each class inheriting from `TestSingleStep`. 
 It utilizes the dynamic class creation in Python to generate test cases for different preprocessing steps. 
 This module allows additionally some tests to be skipped based on configuration flags.
 
@@ -87,6 +87,8 @@ steps_data = [
     (steps.MeanNormalizer, {}, True),
     (steps.LocalContrastNormalizer, {'depth_radius': 5, 'bias': 1.0, 'alpha': 0.0001, 'beta': 0.75}, True),
     (steps.ReverseScaler, {'scale_factor': 255}, True),
+    (steps.Mirrorer, {'mirror_direction': 'horizontal'}),
+    (steps.Rotator, {'angle': 180}),
 ]
 
 
