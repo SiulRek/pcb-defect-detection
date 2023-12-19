@@ -9,13 +9,15 @@ import source.load_raw_data.deep_pcb_tangali5201 as deep_pcb_dataset
 from source.utils.simple_popup_handler import SimplePopupHandler
 from source.utils.search_files_with_name import search_files_with_name
 
+
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
+
 
 if __name__ == '__main__':
     popup_handler = SimplePopupHandler()
     try: 
-        pass#kaggle_dataset.save_tf_record()
-        #deep_pcb_dataset.save_tf_records()
+        kaggle_dataset.save_tf_record()
+        deep_pcb_dataset.save_tf_records()
     except Exception as exc:
         popup_handler.display_popup_message(f'An error occurred: {str(exc)}')
         raise exc
