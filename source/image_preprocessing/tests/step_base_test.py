@@ -54,7 +54,9 @@ class TestStepBase(unittest.TestCase):
     """
 
     @classmethod
-    def setUpClass(cls) -> None:
+    def setUpClass(cls):
+        if not os.path.exists(OUTPUT_DIR):
+            os.mkdir(OUTPUT_DIR)
         cls.image_dataset = load_tf_record().take(9)
         cls.logger = TestResultLogger(LOG_FILE, 'Step Base Test')
     

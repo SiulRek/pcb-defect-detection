@@ -49,7 +49,7 @@ class RGBToGrayscale(StepBase):
         image_grayscale_tensor = correct_image_tensor_shape(image_grayscale_tensor)
         processed_image_nparray = (image_grayscale_tensor.numpy()).astype('uint8')
         return processed_image_nparray
-    # Note in real usage conversion of np.array to tensor and viceversa in one process_step is not recommended.
+
 
 class ErrorStep(StepBase):
 
@@ -75,6 +75,10 @@ class TestImagePreprocessor(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        
+        if not os.path.exists(OUTPUT_DIR):
+            os.mkdir(OUTPUT_DIR)
+        
         cls.image_dataset = load_tf_record().take(9)        # To reduce testing time test cases share this attribute Do not change this attribute.
         cls.logger = TestResultLogger(LOG_FILE, 'Image Preprocessor Test')
     

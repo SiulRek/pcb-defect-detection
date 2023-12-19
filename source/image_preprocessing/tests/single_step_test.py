@@ -78,7 +78,10 @@ class TestSingleStep(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-
+                
+        if not os.path.exists(OUTPUT_DIR):
+            os.mkdir(OUTPUT_DIR)
+            
         cls.image_dataset = load_tf_record().take(9)        
         
         cls.popup_handler = SimplePopupHandler()
