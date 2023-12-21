@@ -14,6 +14,7 @@ class TestRecursiveTypeConversion(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
+        os.makedirs(OUTPUT_DIR, exist_ok=True)
         cls.logger = TestResultLogger(LOG_FILE, 'Recursive Type Conversion Test')
 
     def tearDown(self):

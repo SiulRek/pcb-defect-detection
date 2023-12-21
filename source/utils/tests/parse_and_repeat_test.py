@@ -14,6 +14,7 @@ class TestParseAndRepeat(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
+        os.makedirs(OUTPUT_DIR, exist_ok=True)
         cls.logger = TestResultLogger(LOG_FILE, "Parse and Repeat Test")
 
     def tearDown(self):

@@ -14,6 +14,7 @@ class TestGetSampleFromDistribution(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls) -> None:
+        os.makedirs(OUTPUT_DIR, exist_ok=True)
         cls.logger = TestResultLogger(LOG_FILE)
         cls.logger.log_title("Get Sample From Distribution Test")
 
