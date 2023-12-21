@@ -18,7 +18,6 @@ class TestResultLogger():
             log_file (str): The path to the detailed log file. Defaults to 'test_results.log'.
             title (str): The title to be logged when `TestResultLogger` is initialized. Defaults to '' (no title).
         """
-        #super().__init__(log_file)
         self.log_file = log_file
         self.log_file_simple = log_file.replace('.log', '_simple.log')
         self.setup_logger()
@@ -46,18 +45,14 @@ class TestResultLogger():
         This method configures two loggers: one for detailed test outcomes and another for simplified outcomes.
         Each logger writes to its respective log file.
         """
-        try:
-            # Logger for detailed test outcomes
-            self.logger = logging.getLogger('TestResultLogger')
-            self._setup_file_handler(self.logger, self.log_file)
+        # Logger for detailed test outcomes
+        self.logger = logging.getLogger('TestResultLogger')
+        self._setup_file_handler(self.logger, self.log_file)
 
-            # Logger for simplified test outcomes
-            self.simple_logger = logging.getLogger('TestResultLoggerSimple')
-            self._setup_file_handler(self.simple_logger, self.log_file_simple)
+        # Logger for simplified test outcomes
+        self.simple_logger = logging.getLogger('TestResultLoggerSimple')
+        self._setup_file_handler(self.simple_logger, self.log_file_simple)
 
-        except Exception as exc:
-             print(f"Logging error: {exc}")
-    
     def log_title(self, title):
         """
         Logs a title string with a specific format.
@@ -122,9 +117,6 @@ class TestResultLogger():
             print('Logging error: %s', exc)
 
 
-
-
-
 # Example Test Suite to try out the logger
 class MyTest(unittest.TestCase):
     @classmethod
@@ -148,6 +140,7 @@ class MyTest(unittest.TestCase):
 
     def test_example_error(self):
         raise ValueError()
+
 
 if __name__ == '__main__':
     unittest.main()
