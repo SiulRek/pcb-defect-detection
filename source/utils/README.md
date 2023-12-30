@@ -21,3 +21,5 @@ This folder contains utility modules for the PCB defect detection project. Each 
 
 [simple_popup_handler.py](./simple_popup_handler.py): A utility class for displaying various simple pop-up dialogs using Tkinter. It can show informational messages, prompt for user inputs, and facilitate file selections.
 
+[copy_json_exclude_entries.py](./copy_json_exclude_entries.py): Provides a function for copying a JSON file while excluding specified entries.
+
