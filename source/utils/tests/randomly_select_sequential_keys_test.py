@@ -53,6 +53,37 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
                 extracted_indices.append(int(match.group(1)))
         self.assertTrue(is_sequential(extracted_indices))
 
+    def test_keys_with_frequency_simple(self):
+        input_dict = {
+            "name__L0": "value0", 
+            "name__L0F10": "alt0", 
+            "name__L1": "value1", 
+            "name__L1F10": "alt1"
+        }
+        output_dict = randomly_select_sequential_keys(input_dict)
+        self.assertTrue(all(key in input_dict for key in output_dict))
+        self.assertEqual(len(output_dict), 2)
+
+    def test_keys_with_frequency_with_probability(self):
+        input_dict = {
+            "name__L0": "value0", 
+            "name__L0F10": "alt0", 
+            "name__L1": "value1", 
+            "name__L1F10": "alt1"
+        }
+        output_dicts = []
+        for _ in range(1000):
+            output_dicts.append(randomly_select_sequential_keys(input_dict))
+        
+        # Get the number of times each key was selected.
+        key_counts = {}
+        for key in input_dict:
+            key_counts[key] = sum([1 if key in output_dict else 0 for output_dict in output_dicts])
+
+        # Check if the keys with frequency were selected with the correct probability.
+        self.assertAlmostEqual(key_counts["name__L0"], 100, delta=40)
+        self.assertAlmostEqual(key_counts["name__L1"], 100, delta=40)  
+
 
 if __name__ == '__main__':
     unittest.main()
