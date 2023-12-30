@@ -4,14 +4,17 @@ import re
 import random
 import re
 
+
 def is_sequential(lst):
     """
     Check if the list elements start from 0 and increment by 1 with each element.
 
-    :param lst: List to check.
-    :return: Boolean indicating whether the list is sequential starting from 0.
+    Args:
+    - param lst: List to check.
+    - return: Boolean indicating whether the list is sequential starting from 0.
     """
     return all(i == val for i, val in enumerate(lst))
+
 
 def randomly_select_sequential_keys(input_dict, separator='__'):
     """
@@ -26,6 +29,7 @@ def randomly_select_sequential_keys(input_dict, separator='__'):
     """
 
     seq_key_pattern = re.compile(r'.*' + re.escape(separator) + r'L(\d+)')
+    freq_key_pattern = re.compile(r'.*' + re.escape(separator) + r'L\d+F(\d+)')   
             
     match_flags = [True if seq_key_pattern.match(key) else False for key in input_dict]
 
@@ -42,7 +46,15 @@ def randomly_select_sequential_keys(input_dict, separator='__'):
     
     output_dict = {}
     for index in indices:
-        keys = [key for key in input_dict if seq_key_pattern.match(key).group(1) == index]
+        temp_keys = [key for key in input_dict if seq_key_pattern.match(key).group(1) == index]
+        keys = []
+        for key in temp_keys:
+            if freq_key_pattern.match(key):
+                freq = int(freq_key_pattern.match(key).group(1))
+                keys.extend([key]*freq)
+            else:
+                keys.append(key)
+
         selected_key = random.choice(keys)
         output_dict[selected_key] = input_dict[selected_key]
 
