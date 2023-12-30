@@ -112,10 +112,17 @@ class TestLongPipeline(unittest.TestCase):
         return True
 
     def test_process_pipeline(self):
-        processed_dataset = self.preprocessor.process(self.image_dataset)
+        
+        try:
+            processed_dataset = self.preprocessor.process(self.image_dataset)
+        except Exception as e:
+            raise BrokenPipeError('An exception occured while processing the dataset. This is the problematic pipeline: \n'
+                       + self.preprocessor.get_pipe_code_representation()) from e
+        
         if not self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=3):
             raise BrokenPipeError('The processed dataset has unexpected shapes. This is the problematic pipeline: \n'
                        + self.preprocessor.get_pipe_code_representation())
+        
         grayscaled_dataset = RGBToGrayscale().process_step(processed_dataset)
         if not self._verify_image_shapes(grayscaled_dataset, self.image_dataset, color_channel_expected=1):
             raise BrokenPipeError('The processed dataset could not be converted to grayscale correctly. This is the problematic pipeline: \n'
