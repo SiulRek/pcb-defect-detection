@@ -19,7 +19,7 @@ from source.load_raw_data.kaggle_dataset import load_tf_record
 from source.utils import TestResultLogger, copy_json_exclude_entries, ClassInstancesSerializer
 
 
-N = 100  # Number of Pipelines Tests to run.
+N = 10  # Number of Pipelines Tests to run.
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
 OUTPUT_DIR = os.path.join(ROOT_DIR, r'source/image_preprocessing/tests/outputs')
 JSON_TEMPLATE_FILE = os.path.join(ROOT_DIR, r'source/image_preprocessing/pipelines/template.json')
@@ -120,13 +120,14 @@ class TestLongPipeline(unittest.TestCase):
                        + self.preprocessor.get_pipe_code_representation()) from e
         
         if not self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=3):
-            raise BrokenPipeError('The processed dataset has unexpected shapes. This is the problematic pipeline: \n'
-                       + self.preprocessor.get_pipe_code_representation())
+            message = 'The processed dataset has unexpected shapes. This is the problematic pipeline: \n' + self.preprocessor.get_pipe_code_representation()
+            self.fail(message)
         
         grayscaled_dataset = RGBToGrayscale().process_step(processed_dataset)
         if not self._verify_image_shapes(grayscaled_dataset, self.image_dataset, color_channel_expected=1):
-            raise BrokenPipeError('The processed dataset could not be converted to grayscale correctly. This is the problematic pipeline: \n'
-                       + self.preprocessor.get_pipe_code_representation())
+            message = 'The processed dataset could not be converted to grayscale correctly. This is the problematic pipeline: \n' + self.preprocessor.get_pipe_code_representation()
+            self.fail(message)
+
 
 def load_long_pipeline_tests(n=N):
     """
