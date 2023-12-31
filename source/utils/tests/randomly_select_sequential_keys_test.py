@@ -80,6 +80,30 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
             if match:
                 extracted_indices.append(int(match.group(1)))
         self.assertTrue(is_sequential(extracted_indices))
+    
+    def _generate_test_data(self, num_sequences):
+        """
+        Generate test data with sequential keys for testing.
+
+        Args:
+        - num_sequences (int): The number of sequential pairs to generate.
+
+        Returns:
+        - (dict): A dictionary with generated test data.
+        """
+        return {f"name{i % 2}__L{i // 2}": f"value{i}" for i in range(num_sequences * 2)}
+
+    def test_normal_operation_with_long_sequence(self):
+        """ 
+        Test the normal operation of the function with a longer sequence.
+        """
+        num_sequences = 111 
+        input_dict = self._generate_test_data(num_sequences)
+        output_dict = randomly_select_sequential_keys(input_dict)
+        self.assertTrue(all(key in input_dict for key in output_dict))
+        self.assertEqual(len(output_dict), num_sequences)
+        extracted_indices = [int(re.search(r'L(\d+)', key).group(1)) for key in output_dict]
+        self.assertTrue(is_sequential(extracted_indices))
 
     def test_resilient_operation_1(self):
         """ 
