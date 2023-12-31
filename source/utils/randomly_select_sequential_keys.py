@@ -10,8 +10,10 @@ def is_sequential(lst):
     Check if the list elements start from 0 and increment by 1 with each element.
 
     Args:
-    - param lst: List to check.
-    - return: Boolean indicating whether the list is sequential starting from 0.
+    - lst (list): List to check.
+    
+    Returns:    
+    - (bool): Boolean indicating whether the list is sequential starting from 0.
     """
     return all(i == val for i, val in enumerate(lst))
 
@@ -21,28 +23,31 @@ def randomly_select_sequential_keys(input_dict, separator='__'):
     Randomly selects keys from a dictionary that follow a sequential pattern.
 
     Args:
-        input_dict (dict): The input dictionary containing keys to be selected.
-        separator (str, optional): The separator used in the key pattern. Defaults to '__'.
+    - input_dict (dict): The input dictionary containing keys to be selected.
+    - separator (str, optional): The separator used in the key pattern. Defaults to '__'.
 
     Returns:
-        dict: A new dictionary containing randomly selected keys and their corresponding values.
+    - (dict): A new dictionary containing randomly selected keys and their corresponding values.
     """
 
     seq_key_pattern = re.compile(r'.*' + re.escape(separator) + r'L(\d+)')
-    freq_key_pattern = re.compile(r'.*' + re.escape(separator) + r'L\d+F(\d+)')   
+    seq_key_pattern_end = re.compile(r'.*' + re.escape(separator) + r'L(\d+)$')
+    freq_key_pattern = re.compile(r'.*' + re.escape(separator) + r'L\d+F(\d+)$')   
             
-    match_flags = [True if seq_key_pattern.match(key) else False for key in input_dict]
+    match_flags = [
+        True if seq_key_pattern_end.match(key) or freq_key_pattern.match(key) else False
+        for key in input_dict
+    ]
 
     if not any(match_flags):
         return input_dict
     elif not all(match_flags):
-        raise ValueError('Some keys do not match the expected format. TODO change')
+        raise KeyError('Some keys do not follow a sequential pattern. Please ensure that all keys follow a sequential pattern.')
     
-
     indices = list(set([seq_key_pattern.match(key).group(1) for key in input_dict]))
     indices.sort()
     if not is_sequential([int(i) for i in indices]):
-        raise ValueError('The indices of the keys are not sequential. TODO Change.')
+        raise KeyError('The indices of the keys are not sequential. Please ensure that the keys follow a sequential pattern.')
     
     output_dict = {}
     for index in indices:
