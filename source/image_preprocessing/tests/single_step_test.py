@@ -64,6 +64,28 @@ class GrayscaleToRGB(StepBase):
         return image_grayscale_tensor
 
 
+class TypeCaster(StepBase):
+    """A preprocessing step that casts an image tensor to a specified data type."""
+
+    arguments_datatype = {'output_dtype': str}
+    name = 'Type Caster'
+
+    def __init__(self, output_dtype='float16'):
+        """Initializes the TypeCaster object for integration into an image preprocessing pipeline.
+
+           Args:
+               output_dtype (str): The desired data type to cast the image tensor to. 
+                    Must be an attribute in tensorflow . Default is 'float16'.
+        """
+        super().__init__(locals())
+        self.output_datatypes['image'] = getattr(tf, output_dtype)
+
+    @StepBase._tensor_pyfunc_wrapper
+    def process_step(self, image_tensor):
+        # image_tensor = tf.cast(image_tensor, self.output_datatypes['image']) Line is already going to be accomplished by the wrapper.
+        return image_tensor
+    
+
 class TestSingleStep(unittest.TestCase):
     """
     A unit test class for testing individual image preprocessing steps in to be integrated in the image preprocessing framework. The class focuses on ensuring the correct 
@@ -144,11 +166,20 @@ class TestSingleStep(unittest.TestCase):
 
     def test_process_execution(self):
         """ 
-        Ensures the preprocessing step executes without errors and correctly transforms the image data.
-        This test checks that the processing step can be applied to a dataset of images and 
-        that the processed images differ from the original, indicating effective transformation.
+        Verifies the execution and efficacy of the preprocessing step on an image dataset. This test 
+        validates that the preprocessing step:
+        1. Executes without errors on a dataset of images.
+        2. Alters the images in a way that is detectable when compared to the original images, 
+        suggesting successful transformation.
+        3. Processes images into the specified output datatype of the preprocessing step.
+        
+        The test involves applying the preprocessing step to an image dataset and comparing the 
+        processed images against the original ones. It confirms that the processed images have 
+        undergone transformation by checking for changes in content and shape.
         """
-        processed_dataset = self.test_step.process_step(self.image_dataset)
+        dtype_str = self.test_step.output_datatypes['image'].name
+        image_dataset = TypeCaster(dtype_str).process_step(self.image_dataset)
+        processed_dataset = self.test_step.process_step(image_dataset)
         for _, _ in processed_dataset.take(1):  # Consumes the dataset to force execution of the step.
             pass
         original_images = list(zip(*self.image_dataset))[0]
