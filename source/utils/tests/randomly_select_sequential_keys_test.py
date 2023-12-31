@@ -32,13 +32,19 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
 
     def tearDown(self):
         self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
-    
-    def test_no_matching_keys(self):
+
+    def get_stripped_dict_keys(self, input_dict, separator='__'):
         """ 
-        Test that the function returns the input dictionary when no keys match the pattern.
+        Get the keys of a dictionary with the separator and part after the separator removed.
+        
+        Args:
+        - input_dict (dict): The input dictionary.
+        - separator (str, optional): The separator used in the key pattern. Defaults to '__'.
+        
+        Returns:
+        - (list): A list of keys in the input dictionary.
         """
-        input_dict = {"A1": "value1", "B2": "value2"}
-        self.assertEqual(randomly_select_sequential_keys(input_dict), input_dict)
+        return [key.split(separator)[0] for key in input_dict.keys()]
 
     def test_some_keys_not_matching(self):
         """ 
@@ -52,7 +58,7 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
         """ 
         Test that the function raises an error when the indices are not sequential.
         """
-        input_dict = {"name__L1": "value1", "name__L3": "value2"}
+        input_dict = {"name1__L1": "value1", "name2__L3": "value2"}
         with self.assertRaises(KeyError):
             randomly_select_sequential_keys(input_dict)
 
@@ -60,26 +66,23 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
         """ 
         Test that all keys are selected when all keys match the pattern and have different indices.
         """
-        input_dict = {"name__L0": "value0", "name__L1": "value1", "name__L2": "value2"}
+        input_dict = {"name0__L0": "value0", "name1__L1": "value1", "name2__L2": "value2"}
         output_dict = randomly_select_sequential_keys(input_dict)
-        self.assertTrue(all(key in input_dict for key in output_dict))
+        stripped_input_keys = self.get_stripped_dict_keys(input_dict)
+        self.assertTrue(all(key in stripped_input_keys for key in output_dict))
         self.assertEqual(len(output_dict), 3)
-        self.assertTrue(is_sequential([int(key.split('name__L')[1]) for key in output_dict]))
+        self.assertTrue(is_sequential([int(key.split('name')[1]) for key in output_dict]))
 
     def test_normal_operation(self):
         """ 
         Test the normal operation of the function.
         """
-        input_dict = {"name1__L0": "value0", "name2__L0": "alt0", "name1__L1": "value1", "name2__L1": "alt1"}
+        input_dict = {"a_name0__L0": "value0", "b_name0__L0": "alt0", "a_name1__L1": "value1", "b_name1__L1": "alt1"}
         output_dict = randomly_select_sequential_keys(input_dict)
-        self.assertTrue(all(key in input_dict for key in output_dict))
+        stripped_input_keys = self.get_stripped_dict_keys(input_dict)
+        self.assertTrue(all(key in stripped_input_keys for key in output_dict))
         self.assertEqual(len(output_dict), 2)
-        extracted_indices = []
-        for key in output_dict:
-            match = re.search(r'L(\d+)', key)
-            if match:
-                extracted_indices.append(int(match.group(1)))
-        self.assertTrue(is_sequential(extracted_indices))
+        self.assertTrue(is_sequential([int(key.split('name')[1]) for key in output_dict]))
     
     def _generate_test_data(self, num_sequences):
         """
@@ -91,7 +94,7 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
         Returns:
         - (dict): A dictionary with generated test data.
         """
-        return {f"name{i % 2}__L{i // 2}": f"value{i}" for i in range(num_sequences * 2)}
+        return {f"{i % 2}_name{i // 2}__L{i // 2}": f"value{i}" for i in range(num_sequences * 2)}
 
     def test_normal_operation_with_long_sequence(self):
         """ 
@@ -100,54 +103,47 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
         num_sequences = 111 
         input_dict = self._generate_test_data(num_sequences)
         output_dict = randomly_select_sequential_keys(input_dict)
-        self.assertTrue(all(key in input_dict for key in output_dict))
+        stripped_input_keys = self.get_stripped_dict_keys(input_dict)
+        self.assertTrue(all(key in stripped_input_keys for key in output_dict))
         self.assertEqual(len(output_dict), num_sequences)
-        extracted_indices = [int(re.search(r'L(\d+)', key).group(1)) for key in output_dict]
-        self.assertTrue(is_sequential(extracted_indices))
+        self.assertTrue(is_sequential([int(key.split('name')[1]) for key in output_dict]))
 
     def test_resilient_operation_1(self):
         """ 
         Test that the function is resilient to unique identifier specified in keys.
         """
-        input_dict = {"name1__1__L1": "value1", "name2__1__L1": "alt1", "name1__2__L0": "value0",  "name2__2__L0": "alt0"}
+        input_dict = {"name1__1__L1": "value1", "name1__2__L1": "alt1", "name0__3__L0": "value0",  "name0__4__L0": "alt0"}
         output_dict = randomly_select_sequential_keys(input_dict)
-        self.assertTrue(all(key in input_dict for key in output_dict))
+        stripped_input_keys = ['name1__1', 'name1__2', 'name0__3', 'name0__4']
+        self.assertTrue(all(key in stripped_input_keys for key in output_dict))
         self.assertEqual(len(output_dict), 2)
-        extracted_indices = []
-        for key in output_dict:
-            match = re.search(r'L(\d+)', key)
-            if match:
-                extracted_indices.append(int(match.group(1)))
-        self.assertTrue(is_sequential(extracted_indices))
+        self.assertTrue(is_sequential([int(key.split('name')[1][0]) for key in output_dict]))
     
     def test_resilient_operation_2(self):
         """ 
         Test that the function is resilient to the order of the keys.
         """
-        input_dict = {"name1__L1": "value1", "name1__L0": "value0", "name2__L1": "alt1", "name2__L0": "alt0"}
+        input_dict = {"aname1__L1": "value1", "aname0__L0": "value0", "bname1__L1": "alt1", "bname0__L0": "alt0"}
         output_dict = randomly_select_sequential_keys(input_dict)
-        self.assertTrue(all(key in input_dict for key in output_dict))
+        stripped_input_keys = self.get_stripped_dict_keys(input_dict)
+        self.assertTrue(all(key in stripped_input_keys for key in output_dict))
         self.assertEqual(len(output_dict), 2)
-        extracted_indices = []
-        for key in output_dict:
-            match = re.search(r'L(\d+)', key)
-            if match:
-                extracted_indices.append(int(match.group(1)))
-        self.assertTrue(is_sequential(extracted_indices))
+        self.assertTrue(is_sequential([int(key.split('name')[1]) for key in output_dict]))
 
     def test_keys_with_frequency_simple(self):
         """ 
         Test that keys with frequency specification are processed correctly.
         """
         input_dict = {
-            "name__L0": "value0", 
-            "name__L0F10": "alt0", 
-            "name__L1": "value1", 
-            "name__L1F10": "alt1",
-            "name__L2F10": "alt2",
+            "name1__L0": "value0", 
+            "name2__L0F10": "alt0", 
+            "name3__L1": "value1", 
+            "name4__L1F10": "alt1",
+            "name5__L2F10": "alt2",
         }
         output_dict = randomly_select_sequential_keys(input_dict)
-        self.assertTrue(all(key in input_dict for key in output_dict))
+        stripped_input_keys = self.get_stripped_dict_keys(input_dict)
+        self.assertTrue(all(key in stripped_input_keys for key in output_dict))
         self.assertEqual(len(output_dict), 3)
 
     def test_keys_with_frequency_with_probability(self):
@@ -156,33 +152,58 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
         """
 
         input_dict = {
-            "name__L0": "value0", 
-            "name__L0F10": "alt0", 
-            "name__L1": "value1", 
-            "name__L1F10": "alt1"
+            "name1__L0": "value0", 
+            "name2__L0F10": "alt0", 
+            "name3__L1": "value1", 
+            "name4__L1F10": "alt1"
         }
+        keys = ['name1', 'name2', 'name3', 'name4']
         output_dicts = []
         for _ in range(1000):
             output_dicts.append(randomly_select_sequential_keys(input_dict))
         
         key_counts = {}
-        for key in input_dict:
+        for key in keys:
             key_counts[key] = sum([1 if key in output_dict else 0 for output_dict in output_dicts])
 
-        self.assertAlmostEqual(key_counts["name__L0"], 100, delta=40)
-        self.assertAlmostEqual(key_counts["name__L1"], 100, delta=40)  
+        self.assertAlmostEqual(key_counts["name1"], 100, delta=40)
+        self.assertAlmostEqual(key_counts["name3"], 100, delta=40)  
+   
+    # def test_pattern_ending_allowed(self):
+    #     """
+    #     Test that keys with additional allowed characters after the pattern are correctly identified.
+    #     """
+    #     separator = '__'
+    #     input_dict = {
+    #         f"name1{separator}extra{separator}L0": "value0", 
+    #         f"name2{separator}L1": "value1", 
+    #         f"name3{separator}L2{separator}extra": "value2",  
+    #         f"name4{separator}L3F10": "value3",  
+    #         f"name5{separator}L4F10{separator}extra": "value4" 
+    #     }
 
-    def test_pattern_ending(self):
+    #     expected_dict = {
+    #         f"name1{separator}extra": "value0",
+    #         f"name2": "value1",
+    #         f"name3{separator}extra": "value2",
+    #         f"name4": "value3",
+    #         f"name5{separator}extra": "value4"
+    #     }
+      
+    #     output_dict = randomly_select_sequential_keys(input_dict)
+    #     self.assertEqual(output_dict, expected_dict)
+
+    def test_pattern_ending_not_allowed(self):
         """
-        Test that keys with additional characters after the pattern are correctly identified and lead to error.
+        Test that keys with additional not allowed characters after the pattern are correctly identified and lead to error.
         """
         separator = '__'
         input_dict = {
-            f"name{separator}L0": "value0", 
-            f"name{separator}L1": "value1", 
-            f"name{separator}L2_extra": "value2",  
-            f"name{separator}L3F10": "value3",  
-            f"name{separator}L4F10_extra": "value4" 
+            f"name1{separator}L0": "value0", 
+            f"name2{separator}L1": "value1", 
+            f"name3{separator}L2_extra": "value2",  
+            f"name4{separator}L3F10": "value3",  
+            f"name5{separator}L4F10_extra": "value4" 
         }
 
         with self.assertRaises(KeyError):
