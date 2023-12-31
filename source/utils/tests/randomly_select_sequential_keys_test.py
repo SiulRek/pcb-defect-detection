@@ -20,6 +20,8 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
     integrity, and frequency-based key selection. Each test ensures the function's robustness
     and error handling, verifying its consistency across different key configurations and
     input scenarios.
+
+    Note: All test cases take the default separator value of '__' for simplicity.
     """
 
 
@@ -79,7 +81,22 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
                 extracted_indices.append(int(match.group(1)))
         self.assertTrue(is_sequential(extracted_indices))
 
-    def test_resilient_operation(self):
+    def test_resilient_operation_1(self):
+        """ 
+        Test that the function is resilient to unique identifier specified in keys.
+        """
+        input_dict = {"name1__1__L1": "value1", "name2__1__L1": "alt1", "name1__2__L0": "value0",  "name2__2__L0": "alt0"}
+        output_dict = randomly_select_sequential_keys(input_dict)
+        self.assertTrue(all(key in input_dict for key in output_dict))
+        self.assertEqual(len(output_dict), 2)
+        extracted_indices = []
+        for key in output_dict:
+            match = re.search(r'L(\d+)', key)
+            if match:
+                extracted_indices.append(int(match.group(1)))
+        self.assertTrue(is_sequential(extracted_indices))
+    
+    def test_resilient_operation_2(self):
         """ 
         Test that the function is resilient to the order of the keys.
         """
