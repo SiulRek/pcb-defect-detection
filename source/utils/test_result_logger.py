@@ -108,7 +108,7 @@ class TestResultLogger():
             for failure in result.failures:
                 if failure[0]._testMethodName == test_method_name:
                     success = False
-                    self._log_outcome('failure', test_method_name)
+                    self._log_outcome('failure', test_method_name, failure[1])
                     break
 
             if success: 
