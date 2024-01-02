@@ -26,6 +26,7 @@ class MockClass2:
     arguments_datatype = {'param1': str, 'param2': int}
     def __init__(self, param1, param2=20):
         self.parameters = {'param1': param1, 'param2': param2}
+        self.name = 'MockClass2'
     
     def __eq__(self, obj):
         return self.parameters == obj.parameters
@@ -241,6 +242,41 @@ class TestClassInstancesSerializer(unittest.TestCase):
         self.assertIn(loaded_instance_list[0].parameters['param2'], mock_class_parameters_1['param2'])
         self.assertIn(loaded_instance_list[1].parameters['param1'], mock_class_parameters_2['param1'])
         self.assertTrue(1 <= loaded_instance_list[1].parameters['param2'] <= 10)
+
+    def test_key_randomization_with_json(self):
+        
+        mock_class_parameters_1 = {'param1': 'hallo', 'param2': 20, 'param3': {'key1': 30, 'key2':(3.2, True)}}     
+        mock_class_parameters_2 = {'param1': 'servus', 'param2': 3} 
+        sep = ClassInstancesSerializer.KEY_SEPARATOR  
+        key_1 = 'MockClass1' + sep + 'i0' + sep + 'I0'               
+        key_2 = 'MockClass2' + sep + 'i0' + sep + 'I0F9'               
+        key_3 = 'MockClass1' + sep + 'i1' + sep + 'I1'               
+        key_4 = 'MockClass2' + sep + 'i1' + sep + 'I1F9'               
+        json_data = {
+            key_1: mock_class_parameters_1, 
+            key_2: mock_class_parameters_2,
+            key_3: mock_class_parameters_1,
+            key_4: mock_class_parameters_2
+            }
+        
+        with open(self.json_path, 'w') as file:
+            json.dump(json_data, file)
+
+        loaded_instance_lists = []
+        for _ in range(500):
+            loaded_instance_lists.append(self.serializer.get_instances_from_json(self.json_path))
+        
+        key_counts = {'MockClass1': 0, 'MockClass2': 0}
+        for lst in loaded_instance_lists:
+            self.assertEqual(len(lst), 2)
+            for instance in lst:
+                if isinstance(instance, MockClass1):
+                    key_counts['MockClass1'] += 1
+                if isinstance(instance, MockClass2):
+                    key_counts['MockClass2'] += 1
+
+        self.assertAlmostEqual(key_counts['MockClass1'], 100, delta=25)
+        self.assertAlmostEqual(key_counts['MockClass2'], 900, delta=25)
 
     def test_save_instances_to_json(self):
         self.serializer.save_instances_to_json(self.instance_list, self.json_path)
