@@ -136,6 +136,15 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
         self.assertTrue(all(key in stripped_input_keys for key in output_dict))
         self.assertEqual(len(output_dict), 2)
         self.assertTrue(is_sequential([int(key.split('i')[1]) for key in output_dict]))
+    
+    def test_key_already_selected(self):
+        """ 
+        Test that the function is resilient to keys that have already been selected.
+        """
+        input_dict = {"a_key__I0": "value0", "a_key__I1": "value1"}
+        
+        with self.assertRaises(KeyError):
+            randomly_select_sequential_keys(input_dict)
 
     def test_keys_with_frequency_simple(self):
         """ 
