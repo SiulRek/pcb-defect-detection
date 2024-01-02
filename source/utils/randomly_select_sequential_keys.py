@@ -97,6 +97,9 @@ def randomly_select_sequential_keys(input_dict, separator='__'):
         selected_key = random.choice(keys)
         new_key = remove_second_group(selected_key, freq_key_pattern_all_groups)
         new_key = remove_second_group(new_key, ind_key_pattern_all_groups)
+
+        if new_key in output_dict:
+            raise KeyError('The selected key already exists in the output dictionary.')
         output_dict[new_key] = input_dict[selected_key]
 
     return output_dict
