@@ -6,6 +6,7 @@ import random
 from source.utils.recursive_type_conversion import recursive_type_conversion
 from source.utils.get_sample_from_distribution import get_sample_from_distribution
 from source.utils.parse_and_repeat import parse_and_repeat
+from source.utils.randomly_select_sequential_keys import randomly_select_sequential_keys
 
 class ClassInstancesSerializer:
     """
@@ -270,9 +271,12 @@ class ClassInstancesSerializer:
         try:
             with open(json_path, 'r') as file:
                 json_data = json.load(file)
+                json_data = randomly_select_sequential_keys(json_data, separator=ClassInstancesSerializer.KEY_SEPARATOR)
                 class_names = list(json_data.keys())
         except FileNotFoundError as e:
             raise FileNotFoundError("Specified JSON file storing the instance list to be loaded was not found.") from e
+        except KeyError as e:
+            raise KeyError("The JSON file storing the instance list to be loaded has faulty key names.") from e
         
         instance_list = []
         for class_name in class_names:
