@@ -18,4 +18,6 @@ This folder contains test suites and modules for evaluating the components of th
 
 [channel_conversions_steps_test.py](./channel_conversions_steps_test.py): Costumized test suites, inheriting from `TestSingleStep`, for preprocessing steps converting images between RGB and Grayscale channel formats.
 
+[long_pipeline_test](./long_pipeline_test.py): This suite is designed to test the framework's ability to manage long, potentially complex pipelines, ensuring no issues or bugs arise during processing. By applying random preconfigured pipelines to a dataset and verifying their outputs, the tests help build confidence in the framework's robustness. 
+
 [test_runner.py](./test_runner.py): Runs most of the test cases from the image preprocessing testing framework, combining different test modules.
