@@ -182,8 +182,8 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
         for key in keys:
             key_counts[key] = sum([1 if key in output_dict else 0 for output_dict in output_dicts])
 
-        self.assertAlmostEqual(key_counts["a_key"], 100, delta=40)
-        self.assertAlmostEqual(key_counts["c_key"], 100, delta=40)  
+        self.assertAlmostEqual(key_counts["a_key"], 91, delta=25)
+        self.assertAlmostEqual(key_counts["c_key"], 91, delta=25)  
    
     def test_pattern_ending_allowed(self):
         """
