@@ -57,6 +57,11 @@ def create_test_class_for_step(step_class, arguments, visual_inspection_always_d
             @skip("No value or shape changes are to be expected when Type Casting.")
             def test_process_execution(self):
                 pass
+        
+        if isinstance(step_class(), steps.DummyStep):
+            @skip("No value or shape changes are to be expected when processing Dummy Step.")
+            def test_process_execution(self):
+                pass
 
 
     name = step_class.name.replace(' ', '')
@@ -89,6 +94,7 @@ steps_data = [
     (steps.ReverseScaler, {'scale_factor': 255}, True),
     (steps.Mirrorer, {'mirror_direction': 'horizontal'}),
     (steps.Rotator, {'angle': 180}),
+    (steps.DummyStep, {}),
 ]
 
 
