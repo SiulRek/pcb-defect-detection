@@ -105,5 +105,8 @@
     },    
     "Rotator": {
         "angle": 90.0
+    },
+    "DummyStep": {
+
     }
 }

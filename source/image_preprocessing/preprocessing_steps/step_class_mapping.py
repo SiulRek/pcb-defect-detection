@@ -28,5 +28,6 @@ STEP_CLASS_MAPPING = {
     'Reverse Scaler': steps.ReverseScaler,
     'Type Caster': steps.TypeCaster,
     'Mirrorer': steps.Mirrorer,
-    'Rotator': steps.Rotator
+    'Rotator': steps.Rotator,
+    'DummyStep': steps.DummyStep,
 }

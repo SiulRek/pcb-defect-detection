@@ -1,8 +1,6 @@
 from tensorflow import image 
 
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
-from source.image_preprocessing.preprocessing_steps.step_utils import correct_image_tensor_shape
-
 
 
 class RGBToGrayscale(StepBase):

@@ -28,3 +28,4 @@ from source.image_preprocessing.preprocessing_steps.single_steps.reverse_scaling
 from source.image_preprocessing.preprocessing_steps.single_steps.type_casting import TypeCaster
 from source.image_preprocessing.preprocessing_steps.single_steps.mirroring import Mirrorer
 from source.image_preprocessing.preprocessing_steps.single_steps.rotating import Rotator
+from source.image_preprocessing.preprocessing_steps.single_steps.dummy_step import DummyStep
