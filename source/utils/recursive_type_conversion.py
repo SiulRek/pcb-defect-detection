@@ -21,8 +21,8 @@ def recursive_type_conversion(source_value, target_datatype_template):
     if target_datatype_template in [int, float, str, bool]:
         try:
             return target_datatype_template(source_value)
-        except  ValueError:
-            raise TypeError(f"Value '{source_value}' cannot be recursivly converted to {target_datatype_template}.")
+        except  ValueError as ex:
+            raise TypeError(f"Value '{source_value}' cannot be recursivly converted to {target_datatype_template}.") from ex
 
     elif target_datatype is list:
         if isinstance(source_value, tuple):
