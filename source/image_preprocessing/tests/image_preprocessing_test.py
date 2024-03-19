@@ -100,8 +100,8 @@ class TestImagePreprocessor(unittest.TestCase):
             os.remove(JSON_TEST_FILE)
         self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
 
-    def _verify_image_shapes(self, processed_dataset, original_dataset, color_channel_expected):
-        for original_image, processed_image in zip(original_dataset, processed_dataset):
+    def _verify_image_shapes(self, processed_images, original_images, color_channel_expected):
+        for original_image, processed_image in zip(original_images, processed_images):
             self.assertEqual(processed_image.shape[:1], original_image.shape[:1]) # Check if height and width are equal.
             self.assertEqual(color_channel_expected, processed_image.shape[2])     
     
@@ -219,8 +219,8 @@ class TestImagePreprocessor(unittest.TestCase):
         """
         preprocessor = ImagePreprocessor()
         preprocessor.set_pipe(self.pipeline)
-        processed_dataset = preprocessor.process(self.image_dataset)
-        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=1)
+        processed_images = preprocessor.process(self.image_dataset)
+        self._verify_image_shapes(processed_images, self.image_dataset, color_channel_expected=1)
 
     def test_save_and_load_pipeline(self):
         """    Ensures the image preprocessing pipeline can be saved and subsequently loaded.
@@ -242,8 +242,8 @@ class TestImagePreprocessor(unittest.TestCase):
         for old_step, new_step in zip(old_preprocessor.pipeline, new_preprocessor.pipeline):
             self.assertEqual(old_step, new_step, 'Pipeline steps are not equal.')
         
-        processed_dataset = new_preprocessor.process(self.image_dataset)
-        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=1)
+        processed_images = new_preprocessor.process(self.image_dataset)
+        self._verify_image_shapes(processed_images, self.image_dataset, color_channel_expected=1)
     
     def test_load_randomized_pipeline(self):
         """
@@ -288,9 +288,9 @@ class TestImagePreprocessor(unittest.TestCase):
         ]
         preprocessor = ImagePreprocessor(raise_step_process_exception=False)
         preprocessor.set_pipe(pipeline)
-        processed_dataset = preprocessor.process(self.image_dataset)
+        processed_images = preprocessor.process(self.image_dataset)
         self.assertIn("missing required argument 'ksize'",preprocessor.occurred_exception_message)
-        self.assertIsNone(processed_dataset)
+        self.assertIsNone(processed_images)
     
     def test_not_raised_step_process_exception_2(self):
         """   Test case for ensuring that when pipeline construction is faulty, when processing an image
@@ -305,9 +305,9 @@ class TestImagePreprocessor(unittest.TestCase):
         ]
         preprocessor = ImagePreprocessor(raise_step_process_exception=False)
         preprocessor.set_pipe(pipeline)
-        processed_dataset = preprocessor.process(self.image_dataset)
+        processed_images = preprocessor.process(self.image_dataset)
         self.assertIn("An error occurred in step RGB_to_Grayscale",preprocessor.occurred_exception_message)
-        self.assertIsNone(processed_dataset)
+        self.assertIsNone(processed_images)
 
 
 if __name__ == '__main__':
