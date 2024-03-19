@@ -10,6 +10,7 @@ from source.image_preprocessing.image_preprocessor import ImagePreprocessor
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 from source.image_preprocessing.preprocessing_steps.step_utils import correct_image_tensor_shape
 from source.load_raw_data.kaggle_dataset import load_tf_record
+from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
 from source.utils import TestResultLogger
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
@@ -79,7 +80,8 @@ class TestImagePreprocessor(unittest.TestCase):
         if not os.path.exists(OUTPUT_DIR):
             os.mkdir(OUTPUT_DIR)
         
-        cls.image_dataset = load_tf_record().take(9)        # To reduce testing time test cases share this attribute Do not change this attribute.
+        kaggle_dataset = load_tf_record().take(9)        # To reduce testing time test cases share this attribute Do not change this attribute.
+        cls.image_dataset = unpack_tf_dataset(kaggle_dataset)[0]
         cls.logger = TestResultLogger(LOG_FILE, 'Image Preprocessor Test')
     
     def setUp(self):
@@ -99,11 +101,9 @@ class TestImagePreprocessor(unittest.TestCase):
         self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
 
     def _verify_image_shapes(self, processed_dataset, original_dataset, color_channel_expected):
-
-        for original_data, processed_data in zip(original_dataset, processed_dataset):
-            self.assertEqual(processed_data[1], original_data[1])   # Check if targets are equal.
-            self.assertEqual(processed_data[0].shape[:1], original_data[0].shape[:1]) # Check if height and width are equal.
-            self.assertEqual(color_channel_expected, processed_data[0].shape[2])     
+        for original_image, processed_image in zip(original_dataset, processed_dataset):
+            self.assertEqual(processed_image.shape[:1], original_image.shape[:1]) # Check if height and width are equal.
+            self.assertEqual(color_channel_expected, processed_image.shape[2])     
     
     def test_pipe_pop_and_append(self):
         """
