@@ -176,7 +176,7 @@ class ImagePreprocessor:
         """
         Consumes a TensorFlow dataset to force the execution of the computation graph.
         """
-        for _, _ in tf_dataset.take(1): 
+        for _ in tf_dataset.take(1): 
             pass
 
     def process(self, image_dataset):
