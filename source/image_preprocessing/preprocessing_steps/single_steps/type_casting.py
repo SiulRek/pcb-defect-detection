@@ -15,11 +15,11 @@ class TypeCaster(StepBase):
                     Must be an attribute in tensorflow . Default is 'float16'.
         """
         super().__init__(locals())
-        self.output_datatypes['image'] = getattr(tf, output_dtype)
+        self.output_datatype = getattr(tf, output_dtype)
 
     @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
-        # image_tensor = tf.cast(image_tensor, self.output_datatypes['image']) Line is already going to be accomplished by the wrapper.
+        # image_tensor = tf.cast(image_tensor, self.output_datatype) Line is already going to be accomplished by the wrapper.
         return image_tensor
 
 if __name__ == '__main__':

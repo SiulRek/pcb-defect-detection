@@ -20,12 +20,12 @@ class ReverseScaler(StepBase):
                scale_factor (float): The factor used for scaling the image tensor. Default is 255.
         """
         super().__init__(locals())
-        self.output_datatypes['image'] = tf.float16 
+        self.output_datatype = tf.float16 
     
     @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
-        image_tensor = tf.cast(image_tensor, self.output_datatypes['image'])
-        scale_factor = tf.constant(self.parameters['scale_factor'], self.output_datatypes['image'])
+        image_tensor = tf.cast(image_tensor, self.output_datatype)
+        scale_factor = tf.constant(self.parameters['scale_factor'], self.output_datatype)
         scaled_image = image_tensor / scale_factor
         return scaled_image
 

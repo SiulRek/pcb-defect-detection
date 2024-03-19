@@ -16,11 +16,11 @@ class MinMaxNormalizer(StepBase):
         """Initializes the MinMaxNormalizer object for integration into an image preprocessing pipeline.
         """
         super().__init__({})
-        self.output_datatypes['image'] = tf.float16
+        self.output_datatype = tf.float16
     
     @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
-        image_tensor = tf.cast(image_tensor, self.output_datatypes['image'])
+        image_tensor = tf.cast(image_tensor, self.output_datatype)
         min_val = tf.reduce_min(image_tensor)
         max_val = tf.reduce_max(image_tensor)
         normalized_image = (image_tensor - min_val) / (max_val - min_val)
