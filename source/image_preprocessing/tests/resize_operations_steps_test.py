@@ -10,7 +10,7 @@ from source.image_preprocessing.tests.single_step_test import TestSingleStep
 import source.image_preprocessing.preprocessing_steps as steps
 
 
-ENABLE_VISUAL_INSPECTION = True
+ENABLE_VISUAL_INSPECTION = False
 
 
 class TestSquareShapePadder(TestSingleStep):
@@ -39,11 +39,12 @@ class TestSquareShapePadder(TestSingleStep):
         Compares the processed images to the original dataset to ensure correct height, width, 
         and color channel transformations.
         """
-        for original_data, processed_data in zip(original_dataset, processed_dataset):
-            self.assertEqual(processed_data[1], original_data[1], 'Targets are not equal.')  
-            processed_data_shape = tuple(processed_data[0].shape[:2].as_list())
-            self.assertEqual(color_channel_expected, processed_data[0].shape[2], 'Color channels are not equal.') 
-            self.assertEqual(processed_data_shape[0], processed_data_shape[1], 'Heights and widths are not equal.')     
+        for original_image, processed_image in zip(original_dataset, processed_dataset):
+            processed_image_shape = tuple(processed_image.shape[:2].as_list())
+            original_image_shape = tuple(original_image.shape[:2].as_list())
+            self.assertNotEqual(processed_image_shape, original_image_shape)
+            self.assertEqual(color_channel_expected, processed_image.shape[2], 'Color channels are not equal.') 
+            self.assertEqual(processed_image_shape[0], processed_image_shape[1], 'Heights and widths are not equal.')     
 
 
 class TestShapeResizer(TestSingleStep):
@@ -74,12 +75,13 @@ class TestShapeResizer(TestSingleStep):
         Compares the processed images to the original dataset to ensure correct height, width, 
         and color channel transformations.
         """
-        for original_data, processed_data in zip(original_dataset, processed_dataset):
-            self.assertEqual(processed_data[1], original_data[1], 'Targets are not equal.')  
-            processed_data_shape = tuple(processed_data[0].shape[:2].as_list())
-            self.assertEqual(color_channel_expected, processed_data[0].shape[2], 'Color channels are not equal.') 
-            self.assertEqual(self.parameters['desired_shape'][0], processed_data_shape[0], 'heights are not like desired.')     
-            self.assertEqual(self.parameters['desired_shape'][1], processed_data_shape[1], 'widths are not like desired.') 
+        for original_image, processed_image in zip(original_dataset, processed_dataset):
+            processed_image_shape = tuple(processed_image.shape[:2].as_list())
+            original_image_shape = tuple(original_image.shape[:2].as_list())
+            self.assertNotEqual(processed_image_shape, original_image_shape)
+            self.assertEqual(color_channel_expected, processed_image.shape[2], 'Color channels are not equal.') 
+            self.assertEqual(self.parameters['desired_shape'][0], processed_image_shape[0], 'heights are not like desired.')     
+            self.assertEqual(self.parameters['desired_shape'][1], processed_image_shape[1], 'widths are not like desired.') 
 
 
 def load_resize_operations_steps_tests():
@@ -95,7 +97,7 @@ def load_resize_operations_steps_tests():
     """
     loader = unittest.TestLoader()
     test_suites = []
-    #test_suites.append(loader.loadTestsFromTestCase(TestSquareShapePadder))
+    test_suites.append(loader.loadTestsFromTestCase(TestSquareShapePadder))
     test_suites.append(loader.loadTestsFromTestCase(TestShapeResizer))
     test_suite = unittest.TestSuite(test_suites)  # Combine the suites
     return test_suite
