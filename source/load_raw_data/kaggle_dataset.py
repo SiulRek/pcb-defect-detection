@@ -10,6 +10,7 @@ ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 
 PATH_ANNOTATIONS = os.path.join(ROOT_DIR, r"data\pcb_defects_kaggle\Annotations") # Path to annotations.
 PATH_IMAGE = os.path.join(ROOT_DIR, r"data\pcb_defects_kaggle\images") # Path to .jpg images.
+PATH_PCB_USED = os.path.join(ROOT_DIR, r"data\pcb_defects_kaggle\PCB_USED") # Path to .jpg PCB used.
 RECORD_FILE = os.path.join(ROOT_DIR, r"data\tensorflow_records\pcb_defects_kaggle.tfrecord")
 
 
@@ -168,6 +169,23 @@ def get_tf_dataset(path_an=PATH_ANNOTATIONS, path_im=PATH_IMAGE, create_annotati
     return get_tf_dataset_from_df(df, random_seed=random_seed, sample_num=sample_num)
 
 
+def get_tf_dataset_with_category_zero(image_path=PATH_PCB_USED, random_seed=75):
+    """
+    Generates a TensorFlow Dataset from the Kaggle PCB defects dataset with category zero.
+
+    Parameters:
+    - image_path (str): Path to the directory containing images.
+    - random_seed (int, optional): The random seed for shuffling the dataset. Defaults to 34.
+    """
+    all_files = []       
+    for image_name in os.listdir(image_path):
+        if '.JPG' in image_name:
+            all_files.append(os.path.join(image_path, image_name))
+    categories = [0] * len(all_files)
+    df_zero_category = pd.DataFrame({'path': all_files, 'category_codes': categories})
+    return get_tf_dataset_from_df(df_zero_category, random_seed=random_seed)
+
+
 def save_tf_record():
     """  Save the Kaggle PCB defects dataset as a TFRecord file. 
 
@@ -190,6 +208,8 @@ def load_tf_record():
         where 'image' is the decoded image file and 'category_code' is an integer label.
     """
     return load_tfrecord_from_file(RECORD_FILE)
+
+
 
 
 if __name__ == '__main__':
