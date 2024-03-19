@@ -5,6 +5,7 @@ import tensorflow as tf
 import cv2
 
 from source.load_raw_data.kaggle_dataset import load_tf_record
+from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 from source.image_preprocessing.preprocessing_steps.step_utils import correct_image_tensor_shape
 from source.utils import TestResultLogger
@@ -57,7 +58,8 @@ class TestStepBase(unittest.TestCase):
     def setUpClass(cls):
         if not os.path.exists(OUTPUT_DIR):
             os.mkdir(OUTPUT_DIR)
-        cls.image_dataset = load_tf_record().take(9)
+        kaggle_dataset = load_tf_record().take(9)
+        cls.image_dataset = unpack_tf_dataset(kaggle_dataset)[0]
         cls.logger = TestResultLogger(LOG_FILE, 'Step Base Test')
     
     def setUp(self):
@@ -73,13 +75,13 @@ class TestStepBase(unittest.TestCase):
         self.assertEqual(self.tf_preprocessing_step.parameters, {'param1': 10, 'param2': (10,10), 'param3': True})
 
     def test_correct_shape_gray(self):
-        image_tensor = list(TestStepBase.image_dataset.take(1))[0][0]
+        image_tensor = list(TestStepBase.image_dataset.take(1))[0]
         image_grayscale_tensor = tf.image.rgb_to_grayscale(image_tensor)
         reshaped_image = correct_image_tensor_shape(image_grayscale_tensor)
         self.assertEqual(reshaped_image.shape, [2464, 3056, 1])
 
     def test_correct_shape_rgb(self):
-        image_tensor = list(TestStepBase.image_dataset.take(1))[0][0]
+        image_tensor = list(TestStepBase.image_dataset.take(1))[0]
         reshaped_image = correct_image_tensor_shape(image_tensor)
         self.assertEqual(reshaped_image.shape, [2464, 3056, 3])
     
@@ -96,41 +98,41 @@ class TestStepBase(unittest.TestCase):
         self.assertEqual(json_repr_output,json_repr_expected)
 
     def test_tensor_pyfunc_wrapper(self):
-        tf_dataset = self.tf_preprocessing_step.process_step(self.image_dataset)
-        image_tensor = list(tf_dataset.take(1))[0][0]
+        processed_dataset = self.tf_preprocessing_step.process_step(self.image_dataset)
+        image_tensor = list(processed_dataset.take(1))[0]
         self.assertEqual(image_tensor.shape, [2464, 3056, 1])
 
     def test_nparray_pyfunc_wrapper(self):
-        tf_dataset = self.py_preprocessing_step.process_step(self.image_dataset)
-        image_tensor = list(tf_dataset.take(1))[0][0]
+        processed_dataset = self.py_preprocessing_step.process_step(self.image_dataset)
+        image_tensor = list(processed_dataset.take(1))[0]
         self.assertEqual(image_tensor.shape, [2464, 3056, 1])
 
     def test_output_datatype_conversion(self):
-        self.py_preprocessing_step.output_datatypes['image'] = tf.uint8
-        tf_dataset = self.py_preprocessing_step.process_step(self.image_dataset)
-        for img, _ in tf_dataset.take(1):
+        self.py_preprocessing_step.output_datatype = tf.uint8
+        processed_dataset = self.py_preprocessing_step.process_step(self.image_dataset)
+        for img in processed_dataset.take(1):
             self.assertEqual(img.dtype, tf.uint8)
-        self.py_preprocessing_step.output_datatypes['image'] = tf.float16
-        tf_dataset = self.py_preprocessing_step.process_step(self.image_dataset)
-        for img, _ in tf_dataset.take(1):
+        self.py_preprocessing_step.output_datatype = tf.float16
+        processed_dataset = self.py_preprocessing_step.process_step(self.image_dataset)
+        for img in processed_dataset.take(1):
             self.assertEqual(img.dtype, tf.float16)
 
     def test_output_datatype_default(self):
-        image_datatype_kept = StepBase.default_output_datatypes['image'] 
-        StepBase.default_output_datatypes['image'] = tf.uint8
+        image_datatype_kept = StepBase.default_output_datatype
+        StepBase.default_output_datatype = tf.uint8
         tf_preprocessing_step = TfTestStep(**self.local_vars)
-        tf_dataset = tf_preprocessing_step.process_step(self.image_dataset)
-        for img, _ in tf_dataset.take(1):
+        processed_dataset = tf_preprocessing_step.process_step(self.image_dataset)
+        for img in processed_dataset.take(1):
             self.assertEqual(img.dtype, tf.uint8)
-        StepBase.default_output_datatypes['image'] = tf.float16
+        StepBase.default_output_datatype = tf.float16
         tf_preprocessing_step = TfTestStep(**self.local_vars)
-        tf_dataset = tf_preprocessing_step.process_step(self.image_dataset)
-        for img, _ in tf_dataset.take(1):
+        processed_dataset = tf_preprocessing_step.process_step(self.image_dataset)
+        for img in processed_dataset.take(1):
             self.assertEqual(img.dtype, tf.float16)
         # Check if 'default_output_datatypes' in 'StepBase' remains unchanged, when Child Class changes 'output_datatypes' attribute.
-        tf_preprocessing_step.output_datatypes['image'] = tf.uint8
-        self.assertEqual(StepBase.default_output_datatypes['image'], tf.float16)
-        StepBase.default_output_datatypes['image'] = image_datatype_kept 
+        tf_preprocessing_step.output_datatype = tf.uint8
+        self.assertEqual(StepBase.default_output_datatype, tf.float16)
+        StepBase.default_output_datatype = image_datatype_kept 
     
     def test_equal_objects(self):
         self.assertEqual(self.py_preprocessing_step, self.tf_preprocessing_step)
