@@ -22,6 +22,7 @@ from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 from source.image_preprocessing.preprocessing_steps.step_utils import correct_image_tensor_shape
 from source.image_preprocessing.preprocessing_steps.step_class_mapping import STEP_CLASS_MAPPING
 from source.load_raw_data.kaggle_dataset import load_tf_record
+from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
 from source.utils import recursive_type_conversion,  PCBVisualizerforTF
 from source.utils import SimplePopupHandler, TestResultLogger
 
@@ -78,11 +79,11 @@ class TypeCaster(StepBase):
                     Must be an attribute in tensorflow . Default is 'float16'.
         """
         super().__init__(locals())
-        self.output_datatypes['image'] = getattr(tf, output_dtype)
+        self.output_datatype = getattr(tf, output_dtype)
 
     @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
-        # image_tensor = tf.cast(image_tensor, self.output_datatypes['image']) Line is already going to be accomplished by the wrapper.
+        # image_tensor = tf.cast(image_tensor, self.output_datatype) Line is already going to be accomplished by the wrapper.
         return image_tensor
     
 
@@ -104,7 +105,8 @@ class TestSingleStep(unittest.TestCase):
         if not os.path.exists(OUTPUT_DIR):
             os.mkdir(OUTPUT_DIR)
             
-        cls.image_dataset = load_tf_record().take(9)        
+        kaggle_dataset = load_tf_record().take(9)
+        cls.image_dataset = unpack_tf_dataset(kaggle_dataset)[0]        
         
         cls.popup_handler = SimplePopupHandler()
         cls.logger = TestResultLogger(LOG_FILE, f'{cls.TestStep.name} Test')
@@ -127,18 +129,17 @@ class TestSingleStep(unittest.TestCase):
             os.remove(JSON_TEST_FILE)   
         self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
 
-    def _verify_image_shapes(self, processed_dataset, original_dataset, color_channel_expected):
+    def _verify_image_shapes(self, processed_images, original_images, color_channel_expected):
         """ 
         Helper method to verify the image dimensions and color channels in a processed dataset.
         Compares the processed images to the original dataset to ensure correct height, width, 
         and color channel transformations.
         """
-        for original_data, processed_data in zip(original_dataset, processed_dataset):
-            self.assertEqual(processed_data[1], original_data[1], 'Targets are not equal.')  
-            processed_data_shape = tuple(processed_data[0].shape[:2].as_list())
-            original_data_shape = tuple(original_data[0].shape[:2].as_list())
+        for original_image, processed_image in zip(original_images, processed_images):
+            processed_data_shape = tuple(processed_image.shape[:2].as_list())
+            original_data_shape = tuple(original_image.shape[:2].as_list())
             self.assertEqual(processed_data_shape, original_data_shape, 'heights and/or widths are not equal.') 
-            self.assertEqual(color_channel_expected, processed_data[0].shape[2], 'Color channels are not equal.')     
+            self.assertEqual(color_channel_expected, processed_image.shape[2], 'Color channels are not equal.')     
 
     def test_arguments_datatype(self):
         """ 
@@ -177,14 +178,12 @@ class TestSingleStep(unittest.TestCase):
         processed images against the original ones. It confirms that the processed images have 
         undergone transformation by checking for changes in content and shape.
         """
-        dtype_str = self.test_step.output_datatypes['image'].name
+        dtype_str = self.test_step.output_datatype.name
         image_dataset = TypeCaster(dtype_str).process_step(self.image_dataset)
-        processed_dataset = self.test_step.process_step(image_dataset)
-        for _, _ in processed_dataset.take(1):  # Consumes the dataset to force execution of the step.
+        processed_images = self.test_step.process_step(image_dataset)
+        for _ in processed_images.take(1):  # Consumes the dataset to force execution of the step.
             pass
-        original_images = list(zip(*self.image_dataset))[0]
-        processed_images = list(zip(*processed_dataset))[0]
-        for ori_img, prc_img in zip(original_images, processed_images):
+        for ori_img, prc_img in zip(image_dataset, processed_images):
             equal_flag = True
             prc_img = tf.cast(prc_img, dtype=ori_img.dtype)
             if ori_img.shape != prc_img.shape:
@@ -200,10 +199,9 @@ class TestSingleStep(unittest.TestCase):
         Verifies that the output datatype of the processed images matches the expected datatype 
         specified in the preprocessing step's output datatype configuration.
         """
-        processed_dataset = self.test_step.process_step(self.image_dataset)
-        processed_images = list(zip(*processed_dataset))[0]
+        processed_images = self.test_step.process_step(self.image_dataset)
         for image in processed_images:
-            self.assertEqual(image.dtype, self.test_step.output_datatypes['image'])
+            self.assertEqual(image.dtype, self.test_step.output_datatype)
     
     def test_process_rgb_images(self):
         """ 
@@ -213,8 +211,8 @@ class TestSingleStep(unittest.TestCase):
         pipeline = [self.test_step, RGBToGrayscale()]
         preprocessor = ImagePreprocessor()
         preprocessor.set_pipe(pipeline)
-        processed_dataset = preprocessor.process(self.image_dataset)
-        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=1)
+        processed_images = preprocessor.process(self.image_dataset)
+        self._verify_image_shapes(processed_images, self.image_dataset, color_channel_expected=1)
   
     def test_process_grayscaled_images(self):
         """ 
@@ -225,10 +223,10 @@ class TestSingleStep(unittest.TestCase):
         pipeline = [RGBToGrayscale(), self.test_step]
         preprocessor = ImagePreprocessor()
         preprocessor.set_pipe(pipeline)
-        processed_dataset = preprocessor.process(self.image_dataset)
-        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=1)
-        processed_dataset = GrayscaleToRGB().process_step(processed_dataset)
-        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=3)
+        processed_images = preprocessor.process(self.image_dataset)
+        self._verify_image_shapes(processed_images, self.image_dataset, color_channel_expected=1)
+        processed_images = GrayscaleToRGB().process_step(processed_images)
+        self._verify_image_shapes(processed_images, self.image_dataset, color_channel_expected=3)
     
     def test_load_from_json(self):
         """ This method tests the functionality of loading a preprocessing step from a JSON File. It verifies that the specified preprocessing step, StepToTest, is correctly instantiated and configured based on the settings provided in the JSON file. This ensures the JSON Files's compatibility and correctness with the pipeline instantiation process.
