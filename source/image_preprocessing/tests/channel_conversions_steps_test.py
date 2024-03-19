@@ -75,7 +75,7 @@ class TestGrayscaleToRGB(TestSingleStep):
     
     def test_process_execution(self):
         processed_dataset = self.test_step.process_step(self.image_dataset)
-        for _, _ in processed_dataset.take(1):  # Consumes the dataset to force execution of the step.
+        for _ in processed_dataset.take(1):  # Consumes the dataset to force execution of the step.
             pass
         	
     if not ENABLE_VISUAL_INSPECTION:
