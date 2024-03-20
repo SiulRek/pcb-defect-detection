@@ -65,12 +65,12 @@ class PCBVisualizerforTF(PCBVisualizerBase):
         fig, axes = plt.subplots(3, 3, figsize=(10, 10))
         axes = axes.ravel()
         
-        for i, image_data in enumerate(image_tf_dataset.take(9)):
+        for i, image in enumerate(image_tf_dataset.take(9)):
             
-            if len(image_data[0].shape) == 3 and image_data[0].shape[2] == 1:
-                axes[i].imshow(tf.squeeze(image_data[0]).numpy(), cmap='gray')  # use the gray colormap       
+            if len(image.shape) == 3 and image.shape[2] == 1:
+                axes[i].imshow(tf.squeeze(image).numpy(), cmap='gray')  # use the gray colormap       
             else:
-                axes[i].imshow(image_data[0].numpy())
+                axes[i].imshow(image.numpy())
             
             axes[i].axis('off')
         
@@ -93,22 +93,17 @@ class PCBVisualizerforTF(PCBVisualizerBase):
         image_data_org = original_tf_dataset.skip(index).take(1)
         image_data_prc = processed_tf_dataset.skip(index).take(1)
 
-        labels = []
         for i, take_object in enumerate([image_data_org, image_data_prc]):        
-            for image_data in take_object:
-                labels.append(image_data[1])
-                if len(image_data[0].shape) == 3 and image_data[0].shape[2] == 1:
-                    axes[i].imshow(tf.squeeze(image_data[0]).numpy(), cmap='gray')  # use the gray colormap       
+            for image in take_object:
+                if len(image.shape) == 3 and image.shape[2] == 1:
+                    axes[i].imshow(tf.squeeze(image).numpy(), cmap='gray')  # use the gray colormap       
                 else:
-                    axes[i].imshow(image_data[0].numpy())
+                    axes[i].imshow(image.numpy())
                 
                 axes[i].axis('off')
 
-        if labels[0] != labels[1]:
-            raise ValueError('The compare image probably does not correspond to a processed form of the original image.')
-        
         if title == '':
-            title = 'Compare Images (' + self._get_defect_name(labels[0]) + ')'
+            title = 'Compare Images'
             
         self._generate_plot(fig, title)
 
@@ -125,12 +120,10 @@ class PCBVisualizerforTF(PCBVisualizerBase):
         fig, axes = plt.subplots(3, 3, figsize=(10, 10))
         axes = axes.ravel()
         
-        for i, image_data in enumerate(image_tf_dataset.take(9)):
+        for i, image in enumerate(image_tf_dataset.take(9)):
 
-            if image_data[0].shape[-1] == 3:
-                image = tf.image.rgb_to_grayscale(image_data[0])
-            else: 
-                image = image_data[0]
+            if image.shape[-1] == 3:
+                image = tf.image.rgb_to_grayscale(image)
             
             image_flattened = tf.reshape(image, [-1])
             
@@ -153,10 +146,10 @@ class PCBVisualizerforTF(PCBVisualizerBase):
         fig = plt.figure(figsize=(10, 10))
         fig.suptitle(title, fontsize=16, fontweight='bold', y=1.02)
 
-        for i, image_data in enumerate(image_tf_dataset.take(9)):
+        for i, image in enumerate(image_tf_dataset.take(9)):
             ax = fig.add_subplot(3, 3, i+1, projection='3d')
             
-            magnitude_spectrum = self._compute_image_fft(image_data[0])
+            magnitude_spectrum = self._compute_image_fft(image)
 
             # Create a meshgrid for 3D plotting
             x = np.linspace(0, magnitude_spectrum.shape[0]-1, magnitude_spectrum.shape[0])
@@ -215,12 +208,12 @@ class PCBVisualizerforCV2(PCBVisualizerBase):
         for i in range(num_images):
             
             # Convert the BGR image from cv2 to RGB for displaying using matplotlib
-            image_data = cv2.cvtColor(image_list[i], cv2.COLOR_BGR2RGB)
+            image = cv2.cvtColor(image_list[i], cv2.COLOR_BGR2RGB)
             
-            if image_data.ndim == 3 and image_data.shape[2] == 1:
-                axes[i].imshow(np.squeeze(image_data), cmap='gray')  # use the gray colormap       
+            if image.ndim == 3 and image.shape[2] == 1:
+                axes[i].imshow(np.squeeze(image), cmap='gray')  # use the gray colormap       
             else:
-                axes[i].imshow(image_data)
+                axes[i].imshow(image)
                 
             axes[i].axis('off')
 
@@ -244,12 +237,12 @@ class PCBVisualizerforCV2(PCBVisualizerBase):
         
         images = [original_image, processed_image]
         
-        for i, image_data in enumerate(images): 
+        for i, image in enumerate(images): 
 
-            if len(image_data.shape) == 3 and image_data.shape[2] == 1:
-                axes[i].imshow(np.squeeze(image_data), cmap='gray')  # use the gray colormap
+            if len(image.shape) == 3 and image.shape[2] == 1:
+                axes[i].imshow(np.squeeze(image), cmap='gray')  # use the gray colormap
             else:
-                axes[i].imshow(image_data)
+                axes[i].imshow(image)
             
             axes[i].axis('off')
         
@@ -271,8 +264,8 @@ class PCBVisualizerforCV2(PCBVisualizerBase):
         
         for i in range(9):
             
-            image_data = cv2.cvtColor(image_list[i], cv2.COLOR_BGR2RGB)
-            axes[i].imshow(image_data)
+            image = cv2.cvtColor(image_list[i], cv2.COLOR_BGR2RGB)
+            axes[i].imshow(image)
             
             # Plot the detected corners on the image
 
