@@ -3,6 +3,8 @@ from copy import deepcopy
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 from source.image_preprocessing.preprocessing_steps.step_class_mapping import STEP_CLASS_MAPPING
 from source.utils import ClassInstancesSerializer
+from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
+from source.load_raw_data.pack_images_and_labels import pack_images_and_labels
 
 class ImagePreprocessor:
     """
@@ -178,6 +180,12 @@ class ImagePreprocessor:
         """
         for _ in tf_dataset.take(1): 
             pass
+    
+    def _strip_dataset(self, dataset):
+        for element in dataset.take(1):
+            if isinstance(element, tuple) and len(element) == 2:
+                return unpack_tf_dataset(dataset)
+            return dataset, None
 
     def process(self, image_dataset):
         """
@@ -186,11 +194,13 @@ class ImagePreprocessor:
         and the process will return None. If False, it will proceed without exception handling.
 
         Args:
-            image_dataset (tf.data.Dataset): The TensorFlow dataset to be processed.
+            image_dataset (tf.data.Dataset): The TensorFlow dataset to be processed. It can contain images only
+            or images and labels.
 
         Returns:
             tf.data.Dataset: The processed dataset after applying all the steps in the pipeline.
         """
+        image_dataset, label_dataset = self._strip_dataset(image_dataset)
         processed_dataset = image_dataset
         for step in self.pipeline:
             if self._raise_step_process_exception:
@@ -205,6 +215,9 @@ class ImagePreprocessor:
                     return None
 
         self._consume_tf_dataset(processed_dataset)
+
+        if label_dataset is not None:
+            processed_dataset = pack_images_and_labels(processed_dataset, label_dataset)
 
         return processed_dataset
     
