@@ -166,8 +166,8 @@ class ImageClassifierVisualizer:
         plot = self.plot_image_comparisons(filtered_dataset_1, filtered_dataset_2, n_rows=n_rows, n_cols=n_cols, title=title, fontsize=fontsize, show_plot=show_plot)
         return plot
 
-    def prepare_model_predictions(self, model, dataset):
-        """ Prepares model predictions and dataset for visualization.
+    def calculate_model_predictions(self, model, dataset):
+        """ Calculate model predictions and dataset, call this to visualize results with according methods.
 
         Args:
         - model (tf.keras.Model): Trained TensorFlow model.
