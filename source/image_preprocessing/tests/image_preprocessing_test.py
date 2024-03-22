@@ -222,6 +222,20 @@ class TestImagePreprocessor(unittest.TestCase):
         processed_images = preprocessor.process(self.image_dataset)
         self._verify_image_shapes(processed_images, self.image_dataset, color_channel_expected=1)
 
+    def test_process_pipeline_for_packed_dataset(self):
+        """   Tests the functionality of the image preprocessing pipeline for packed datasets.
+
+        This test case validates that the pipeline, when applied to a packed dataset, meaning a dataset
+        with both images and labels.
+        """
+        packed_dataset = load_tf_record().take(9) 
+        preprocessor = ImagePreprocessor()
+        preprocessor.set_pipe(self.pipeline)
+        processed_dataset = preprocessor.process(packed_dataset)
+        processed_images = unpack_tf_dataset(processed_dataset)[0]
+        original_images = unpack_tf_dataset(packed_dataset)[0]
+        self._verify_image_shapes(processed_images, original_images, color_channel_expected=1)
+
     def test_save_and_load_pipeline(self):
         """    Ensures the image preprocessing pipeline can be saved and subsequently loaded.
 
