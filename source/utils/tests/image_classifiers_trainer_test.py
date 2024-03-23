@@ -13,7 +13,8 @@ ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..","
 OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/utils/tests/outputs")
 LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
 
-PLOT_SHOW = False
+SHOW_PLOT = False
+
 
 class TestImageClassifiersTrainer(unittest.TestCase):
 
@@ -41,8 +42,8 @@ class TestImageClassifiersTrainer(unittest.TestCase):
     def setUp(self):
         self.model = tf.keras.Sequential([
             tf.keras.layers.Flatten(input_shape=(28, 28)),
-            tf.keras.layers.Dense(784, activation='relu'),
-            tf.keras.layers.Dense(10)
+            tf.keras.layers.Dense(128, activation='relu'),
+            tf.keras.layers.Dense(10, activation='softmax')
         ])
         self.model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
@@ -91,7 +92,7 @@ class TestImageClassifiersTrainer(unittest.TestCase):
         trainer.load_model(self.model)
         trainer.set_datasets(self.datasets)
         trainer.fit_all(verbose=0, epochs=10)
-        trainer.plot_histories(plot_show=PLOT_SHOW)
+        trainer.plot_histories(plot_show=SHOW_PLOT)
         self.assertIsNotNone(trainer.history_plot)
 
     def test_calculate_model_predictions(self):
@@ -112,12 +113,37 @@ class TestImageClassifiersTrainer(unittest.TestCase):
         trainer.load_model(self.model)
         trainer.set_datasets(self.datasets)
         trainer.calculate_model_predictions({'group1': self._get_dataset(), 'group2': self._get_dataset()})
-        figures = trainer.plot_all_results(n_rows=3, n_cols=3, title='All Results', fontsize=12, prediction_bar=True, show_plot=PLOT_SHOW)
+        figures = trainer.plot_all_results(n_rows=3, n_cols=3, title='All Results', fontsize=12, 
+                                           prediction_bar=True, show_plot=SHOW_PLOT)
 
         self.assertIsInstance(figures, dict)
         self.assertEqual(len(figures), len(self.group_names))
         for group in self.group_names:
-            # is of type matplotlib.figure.Figure
+            self.assertIsInstance(figures[group], type(plt.figure()))
+    
+    def test_plot_all_false_results(self):
+        trainer = ImageClassifiersTrainer(self.group_names, self.categories)
+        trainer.load_model(self.model)
+        trainer.set_datasets(self.datasets)
+        trainer.calculate_model_predictions({'group1': self._get_dataset(), 'group2': self._get_dataset()})
+        figures = trainer.plot_all_false_results(n_rows=3, n_cols=3, title='All False Results', 
+                                                 fontsize=12, prediction_bar=True, show_plot=SHOW_PLOT)
+
+        self.assertIsInstance(figures, dict)
+        self.assertEqual(len(figures), len(self.group_names))
+        for group in self.group_names:
+            self.assertIsInstance(figures[group], type(plt.figure()))
+
+    def test_plot_confusion_matrices(self):
+        trainer = ImageClassifiersTrainer(self.group_names, self.categories)
+        trainer.load_model(self.model)
+        trainer.set_datasets(self.datasets)
+        trainer.calculate_model_predictions({'group1': self._get_dataset(), 'group2': self._get_dataset()})
+        figures = trainer.plot_all_confusion_matrices(title='All Confusion Matrices', fontsize=12, show_plot=SHOW_PLOT)
+
+        self.assertIsInstance(figures, dict)
+        self.assertEqual(len(figures), len(self.group_names))
+        for group in self.group_names:
             self.assertIsInstance(figures[group], type(plt.figure()))
 
 
