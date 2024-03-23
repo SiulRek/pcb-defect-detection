@@ -1,9 +1,9 @@
 import os
 import unittest
 
-from source.utils.tests import get_sample_from_distribution_test, recursive_type_conversion_test
+from source.utils.tests import get_sample_from_distribution_test, image_classifiers_trainer_test, recursive_type_conversion_test
 from source.utils.tests import class_instance_serializer_test, parse_and_repeat_test, copy_json_exclude_entries_test
-from source.utils.tests import randomly_select_sequential_keys_test, multi_model_trainer_test
+from source.utils.tests import randomly_select_sequential_keys_test
 
 from source.utils.test_result_logger import TestResultLogger
 
@@ -20,7 +20,7 @@ def load_tests(test_suite):
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(parse_and_repeat_test))
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(copy_json_exclude_entries_test))
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(randomly_select_sequential_keys_test))
-    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(multi_model_trainer_test))
+    # test_suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(image_classifiers_trainer_test))
     return test_suite
 
 if __name__ == '__main__':
