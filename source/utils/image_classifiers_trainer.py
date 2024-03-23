@@ -75,33 +75,37 @@ class ImageClassifiersTrainer():
             self.visualizers[group].calculate_model_predictions(model, test_datasets[group])
         self.model_predictions_calculated = True
 
-    # ChatGPT please make tests for the following three methods. Many thanks.
-
     def plot_all_results(self, n_rows=3, n_cols=3, title=None, fontsize=12, prediction_bar=True, show_plot=True):
         if not self.model_predictions_calculated:
             raise Exception("Model predictions have not been calculated. Please run calculate_model_predictions first")
         
+        title = '' if title is None else title
         figures = {}
         for group, visualizer in self.visualizers.items():
-            figures[group] = visualizer.plot_results(n_rows, n_cols, title, fontsize, prediction_bar, show_plot)
+            group_title = f"{title} - {group}"
+            figures[group] = visualizer.plot_results(n_rows, n_cols, group_title, fontsize, prediction_bar, show_plot)
         return figures
     
     def plot_all_false_results(self, n_rows=3, n_cols=3, title=None, fontsize=12, prediction_bar=True, show_plot=True):
         if not self.model_predictions_calculated:
             raise Exception("Model predictions have not been calculated. Please run calculate_model_predictions first")
         
+        title = '' if title is None else title
         figures = {}
         for group, visualizer in self.visualizers.items():
-            figures[group] = visualizer.plot_false_results(n_rows, n_cols, title, fontsize, prediction_bar, show_plot)
+            group_title = f"{title} - {group}"
+            figures[group] = visualizer.plot_false_results(n_rows, n_cols, group_title, fontsize, prediction_bar, show_plot)
         return figures
     
     def plot_all_confusion_matrices(self, title=None, fontsize=12, show_plot=True):
         if not self.model_predictions_calculated:
             raise Exception("Model predictions have not been calculated. Please run calculate_model_predictions first")
-        
+
+        title = '' if title is None else title    
         figures = {}
         for group, visualizer in self.visualizers.items():
-            figures[group] = visualizer.plot_confusion_matrix(title, fontsize, show_plot)
+            group_title = f"{title} - {group}"
+            figures[group] = visualizer.plot_confusion_matrix(group_title, fontsize=fontsize, show_plot=show_plot)
         return figures
     
 
