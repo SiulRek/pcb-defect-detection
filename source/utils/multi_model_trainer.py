@@ -5,13 +5,16 @@ from source.utils.image_classifier_visualizer import ImageClassifierVisualizer
 
 
 class MultiModelTrainer():
-    def __init__(self, group_names):
+    def __init__(self, group_names, initialize_classifier_visualizers=True):
         self.group_names = group_names
         self.groups_nums = len(group_names)
         self.models = {}
         self.histories = {}
+        self.model_predictions_calculated = False
         self.final_results = {group: {} for group in group_names}
-        # self.visualizers = {group: ImageClassifierVisualizer() for group in group_names}
+        self.visualizers = {}
+        if initialize_classifier_visualizers:
+            self.visualizers = {group: ImageClassifierVisualizer(group_names) for group in group_names}
 
     def load_model(self, model):
         optimizer_config = model.optimizer.get_config() 
@@ -19,7 +22,6 @@ class MultiModelTrainer():
         for m in self.models.values():
             new_optimizer = type(model.optimizer).from_config(optimizer_config) 
             m.compile(optimizer=new_optimizer, loss=model.loss, metrics=model.metrics)  
-
 
     def set_datasets(self, datasets):
         assert set(datasets.keys()) == set(self.group_names), "Datasets must be the same as group names"
@@ -65,10 +67,46 @@ class MultiModelTrainer():
                 plt.show()
 
             self.history_plot = plt.gcf()
+    
+    def calculate_model_predictions(self, test_datasets):
+        assert set(test_datasets.keys()) == set(self.group_names), "Datasets must be the same as group names"
+        if self.visualizers == {}:
+            raise Exception("Visualizers have not been initialized. Please set initialize_classifier_visualizers=True in the constructor")
+        for group, model in self.models.items():
+            self.visualizers[group].calculate_model_predictions(model, test_datasets[group])
+        self.model_predictions_calculated = True
+
+    # ChatGPT please make tests for the following three methods. Many thanks.
+
+    def plot_all_results(self, n_rows=3, n_cols=3, title=None, fontsize=12, prediction_bar=True, show_plot=True):
+        if not self.model_predictions_calculated:
+            raise Exception("Model predictions have not been calculated. Please run calculate_model_predictions first")
+        
+        figures = {}
+        for group, visualizer in self.visualizers.items():
+            figures[group] = visualizer.plot_results(n_rows, n_cols, title, fontsize, prediction_bar, show_plot)
+        return figures
+    
+    def plot_all_false_results(self, n_rows=3, n_cols=3, title=None, fontsize=12, prediction_bar=True, show_plot=True):
+        if not self.model_predictions_calculated:
+            raise Exception("Model predictions have not been calculated. Please run calculate_model_predictions first")
+        
+        figures = {}
+        for group, visualizer in self.visualizers.items():
+            figures[group] = visualizer.plot_false_results(n_rows, n_cols, title, fontsize, prediction_bar, show_plot)
+        return figures
+    
+    def plot_all_confusion_matrices(self, title=None, fontsize=12, show_plot=True):
+        if not self.model_predictions_calculated:
+            raise Exception("Model predictions have not been calculated. Please run calculate_model_predictions first")
+        
+        figures = {}
+        for group, visualizer in self.visualizers.items():
+            figures[group] = visualizer.plot_confusion_matrix(title, fontsize, show_plot)
+        return figures
+    
 
 
-        
-        
     
 
     
