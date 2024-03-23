@@ -7,7 +7,13 @@ from sklearn.metrics import confusion_matrix
 
 
 class ImageClassifierVisualizer:
+    """ Class for visualizing image classification results and model predictions."""
     def __init__(self, class_names):
+        """ Initializes the ImageClassifierVisualizer class.
+
+        Args:
+        - class_names (list): List of class names.
+        """
         self.class_names = class_names
         self.num_classes = len(class_names)
         self.model_predictions_prepared = False
@@ -24,7 +30,9 @@ class ImageClassifierVisualizer:
             plt.suptitle(title, fontsize=fontsize)
         plt.tight_layout()
         if show_plot:
-            plt.show()
+            plt.show() 
+        
+        return plt.gcf()
     
     def _prepare_dataset(self, dataset, shuffle=True):
         if isinstance(dataset, np.ndarray):
@@ -59,12 +67,12 @@ class ImageClassifierVisualizer:
         - fontsize (int, optional): Font size of the labels.
 
         Returns:
-        - plt: Plot of the images.
+        - fig: Figure of the images.
         """
         np_dataset = self._prepare_dataset(combined_dataset)
 
         _, axes = plt.subplots(n_rows, n_cols, figsize=(n_cols * 3, n_rows * 3))
-        axes = axes.flatten()
+        axes = np.atleast_2d(axes).flatten()
         for i, ax in enumerate(axes):
             if i >= n_rows * n_cols:
                 break
@@ -80,7 +88,7 @@ class ImageClassifierVisualizer:
                 label_name = self.class_names[np.argmax(label)]
                 ax.set_title(label_name, fontsize=fontsize)
 
-        self._prepare_plot(title, fontsize, show_plot)
+        return self._prepare_plot(title, fontsize, show_plot)
     
     @tf.autograph.experimental.do_not_convert
     def plot_class_specific_images(self, combined_dataset, classes, n_rows=1, n_cols=1,
@@ -96,12 +104,12 @@ class ImageClassifierVisualizer:
         - fontsize (int, optional): Font size of the labels.
 
         Returns:
-        - plt: Plot of the images.
+        - fig: Figure of the images.	
         """
         np_dataset = self._prepare_dataset(combined_dataset)
         filtered_dataset, _ = self._filter_np_dataset(np_dataset, classes)
-        plot = self.plot_images(filtered_dataset, n_rows=n_rows, n_cols=n_cols, title=title, fontsize=fontsize, show_plot=show_plot)
-        return plot
+        fig = self.plot_images(filtered_dataset, n_rows=n_rows, n_cols=n_cols, title=title, fontsize=fontsize, show_plot=show_plot)
+        return fig
     
     def plot_image_comparisons(self, combined_dataset_1, combined_dataset_2, n_rows=1,
                                 n_cols=1, title=None, fontsize=12, show_plot=True):
@@ -116,14 +124,14 @@ class ImageClassifierVisualizer:
         - fontsize (int, optional): Font size of the labels.
 
         Returns:
-        - plt: Plot of the images.
+        - fig: Figure of the images.
         """
         np_dataset_1 = self._prepare_dataset(combined_dataset_1, shuffle=False)
         np_dataset_2 = self._prepare_dataset(combined_dataset_2, shuffle=False)
         np_dataset_1, np_dataset_2 = self._shuffle_in_unison(np_dataset_1, np_dataset_2)
 
         _, axes = plt.subplots(n_rows, n_cols * 2, figsize=(n_cols * 6, n_rows * 3))
-        axes = axes.flatten()
+        axes = np.atleast_2d(axes).flatten()
         for i, ax in enumerate(axes):
             if i >= n_rows * n_cols * 2:
                 break
@@ -140,7 +148,7 @@ class ImageClassifierVisualizer:
                 subtitle += self.class_names[np.argmax(label)]
             ax.set_title(subtitle, fontsize=fontsize)
 
-        self._prepare_plot(title, fontsize, show_plot)
+        return self._prepare_plot(title, fontsize, show_plot)
 
     def plot_class_specific_image_comparisons(self, combined_dataset_1, combined_dataset_2, classes,
                                  n_rows=1, n_cols=1, title=None, fontsize=12, show_plot=True):
@@ -156,15 +164,15 @@ class ImageClassifierVisualizer:
         - fontsize (int, optional): Font size of the labels.
 
         Returns:
-        - plt: Plot of the images.
+        - fig: Figure of the images.
         """
         np_dataset_1 = self._prepare_dataset(combined_dataset_1, shuffle=False)
         np_dataset_2 = self._prepare_dataset(combined_dataset_2, shuffle=False)
         filtered_dataset_1, _ = self._filter_np_dataset(np_dataset_1, classes)
         filtered_dataset_2, _ = self._filter_np_dataset(np_dataset_2, classes)
         filtered_dataset_1, filtered_dataset_2 = self._shuffle_in_unison(filtered_dataset_1, filtered_dataset_2)
-        plot = self.plot_image_comparisons(filtered_dataset_1, filtered_dataset_2, n_rows=n_rows, n_cols=n_cols, title=title, fontsize=fontsize, show_plot=show_plot)
-        return plot
+        fig = self.plot_image_comparisons(filtered_dataset_1, filtered_dataset_2, n_rows=n_rows, n_cols=n_cols, title=title, fontsize=fontsize, show_plot=show_plot)
+        return fig
 
     def calculate_model_predictions(self, model, dataset):
         """ Calculate model predictions and dataset, call this to visualize results with according methods.
@@ -174,7 +182,7 @@ class ImageClassifierVisualizer:
         - dataset (tf.data.Dataset): TensorFlow dataset consisting of tuples (image, label).
 
         Returns:
-        - None
+        - fig: Figure of the images.
         """
         self.model = model
         self.predictions = model.predict(dataset)
@@ -183,7 +191,7 @@ class ImageClassifierVisualizer:
 
     def _plot_results(self, np_dataset, predictions, n_rows=3, n_cols=3, title=None, fontsize=12, prediction_bar=True, show_plot=True):
         _, axes = plt.subplots(n_rows, n_cols * (2 if prediction_bar else 1), figsize=(n_cols * (6 if prediction_bar else 3), n_rows * 3))
-        axes = axes.flatten()
+        axes = np.atleast_2d(axes).flatten()
 
         for i in range(n_rows * n_cols):
             img_ax = axes[i * (2 if prediction_bar else 1)]
@@ -211,7 +219,7 @@ class ImageClassifierVisualizer:
                 bar_ax.set_xticklabels(self.class_names, rotation=90)
                 bar_ax.set_ylim(0, 1)
 
-        self._prepare_plot(title, fontsize, show_plot)
+        return self._prepare_plot(title, fontsize, show_plot)
 
     def plot_results(self, n_rows=3, n_cols=3, title=None, fontsize=12, prediction_bar=True, show_plot=True):
         """ Plots a set of images along with their predicted and true labels, with an optional prediction bar.
@@ -223,11 +231,14 @@ class ImageClassifierVisualizer:
         - fontsize (int, optional): Font size of the labels.
         - prediction_bar (bool): Whether to add a prediction bar.
         - show_plot (bool): Whether to display the plot.
+
+        Returns:
+        - fig: Figure of the images.
         """
         if not self.model_predictions_prepared:
             raise ValueError("Model predictions have not been prepared. Please call prepare_model_predictions first.")
         
-        self._plot_results(self.np_dataset, self.predictions, n_rows=n_rows, n_cols=n_cols, title=title, 
+        return self._plot_results(self.np_dataset, self.predictions, n_rows=n_rows, n_cols=n_cols, title=title, 
                            fontsize=fontsize, prediction_bar=prediction_bar, show_plot=show_plot)
 
     def plot_class_specific_results(self, classes, n_rows=3, n_cols=3, title=None, fontsize=12, prediction_bar=True, show_plot=True):
@@ -241,13 +252,16 @@ class ImageClassifierVisualizer:
         - fontsize (int, optional): Font size of the labels.
         - prediction_bar (bool): Whether to add a prediction bar.
         - show_plot (bool): Whether to display the plot.
+
+        Returns:
+        - fig: Figure of the images.
         """
         if not self.model_predictions_prepared:
             raise ValueError("Model predictions have not been prepared. Please call prepare_model_predictions first.")
         
         filtered_dataset, boolean_mask = self._filter_np_dataset(self.np_dataset, classes)
         filtered_predictions = self.predictions[boolean_mask]
-        self._plot_results(filtered_dataset, filtered_predictions, n_rows=n_rows, n_cols=n_cols, title=title, 
+        return self._plot_results(filtered_dataset, filtered_predictions, n_rows=n_rows, n_cols=n_cols, title=title, 
                            fontsize=fontsize, prediction_bar=prediction_bar, show_plot=show_plot)
     
     def plot_false_results(self, n_rows=3, n_cols=3, title=None, fontsize=12, prediction_bar=True, show_plot=True):
@@ -260,6 +274,9 @@ class ImageClassifierVisualizer:
         - fontsize (int, optional): Font size of the labels.
         - prediction_bar (bool): Whether to add a prediction bar.
         - show_plot (bool): Whether to display the plot.
+
+        Returns:
+        - fig: Figure of the images.
         """
         if not self.model_predictions_prepared:
             raise ValueError("Model predictions have not been prepared. Please call prepare_model_predictions first.")
@@ -267,7 +284,7 @@ class ImageClassifierVisualizer:
         boolean_mask = np.argmax(self.predictions, axis=1) != np.argmax([label for _, label in self.np_dataset], axis=1)
         filtered_dataset = self.np_dataset[boolean_mask]
         filtered_predictions = self.predictions[boolean_mask]
-        self._plot_results(filtered_dataset, filtered_predictions, n_rows=n_rows, n_cols=n_cols, title=title, 
+        return self._plot_results(filtered_dataset, filtered_predictions, n_rows=n_rows, n_cols=n_cols, title=title, 
                            fontsize=fontsize, prediction_bar=prediction_bar, show_plot=show_plot)
         
     def plot_confusion_matrix(self, normalize=False, title='Confusion Matrix', cmap=plt.cm.Blues, fontsize=12, show_plot=True):
@@ -279,6 +296,9 @@ class ImageClassifierVisualizer:
         - cmap (matplotlib.colors.Colormap, optional): Colormap of the plot.
         - fontsize (int, optional): Font size of the labels.
         - show_plot (bool): Whether to display the plot.
+
+        Returns:
+        - fig: Figure of the images.
         """
         if not self.model_predictions_prepared:
             raise ValueError("Model predictions have not been prepared. Please call prepare_model_predictions first.")
@@ -295,4 +315,4 @@ class ImageClassifierVisualizer:
         plt.ylabel('True label', fontsize=fontsize)
         plt.xlabel('Predicted label', fontsize=fontsize)
 
-        self._prepare_plot(title=title, fontsize=fontsize, show_plot=show_plot)
+        return self._prepare_plot(title=title, fontsize=fontsize, show_plot=show_plot)
