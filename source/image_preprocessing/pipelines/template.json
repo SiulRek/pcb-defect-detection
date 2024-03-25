@@ -106,7 +106,7 @@
     "Rotator": {
         "angle": 90.0
     },
-    "DummyStep": {
-
+    "Random Rotation": {
+        "angle_range": [-90, 90]
     }
 }

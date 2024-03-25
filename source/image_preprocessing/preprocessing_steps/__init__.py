@@ -29,3 +29,4 @@ from source.image_preprocessing.preprocessing_steps.single_steps.type_casting im
 from source.image_preprocessing.preprocessing_steps.single_steps.mirroring import Mirrorer
 from source.image_preprocessing.preprocessing_steps.single_steps.rotating import Rotator
 from source.image_preprocessing.preprocessing_steps.single_steps.dummy_step import DummyStep
+from source.image_preprocessing.preprocessing_steps.single_steps.random_rotation import RandomRotation
