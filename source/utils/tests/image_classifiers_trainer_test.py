@@ -58,6 +58,13 @@ class TestImageClassifiersTrainer(unittest.TestCase):
         self.assertEqual(len(trainer.models), 2)
         self.assertEqual(trainer.models['group1'].get_config(), trainer.models['group2'].get_config())
 
+    def test_plot_model_summary(self):
+        trainer = ImageClassifiersTrainer(self.group_names, self.categories)
+        trainer.load_model(self.model)
+        fig = trainer.plot_model_summary(title='Model Summary', fontsize=12, show_plot=True)
+        self.assertIsNotNone(fig)
+        print("Juuuhuuuuuuuuu")
+
     def test_set_datasets(self):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
         trainer.set_datasets(self.datasets)
