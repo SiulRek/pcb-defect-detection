@@ -1,3 +1,5 @@
+import io
+
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
@@ -22,6 +24,36 @@ class ImageClassifiersTrainer():
             new_optimizer = type(model.optimizer).from_config(optimizer_config) 
             m.compile(optimizer=new_optimizer, loss=model.loss, metrics=model.metrics)  
 
+    def plot_model_summary(self, title='Model Summary', fontsize=10, show_plot=True):
+        """ Plot the summary of each trained model.
+        
+        Args:
+        - fontsize (int, optional): Font size for text in the plot.
+        - show_plot (bool, optional): Whether to display the plot.
+        
+        Returns:
+        - fig: Matplotlib figure for the model configuration.
+        """
+        model = list(self.models.values())[0]
+
+        summary_str = io.StringIO()
+        model.summary(print_fn=lambda x: summary_str.write(x + '\n'))
+        summary_text = summary_str.getvalue()
+        summary_str.close()
+
+        fig, ax = plt.subplots(figsize=(12, len(summary_text.split('\n')) * 0.4)) 
+        ax.axis('off')
+
+        ax.text(0.01, 0.99, title, fontsize=fontsize + 2, fontweight='bold', verticalalignment='top', transform=ax.transAxes)
+        ax.text(0.01, 0.94, summary_text, fontsize=fontsize, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
+        
+        plt.subplots_adjust(top=0.85) 
+
+        if show_plot:
+            plt.show()
+
+        return fig
+
     def set_datasets(self, datasets):
         assert set(datasets.keys()) == set(self.group_names), "Datasets must be the same as group names"
         self.datasets = datasets
@@ -39,33 +71,32 @@ class ImageClassifiersTrainer():
             print(f"Final results for group {group}: {results}")
         
     def plot_histories(self, metrics=None, plot_show=True):
-            if not metrics:
-                first_history = next(iter(self.histories.values()))
-                metrics = list(first_history.history.keys())
+        if not metrics:
+            first_history = next(iter(self.histories.values()))
+            metrics = list(first_history.history.keys())
 
-            n_cols = 1
-            n_rows = len(metrics)
+        n_cols = 1
+        n_rows = len(metrics)
 
-            plt.figure(figsize=(12, 4 * n_rows))
+        fig, axes = plt.subplots(n_rows, n_cols, figsize=(12, 4 * n_rows))
 
-            for i, metric in enumerate(metrics):
-                plt.subplot(n_rows, n_cols, i + 1)
-                plt.title(f'Training {metric}')
+        for i, metric in enumerate(metrics):
+            ax = axes[i] if n_rows > 1 else axes 
 
-                for group, history in self.histories.items():
-                    values = history.history[metric]
-                    epochs = range(1, len(values) + 1)
-                    plt.plot(epochs, values, label=f'{group}')
+            ax.set_title(f'Training {metric}')
+            for group, history in self.histories.items():
+                values = history.history[metric]
+                epochs = range(1, len(values) + 1)
+                ax.plot(epochs, values, label=f'{group}')
 
-                plt.xlabel('Epochs')
-                plt.ylabel(metric.capitalize())
-                plt.legend()
+            ax.set_xlabel('Epochs')
+            ax.set_ylabel(metric.capitalize())
+            ax.legend()
 
-            plt.tight_layout()
-            if plot_show:
-                plt.show()
-
-            self.history_plot = plt.gcf()
+        fig.tight_layout()
+        if plot_show:
+            plt.show()
+        self.history_plot = fig  
     
     def calculate_model_predictions(self, test_datasets):
         assert set(test_datasets.keys()) == set(self.group_names), "Datasets must be the same as group names"
@@ -107,6 +138,8 @@ class ImageClassifiersTrainer():
             group_title = f"{title} - {group}"
             figures[group] = visualizer.plot_confusion_matrix(group_title, fontsize=fontsize, show_plot=show_plot)
         return figures
+    
+
     
 
 
