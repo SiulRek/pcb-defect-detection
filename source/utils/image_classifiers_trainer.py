@@ -7,7 +7,18 @@ from source.utils.image_classifier_visualizer import ImageClassifierVisualizer
 
 
 class ImageClassifiersTrainer():
+    """ 
+    A class to train multiple image classifiers of the same type on different datasets
+    and visualize their results.
+    """
     def __init__(self, group_names, category_names):
+        """
+        Initializes the ImageClassifiersTrainer.
+
+        Args:
+        - group_names (list): Names of the groups of classifiers.
+        - category_names (list): Names of the categories.
+        """
         self.group_names = group_names
         self.groups_num = len(group_names)
         self.models = {}
@@ -18,6 +29,12 @@ class ImageClassifiersTrainer():
         self.visualizers = {group: ImageClassifierVisualizer(category_names) for group in group_names}
 
     def load_model(self, model):
+        """ 
+        Load a model and create copies for each group.
+
+        Args:
+        - model: A compiled Keras model.
+        """
         optimizer_config = model.optimizer.get_config() 
         self.models = {group: tf.keras.models.clone_model(model) for group in self.group_names}
         for m in self.models.values():
@@ -25,7 +42,8 @@ class ImageClassifiersTrainer():
             m.compile(optimizer=new_optimizer, loss=model.loss, metrics=model.metrics)  
 
     def plot_model_summary(self, title='Model Summary', fontsize=10, show_plot=True):
-        """ Plot the summary of each trained model.
+        """ 
+        Plot the summary of each trained model.
         
         Args:
         - fontsize (int, optional): Font size for text in the plot.
@@ -43,22 +61,31 @@ class ImageClassifiersTrainer():
 
         fig, ax = plt.subplots(figsize=(12, len(summary_text.split('\n')) * 0.4)) 
         ax.axis('off')
-
         ax.text(0.01, 0.99, title, fontsize=fontsize + 2, fontweight='bold', verticalalignment='top', transform=ax.transAxes)
         ax.text(0.01, 0.94, summary_text, fontsize=fontsize, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
-        
         plt.subplots_adjust(top=0.85) 
-
         if show_plot:
             plt.show()
 
         return fig
 
     def set_datasets(self, datasets):
+        """ 
+        Set the datasets for training and validation.
+
+        Args:
+        - datasets (dict): A dictionary with keys as group names and values as tuples of training and validation datasets.
+        """
         assert set(datasets.keys()) == set(self.group_names), "Datasets must be the same as group names"
         self.datasets = datasets
     
     def fit_all(self, **args):
+        """ 
+        Fit all models on their respective datasets.
+
+        Args:
+        - args: Additional arguments to pass to the fit method.
+        """
         for group in self.group_names:
             self.histories[group] = self.models[group].fit(self.datasets[group][0], 
                                                            validation_data=self.datasets[group][1], **args)
@@ -71,6 +98,16 @@ class ImageClassifiersTrainer():
             print(f"Final results for group {group}: {results}")
         
     def plot_histories(self, metrics=None, plot_show=True):
+        """ 
+        Plot the training history of all models.
+
+        Args:
+        - metrics (list, optional): List of metrics to plot. If None, all metrics are plotted.
+        - plot_show (bool, optional): Whether to display the plot.
+
+        Returns:
+        - fig: Matplotlib figure for the training history.
+        """
         if not metrics:
             first_history = next(iter(self.histories.values()))
             metrics = list(first_history.history.keys())
@@ -99,6 +136,12 @@ class ImageClassifiersTrainer():
         self.history_plot = fig  
     
     def calculate_model_predictions(self, test_datasets):
+        """
+        Calculate the predictions of all models on the test datasets.
+
+        Args:
+        - test_datasets (dict): A dictionary with keys as group names and values as test datasets.
+        """
         assert set(test_datasets.keys()) == set(self.group_names), "Datasets must be the same as group names"
         if self.visualizers == {}:
             raise Exception("Visualizers have not been initialized. Please set initialize_classifier_visualizers=True in the constructor")
@@ -107,6 +150,20 @@ class ImageClassifiersTrainer():
         self.model_predictions_calculated = True
 
     def plot_all_results(self, n_rows=3, n_cols=3, title=None, fontsize=12, prediction_bar=True, show_plot=True):
+        """ 
+        Plot the results of all models.
+
+        Args:
+        - n_rows (int, optional): Number of rows in the plot.
+        - n_cols (int, optional): Number of columns in the plot.
+        - title (str, optional): Title of the plot.
+        - fontsize (int, optional): Font size for text in the plot.
+        - prediction_bar (bool, optional): Whether to show the prediction bar.
+        - show_plot (bool, optional): Whether to display the plot.
+
+        Returns:
+        - figures (dict): A dictionary with group names as keys and Matplotlib figures as values.
+        """
         if not self.model_predictions_calculated:
             raise Exception("Model predictions have not been calculated. Please run calculate_model_predictions first")
         
@@ -118,6 +175,20 @@ class ImageClassifiersTrainer():
         return figures
     
     def plot_all_false_results(self, n_rows=3, n_cols=3, title=None, fontsize=12, prediction_bar=True, show_plot=True):
+        """ 
+        Plot the false results of all models.
+
+        Args:
+        - n_rows (int, optional): Number of rows in the plot.
+        - n_cols (int, optional): Number of columns in the plot.
+        - title (str, optional): Title of the plot.
+        - fontsize (int, optional): Font size for text in the plot.
+        - prediction_bar (bool, optional): Whether to show the prediction bar.
+        - show_plot (bool, optional): Whether to display the plot.
+
+        Returns:
+        - figures (dict): A dictionary with group names as keys and Matplotlib figures as values.
+        """
         if not self.model_predictions_calculated:
             raise Exception("Model predictions have not been calculated. Please run calculate_model_predictions first")
         
@@ -129,6 +200,17 @@ class ImageClassifiersTrainer():
         return figures
     
     def plot_all_confusion_matrices(self, title=None, fontsize=12, show_plot=True):
+        """ 
+        Plot the confusion matrices of all models.
+
+        Args:
+        - title (str, optional): Title of the plot.
+        - fontsize (int, optional): Font size for text in the plot.
+        - show_plot (bool, optional): Whether to display the plot.
+
+        Returns:
+        - figures (dict): A dictionary with group names as keys and Matplotlib figures as values.
+        """
         if not self.model_predictions_calculated:
             raise Exception("Model predictions have not been calculated. Please run calculate_model_predictions first")
 
