@@ -106,7 +106,7 @@
     "Rotator": {
         "angle": 90.0
     },
-    "Random Rotation": {
+    "Random Rotator": {
         "angle_range": [-90, 90]
     },
     "Random Flipper": {

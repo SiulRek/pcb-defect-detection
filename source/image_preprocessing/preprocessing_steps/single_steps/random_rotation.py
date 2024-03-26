@@ -3,17 +3,17 @@ import numpy as np
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 
 
-class RandomRotation(StepBase):
+class RandomRotator(StepBase):
     """
-    A preprocessing step that applies random rotation to an image within a specified angle range.
+    A preprocessing step that applies Random Rotator to an image within a specified angle range.
     """
 
     arguments_datatype = {'angle_range': (int, int)}
-    name = 'Random Rotation'
+    name = 'Random Rotator'
 
     def __init__(self, angle_range=(-90, 90)):
         """
-        Initializes the RandomRotation object that can be integrated in an image preprocessing pipeline.
+        Initializes the RandomRotator object that can be integrated in an image preprocessing pipeline.
         
         Args:
             angle_range (tuple): A tuple of two integers specifying the range of angles for rotation. 
@@ -30,5 +30,5 @@ class RandomRotation(StepBase):
         return rotated_image
 
 if __name__ == '__main__':
-    step = RandomRotation()
+    step = RandomRotator()
     print(step.get_step_json_representation())

@@ -30,7 +30,7 @@ STEP_CLASS_MAPPING = {
     'Mirrorer': steps.Mirrorer,
     'Rotator': steps.Rotator,
     'DummyStep': steps.DummyStep,
-    'Random Rotation': steps.RandomRotation,
+    'Random Rotator': steps.RandomRotator,
     'Random Flipper': steps.RandomFlipper,
     'Gaussian Noise Injection': steps.GaussianNoiseInjection,
     'Random Color Jitter': steps.RandomColorJitter,
