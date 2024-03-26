@@ -114,7 +114,8 @@
     },
     "Gaussian Noise Injection": {
         "mean": 0.0,
-        "sigma": 0.05
+        "sigma": 0.05,
+        "apply_clipping": true
     },
     "Random Color Jitter": {
         "brightness": 0.3,
