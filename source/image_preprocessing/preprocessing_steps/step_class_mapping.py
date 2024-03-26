@@ -31,4 +31,5 @@ STEP_CLASS_MAPPING = {
     'Rotator': steps.Rotator,
     'DummyStep': steps.DummyStep,
     'Random Rotation': steps.RandomRotation,
+    'Random Flip': steps.RandomFlip
 }

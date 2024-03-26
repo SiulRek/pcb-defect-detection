@@ -108,5 +108,8 @@
     },
     "Random Rotation": {
         "angle_range": [-90, 90]
+    },
+    "Random Flip": {
+        "flip_direction": "horizontal"
     }
 }
