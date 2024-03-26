@@ -1,7 +1,7 @@
 import tensorflow as tf
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 
-class RandomColorJitter(StepBase):
+class RandomColorJitterer(StepBase):
     """
     A data augmentation step that randomly alters the brightness, contrast, saturation, and hue of an image tensor.
     Each attribute is adjusted within a specified range. For grayscale images (single channel), only brightness and contrast
@@ -9,11 +9,11 @@ class RandomColorJitter(StepBase):
     """
 
     arguments_datatype = {'brightness': float, 'contrast': float, 'saturation': float, 'hue': float}
-    name = 'Random Color Jitter'
+    name = 'Random Color Jitterer'
 
     def __init__(self, brightness=0.3, contrast=0.3, saturation=0.3, hue=0.1):
         """
-        Initializes the RandomColorJitter object for integration into an image preprocessing pipeline.
+        Initializes the RandomColorJitterer object for integration into an image preprocessing pipeline.
 
         Args:
             brightness (float): Maximum delta for brightness adjustment. Must be non-negative.
@@ -36,5 +36,5 @@ class RandomColorJitter(StepBase):
         return image_tensor
 
 if __name__ == '__main__':
-    step = RandomColorJitter()
+    step = RandomColorJitterer()
     print(step.get_step_json_representation())

@@ -117,7 +117,7 @@
         "sigma": 0.05,
         "apply_clipping": true
     },
-    "Random Color Jitter": {
+    "Random Color Jitterer": {
         "brightness": 0.3,
         "contrast": 0.3,
         "saturation": 0.3,
