@@ -32,7 +32,7 @@ STEP_CLASS_MAPPING = {
     'DummyStep': steps.DummyStep,
     'Random Rotator': steps.RandomRotator,
     'Random Flipper': steps.RandomFlipper,
-    'Gaussian Noise Injection': steps.GaussianNoiseInjection,
+    'Gaussian Noise Injector': steps.GaussianNoiseInjector,
     'Random Color Jitter': steps.RandomColorJitter,
     'Clipper': steps.Clipper
 }

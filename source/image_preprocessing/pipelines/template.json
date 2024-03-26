@@ -112,7 +112,7 @@
     "Random Flipper": {
         "flip_direction": "horizontal"
     },
-    "Gaussian Noise Injection": {
+    "Gaussian Noise Injector": {
         "mean": 0.0,
         "sigma": 0.05,
         "apply_clipping": true
