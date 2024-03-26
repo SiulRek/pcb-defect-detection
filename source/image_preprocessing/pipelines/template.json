@@ -115,5 +115,11 @@
     "Gaussian Noise Injection": {
         "mean": 0.0,
         "sigma": 0.05
+    },
+    "Random Color Jitter": {
+        "brightness": 0.3,
+        "contrast": 0.3,
+        "saturation": 0.3,
+        "hue": 0.1
     }
 }

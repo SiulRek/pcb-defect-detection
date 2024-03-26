@@ -33,4 +33,5 @@ STEP_CLASS_MAPPING = {
     'Random Rotation': steps.RandomRotation,
     'Random Flip': steps.RandomFlip,
     'Gaussian Noise Injection': steps.GaussianNoiseInjection,
+    'Random Color Jitter': steps.RandomColorJitter
 }
