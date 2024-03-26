@@ -34,5 +34,6 @@ STEP_CLASS_MAPPING = {
     'Random Flipper': steps.RandomFlipper,
     'Gaussian Noise Injector': steps.GaussianNoiseInjector,
     'Random Color Jitterer': steps.RandomColorJitterer,
-    'Clipper': steps.Clipper
+    'Clipper': steps.Clipper,
+    'Random Cropper': steps.RandomCropper,
 }

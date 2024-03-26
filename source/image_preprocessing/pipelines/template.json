@@ -123,8 +123,7 @@
         "saturation": 0.3,
         "hue": 0.1
     },
-    "Clipper": {
-        "min_value": 0.0,
-        "max_value": 1.0
+    "Random Cropper": {
+        "crop_size": [256, 256]
     }
 }

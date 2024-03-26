@@ -34,3 +34,4 @@ from source.image_preprocessing.preprocessing_steps.single_steps.random_flipping
 from source.image_preprocessing.preprocessing_steps.single_steps.gaussian_noise_injection import GaussianNoiseInjector
 from source.image_preprocessing.preprocessing_steps.single_steps.random_color_jitter import RandomColorJitterer
 from source.image_preprocessing.preprocessing_steps.single_steps.clipping import Clipper
+from source.image_preprocessing.preprocessing_steps.single_steps.random_cropping import RandomCropper

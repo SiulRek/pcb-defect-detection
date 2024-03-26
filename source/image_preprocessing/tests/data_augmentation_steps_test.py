@@ -32,6 +32,18 @@ def create_test_class_for_augmentation_step(augmentation_class, arguments):
             @skip("Visual inspection not enabled")
             def test_processed_image_visualization(self):
                 pass
+        
+        if isinstance(augmentation_class(), steps.RandomCropper):
+            def _verify_image_shapes(self, processed_images, original_images, color_channel_expected):
+                """ 
+                Helper method to verify the image dimensions and color channels in a processed dataset.
+                Compa
+                """
+                for processed_image in processed_images:
+                    processed_data_shape = tuple(processed_image.shape[:2].as_list())
+                    self.assertEqual(processed_data_shape, self.parameters['crop_size'], 'heights and/or widths are not equal.') 
+                    self.assertEqual(color_channel_expected, processed_image.shape[2], 'Color channels are not equal.')     
+
 
         def test_process_execution(self):
             """ 
@@ -62,7 +74,8 @@ augmentation_steps_data = [
     # (steps.RandomRotator, {'angle_range': (-90, 90)}),
     # (steps.RandomFlipper, {'flip_direction': 'horizontal'}),
     # (steps.GaussianNoiseInjector, {'mean': 0.0, 'sigma': 0.2, 'apply_clipping': True}),
-    (steps.RandomColorJitterer, {'brightness': 0.3, 'contrast': 0.3, 'saturation': 0.3, 'hue': 0.1})
+    # (steps.RandomColorJitterer, {'brightness': 0.3, 'contrast': 0.3, 'saturation': 0.3, 'hue': 0.1}),
+    (steps.RandomCropper, {'crop_size': (250, 250)}),
 ]
 
 
