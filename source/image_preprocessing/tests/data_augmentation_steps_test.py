@@ -60,8 +60,8 @@ def create_test_class_for_augmentation_step(augmentation_class, arguments):
 
 augmentation_steps_data = [
     # (steps.RandomRotation, {'angle_range': (-90, 90)}),
-    # (steps.RandomFlip, {'flip_direction': 'horizontal'}),
-    (steps.GaussianNoiseInjection, {'mean': 0.0, 'sigma': 0.2, 'apply_clipping': True}),
+    (steps.RandomFlipper, {'flip_direction': 'horizontal'}),
+    # (steps.GaussianNoiseInjection, {'mean': 0.0, 'sigma': 0.2, 'apply_clipping': True}),
     # (steps.RandomColorJitter, {'brightness': 0.3, 'contrast': 0.3, 'saturation': 0.3, 'hue': 0.1})
 ]
 

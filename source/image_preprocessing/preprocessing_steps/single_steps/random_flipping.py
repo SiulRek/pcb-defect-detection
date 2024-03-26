@@ -4,17 +4,17 @@ from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 import random
 
 
-class RandomFlip(StepBase):
+class RandomFlipper(StepBase):
     """
     A data augmentation step that flips the image randomly in a specified direction.
     """
 
     arguments_datatype = {'flip_direction': str}
-    name = 'Random Flip'
+    name = 'Random Flipper'
 
     def __init__(self, flip_direction='horizontal'):
         """
-        Initializes the RandomFlip object for integration in an image preprocessing pipeline.
+        Initializes the RandomFlipper object for integration in an image preprocessing pipeline.
         
         Args:
             flip_direction (str): Direction of the potential flip. Can be 'horizontal', 'vertical', or 'both'.
@@ -41,5 +41,5 @@ class RandomFlip(StepBase):
         return flipped_image
 
 if __name__ == '__main__':
-    step = RandomFlip()
+    step = RandomFlipper()
     print(step.get_step_json_representation())

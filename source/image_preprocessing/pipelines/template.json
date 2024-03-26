@@ -109,7 +109,7 @@
     "Random Rotation": {
         "angle_range": [-90, 90]
     },
-    "Random Flip": {
+    "Random Flipper": {
         "flip_direction": "horizontal"
     },
     "Gaussian Noise Injection": {
@@ -122,5 +122,9 @@
         "contrast": 0.3,
         "saturation": 0.3,
         "hue": 0.1
+    },
+    "Clipper": {
+        "min_value": 0.0,
+        "max_value": 1.0
     }
 }
