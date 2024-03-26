@@ -111,5 +111,9 @@
     },
     "Random Flip": {
         "flip_direction": "horizontal"
+    },
+    "Gaussian Noise Injection": {
+        "mean": 0.0,
+        "sigma": 0.05
     }
 }

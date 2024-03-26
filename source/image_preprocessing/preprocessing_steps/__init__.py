@@ -31,3 +31,4 @@ from source.image_preprocessing.preprocessing_steps.single_steps.rotating import
 from source.image_preprocessing.preprocessing_steps.single_steps.dummy_step import DummyStep
 from source.image_preprocessing.preprocessing_steps.single_steps.random_rotation import RandomRotation
 from source.image_preprocessing.preprocessing_steps.single_steps.random_flip import RandomFlip
+from source.image_preprocessing.preprocessing_steps.single_steps.gaussian_noise_injection import GaussianNoiseInjection

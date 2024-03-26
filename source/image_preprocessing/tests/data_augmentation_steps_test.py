@@ -61,6 +61,7 @@ def create_test_class_for_augmentation_step(augmentation_class, arguments):
 augmentation_steps_data = [
     (steps.RandomRotation, {'angle_range': (-90, 90)}),
     (steps.RandomFlip, {'flip_direction': 'horizontal'}),
+    (steps.GaussianNoiseInjection, {'mean': 0.0, 'sigma': 0.2}),
 ]
 
 
