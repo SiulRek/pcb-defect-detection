@@ -94,6 +94,7 @@ steps_data = [
     (steps.Mirrorer, {'mirror_direction': 'horizontal'}),
     (steps.Rotator, {'angle': 180}),
     (steps.DummyStep, {}),
+    (steps.Clipper, {'min_value': 0.0, 'max_value': 1.0}),
 ]
 
 
