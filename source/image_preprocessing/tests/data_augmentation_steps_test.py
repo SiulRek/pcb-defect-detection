@@ -19,13 +19,13 @@ import tensorflow as tf
 import source.image_preprocessing.preprocessing_steps as steps
 from source.image_preprocessing.tests.single_step_test import TestSingleStep
 
-ENABLE_VISUAL_INSPECTION = False
+ENABLE_VISUAL_INSPECTION = True
 
 
 def create_test_class_for_augmentation_step(augmentation_class, arguments):
 
     class DynamicDataAugmentationTest(TestSingleStep):
-        AugmentationStep = augmentation_class
+        TestStep = augmentation_class
         parameters = arguments
 
         if not ENABLE_VISUAL_INSPECTION:
@@ -33,24 +33,24 @@ def create_test_class_for_augmentation_step(augmentation_class, arguments):
             def test_processed_image_visualization(self):
                 pass
 
-            def test_process_execution(self):
-                """ 
-                Test to verify the execution of the data augmentation step.
+        def test_process_execution(self):
+            """ 
+            Test to verify the execution of the data augmentation step.
 
-                Tests if at least one image is processed by the augmentation step.
-                """
-                image_dataset = self.image_dataset
-                processed_images = self.test_step.process_step(image_dataset)
-                for _ in processed_images.take(1):  
-                    pass
-                equal_flag = True
-                for ori_img, prc_img in zip(image_dataset, processed_images):
-                    prc_img = tf.cast(prc_img, dtype=ori_img.dtype)
-                    if ori_img.shape != prc_img.shape:
-                        equal_flag = False
-                    elif not tf.reduce_all(tf.equal(ori_img, prc_img)).numpy():
-                        equal_flag = False
-                self.assertFalse(equal_flag)
+            Tests if at least one image is processed by the augmentation step.
+            """
+            image_dataset = self.image_dataset
+            processed_images = self.test_step.process_step(image_dataset)
+            for _ in processed_images.take(1):  
+                pass
+            equal_flag = True
+            for ori_img, prc_img in zip(image_dataset, processed_images):
+                prc_img = tf.cast(prc_img, dtype=ori_img.dtype)
+                if ori_img.shape != prc_img.shape:
+                    equal_flag = False
+                elif not tf.reduce_all(tf.equal(ori_img, prc_img)).numpy():
+                    equal_flag = False
+            self.assertFalse(equal_flag)
 
     name = augmentation_class.name.replace(' ', '')
     DynamicDataAugmentationTest.__name__ = f'Test{name}'
@@ -60,6 +60,7 @@ def create_test_class_for_augmentation_step(augmentation_class, arguments):
 
 augmentation_steps_data = [
     (steps.RandomRotation, {'angle_range': (-90, 90)}),
+    (steps.RandomFlip, {'flip_direction': 'horizontal'}),
 ]
 
 
@@ -86,4 +87,5 @@ def load_multiple_augmentation_tests():
 if __name__ == '__main__':
     """ Main execution block for running the loaded test suite."""
     runner = unittest.TextTestRunner()
-    runner.run(load_multiple_augmentation_tests())
+    test_suites = load_multiple_augmentation_tests()
+    runner.run(test_suites)
