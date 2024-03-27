@@ -27,7 +27,7 @@ def save_images_from_tf_dataset(tf_dataset, directory):
             raise ValueError(f"Unsupported image data type: {image.dtype}")
 
         if image.shape[2] == 1:
-            image = Image.fromarray(image, mode='L')
+            image = Image.fromarray(image.squeeze(-1), mode='L')
         elif image.shape[2] == 3 and image.shape[2] == 3:
             image = Image.fromarray(image, mode='RGB')
         else:
