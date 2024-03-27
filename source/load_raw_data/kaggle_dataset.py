@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 
 from source.load_raw_data.get_tf_dataset import get_tf_dataset_from_df
 from source.load_raw_data.dataset_serialization import load_tfrecord_from_file, save_tfrecord_to_file
-
+from source.load_raw_data.category_codes import Category
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 
@@ -86,17 +86,17 @@ def get_dataframe(path_an=PATH_ANNOTATIONS, path_im=PATH_IMAGE, create_annotatio
                         dataset['class']+=[name]
                         
                         if name == 'missing_hole':
-                            dataset['category_codes'] += [1]
+                            dataset['category_codes'] += [Category.MISSING_HOLE.value]
                         elif name == 'mouse_bite':
-                            dataset['category_codes'] += [2]
+                            dataset['category_codes'] += [Category.MOUSE_BITE.value]
                         elif name == 'open_circuit':
-                            dataset['category_codes'] += [3]
+                            dataset['category_codes'] += [Category.OPEN_CIRCUIT.value]
                         elif name == 'short':
-                            dataset['category_codes'] += [4]
+                            dataset['category_codes'] += [Category.SHORT.value]
                         elif name == 'spur':
-                            dataset['category_codes'] += [5]
+                            dataset['category_codes'] += [Category.SPUR.value]
                         elif name == 'spurious_copper':
-                            dataset['category_codes'] += [6]
+                            dataset['category_codes'] += [Category.SPURIOUS_COPPER.value]
                         
                         dataset['image_width']+=[image_width]
                         dataset['image_height']+=[image_height] 

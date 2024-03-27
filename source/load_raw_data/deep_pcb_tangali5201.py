@@ -3,7 +3,7 @@ import os
 
 from source.load_raw_data.get_tf_dataset import get_tf_dataset_from_df
 from source.load_raw_data.dataset_serialization import load_tfrecord_from_file, save_tfrecord_to_file
-
+from source.load_raw_data.category_codes import Category
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 DATASET_DIR = os.path.join(ROOT_DIR, 'data', 'deep_pcb_tangsali5201')
@@ -91,17 +91,17 @@ def get_dataset_dictionary(path_to_paths_file, dataset_dir=DATASET_DIR):
             
             code = int(parts[4])  
             if code == 1:
-                dataset['category_codes'].append(3)  
+                dataset['category_codes'].append(Category.OPEN_CIRCUIT.value)  
             elif code == 2:
-                dataset['category_codes'].append(4)  
+                dataset['category_codes'].append(Category.SHORT.value)  
             elif code == 3:
-                dataset['category_codes'].append(2)  
+                dataset['category_codes'].append(Category.MOUSE_BITE.value)  
             elif code == 4:
-                dataset['category_codes'].append(5)  
+                dataset['category_codes'].append(Category.SPUR.value)  
             elif code == 5:
-                dataset['category_codes'].append(6) 
+                dataset['category_codes'].append(Category.SPURIOUS_COPPER.value) 
             elif code == 6:
-                dataset['category_codes'].append(7) 
+                dataset['category_codes'].append(Category.PIN_HOLE.value) 
             else:
                 raise LoadDataError(f'Code {code} is invalid.')
                 
