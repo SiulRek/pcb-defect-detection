@@ -132,5 +132,9 @@
     "Random Elastic Transformer": {
         "alpha": 34,
         "sigma": 4
+    },
+    "Random Sharpening": {
+        "min_intensity": 0.5,
+        "max_intensity": 2.0
     }
 }

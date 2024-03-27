@@ -38,4 +38,5 @@ STEP_CLASS_MAPPING = {
     'Random Cropper': steps.RandomCropper,
     'Random Perspective Transformer': steps.RandomPerspectiveTransformer,
     'Random Elastic Transformer': steps.RandomElasticTransformer,
+    'Random Sharpening': steps.RandomSharpening,
 }
