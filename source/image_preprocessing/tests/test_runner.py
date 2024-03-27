@@ -5,7 +5,7 @@ from source.image_preprocessing.tests.channel_conversions_steps_test import load
 from source.image_preprocessing.tests.multiple_steps_test import load_multiple_steps_tests
 from source.image_preprocessing.tests.resize_operations_steps_test import load_resize_operations_steps_tests
 from source.image_preprocessing.tests.long_pipeline_test import load_long_pipeline_tests
-
+from source.image_preprocessing.tests.data_augmentation_steps_test import load_data_augmentation_steps_tests
 
 def load_tests(test_suite):
     """
@@ -25,6 +25,7 @@ def load_tests(test_suite):
     test_suite.addTest(load_multiple_steps_tests())
     test_suite.addTest(load_channel_conversion_steps_tests())
     test_suite.addTest(load_resize_operations_steps_tests())
+    test_suite.addTest(load_data_augmentation_steps_tests())
     test_suite.addTest(load_long_pipeline_tests(1)) 
     return test_suite
 
