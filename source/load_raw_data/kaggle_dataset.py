@@ -186,6 +186,30 @@ def get_tf_dataset_with_category_zero(image_path=PATH_PCB_USED, random_seed=75):
     return get_tf_dataset_from_df(df_zero_category, random_seed=random_seed)
 
 
+def get_tf_datasets_for_each_category(path_an=PATH_ANNOTATIONS, path_im=PATH_IMAGE, create_annotation_summary=False, random_seed=75):
+    """
+    Generates TensorFlow Datasets for each category of the Kaggle PCB defects dataset.
+
+    Parameters:
+    - path_an (str): Path to the directory containing XML annotations.
+    - path_im (str): Path to the directory containing images.
+    - create_annotation_summary (bool): If True, create an annotation summary CSV file.
+    - random_seed (int, optional): The random seed for shuffling the dataset. Defaults to 34.
+
+    Returns:
+    - dict: A dictionary containing TensorFlow Datasets for each category.
+    """
+    
+    df = get_dataframe(path_an, path_im, create_annotation_summary)
+    datasets = {}
+    for category in Category:
+        category_df = df[df['category_codes'] == category.value]
+        if category_df.empty:
+            continue
+        category_df.to_csv(os.path.join(path_an, f'{category.name}_df.csv'), sep=';')
+        datasets[category.name] = get_tf_dataset_from_df(category_df, random_seed=random_seed)
+    return datasets
+
 def save_tf_record():
     """  Save the Kaggle PCB defects dataset as a TFRecord file. 
 
@@ -213,4 +237,5 @@ def load_tf_record():
 
 
 if __name__ == '__main__':
-    save_tf_record()
+    # save_tf_record()
+    get_tf_datasets_for_each_category()
