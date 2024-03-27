@@ -77,7 +77,8 @@ augmentation_steps_data = [
     # (steps.GaussianNoiseInjector, {'mean': 0.0, 'sigma': 0.2, 'apply_clipping': True}),
     # (steps.RandomColorJitterer, {'brightness': 0.3, 'contrast': 0.3, 'saturation': 0.3, 'hue': 0.1}),
     # (steps.RandomCropper, {'crop_size': (250, 250)}),
-    (steps.RandomPerspectiveTransformer, {'warp_scale': 0.2})
+    # (steps.RandomPerspectiveTransformer, {'warp_scale': 0.2}),
+    (steps.RandomElasticTransformer, {'alpha': 34, 'sigma': 4}),
 ]
 
 

@@ -128,5 +128,9 @@
     },
     "Random Perspective Transformer": {
         "warp_scale": 0.2
+    },
+    "Random Elastic Transformer": {
+        "alpha": 34,
+        "sigma": 4
     }
 }
