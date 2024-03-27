@@ -125,5 +125,8 @@
     },
     "Random Cropper": {
         "crop_size": [256, 256]
+    },
+    "Random Perspective Transformer": {
+        "warp_scale": 0.2
     }
 }

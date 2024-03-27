@@ -19,6 +19,7 @@ import tensorflow as tf
 import source.image_preprocessing.preprocessing_steps as steps
 from source.image_preprocessing.tests.single_step_test import TestSingleStep
 
+
 ENABLE_VISUAL_INSPECTION = True
 
 
@@ -75,7 +76,8 @@ augmentation_steps_data = [
     # (steps.RandomFlipper, {'flip_direction': 'horizontal'}),
     # (steps.GaussianNoiseInjector, {'mean': 0.0, 'sigma': 0.2, 'apply_clipping': True}),
     # (steps.RandomColorJitterer, {'brightness': 0.3, 'contrast': 0.3, 'saturation': 0.3, 'hue': 0.1}),
-    (steps.RandomCropper, {'crop_size': (250, 250)}),
+    # (steps.RandomCropper, {'crop_size': (250, 250)}),
+    (steps.RandomPerspectiveTransformer, {'warp_scale': 0.2})
 ]
 
 
