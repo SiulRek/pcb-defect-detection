@@ -1,10 +1,13 @@
 from copy import deepcopy
 
+import tensorflow as tf
+
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 from source.image_preprocessing.preprocessing_steps.step_class_mapping import STEP_CLASS_MAPPING
 from source.utils import ClassInstancesSerializer
 from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
 from source.load_raw_data.pack_images_and_labels import pack_images_and_labels
+
 
 class ImagePreprocessor:
     """
@@ -23,6 +26,10 @@ class ImagePreprocessor:
     Methods:
         pipeline(self):
             Property that returns the current pipeline.
+
+        set_default_datatype(self, datatype: tf.DType):
+            Sets the default datatype for the pipeline steps. In case the datatype is not set, 
+            the default datatype is tf.uint8.
 
         set_pipe(self, pipeline: List[StepBase]):
             Sets the preprocessing pipeline with a deep copy of the provided steps,
@@ -66,6 +73,7 @@ class ImagePreprocessor:
         self._initialize_class_instance_serializer(STEP_CLASS_MAPPING)
         self._raise_step_process_exception = raise_step_process_exception
         self._occurred_exception_message = ''
+        self.set_default_datatype(tf.uint8)
 
     @property
     def pipeline(self):
@@ -78,7 +86,7 @@ class ImagePreprocessor:
     @property
     def occurred_exception_message(self):
         return self._occurred_exception_message
-    
+        
     def _initialize_class_instance_serializer(self, step_class_mapping):
         """ Checks if `step_class_mapping` is a dictionary and mapps to subclasses of `StepBase`, if successfull instanciates the `ClassInstancesSerializer` for pipeline serialization and deserialization."""
 
@@ -90,6 +98,16 @@ class ImagePreprocessor:
                 raise ValueError("At least one mapped class is not a class or subclass of StepBase.")
         self._serializer = ClassInstancesSerializer(step_class_mapping)
 
+    def set_default_datatype(self, datatype):
+        """
+        Sets the default datatype for the pipeline steps.
+
+        Args:
+            datatype: The default output datatype if the pipeline steps.   
+                Must be a TensorFlow datatype (e.g., tf.float32, tf.uint8).
+        """
+        StepBase.default_output_datatype = datatype
+    
     def set_pipe(self, pipeline):
         """
         Sets the preprocessing pipeline with a deep copy of the provided steps,
