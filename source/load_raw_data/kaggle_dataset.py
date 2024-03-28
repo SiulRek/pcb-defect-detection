@@ -206,7 +206,6 @@ def get_tf_datasets_for_each_category(path_an=PATH_ANNOTATIONS, path_im=PATH_IMA
         category_df = df[df['category_codes'] == category.value]
         if category_df.empty:
             continue
-        category_df.to_csv(os.path.join(path_an, f'{category.name}_df.csv'), sep=';')
         datasets[category.name] = get_tf_dataset_from_df(category_df, random_seed=random_seed)
     return datasets
 
