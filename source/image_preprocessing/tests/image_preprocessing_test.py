@@ -235,6 +235,23 @@ class TestImagePreprocessor(unittest.TestCase):
         processed_images = unpack_tf_dataset(processed_dataset)[0]
         original_images = unpack_tf_dataset(packed_dataset)[0]
         self._verify_image_shapes(processed_images, original_images, color_channel_expected=1)
+    
+    def test_set_default_datatype(self):
+        """
+        Test the functionality of the set_default_datatype method.
+        This test changes the default output datatype and verifies if the processed images are in the new datatype.
+        """
+        preprocessor = ImagePreprocessor()
+        preprocessor.set_default_datatype(tf.float32)
+        pipeline = [
+             RGBToGrayscale(param1=20,param2=(20,20),param3=False),
+             GrayscaleToRGB(param1=40,param2=(30,30),param3=False),     
+        ]
+        preprocessor.set_pipe(pipeline)
+        processed_dataset = preprocessor.process(self.image_dataset)
+
+        for image in processed_dataset.take(1):
+            self.assertEqual(image.dtype, tf.float32, "The datatype of the processed image does not match the expected default datatype.")
 
     def test_save_and_load_pipeline(self):
         """    Ensures the image preprocessing pipeline can be saved and subsequently loaded.
