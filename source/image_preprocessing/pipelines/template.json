@@ -107,34 +107,42 @@
         "angle": 90.0
     },
     "Random Rotator": {
-        "angle_range": [-90, 90]
+        "angle_range": [-90, 90],
+        "seed": 42
     },
     "Random Flipper": {
-        "flip_direction": "horizontal"
+        "flip_direction": "horizontal",
+        "seed": 42
     },
     "Gaussian Noise Injector": {
         "mean": 0.0,
         "sigma": 0.05,
-        "apply_clipping": true
+        "apply_clipping": true,
+        "seed": 42
     },
     "Random Color Jitterer": {
         "brightness": 0.3,
         "contrast": 0.3,
         "saturation": 0.3,
-        "hue": 0.1
+        "hue": 0.1,
+        "seed": 42
     },
     "Random Cropper": {
-        "crop_size": [256, 256]
+        "crop_size": [256, 256],
+        "seed": 42
     },
     "Random Perspective Transformer": {
-        "warp_scale": 0.2
+        "warp_scale": 0.2,
+        "seed": 42
     },
     "Random Elastic Transformer": {
         "alpha": 34,
-        "sigma": 4
+        "sigma": 4,
+        "seed": 42
     },
     "Random Sharpening": {
         "min_intensity": 0.5,
-        "max_intensity": 2.0
+        "max_intensity": 2.0,
+        "seed": 42
     }
 }
