@@ -4,13 +4,14 @@ from PIL import Image
 import numpy as np
 
 
-def save_images_from_tf_dataset(tf_dataset, directory):
+def save_images_from_tf_dataset(tf_dataset, directory, name_prefix='image'):
     """     
     Save images from a tf.data.Dataset object to a directory.
 
     Args:
         tf_dataset (tf.data.Dataset): A tf.data.Dataset object containing images. Format: (image, label).
         directory (str): The directory where the images will be saved.
+        name_prefix (str, optional): The prefix of the image file names. Default: 'image'.
     """
 
     if not os.path.exists(directory):
@@ -33,6 +34,6 @@ def save_images_from_tf_dataset(tf_dataset, directory):
         else:
             raise ValueError("Unsupported image format")
 
-        file_path = os.path.join(directory, f'image_{i}.png')
+        file_path = os.path.join(directory, f'{name_prefix}_{i}.png')
         image.save(file_path)
 
