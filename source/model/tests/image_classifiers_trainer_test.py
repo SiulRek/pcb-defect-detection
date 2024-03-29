@@ -3,14 +3,14 @@ import unittest
 
 import tensorflow as tf
 
-from source.utils.image_classifiers_trainer import ImageClassifiersTrainer
+from source.model.helpers.image_classifiers_trainer import ImageClassifiersTrainer
 from source.utils.test_result_logger import TestResultLogger
 
 from matplotlib import pyplot as plt
 
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..","..")
-OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/utils/tests/outputs")
+OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/model/tests/outputs")
 LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
 
 SHOW_PLOT = False
@@ -61,9 +61,8 @@ class TestImageClassifiersTrainer(unittest.TestCase):
     def test_plot_model_summary(self):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
         trainer.load_model(self.model)
-        fig = trainer.plot_model_summary(title='Model Summary', fontsize=12, show_plot=True)
+        fig = trainer.plot_model_summary(title='Model Summary', fontsize=12, show_plot=SHOW_PLOT)
         self.assertIsNotNone(fig)
-        print("Juuuhuuuuuuuuu")
 
     def test_set_datasets(self):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)

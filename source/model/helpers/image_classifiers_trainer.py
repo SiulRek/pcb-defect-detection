@@ -3,7 +3,7 @@ import io
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
-from source.utils.image_classifier_visualizer import ImageClassifierVisualizer
+from source.model.helpers.image_classifier_visualizer import ImageClassifierVisualizer
 
 
 class ImageClassifiersTrainer():
