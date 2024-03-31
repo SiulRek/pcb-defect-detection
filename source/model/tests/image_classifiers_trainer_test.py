@@ -84,6 +84,13 @@ class TestImageClassifiersTrainer(unittest.TestCase):
         self.assertEqual(len(trainer.histories), 2)
         self.assertIn('loss', trainer.histories['group1'].history)
     
+    def test_fit_all_with_datasets_in_args(self):
+        trainer = ImageClassifiersTrainer(self.group_names, self.categories)
+        trainer.load_model(self.model)
+        trainer.fit_all(datasets=self.datasets, verbose=0)
+        self.assertEqual(len(trainer.histories), 2)
+        self.assertIn('loss', trainer.histories['group1'].history)
+    
     def test_fit_all_with_kwargs(self):
         kwargs = {'epochs': 1, 'verbose': 0}
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
