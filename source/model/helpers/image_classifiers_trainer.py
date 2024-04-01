@@ -23,7 +23,8 @@ class ImageClassifiersTrainer():
         self.groups_num = len(group_names)
         self.models = {}
         self.histories = {}
-        self.datasets = {}
+        self.train_datasets = None
+        self.val_datasets = None
         self.model_predictions_calculated = False
         self.final_results = {group: {} for group in group_names}
         self.visualizers = {}
@@ -70,21 +71,15 @@ class ImageClassifiersTrainer():
 
         return fig
 
-    def set_datasets(self, datasets):
-        """ 
-        Set the datasets for training and validation.
+    def _set_datasets(self, train_datasets, val_datasets):      
+        assert set(train_datasets.keys()) == set(self.group_names), "Train Datasets must be the same as group names"
+        self.train_datasets = train_datasets
 
-        Args:
-        - datasets (dict): A dictionary with keys as group names and values as tuples of training and validation datasets.
-        """
-        if datasets is None:
-            if self.datasets == {}:
-                raise Exception("Datasets have not been initialized. Please provide datasets using set_datasets method.")
-            return
-        assert set(datasets.keys()) == set(self.group_names), "Datasets must be the same as group names"
-        self.datasets = datasets
-    
-    def fit_all(self, datasets=None, **kwargs):
+        if val_datasets is not None:
+            assert set(val_datasets.keys()) == set(self.group_names), "Datasets must be the same as group names"
+            self.val_datasets = val_datasets
+        
+    def fit_all(self, train_datasets, val_datasets=None, **kwargs):
         """ 
         Fit all models on their respective datasets.
 
@@ -92,14 +87,14 @@ class ImageClassifiersTrainer():
         - datasets (dict): A dictionary with keys as group names and values as tuples of training and validation datasets.
         - kwargs: Additional arguments to pass to the fit method.
         """
-        self.set_datasets(datasets)
-        validation_set_exists = len(self.datasets[self.group_names[0]]) == 2
+        self._set_datasets(train_datasets, val_datasets)
+        validation_set_exists = self.val_datasets is not None
         for group in self.group_names:
             if validation_set_exists:
-                self.histories[group] = self.models[group].fit(self.datasets[group][0], 
-                                                           validation_data=self.datasets[group][1], **kwargs)
+                self.histories[group] = self.models[group].fit(self.train_datasets[group], 
+                                                           validation_data=self.val_datasets[group], **kwargs)
             else:
-                self.histories[group] = self.models[group].fit(self.datasets[group][0], **kwargs)
+                self.histories[group] = self.models[group].fit(self.train_datasets[group], **kwargs)
             final_results = {}
             for metric, values in self.histories[group].history.items():
                 final_results[metric] = values[-1]
