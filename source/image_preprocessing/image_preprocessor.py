@@ -22,7 +22,6 @@ class ImagePreprocessor:
         pipeline (list of StepBase Child classes): A list of preprocessing steps to be executed.
         serializer (ClassInstancesSerializer): Handles the serialization and deserialization of the pipeline to and from a JSON file.
 
-
     Methods:
         pipeline(self):
             Property that returns the current pipeline.
@@ -60,6 +59,8 @@ class ImagePreprocessor:
           handle the conversion and reconstruction of the pipeline steps, respectively.
         - The `process` method's behavior changes based on the `raise_step_process_exception` flag,
                 allowing for flexible error handling during the preprocessing stage.
+        - The datatype thoughout the pipeline is the default datatype, except if explicitly set in the step.
+        - tf.uint8 is the only input datatype all pipeline steps can handle.
     """
 
     def __init__(self, raise_step_process_exception=True): 
