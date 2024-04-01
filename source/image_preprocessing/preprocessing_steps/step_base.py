@@ -1,3 +1,5 @@
+import functools
+
 from abc import ABC, abstractmethod
 import tensorflow as tf
 
@@ -118,16 +120,13 @@ class StepBase(ABC):
     
     @staticmethod
     def _tensor_pyfunc_wrapper(function):
-        """ 
-        A decorator for mapping TensorFlow tensor-based functions onto a dataset using tf.py_function.
-        This decorator is designed for preprocessing steps implemented as Python functions,
-        where the input to the function is a TensorFlow tensor.
-        """
+        @functools.wraps(function)  # Preserve function metadata
         def tensor_to_py_function_wrapper(self, image_tensor):
             processed_image = function(self, image_tensor)
             processed_image = tf.cast(processed_image, dtype=self.output_datatype)
             return processed_image
 
+        @functools.wraps(function)  # Preserve function metadata
         def dataset_map_function(self, image_dataset):
             return image_dataset.map(
                 lambda img: tf.py_function(
@@ -141,11 +140,7 @@ class StepBase(ABC):
 
     @staticmethod
     def _nparray_pyfunc_wrapper(function):
-        """ 
-        A decorator for mapping Python functions (processing NumPy arrays) onto a TensorFlow dataset using tf.py_function.
-        This decorator is useful for preprocessing steps implemented in Python,
-        converting TensorFlow tensors to NumPy arrays before processing.
-        """
+        @functools.wraps(function)  # Preserve function metadata
         def numpy_to_py_function_wrapper(self, image_tensor):
             image_nparray = image_tensor.numpy().astype('uint8')
             processed_image = function(self, image_nparray)
@@ -153,6 +148,7 @@ class StepBase(ABC):
             processed_image = correct_image_tensor_shape(processed_image)
             return processed_image
 
+        @functools.wraps(function)  # Preserve function metadata
         def py_function_dataset_map(self, image_dataset):
             return image_dataset.map(
                 lambda img: tf.py_function(
