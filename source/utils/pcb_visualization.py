@@ -1,3 +1,6 @@
+""" Disclaimer: The classes in this modules where used for visualization puproses during the development
+ of the Image Preprocessing Framework. They are not used for plotting purposes in model development. """
+
 from abc import ABC
 from copy import deepcopy
 
@@ -6,6 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import tensorflow as tf
+
 
 class PCBVisualizerBase(ABC):
     """ This class represents the base for the PCBVisualizer child classes."""
