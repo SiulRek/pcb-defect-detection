@@ -4,7 +4,7 @@ from PIL import Image
 import numpy as np
 
 
-def save_images_from_tf_dataset(tf_dataset, directory, name_prefix='image'):
+def save_images_from_tf_dataset(tf_dataset, directory, name_prefix='image', max_images=None):
     """     
     Save images from a tf.data.Dataset object to a directory.
 
@@ -12,12 +12,15 @@ def save_images_from_tf_dataset(tf_dataset, directory, name_prefix='image'):
         tf_dataset (tf.data.Dataset): A tf.data.Dataset object containing images. Format: (image, label).
         directory (str): The directory where the images will be saved.
         name_prefix (str, optional): The prefix of the image file names. Default: 'image'.
+        max_images (int, optional): The maximum number of images to save. Default: None.
     """
 
     if not os.path.exists(directory):
         os.makedirs(directory)
 
     for i, (image_tensor, _) in enumerate(tf_dataset):
+        if max_images is not None and i >= max_images:
+            break
         image = image_tensor.numpy()
 
         if image.dtype == np.float32 or image.dtype == np.float64 or image.dtype == np.float16:
@@ -34,6 +37,8 @@ def save_images_from_tf_dataset(tf_dataset, directory, name_prefix='image'):
         else:
             raise ValueError("Unsupported image format")
 
-        file_path = os.path.join(directory, f'{name_prefix}_{i}.png')
+        file_path = os.path.join(directory, f'{name_prefix}_{i+1}.png')
         image.save(file_path)
+
+
 
