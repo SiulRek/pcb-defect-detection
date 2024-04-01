@@ -31,9 +31,13 @@ class TestImageClassifiersTrainer(unittest.TestCase):
     def setUpClass(cls):
         cls.group_names = ['group1', 'group2']
         cls.categories = [str(i) for i in range(10)]
-        cls.datasets = {
-            'group1': (cls._get_dataset(), cls._get_dataset()), 
-            'group2': (cls._get_dataset(), cls._get_dataset())
+        cls.train_datasets = {
+            'group1':   cls._get_dataset(), 
+            'group2':   cls._get_dataset()
+        }
+        cls.val_datasets = {
+            'group1':   cls._get_dataset(), 
+            'group2':   cls._get_dataset()
         }
         os.makedirs(OUTPUT_DIR, exist_ok=True)
         cls.logger = TestResultLogger(LOG_FILE)
@@ -66,28 +70,16 @@ class TestImageClassifiersTrainer(unittest.TestCase):
 
     def test_set_datasets(self):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
-        trainer.set_datasets(self.datasets)
-        self.assertEqual(len(trainer.datasets), 2)
-        self.assertEqual(trainer.datasets['group1'], self.datasets['group1'])
-        self.assertEqual(trainer.datasets['group2'], self.datasets['group2'])                                               
-
-    def test_set_datasets_error(self):
-        trainer = ImageClassifiersTrainer(self.group_names, self.categories)
-        with self.assertRaises(AssertionError):
-            trainer.set_datasets({})
+        trainer._set_datasets(train_datasets=self.train_datasets, val_datasets=self.val_datasets)
+        self.assertEqual(len(trainer.train_datasets), 2)
+        self.assertEqual(len(trainer.val_datasets), 2)
+        self.assertEqual(trainer.train_datasets['group1'], self.train_datasets['group1'])
+        self.assertEqual(trainer.val_datasets['group2'], self.val_datasets['group2'])
 
     def test_fit_all(self):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
         trainer.load_model(self.model)
-        trainer.set_datasets(self.datasets)
-        trainer.fit_all(verbose=0)
-        self.assertEqual(len(trainer.histories), 2)
-        self.assertIn('loss', trainer.histories['group1'].history)
-    
-    def test_fit_all_with_datasets_in_args(self):
-        trainer = ImageClassifiersTrainer(self.group_names, self.categories)
-        trainer.load_model(self.model)
-        trainer.fit_all(datasets=self.datasets, verbose=0)
+        trainer.fit_all(train_datasets=self.train_datasets, verbose=0)
         self.assertEqual(len(trainer.histories), 2)
         self.assertIn('loss', trainer.histories['group1'].history)
     
@@ -95,24 +87,21 @@ class TestImageClassifiersTrainer(unittest.TestCase):
         kwargs = {'epochs': 1, 'verbose': 0}
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
         trainer.load_model(self.model)
-        trainer.set_datasets(self.datasets)
-        trainer.fit_all(**kwargs)
+        trainer.fit_all(train_datasets=self.train_datasets, **kwargs)
         self.assertEqual(len(trainer.histories), 2)
         self.assertIn('loss', trainer.histories['group1'].history)
 
     def test_plot_histories(self):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
         trainer.load_model(self.model)
-        trainer.set_datasets(self.datasets)
-        trainer.fit_all(verbose=0, epochs=10)
+        trainer.fit_all(train_datasets=self.train_datasets, verbose=0, epochs=10)
         trainer.plot_histories(plot_show=SHOW_PLOT)
         self.assertIsNotNone(trainer.history_plot)
 
     def test_calculate_model_predictions(self):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
         trainer.load_model(self.model)
-        trainer.set_datasets(self.datasets)
-        trainer.fit_all(verbose=0, epochs=10)
+        trainer.fit_all(train_datasets=self.train_datasets, verbose=0, epochs=10)
         test_datasets = {
             'group1': self._get_dataset(), 
             'group2': self._get_dataset()
@@ -124,8 +113,8 @@ class TestImageClassifiersTrainer(unittest.TestCase):
     def test_plot_all_results(self):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
         trainer.load_model(self.model)
-        trainer.set_datasets(self.datasets)
         trainer.calculate_model_predictions({'group1': self._get_dataset(), 'group2': self._get_dataset()})
+        trainer.fit_all(train_datasets=self.train_datasets, verbose=0, epochs=1)
         figures = trainer.plot_all_results(n_rows=3, n_cols=3, title='All Results', fontsize=12, 
                                            prediction_bar=True, show_plot=SHOW_PLOT)
 
@@ -137,7 +126,7 @@ class TestImageClassifiersTrainer(unittest.TestCase):
     def test_plot_all_false_results(self):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
         trainer.load_model(self.model)
-        trainer.set_datasets(self.datasets)
+        trainer.fit_all(train_datasets=self.train_datasets, verbose=0, epochs=1)
         trainer.calculate_model_predictions({'group1': self._get_dataset(), 'group2': self._get_dataset()})
         figures = trainer.plot_all_false_results(n_rows=3, n_cols=3, title='All False Results', 
                                                  fontsize=12, prediction_bar=True, show_plot=SHOW_PLOT)
@@ -150,7 +139,7 @@ class TestImageClassifiersTrainer(unittest.TestCase):
     def test_plot_confusion_matrices(self):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
         trainer.load_model(self.model)
-        trainer.set_datasets(self.datasets)
+        trainer.fit_all(train_datasets=self.train_datasets, verbose=0, epochs=1)
         trainer.calculate_model_predictions({'group1': self._get_dataset(), 'group2': self._get_dataset()})
         figures = trainer.plot_all_confusion_matrices(title='All Confusion Matrices', fontsize=12, show_plot=SHOW_PLOT)
 
