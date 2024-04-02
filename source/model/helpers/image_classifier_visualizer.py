@@ -1,5 +1,6 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 import tensorflow as tf
 
 import seaborn as sns
@@ -289,6 +290,19 @@ class ImageClassifierVisualizer:
                            fontsize=fontsize, prediction_bar=prediction_bar, show_plot=show_plot)
         
     def plot_confusion_matrix(self, normalize=False, title='Confusion Matrix', cmap=plt.cm.Blues, fontsize=12, show_plot=True):
+        """ 
+        Plot the confusion matrix of the model.
+
+        Args:
+        - normalize (bool, optional): Whether to normalize the confusion matrix.
+        - title (str, optional): Title of the plot.
+        - cmap (matplotlib.colors.Colormap, optional): Colormap to use for the plot.
+        - fontsize (int, optional): Font size for text in the plot.
+        - show_plot (bool, optional): Whether to display the plot.
+
+        Returns:	
+        - fig: Figure of the confusion matrix.
+        """
         if not self.model_predictions_prepared:
             raise ValueError("Model predictions have not been prepared. Please call prepare_model_predictions first.")
 
@@ -306,3 +320,36 @@ class ImageClassifierVisualizer:
         ax.set_xlabel('Predicted label', fontsize=fontsize)
 
         return self._prepare_plot(fig, title, fontsize, show_plot)
+
+    def plot_evaluation_metrics(self, average='macro', title='Evaluation Metrics', fontsize=12, show_plot=True):
+        """ 
+        Plot the evaluation metrics of the model.
+
+        Args:
+        - average (str, optional): Type of averaging to use for precision, recall, and F1 score.
+        - title (str, optional): Title of the plot.
+        - fontsize (int, optional): Font size for text in the plot.
+        - show_plot (bool, optional): Whether to display the plot.
+
+        Returns:
+        - fig: Figure of the evaluation metrics.
+        """
+        if not self.model_predictions_prepared:
+            raise ValueError("Model predictions have not been prepared. Please call calculate_model_predictions first.")
+
+        true_labels = np.argmax([label for _, label in self.np_dataset], axis=1)
+        predicted_labels = np.argmax(self.predictions, axis=1)
+
+        accuracy = accuracy_score(true_labels, predicted_labels)
+        precision = precision_score(true_labels, predicted_labels, average=average)
+        recall = recall_score(true_labels, predicted_labels, average=average)
+        f1 = f1_score(true_labels, predicted_labels, average=average)
+
+        metrics_text = f'Accuracy: {accuracy:.4f}\nPrecision: {precision:.4f}\nRecall: {recall:.4f}\nF1 Score: {f1:.4f}'
+
+        fig, ax = plt.subplots(figsize=(1.5, 2))
+        ax.text(0.5, 0.5, metrics_text, fontsize=fontsize, ha='center', va='center')
+        ax.axis('off')
+        fig.suptitle(title, fontsize=fontsize+2)
+
+        return self._prepare_plot(fig, None, fontsize, show_plot)
