@@ -227,6 +227,28 @@ class ImageClassifiersTrainer():
             figures[group] = visualizer.plot_confusion_matrix(group_title, fontsize=fontsize, show_plot=show_plot)
         return figures
     
+    def plot_all_evaluation_metrics(self, title=None, fontsize=12, show_plot=True):
+        """ 
+        Plot the evaluation metrics of all models.
+
+        Args:
+        - title (str, optional): Title of the plot.
+        - fontsize (int, optional): Font size for text in the plot.
+        - show_plot (bool, optional): Whether to display the plot.
+
+        Returns:
+        - figures (dict): A dictionary with group names as keys and Matplotlib figures as values.
+        """
+        if not self.model_predictions_calculated:
+            raise Exception("Model predictions have not been calculated. Please run calculate_model_predictions first")
+
+        title = '' if title is None else title    
+        figures = {}
+        for group, visualizer in self.visualizers.items():
+            group_title = f"{title} - {group}"
+            figures[group] = visualizer.plot_evaluation_metrics(average='macro', title=group_title, 
+                                                                fontsize=fontsize, show_plot=show_plot)
+        return figures
 
     
 

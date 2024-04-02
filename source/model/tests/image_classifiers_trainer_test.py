@@ -136,12 +136,24 @@ class TestImageClassifiersTrainer(unittest.TestCase):
         for group in self.group_names:
             self.assertIsInstance(figures[group], type(plt.figure()))
 
-    def test_plot_confusion_matrices(self):
+    def test_plot_all_confusion_matrices(self):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
         trainer.load_model(self.model)
         trainer.fit_all(train_datasets=self.train_datasets, verbose=0, epochs=1)
         trainer.calculate_model_predictions({'group1': self._get_dataset(), 'group2': self._get_dataset()})
         figures = trainer.plot_all_confusion_matrices(title='All Confusion Matrices', fontsize=12, show_plot=SHOW_PLOT)
+
+        self.assertIsInstance(figures, dict)
+        self.assertEqual(len(figures), len(self.group_names))
+        for group in self.group_names:
+            self.assertIsInstance(figures[group], type(plt.figure()))
+
+    def test_plot_all_evaluation_metrics(self):
+        trainer = ImageClassifiersTrainer(self.group_names, self.categories)
+        trainer.load_model(self.model)
+        trainer.fit_all(train_datasets=self.train_datasets, verbose=0, epochs=1)
+        trainer.calculate_model_predictions({'group1': self._get_dataset(), 'group2': self._get_dataset()})
+        figures = trainer.plot_all_evaluation_metrics(title='All Evaluation Metrics', fontsize=12, show_plot=SHOW_PLOT)
 
         self.assertIsInstance(figures, dict)
         self.assertEqual(len(figures), len(self.group_names))
