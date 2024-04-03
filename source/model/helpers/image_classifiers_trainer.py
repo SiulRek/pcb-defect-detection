@@ -1,4 +1,6 @@
+from copy import deepcopy
 import io
+
 
 import tensorflow as tf
 import matplotlib.pyplot as plt
@@ -79,22 +81,24 @@ class ImageClassifiersTrainer():
             assert set(val_datasets.keys()) == set(self.group_names), "Datasets must be the same as group names"
             self.val_datasets = val_datasets
         
-    def fit_all(self, train_datasets, val_datasets=None, **kwargs):
+    def fit_all(self, train_datasets, val_datasets=None, callbacks=None, **kwargs):
         """ 
         Fit all models on their respective datasets.
 
         Args:
         - datasets (dict): A dictionary with keys as group names and values as tuples of training and validation datasets.
+        - callbacks (list, optional): List of callbacks to pass to the fit method.
         - kwargs: Additional arguments to pass to the fit method.
         """
         self._set_datasets(train_datasets, val_datasets)
-        validation_set_exists = self.val_datasets is not None
+
         for group in self.group_names:
-            if validation_set_exists:
-                self.histories[group] = self.models[group].fit(self.train_datasets[group], 
-                                                           validation_data=self.val_datasets[group], **kwargs)
-            else:
-                self.histories[group] = self.models[group].fit(self.train_datasets[group], **kwargs)
+            fit_params = {}
+            if callbacks is not None:
+                fit_params['callbacks'] = deepcopy(callbacks)
+            if val_datasets is not None:
+                fit_params['validation_data'] = self.val_datasets[group]
+            self.histories[group] = self.models[group].fit(self.train_datasets[group], **fit_params, **kwargs)
             final_results = {}
             for metric, values in self.histories[group].history.items():
                 final_results[metric] = values[-1]
