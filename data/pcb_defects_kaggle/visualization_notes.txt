@@ -1,0 +1,79 @@
+Kaggle Dataset Visualization
+
+PCBs used:
+	- twolth PCBs are used
+	- Lines connected to Pads
+	- Lines can be thin or thick, not zig zag, 
+	- pads have similar size, shape is mostly cycle
+	- Some have shape pads some not
+	- Colours mainly green range and gray range
+	- Some Pads connected to vias some not.
+	- Shapes either rectangle
+	- Small variance in via size
+	- PCB 11 is easy
+	
+	01: A lot of Uniform spread small vias, Shape Pads, Almost thin lines, Pads, cylce, square, 
+	rectangle, ovalo, no isles, vias almost same area value ...
+	04: wider lines than 1.,  parallel lines almost close, less area without copper, some text, feaw isles
+		No holes, lines a bit irregular, NO Shape vias
+	05. less area without copper, slightly more distance between lines and copper area, small shape vias, 
+	mini isles, two big filled cyclic vias, 
+	06: Thin lines, Irregular width of lines, Shape pads, equal size vias, many lines compared to others,
+	strange free side pads, most cluttered!
+	07: Smaller PCB, less lines, complex and irregular line connection in uppder area, shape pads
+	08: much White Text, much white drawings, Copper free area in the middle, regular lines connection, component
+	pads, Vias are alligned, shape pads.
+	9: Shape Pads, Some but less than previously white text and drawings, Component Pad, Good part free copper area,
+	Aligned component and vias, 
+	10: Smaller PCB, thicker lines, less complex than the others, but the connections of lines are irregular, Has also big
+	vias, bias are not of equal size, shape pads
+	11: Lines rest are free copper areas, not complex, no shape pads, less lines, no Component Pads, lines of typical lengths,
+	12: Small Shape Pads, More lines, Complexity level is higher, Relative regular lines, but the width of the lines vary
+
+Spurious Copper:
+	Similar lengths & width, confundable with copper isles, orientation is parallel to neighbours,
+	distances of spur to adjacent copper on both horizontal sides are mostly unequal, distance to side
+	is sometimes close, Shapes (short thin lines with curvy end) are equal, colour on spur uniform, 
+	each spur same color, PCB 12 and 6 lead most likely to failure, PCB 11 is easy, PCB 5 spurs seem longer, 
+	PCB 4 they are more close to sides, PCb 1 you can exchange them with lines, somethimes in 1
+	not parallel to closest side 8just slightly differing or parallel to other side), slightly noisy line
+	
+Spur: 
+	Similar to spurious Copper only difference is that spur is completly binded at one site, 1/3 or half of the spur overlaps side	copper,
+	as lines are wider spur is less noticable in 11, Sometimes two halfly overlapping spurs (one above the other), 
+	Sometimes spur form of a noisy triangle, always attached to straight line, e.g.10 the noisy lines and forms can
+	already be confunded with spurs, spurs are small in 1 (really small), 6, 9 and 8 in relation to image, 
+	most of the time clearly separable from line itself, 6 already appears cluttered probably most difficult, 
+	usually separable from line copper as density is slightly higher, it is also separable from curvy shapes as it usually does not so
+	fluently with the environment, some contours of curves in 4 can be exchanged as spur, in 1 they are even small in length
+	
+Short:
+	short orhogonal connections of two parallel lines, usually not on edges,not always orthogonal, similar width as lines on side or smaller,
+	can be longer sometimes, on 4 it gets stranger as it not always connects to parallel lines and also the "Schnittpunkte" are orthogonal,
+	like spur or spurious copper with the difference it connects to lines, sometimes really short when lines are close than they are nearly not rectangular,
+	the shape of the short connection is almost always a slighlty noisy line, 6 is hart as connections are shorter, always connects to copper never vias so
+	there is a separation to short lines connecting to vias (e.g. 6), in e.g. 4 the density seem slightly lower as lines on side, whats interesting in e.g. 1 there are
+	pad connections looking similar to shorts, short connection from vias and copper area are never shorts!
+	
+Oper Circuit:
+	Line is interrupted completly, open circuit area color is similar as line surrounding area color, Sometimes color a bit different than it 
+	has the form of a line like spurious copper is longer as open line wide, It cuts the line not always orthogonal, useually on straight part of line
+	cannot be easily exchange with other part of PCB except maybe cluttered parts with isles, sometimes not line forms but trapezoids, when lines are touching
+	each other nearly and have angles this can be confundet width opencircuits. open circuit line width not much porpotional to line width
+
+Mouse Bite:
+	Cuts line in convex form, the form itself is noisy not a perfect half cycle or ellipse, does not fully disconnect line, color slightly different
+	from free copper area, the form does not only cover the line but also a part of free copper area, never on copper areas, reaches more than half or half the 
+	width usually, e.g. PCb 10 has some snakk convex form invading the copper area that can be exchanged with mouse bite, nearly always on straight part of lines,
+	sometimes mouse bite nearly reaches the other site, sometimes like in 8 a bit darker, sometimes not cycle form more form of rectangle/line, 
+	on PCB 1 they are small and not easy to find... often just 1 or 2 here.
+	
+Missing Hole:
+	Almost always in the center of a via of cyclic oval or rectangular shape is a cycle filled with the color green, can be in every via, the ratio of covered and not covered via area
+	varyies a lot, can be in every via, often around 5 missing holes, like in 08 there are vias with hole that can be exchanged with missing holes, but they have a yello annular instead of gray,
+	always filled with green, othervwise no missing hole (e.g. in 06 south-east), 
+	
+	
+	
+TODO:
+	Check if the objects are always of same colour

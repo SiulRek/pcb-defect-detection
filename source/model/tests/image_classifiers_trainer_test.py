@@ -90,6 +90,31 @@ class TestImageClassifiersTrainer(unittest.TestCase):
         trainer.fit_all(train_datasets=self.train_datasets, **kwargs)
         self.assertEqual(len(trainer.histories), 2)
         self.assertIn('loss', trainer.histories['group1'].history)
+    
+    def test_fit_all_with_callbacks(self):
+        def scheduler(epoch, lr):
+            if epoch < 5:
+                return lr
+            else:
+                return lr * 0.9
+
+        lr_scheduler_callback = tf.keras.callbacks.LearningRateScheduler(scheduler)
+        trainer = ImageClassifiersTrainer(self.group_names, self.categories)
+        trainer.load_model(self.model)
+
+        trainer.fit_all(train_datasets=self.train_datasets, 
+                        val_datasets=self.val_datasets, 
+                        callbacks=[lr_scheduler_callback], 
+                        epochs=10, 
+                        verbose=0)
+
+        for group in self.group_names:
+            history = trainer.histories[group].history
+            self.assertIn('lr', history.keys())
+
+            initial_lr = history['lr'][0]
+            later_lr = history['lr'][-1]
+            self.assertLess(later_lr, initial_lr)
 
     def test_plot_histories(self):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
