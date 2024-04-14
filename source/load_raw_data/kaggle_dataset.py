@@ -8,10 +8,10 @@ from source.load_raw_data.category_codes import Category
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 
-PATH_ANNOTATIONS = os.path.join(ROOT_DIR, r"data\pcb_defects_kaggle\Annotations") # Path to annotations.
-PATH_IMAGE = os.path.join(ROOT_DIR, r"data\pcb_defects_kaggle\images") # Path to .jpg images.
-PATH_PCB_USED = os.path.join(ROOT_DIR, r"data\pcb_defects_kaggle\PCB_USED") # Path to .jpg PCB used.
-RECORD_FILE = os.path.join(ROOT_DIR, r"data\tensorflow_records\pcb_defects_kaggle.tfrecord")
+PATH_ANNOTATIONS = os.path.join(ROOT_DIR, r"data/pcb_defects_kaggle/Annotations") # Path to annotations.
+PATH_IMAGE = os.path.join(ROOT_DIR, r"data/pcb_defects_kaggle/images") # Path to .jpg images.
+PATH_PCB_USED = os.path.join(ROOT_DIR, r"data/pcb_defects_kaggle/PCB_USED") # Path to .jpg PCB used.
+RECORD_FILE = os.path.join(ROOT_DIR, r"data/tensorflow_records/pcb_defects_kaggle.tfrecord")
 
 
 def get_dataframe(path_an=PATH_ANNOTATIONS, path_im=PATH_IMAGE, create_annotation_summary=True):
@@ -236,5 +236,5 @@ def load_tf_record():
 
 
 if __name__ == '__main__':
-    # save_tf_record()
-    get_tf_datasets_for_each_category()
+    save_tf_record()
+    #get_tf_datasets_for_each_category()
