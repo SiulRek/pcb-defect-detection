@@ -84,7 +84,7 @@ augmentation_steps_data = [
 
 
 
-def load_multiple_augmentation_tests():
+def load_data_augmentation_steps_tests():
     """
     Dynamically loads and aggregates individual test suites for multiple data augmentation steps into a unified test suite.
     
@@ -107,5 +107,5 @@ def load_multiple_augmentation_tests():
 if __name__ == '__main__':
     """ Main execution block for running the loaded test suite."""
     runner = unittest.TextTestRunner()
-    test_suites = load_multiple_augmentation_tests()
+    test_suites = load_data_augmentation_steps_tests()
     runner.run(test_suites)
