@@ -9,15 +9,17 @@ from sklearn.metrics import confusion_matrix
 
 class ImageClassifierVisualizer:
     """ Class for visualizing image classification results and model predictions."""
-    def __init__(self, class_names):
+    def __init__(self, class_names, is_multiclass=True):
         """ Initializes the ImageClassifierVisualizer class.
 
         Args:
         - class_names (list): List of class names.
+        - is_multiclass (bool, optional): Whether the classification task is multiclass or binary.
         """
         self.class_names = class_names
         self.num_classes = len(class_names)
         self.model_predictions_prepared = False
+        self.is_multiclass = is_multiclass
 
     def _unbatch_dataset(self, dataset):
         try:
@@ -45,7 +47,10 @@ class ImageClassifierVisualizer:
 
     def _filter_np_dataset(self, np_dataset, classes):
         class_indices = [self.class_names.index(c) for c in classes]
-        boolean_mask = np.array([np.argmax(label) in class_indices for _, label in np_dataset])
+        if self.is_multiclass:
+            boolean_mask = np.array([np.argmax(label) in class_indices for _, label in np_dataset])
+        else:
+            boolean_mask = np.array([label in class_indices for _, label in np_dataset])    
         filtered_data = np_dataset[boolean_mask]
         return filtered_data, boolean_mask
     
@@ -54,6 +59,12 @@ class ImageClassifierVisualizer:
         
         p = np.random.permutation(len(np_dataset1))
         return np_dataset1[p], np_dataset2[p]
+    
+    def _get_label_name(self, label):
+        if self.is_multiclass:
+            return self.class_names[np.argmax(label)]
+        else:
+            return self.class_names[label]
 
     def plot_images(self, combined_dataset, n_rows=1, n_cols=1, title=None, 
                     fontsize=12, show_plot=True):
@@ -85,7 +96,7 @@ class ImageClassifierVisualizer:
             ax.axis('off')
 
             if label is not None:
-                label_name = self.class_names[np.argmax(label)]
+                label_name = self._get_label_name(label)
                 ax.set_title(label_name, fontsize=fontsize)
 
         return self._prepare_plot(fig, title, fontsize, show_plot)
@@ -145,7 +156,7 @@ class ImageClassifierVisualizer:
             
             subtitle = f'{i//2}. '
             if label is not None:
-                subtitle += self.class_names[np.argmax(label)]
+                subtitle += self._get_label_name(label)
             ax.set_title(subtitle, fontsize=fontsize)
 
         return self._prepare_plot(fig, title, fontsize, show_plot)  
@@ -198,14 +209,20 @@ class ImageClassifierVisualizer:
             img_ax = axes[i * (2 if prediction_bar else 1)]
             image, true_label = np_dataset[i]
             predicted_probs = predictions[i]
-            predicted_label_index = np.argmax(predicted_probs)
-            true_label_index = np.argmax(true_label)
+
+            if self.is_multiclass:
+                true_label_index = np.argmax(true_label)
+                predicted_label_index = np.argmax(predicted_probs)
+            else:
+                predicted_label_index = int(np.round(predicted_probs, 2))
+                true_label_index = true_label
 
             img_ax.imshow(image.squeeze(), cmap='gray' if image.shape[-1] == 1 else None)
             img_ax.axis('off')
 
             title_color = 'green' if predicted_label_index == true_label_index else 'red'
-            bar_colors = ['green' if j == true_label_index else 'blue' for j in range(len(predicted_probs))]
+            range_len = len(self.class_names) if isinstance(true_label, np.ndarray) else 2
+            bar_colors = ['green' if j == true_label_index else 'blue' for j in range(range_len)]
             if predicted_label_index != true_label_index:
                 bar_colors[predicted_label_index] = 'red'
 
@@ -215,7 +232,11 @@ class ImageClassifierVisualizer:
 
             if prediction_bar:
                 bar_ax = axes[i * 2 + 1]
-                bar_ax.bar(range(len(predicted_probs)), predicted_probs, color=bar_colors)
+                if self.is_multiclass:
+                    bar_ax.bar(range(len(predicted_probs)), predicted_probs, color=bar_colors)
+                else:
+                    concat_probs = np.concatenate([1 - predicted_probs, predicted_probs])
+                    bar_ax.bar(['0', '1'], concat_probs, color=bar_colors)
                 bar_ax.set_xticks(range(len(self.class_names)))
                 bar_ax.set_xticklabels(self.class_names, rotation=90)
                 bar_ax.set_ylim(0, 1)
@@ -282,14 +303,23 @@ class ImageClassifierVisualizer:
         """
         if not self.model_predictions_prepared:
             raise ValueError("Model predictions have not been prepared. Please call prepare_model_predictions first.")
-        
-        boolean_mask = np.argmax(self.predictions, axis=1) != np.argmax([label for _, label in self.np_dataset], axis=1)
+        if self.is_multiclass:
+            boolean_mask = np.argmax(self.predictions, axis=1) != np.argmax([label for _, label in self.np_dataset], axis=1)
+        else:
+            boolean_mask = np.round(self.predictions.flatten()) != [label for _, label in self.np_dataset]
         filtered_dataset = self.np_dataset[boolean_mask]
         filtered_predictions = self.predictions[boolean_mask]
         return self._plot_results(filtered_dataset, filtered_predictions, n_rows=n_rows, n_cols=n_cols, title=title, 
                            fontsize=fontsize, prediction_bar=prediction_bar, show_plot=show_plot)
+    
+    def _get_label_indices(self, labels):
+        if self.is_multiclass:
+            return np.argmax(labels, axis=1)
+        else:
+            return np.round(labels).astype(int)
         
-    def plot_confusion_matrix(self, normalize=False, title='Confusion Matrix', cmap=plt.cm.Blues, fontsize=12, show_plot=True):
+    def plot_confusion_matrix(self, normalize=False, title='Confusion Matrix', cmap=plt.cm.Blues, fontsize=12, 
+                                fig_size=(10, 10), show_plot=True):
         """ 
         Plot the confusion matrix of the model.
 
@@ -298,6 +328,7 @@ class ImageClassifierVisualizer:
         - title (str, optional): Title of the plot.
         - cmap (matplotlib.colors.Colormap, optional): Colormap to use for the plot.
         - fontsize (int, optional): Font size for text in the plot.
+        - fig_size (tuple, optional): Size of the figure.
         - show_plot (bool, optional): Whether to display the plot.
 
         Returns:	
@@ -306,14 +337,13 @@ class ImageClassifierVisualizer:
         if not self.model_predictions_prepared:
             raise ValueError("Model predictions have not been prepared. Please call prepare_model_predictions first.")
 
-        true_labels = np.argmax([label for _, label in self.np_dataset], axis=1)
-        predicted_labels = np.argmax(self.predictions, axis=1)
-
-        cm = confusion_matrix(true_labels, predicted_labels)
+        true_indices = self._get_label_indices([label for _, label in self.np_dataset])
+        predicted_indices = self._get_label_indices(self.predictions)
+        cm = confusion_matrix(true_indices, predicted_indices)
         if normalize:
             cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
 
-        fig, ax = plt.subplots(figsize=(10, 10))
+        fig, ax = plt.subplots(figsize=fig_size)
         
         sns.heatmap(cm, annot=True, fmt='.2f' if normalize else 'd', cmap=cmap, xticklabels=self.class_names, yticklabels=self.class_names, ax=ax)
         ax.set_ylabel('True label', fontsize=fontsize)
@@ -337,13 +367,13 @@ class ImageClassifierVisualizer:
         if not self.model_predictions_prepared:
             raise ValueError("Model predictions have not been prepared. Please call calculate_model_predictions first.")
 
-        true_labels = np.argmax([label for _, label in self.np_dataset], axis=1)
-        predicted_labels = np.argmax(self.predictions, axis=1)
-
-        accuracy = accuracy_score(true_labels, predicted_labels)
-        precision = precision_score(true_labels, predicted_labels, average=average)
-        recall = recall_score(true_labels, predicted_labels, average=average)
-        f1 = f1_score(true_labels, predicted_labels, average=average)
+        true_index = self._get_label_indices([label for _, label in self.np_dataset])
+        predicted_index = self._get_label_indices(self.predictions)
+        
+        accuracy = accuracy_score(true_index, predicted_index)
+        precision = precision_score(true_index, predicted_index, average=average)
+        recall = recall_score(true_index, predicted_index, average=average)
+        f1 = f1_score(true_index, predicted_index, average=average)
 
         metrics_text = f'Accuracy: {accuracy:.4f}\nPrecision: {precision:.4f}\nRecall: {recall:.4f}\nF1 Score: {f1:.4f}'
 
