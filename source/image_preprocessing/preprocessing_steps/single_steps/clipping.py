@@ -21,6 +21,7 @@ class Clipper(StepBase):
 
     @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
+        image_tensor = tf.cast(image_tensor, self.output_datatype)
         min_value = tf.cast(self.parameters['min_value'], dtype=self.output_datatype)
         max_value = tf.cast(self.parameters['max_value'], dtype=self.output_datatype)
         clipped_image = tf.clip_by_value(image_tensor, min_value, max_value)
