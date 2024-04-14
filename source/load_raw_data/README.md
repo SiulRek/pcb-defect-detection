@@ -16,6 +16,6 @@ The folder `load_raw_data` are used for preprocessing and preparing raw data for
 
 ## References
 
-[1] A. Khatova, "PCB Defects: Dataset for Machine Learning Analysis of Printed Circuit Board Defects", Kaggle, 2021. [Online]. Available: https://www.kaggle.com/datasets/akhatova/pcb-defects/data. Accessed December 4, 2023.
+[1] A. Khatova, "PCB Defects: Dataset for Machine Learning Analysis of Printed Circuit Board Defects", Kaggle, 2021. [Online]. Available: https://www.kaggle.com/datasets/akhatova/pcb-defects/data. Accessed December 4, 2023. Additionally a related Paper: R. Ding, L. Dai, G. Li and H. Liu, "TDD-net: a tiny defect detection network for printed circuit boards," in CAAI Transactions on Intelligence Technology, vol. 4, no. 2, pp. 110-116, 6 2019, doi: 10.1049/trit.2019.0019.
 
 [2] S. Tang, "DeepPCB: A Dataset and Benchmark for PCB Defect Detection Using Deep Learning", GitHub Repository, 2020. [Online]. Available: https://github.com/tangsanli5201/DeepPCB/tree/master. Accessed December 4, 2023.
