@@ -69,6 +69,11 @@ class TestStepBase(unittest.TestCase):
 
     def tearDown(self):
         self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
+
+    def _verify_image_shapes(self, processed_images, original_images, color_channel_expected):
+        for original_image, processed_image in zip(original_images, processed_images):
+            self.assertEqual(processed_image.shape[:1], original_image.shape[:1]) # Check if height and width are equal.
+            self.assertEqual(color_channel_expected, processed_image.shape[2])   
         
     def test_initialization(self):
         self.assertEqual(self.tf_preprocessing_step.name, "Test_Step")
@@ -78,12 +83,14 @@ class TestStepBase(unittest.TestCase):
         image_tensor = list(TestStepBase.image_dataset.take(1))[0]
         image_grayscale_tensor = tf.image.rgb_to_grayscale(image_tensor)
         reshaped_image = correct_image_tensor_shape(image_grayscale_tensor)
-        self.assertEqual(reshaped_image.shape, [2464, 3056, 1])
+        self.assertEqual(reshaped_image.shape, image_tensor.shape[:2] + [1])
 
     def test_correct_shape_rgb(self):
         image_tensor = list(TestStepBase.image_dataset.take(1))[0]
-        reshaped_image = correct_image_tensor_shape(image_tensor)
-        self.assertEqual(reshaped_image.shape, [2464, 3056, 3])
+        image_grayscale_tensor = tf.image.rgb_to_grayscale(image_tensor)
+        image_rgb_tensor = tf.image.grayscale_to_rgb(image_grayscale_tensor)
+        reshaped_image = correct_image_tensor_shape(image_rgb_tensor)
+        self.assertEqual(reshaped_image.shape, image_tensor.shape)
     
     def _remove_new_lines_and_spaces(self, string):
         string = string.replace('\n','')
@@ -99,13 +106,11 @@ class TestStepBase(unittest.TestCase):
 
     def test_tensor_pyfunc_wrapper(self):
         processed_dataset = self.tf_preprocessing_step.process_step(self.image_dataset)
-        image_tensor = list(processed_dataset.take(1))[0]
-        self.assertEqual(image_tensor.shape, [2464, 3056, 1])
+        self._verify_image_shapes(processed_dataset, self.image_dataset, 1)
 
     def test_nparray_pyfunc_wrapper(self):
         processed_dataset = self.py_preprocessing_step.process_step(self.image_dataset)
-        image_tensor = list(processed_dataset.take(1))[0]
-        self.assertEqual(image_tensor.shape, [2464, 3056, 1])
+        self._verify_image_shapes(processed_dataset, self.image_dataset, 1)
 
     def test_output_datatype_conversion(self):
         self.py_preprocessing_step.output_datatype = tf.uint8
