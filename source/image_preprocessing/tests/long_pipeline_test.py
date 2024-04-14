@@ -87,11 +87,9 @@ class TestLongPipeline(unittest.TestCase):
             "Non Local Mean Denoiser", 
             "RGB To Grayscale", 
             "Grayscale To RGB", 
-            "Min Max Normalizer", 
-            "Standard Normalizer", 
-            "Mean Normalizer", 
             "Local Contrast Normalizer",
-            "Type Caster"
+            "Type Caster",
+            "Random Color Jitterer"
         ]
         copy_json_exclude_entries(JSON_TEMPLATE_FILE, JSON_TEST_FILE, excluded_keys)
 
@@ -105,6 +103,7 @@ class TestLongPipeline(unittest.TestCase):
 
     def _verify_image_shapes(self, processed_dataset, original_dataset, color_channel_expected):
         for original_image, processed_image in zip(original_dataset, processed_dataset):
+            original_image = tf.cast(original_image, processed_image.dtype)
             if original_image.shape == processed_image.shape:
                if tf.reduce_all(tf.math.equal(original_image, processed_image)):
                     return False
