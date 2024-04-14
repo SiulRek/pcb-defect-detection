@@ -17,6 +17,10 @@ SHOW_PLOT = False
 
 
 class TestImageClassifiersTrainer(unittest.TestCase):
+    """ Tests for the ImageClassifiersTrainer class.
+
+    The ImageClassifiersTrainer class is used to train multiple image classifiers on different datasets and evaluate their performance.
+    """
 
     @classmethod
     def _get_dataset(cls):
