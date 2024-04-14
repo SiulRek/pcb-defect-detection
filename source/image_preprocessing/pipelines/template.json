@@ -144,5 +144,10 @@
         "min_intensity": 0.5,
         "max_intensity": 2.0,
         "seed": 42
+    },
+    "Dummy Step": {},
+    "Clipper": {
+        "min_value": 0.0,
+        "max_value": 1.0
     }
 }
