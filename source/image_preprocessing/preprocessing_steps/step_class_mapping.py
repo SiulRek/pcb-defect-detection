@@ -29,7 +29,7 @@ STEP_CLASS_MAPPING = {
     'Type Caster': steps.TypeCaster,
     'Mirrorer': steps.Mirrorer,
     'Rotator': steps.Rotator,
-    'DummyStep': steps.DummyStep,
+    'Dummy Step': steps.DummyStep,
     'Random Rotator': steps.RandomRotator,
     'Random Flipper': steps.RandomFlipper,
     'Gaussian Noise Injector': steps.GaussianNoiseInjector,

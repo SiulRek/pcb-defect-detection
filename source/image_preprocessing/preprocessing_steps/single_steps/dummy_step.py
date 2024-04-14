@@ -7,7 +7,7 @@ class DummyStep(StepBase):
     """
     A dummy preprocessing step that does nothing to the image.
     """
-    name = 'DummyStep'
+    name = 'Dummy Step'
     arguments_datatype = {}
 
     def __init__(self):
