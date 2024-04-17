@@ -4,11 +4,11 @@ from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 
 
 class AdaptiveHistogramEqualizer(StepBase):
-    """ 
-    A preprocessing step that applies Contrast Limited Adaptive Histogram Equalizer (CLAHE) to an 
+    """
+    A preprocessing step that applies Contrast Limited Adaptive Histogram Equalizer (CLAHE) to an
     image.
-    
-    Note:     In the case of RGB images, it processes each color channel (Red, Green, Blue) 
+
+    Note:     In the case of RGB images, it processes each color channel (Red, Green, Blue)
     separately.
     """
     arguments_datatype = {'clip_limit': float, 'tile_gridsize': (int, int)}
@@ -19,10 +19,10 @@ class AdaptiveHistogramEqualizer(StepBase):
           preprocessing pipeline.
 
         Parameters:
-            clip_limit (float): Threshold for contrast limiting. Higher values increase contrast; 
+            clip_limit (float): Threshold for contrast limiting. Higher values increase contrast;
                                 too high values may lead to noise amplification.
-            tile_gridsize (tuple): Size of the grid for the tiles (regions) of the image to which 
-                                CLAHE will be applied. Smaller tiles can lead to more localized 
+            tile_gridsize (tuple): Size of the grid for the tiles (regions) of the image to which
+                                CLAHE will be applied. Smaller tiles can lead to more localized
                                 contrast enhancement.
         """
         super().__init__(locals())
@@ -30,17 +30,13 @@ class AdaptiveHistogramEqualizer(StepBase):
     @StepBase._nparray_pyfunc_wrapper
     def process_step(self, image_nparray):
         channels = cv2.split(image_nparray)
-        clahe = cv2.createCLAHE(clipLimit=self.parameters['clip_limit'], 
+        clahe = cv2.createCLAHE(clipLimit=self.parameters['clip_limit'],
                                     tileGridSize=self.parameters['tile_gridsize'])
         clahe_channels = [clahe.apply(ch) for ch in channels]
         clahe_image = cv2.merge(clahe_channels)
         return clahe_image
-    
+
 
 if __name__ == '__main__':
     step = AdaptiveHistogramEqualizer()
     print(step.get_step_json_representation())
-    
-
-
-

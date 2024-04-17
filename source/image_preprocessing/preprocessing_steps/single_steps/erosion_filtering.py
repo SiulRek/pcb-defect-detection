@@ -11,8 +11,8 @@ class ErosionFilter(StepBase):
     name = 'Erosion Filter'
 
     def __init__(self, kernel_size=3, iterations=1):
-        """ 
-        Initializes the ErosionFilter object that can be integrated into an image preprocessing 
+        """
+        Initializes the ErosionFilter object that can be integrated into an image preprocessing
         pipeline.
 
         Args:

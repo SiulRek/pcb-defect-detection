@@ -16,11 +16,11 @@ class Mirrorer(StepBase):
         Initializes the Mirrorer object for integration into an image preprocessing pipeline.
 
         Args:
-            mirror_direction (str): The direction for mirroring the image. 
+            mirror_direction (str): The direction for mirroring the image.
                                     Accepts 'horizontal' or 'vertical'. Default is 'horizontal'.
         """
         super().__init__(locals())
-    
+
     @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
         if self.parameters['mirror_direction'] == 'horizontal':

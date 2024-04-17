@@ -34,13 +34,13 @@ class RandomPerspectiveTransformer(StepBase):
 
         src_points = np.float32([[0, 0], [width - 1, 0], [0, height - 1], [width - 1, height - 1]])
         dst_points = np.float32([
-            [random.randint(-warp_intensity, warp_intensity), 
+            [random.randint(-warp_intensity, warp_intensity),
                 random.randint(-warp_intensity, warp_intensity)],
-            [width - 1 - random.randint(-warp_intensity, warp_intensity), 
+            [width - 1 - random.randint(-warp_intensity, warp_intensity),
                 random.randint(-warp_intensity, warp_intensity)],
-            [random.randint(-warp_intensity, warp_intensity), 
+            [random.randint(-warp_intensity, warp_intensity),
                 height - 1 - random.randint(-warp_intensity, warp_intensity)],
-            [width - 1 - random.randint(-warp_intensity, warp_intensity), 
+            [width - 1 - random.randint(-warp_intensity, warp_intensity),
                 height - 1 - random.randint(-warp_intensity, warp_intensity)]
         ])
 

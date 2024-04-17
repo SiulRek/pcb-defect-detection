@@ -62,7 +62,7 @@ class DilateErodeSequencer(StepBase):
 
     def _choose_operation(self, erosion_probability):
         """
-        Randomly chooses between dilation ('d') and erosion ('e') based on the specified 
+        Randomly chooses between dilation ('d') and erosion ('e') based on the specified
             probability.
 
         Args:

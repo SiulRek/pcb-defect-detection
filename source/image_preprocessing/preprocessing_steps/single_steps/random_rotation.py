@@ -14,11 +14,11 @@ class RandomRotator(StepBase):
 
     def __init__(self, angle_range=(-90, 90), seed=42):
         """
-        Initializes the RandomRotator object that can be integrated in an image preprocessing 
+        Initializes the RandomRotator object that can be integrated in an image preprocessing
             pipeline.
-        
+
         Args:
-            angle_range (tuple): Tuple of two integers specifying the range of angles for rotation. 
+            angle_range (tuple): Tuple of two integers specifying the range of angles for rotation.
                                  For example, (-90, 90) allows rotations between -90 and 90 degrees.
             seed (int): Random seed for reproducible rotations. Default is 42.
         """

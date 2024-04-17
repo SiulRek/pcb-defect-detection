@@ -15,7 +15,7 @@ class RandomFlipper(StepBase):
     def __init__(self, flip_direction='horizontal', seed=42):
         """
         Initializes the RandomFlipper object for integration in an image preprocessing pipeline.
-        
+
         Args:
             flip_direction (str): Direction of the potential flip. Can be 'horizontal', 'vertical',
                 or 'both'.

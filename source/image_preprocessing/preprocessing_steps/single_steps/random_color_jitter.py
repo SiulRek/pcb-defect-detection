@@ -4,7 +4,7 @@ from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 
 class RandomColorJitterer(StepBase):
     """
-    A data augmentation step that randomly alters the brightness, contrast, saturation, and hue of 
+    A data augmentation step that randomly alters the brightness, contrast, saturation, and hue of
     an image tensor. Each attribute is adjusted within a specified range. For grayscale images,
     only brightness and contrast adjustments are applied, as saturation and hue changes are
     not applicable.
@@ -16,7 +16,7 @@ class RandomColorJitterer(StepBase):
 
     def __init__(self, brightness=0.3, contrast=0.3, saturation=0.3, hue=0.1, seed=42):
         """
-        Initializes the RandomColorJitterer object for integration into an image preprocessing 
+        Initializes the RandomColorJitterer object for integration into an image preprocessing
         pipeline.
 
         Args:
@@ -41,7 +41,7 @@ class RandomColorJitterer(StepBase):
 
         if not is_grayscale:
             image_tensor = tf.image.random_saturation(
-                image_tensor, lower=1-self.parameters['saturation'], 
+                image_tensor, lower=1-self.parameters['saturation'],
                 upper=1+self.parameters['saturation'], seed=self.parameters['seed']
             )
             image_tensor = tf.image.random_hue(

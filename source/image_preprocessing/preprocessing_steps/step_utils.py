@@ -10,7 +10,7 @@ def correct_image_tensor_shape(image_tensor):
     Returns:
     - tf.Tensor: A reshaped tensor based on inferred dimensions.
     """
-    
+
     dims = tf.shape(image_tensor)
     height = dims[0]
     width = dims[1]
@@ -21,7 +21,7 @@ def correct_image_tensor_shape(image_tensor):
     else:
         channel_num = dims[2]
         reshaped_image = tf.reshape(image_tensor, [height, width, channel_num])
-    
+
     return reshaped_image
 
 def reduce_std(tensor):

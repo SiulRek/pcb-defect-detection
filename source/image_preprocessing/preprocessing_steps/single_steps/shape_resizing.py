@@ -4,7 +4,7 @@ from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 
 
 class ShapeResizer(StepBase):
-    """ 
+    """
     A preprocessing step that resizes an image to a specified shape, potentially altering its
     aspect ratio.
     """
@@ -43,12 +43,12 @@ class ShapeResizer(StepBase):
         image_tensor_with_batch = tf.expand_dims(image_tensor, axis=0)
         method = self.resize_methods[self.parameters['resize_method']]
         resized_image_with_batch = tf.image.resize(
-            image_tensor_with_batch, 
-            self.parameters['desired_shape'], 
+            image_tensor_with_batch,
+            self.parameters['desired_shape'],
             method=method
         )
         resized_image = tf.squeeze(resized_image_with_batch, axis=0)
-        resized_image = tf.ensure_shape(resized_image, 
+        resized_image = tf.ensure_shape(resized_image,
                                         [*self.parameters['desired_shape'], channels])
         return resized_image
 

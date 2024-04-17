@@ -15,7 +15,7 @@ class DummyStep(StepBase):
         Initializes the DummyStep object for integration into an image preprocessing pipeline.
         """
         super().__init__(locals())
-    
+
     @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
         return image_tensor

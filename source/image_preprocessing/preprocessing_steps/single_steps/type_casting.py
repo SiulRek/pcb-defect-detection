@@ -11,7 +11,7 @@ class TypeCaster(StepBase):
         """Initializes the TypeCaster object for integration into an image preprocessing pipeline.
 
            Args:
-               output_dtype (str): The desired data type to cast the image tensor to. 
+               output_dtype (str): The desired data type to cast the image tensor to.
                     Must be an attribute in tensorflow . Default is 'float16'.
         """
         super().__init__(locals())

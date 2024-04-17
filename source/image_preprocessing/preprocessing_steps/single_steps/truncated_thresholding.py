@@ -4,40 +4,40 @@ from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 
 
 class TruncatedThresholder(StepBase):
-    """ 
-    A preprocessing step that applies truncated thresholding to an image. 
-    
-    Note: In the case of RGB images, it processes each color channel (Red, Green, Blue) 
+    """
+    A preprocessing step that applies truncated thresholding to an image.
+
+    Note: In the case of RGB images, it processes each color channel (Red, Green, Blue)
     separately.
     """
     arguments_datatype = {'thresh': int}
     name = 'Truncated Thresholding'
 
     def __init__(self, thresh=128):
-        """ 
-        Initializes the TruncatedThresholder object that can be integrated into an image 
-        preprocessing pipeline. 
+        """
+        Initializes the TruncatedThresholder object that can be integrated into an image
+        preprocessing pipeline.
 
         Args:
-            thresh (int, optional): The threshold value used for truncated thresholding. Pixel 
-                                    values greater than this threshold are set to the threshold 
-                                    value itself, and values less than or equal to the threshold 
+            thresh (int, optional): The threshold value used for truncated thresholding. Pixel
+                                    values greater than this threshold are set to the threshold
+                                    value itself, and values less than or equal to the threshold
                                     remain unchanged. Defaults to 128.
         """
         super().__init__(locals())
 
     @StepBase._nparray_pyfunc_wrapper
     def process_step(self, image_nparray):
-        
+
         def apply_truncated_threshold(np_array):
             _, thresholded_np_array = cv2.threshold(
-                src=np_array, 
-                thresh=self.parameters['thresh'], 
-                maxval=255, 
+                src=np_array,
+                thresh=self.parameters['thresh'],
+                maxval=255,
                 type=cv2.THRESH_TRUNC
-            )    
+            )
             return thresholded_np_array
-        
+
         if image_nparray.shape[2] == 1:
             thresholded_image = apply_truncated_threshold(image_nparray)
         else:
@@ -48,7 +48,7 @@ class TruncatedThresholder(StepBase):
             thresholded_image = cv2.merge([r_thresholded, g_thresholded, b_thresholded])
 
         return thresholded_image
-    
+
 
 if __name__ == '__main__':
     step = TruncatedThresholder()

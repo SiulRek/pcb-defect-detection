@@ -15,7 +15,7 @@ class RandomSharpening(StepBase):
     def __init__(self, min_intensity=0.5, max_intensity=2.0, seed=42):
         """
         Initializes the RandomSharpening object for integration in an image preprocessing pipeline.
-        
+
         Args:
             min_intensity (float): Minimum intensity of sharpening.
             max_intensity (float): Maximum intensity of sharpening.
@@ -27,7 +27,7 @@ class RandomSharpening(StepBase):
     def process_step(self, image_nparray):
         random.seed(self.parameters['seed'])
 
-        intensity = random.uniform(self.parameters['min_intensity'], 
+        intensity = random.uniform(self.parameters['min_intensity'],
                                    self.parameters['max_intensity'])
 
         kernel = np.array([[0, -1, 0],
