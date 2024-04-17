@@ -142,8 +142,8 @@ class TestImageClassifiersTrainer(unittest.TestCase):
     def test_plot_all_results(self):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
         trainer.load_model(self.model)
-        trainer.calculate_model_predictions({'group1': self._get_dataset(), 'group2': self._get_dataset()})
         trainer.fit_all(train_datasets=self.train_datasets, verbose=0, epochs=1)
+        trainer.calculate_model_predictions(self.val_datasets)
         figures = trainer.plot_all_results(n_rows=3, n_cols=3, title='All Results', fontsize=12, 
                                            prediction_bar=True, show_plot=SHOW_PLOT)
 
@@ -156,7 +156,7 @@ class TestImageClassifiersTrainer(unittest.TestCase):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
         trainer.load_model(self.model)
         trainer.fit_all(train_datasets=self.train_datasets, verbose=0, epochs=1)
-        trainer.calculate_model_predictions({'group1': self._get_dataset(), 'group2': self._get_dataset()})
+        trainer.calculate_model_predictions(self.val_datasets)
         figures = trainer.plot_all_false_results(n_rows=3, n_cols=3, title='All False Results', 
                                                  fontsize=12, prediction_bar=True, show_plot=SHOW_PLOT)
 
@@ -169,7 +169,7 @@ class TestImageClassifiersTrainer(unittest.TestCase):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
         trainer.load_model(self.model)
         trainer.fit_all(train_datasets=self.train_datasets, verbose=0, epochs=1)
-        trainer.calculate_model_predictions({'group1': self._get_dataset(), 'group2': self._get_dataset()})
+        trainer.calculate_model_predictions(self.val_datasets)
         figures = trainer.plot_all_confusion_matrices(title='All Confusion Matrices', fontsize=12, show_plot=SHOW_PLOT)
 
         self.assertIsInstance(figures, dict)
@@ -181,27 +181,29 @@ class TestImageClassifiersTrainer(unittest.TestCase):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
         trainer.load_model(self.model)
         trainer.fit_all(train_datasets=self.train_datasets, verbose=0, epochs=1)
-        trainer.calculate_model_predictions({'group1': self._get_dataset(), 'group2': self._get_dataset()})
-        figures = trainer.plot_all_evaluation_metrics(title='All Evaluation Metrics', fontsize=12, show_plot=SHOW_PLOT)
-
-        self.assertIsInstance(figures, dict)
-        self.assertEqual(len(figures), len(self.group_names))
-        for group in self.group_names:
-            self.assertIsInstance(figures[group], type(plt.figure()))
-
-    def test_plot_all_evaluation_metrics(self):
-        """
-        Tests the plot_all_evaluation_metrics method of the ImageClassifiersTrainer.
-        This method should create a plot of evaluation metrics, and the test will
-        verify the type of the object returned and ensure it is a Matplotlib figure.
-        """
-        trainer = ImageClassifiersTrainer(self.group_names, self.categories)
-        trainer.load_model(self.model)
-        trainer.fit_all(train_datasets=self.train_datasets, verbose=0, epochs=1)
-        trainer.calculate_model_predictions({'group1': self._get_dataset(), 'group2': self._get_dataset()})
+        trainer.calculate_model_predictions(self.val_datasets)
         figure = trainer.plot_all_evaluation_metrics(title='All Evaluation Metrics', fontsize=12, show_plot=SHOW_PLOT)
-
         self.assertIsInstance(figure, plt.Figure)
+    
+    def test_plot_roc_curves(self):
+        dataset = self._get_dataset()
+        dataset = dataset.map(lambda x, y: (x, y[:, 0]))
+        datasets = {
+            'group1': dataset,
+            'group2': dataset
+        }
+        model = tf.keras.Sequential([
+            tf.keras.layers.Flatten(input_shape=(28, 28)),
+            tf.keras.layers.Dense(128, activation='relu'),
+            tf.keras.layers.Dense(1, activation='sigmoid')
+        ])
+        model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+        trainer = ImageClassifiersTrainer(self.group_names, ['0', '1'], is_multiclass=False)
+        trainer.load_model(model)
+        trainer.fit_all(train_datasets=datasets, verbose=0, epochs=1)
+        trainer.calculate_model_predictions(datasets)
+        fig = trainer.plot_roc_curves(title='ROC Curves', fontsize=12, show_plot=True)
+        self.assertIsInstance(fig, plt.Figure)
 
 
 if __name__ == '__main__':
