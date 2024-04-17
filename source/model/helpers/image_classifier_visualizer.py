@@ -17,7 +17,9 @@ class ImageClassifierVisualizer:
         - is_multiclass (bool, optional): Whether the classification task is multiclass or binary.
         """
         self.class_names = class_names
-        self.num_classes = len(class_names)
+        self.num_classes = None
+        if class_names is not None:
+            self.num_classes = len(class_names)
         self.model_predictions_prepared = False
         self.is_multiclass = is_multiclass
 
@@ -351,6 +353,54 @@ class ImageClassifierVisualizer:
 
         return self._prepare_plot(fig, title, fontsize, show_plot)
 
+    def calculate_evaluation_metrics(self, average='macro'):
+        """
+        Calculate the evaluation metrics for the model using true labels and predictions.
+
+        Args:
+        - average (str, optional): The type of averaging to perform on the data.
+
+        Returns:
+        - dict: A dictionary containing the computed metrics.
+        """
+        if not self.model_predictions_prepared:
+            raise ValueError("Model predictions have not been prepared. Please call calculate_model_predictions first.")
+
+        true_index = self._get_label_indices([label for _, label in self.np_dataset])
+        predicted_index = self._get_label_indices(self.predictions)
+
+        accuracy = accuracy_score(true_index, predicted_index)
+        precision = precision_score(true_index, predicted_index, average=average)
+        recall = recall_score(true_index, predicted_index, average=average)
+        f1 = f1_score(true_index, predicted_index, average=average)
+
+        return {
+            'accuracy': accuracy,
+            'precision': precision,
+            'recall': recall,
+            'f1_score': f1
+        }
+    
+    def plot_text(self, text, title='Evaluation Metrics', fontsize=12, fig_size=(1.5, 2), show_plot=True):
+        """
+        Create a plot with the provided text displayed.
+
+        Args:
+        - text (str): Text to display in the plot.
+        - title (str, optional): Title of the plot. Defaults to 'Evaluation Metrics'.
+        - fontsize (int, optional): Font size for text in the plot. Defaults to 12.
+        - show_plot (bool, optional): Whether to display the plot. Defaults to True.
+
+        Returns:
+        - fig: Figure containing the plotted text.
+        """
+        fig, ax = plt.subplots(figsize=fig_size)
+        ax.text(0.5, 0.5, text, fontsize=fontsize, ha='center', va='center', transform=ax.transAxes)
+        ax.axis('off')
+        fig.suptitle(title, fontsize=fontsize+2)
+
+        return self._prepare_plot(fig, None, fontsize, show_plot)
+
     def plot_evaluation_metrics(self, average='macro', title='Evaluation Metrics', fontsize=12, show_plot=True):
         """ 
         Plot the evaluation metrics of the model.
@@ -364,22 +414,7 @@ class ImageClassifierVisualizer:
         Returns:
         - fig: Figure of the evaluation metrics.
         """
-        if not self.model_predictions_prepared:
-            raise ValueError("Model predictions have not been prepared. Please call calculate_model_predictions first.")
-
-        true_index = self._get_label_indices([label for _, label in self.np_dataset])
-        predicted_index = self._get_label_indices(self.predictions)
         
-        accuracy = accuracy_score(true_index, predicted_index)
-        precision = precision_score(true_index, predicted_index, average=average)
-        recall = recall_score(true_index, predicted_index, average=average)
-        f1 = f1_score(true_index, predicted_index, average=average)
-
-        metrics_text = f'Accuracy: {accuracy:.4f}\nPrecision: {precision:.4f}\nRecall: {recall:.4f}\nF1 Score: {f1:.4f}'
-
-        fig, ax = plt.subplots(figsize=(1.5, 2))
-        ax.text(0.5, 0.5, metrics_text, fontsize=fontsize, ha='center', va='center')
-        ax.axis('off')
-        fig.suptitle(title, fontsize=fontsize+2)
-
-        return self._prepare_plot(fig, None, fontsize, show_plot)
+        metrics = self.calculate_evaluation_metrics(average=average)
+        metrics_text = '\n'.join([f"{metric.capitalize()}: {value:.2f}" for metric, value in metrics.items()])
+        return self.plot_text(metrics_text, title=title, fontsize=fontsize, show_plot=show_plot)
