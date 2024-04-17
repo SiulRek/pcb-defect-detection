@@ -230,7 +230,34 @@ class ImageClassifiersTrainer():
             group_title = f"{title} - {group}"
             figures[group] = visualizer.plot_confusion_matrix(group_title, fontsize=fontsize, fig_size=fig_size, show_plot=show_plot)
         return figures
-    
+
+    def calculate_evaluation_metrics(self, average='macro'):
+            """
+            Calculate and return metrics including average and standard deviation for each metric.
+            
+            Args:
+            - average (str, optional): Type of averaging used for multiclass classification. Default is 'macro'.
+            
+            Returns:
+            - dict: A dictionary containing metrics data including averages and standard deviations.
+            """
+            if not self.model_predictions_calculated:
+                raise Exception("Model predictions have not been calculated. Please run calculate_model_predictions first.")
+
+            metrics = {group: visualizer.calculate_evaluation_metrics(average=average) for group, visualizer in self.visualizers.items()}
+
+            first_group_metrics = next(iter(metrics.values()))
+            metrics['average'] = {}
+            metrics['std'] = {}
+
+            for metric_name, _ in first_group_metrics.items():
+                metric_values = [metrics[group][metric_name] for group in self.group_names]
+                average_value = sum(metric_values) / len(metric_values)
+                metrics['average'][metric_name] = average_value
+                metrics['std'][metric_name] = sum([(value - average_value) ** 2 for value in metric_values]) / len(metric_values)
+            
+            return metrics
+
     def plot_all_evaluation_metrics(self, average='macro', title=None, fontsize=12, fig_size=(5, 3), show_plot=True):
         """
         Plot the evaluation metrics of all models.
@@ -244,27 +271,14 @@ class ImageClassifiersTrainer():
         Returns:
         - figure: Matplotlib figure for the evaluation metrics.
         """
-        if not self.model_predictions_calculated:
-            raise Exception("Model predictions have not been calculated. Please run calculate_model_predictions first.")
-
-        title = title if title is not None else '' 
-
-        metrics = {group: visualizer.calculate_evaluation_metrics(average=average) for group, visualizer in self.visualizers.items()}
-
+        metrics = self.calculate_evaluation_metrics(average=average)
         first_group_metrics = next(iter(metrics.values()))
-        metrics['average'] = {}
-        metrics['std'] = {}
-
-        for metric_name, _ in first_group_metrics.items():
-            metric_values = [metrics[group][metric_name] for group in self.group_names]
-            average_value = sum(metric_values) / len(metric_values)
-            metrics['average'][metric_name] = average_value
-            metrics['std'][metric_name] = sum([(value - average_value) ** 2 for value in metric_values]) / len(metric_values)
 
         metrics_header = '        ' + ',   '.join(first_group_metrics.keys()) + '\n\n'
         metrics_lines = [f"{group}:   " + ',  '.join(f"{value:.2f}" for value in group_metrics.values()) for group, group_metrics in metrics.items()]
         metrics_text = metrics_header + '\n'.join(metrics_lines)
 
+        title = title if title is not None else '' 
         figure = ImageClassifierVisualizer(None).plot_text(text=metrics_text,
                                                         title=title,
                                                         fontsize=fontsize,
