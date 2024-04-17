@@ -15,7 +15,8 @@ PLOTS_DIR = os.path.join(OUTPUT_DIR, "ict_plots")
 LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
 
 SHOW_PLOTS = False
-SAVE_PLOTS = False
+SAVE_PLOTS = True
+
 
 class TestImageClassifiersTrainer(unittest.TestCase):
     """ Tests for the ImageClassifiersTrainer class.
@@ -195,6 +196,16 @@ class TestImageClassifiersTrainer(unittest.TestCase):
         if SAVE_PLOTS:
             for group in self.group_names:
                 figures[group].savefig(os.path.join(PLOTS_DIR, f'all_false_results_{group}.png'))
+        
+    def test_calculate_evaluation_metrics(self):
+        trainer = ImageClassifiersTrainer(self.group_names, self.categories)
+        trainer.load_model(self.model)
+        trainer.fit_all(train_datasets=self.train_datasets, verbose=0, epochs=1)
+        trainer.calculate_model_predictions(self.val_datasets)
+        metrics = trainer.calculate_evaluation_metrics()
+        self.assertEqual(len(metrics), 4) # + mean and stdev
+        self.assertEqual(len(metrics['group1']), 4)
+        self.assertEqual(len(metrics['group2']), 4)
 
     def test_plot_all_evaluation_metrics(self):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
