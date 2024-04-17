@@ -1,9 +1,9 @@
 from copy import deepcopy
 import io
 
-
-import tensorflow as tf
+from sklearn.metrics import roc_curve, auc
 import matplotlib.pyplot as plt
+import tensorflow as tf
 
 from source.model.helpers.image_classifier_visualizer import ImageClassifierVisualizer
 
@@ -24,6 +24,7 @@ class ImageClassifiersTrainer():
         self.group_names = group_names
         self.groups_num = len(group_names)
         self.models = {}
+        self.is_multiclass = is_multiclass
         self.histories = {}
         self.train_datasets = None
         self.val_datasets = None
@@ -271,7 +272,47 @@ class ImageClassifiersTrainer():
                                                         fig_size=fig_size)
         return figure
 
+    def plot_roc_curves(self, title='ROC Curves for All Models', fontsize=12, show_plot=True):
+        """
+        Plot the ROC curves of all models on one plot and return the figure.
 
+        Args:
+        - title (str, optional): Title of the plot.
+        - fontsize (int, optional): Font size for text in the plot.
+        - show_plot (bool, optional): Whether to display the plot.
+
+        Returns:
+        - fig: Matplotlib figure object containing the ROC curves.
+        """
+        if not self.model_predictions_calculated:
+            raise Exception("Model predictions have not been calculated. Please run calculate_model_predictions first.")
+        
+        if self.is_multiclass:
+            raise Exception("ROC curves are not available for multiclass classification.")
+
+        fig, ax = plt.subplots(figsize=(10, 8))
+        
+        for group, visualizer in self.visualizers.items():
+            y_true = [label[1] for label in visualizer.np_dataset]
+            probs = visualizer.predictions 
+            fpr, tpr, _ = roc_curve(y_true, probs)
+            roc_auc = auc(fpr, tpr)
+
+            ax.plot(fpr, tpr, lw=2, label=f'ROC curve for {group} (AUC = {roc_auc:.2f})')
+
+        ax.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+        
+        ax.set_xlim([0.0, 1.0])
+        ax.set_ylim([0.0, 1.05])
+        ax.set_xlabel('False Positive Rate', fontsize=fontsize)
+        ax.set_ylabel('True Positive Rate', fontsize=fontsize)
+        ax.set_title(title, fontsize=fontsize)
+        ax.legend(loc="lower right")
+
+        if show_plot:
+            plt.show()
+
+        return fig
     
 
 
