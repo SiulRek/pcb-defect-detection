@@ -11,10 +11,11 @@ from matplotlib import pyplot as plt
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..","..")
 OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/model/tests/outputs")
+PLOTS_DIR = os.path.join(OUTPUT_DIR, "ict_plots")
 LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
 
-SHOW_PLOT = False
-
+SHOW_PLOTS = False
+SAVE_PLOTS = False
 
 class TestImageClassifiersTrainer(unittest.TestCase):
     """ Tests for the ImageClassifiersTrainer class.
@@ -44,6 +45,8 @@ class TestImageClassifiersTrainer(unittest.TestCase):
             'group2':   cls._get_dataset()
         }
         os.makedirs(OUTPUT_DIR, exist_ok=True)
+        if SAVE_PLOTS:
+            os.makedirs(PLOTS_DIR, exist_ok=True)
         cls.logger = TestResultLogger(LOG_FILE)
         cls.logger.log_title("Multi Model Trainer Test")
 
@@ -69,8 +72,10 @@ class TestImageClassifiersTrainer(unittest.TestCase):
     def test_plot_model_summary(self):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
         trainer.load_model(self.model)
-        fig = trainer.plot_model_summary(title='Model Summary', fontsize=12, show_plot=SHOW_PLOT)
+        fig = trainer.plot_model_summary(title='Model Summary', fontsize=12, show_plot=SHOW_PLOTS)
         self.assertIsNotNone(fig)
+        if SAVE_PLOTS:
+            fig.savefig(os.path.join(PLOTS_DIR, 'model_summary.png'))
 
     def test_set_datasets(self):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
@@ -124,8 +129,10 @@ class TestImageClassifiersTrainer(unittest.TestCase):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
         trainer.load_model(self.model)
         trainer.fit_all(train_datasets=self.train_datasets, verbose=0, epochs=10)
-        trainer.plot_histories(plot_show=SHOW_PLOT)
+        trainer.plot_histories(plot_show=SHOW_PLOTS)
         self.assertIsNotNone(trainer.history_plot)
+        if SAVE_PLOTS:
+            trainer.history_plot.savefig(os.path.join(PLOTS_DIR, 'histories.png'))
 
     def test_calculate_model_predictions(self):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
@@ -145,12 +152,16 @@ class TestImageClassifiersTrainer(unittest.TestCase):
         trainer.fit_all(train_datasets=self.train_datasets, verbose=0, epochs=1)
         trainer.calculate_model_predictions(self.val_datasets)
         figures = trainer.plot_all_results(n_rows=3, n_cols=3, title='All Results', fontsize=12, 
-                                           prediction_bar=True, show_plot=SHOW_PLOT)
+                                           prediction_bar=True, show_plot=SHOW_PLOTS)
 
         self.assertIsInstance(figures, dict)
         self.assertEqual(len(figures), len(self.group_names))
         for group in self.group_names:
             self.assertIsInstance(figures[group], type(plt.figure()))
+
+        if SAVE_PLOTS:
+            for group in self.group_names:
+                figures[group].savefig(os.path.join(PLOTS_DIR, f'all_results_{group}.png'))
     
     def test_plot_all_false_results(self):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
@@ -158,32 +169,44 @@ class TestImageClassifiersTrainer(unittest.TestCase):
         trainer.fit_all(train_datasets=self.train_datasets, verbose=0, epochs=1)
         trainer.calculate_model_predictions(self.val_datasets)
         figures = trainer.plot_all_false_results(n_rows=3, n_cols=3, title='All False Results', 
-                                                 fontsize=12, prediction_bar=True, show_plot=SHOW_PLOT)
+                                                 fontsize=12, prediction_bar=True, show_plot=SHOW_PLOTS)
 
         self.assertIsInstance(figures, dict)
         self.assertEqual(len(figures), len(self.group_names))
         for group in self.group_names:
             self.assertIsInstance(figures[group], type(plt.figure()))
-
+        
+        if SAVE_PLOTS:
+            for group in self.group_names:
+                figures[group].savefig(os.path.join(PLOTS_DIR, f'all_false_results_{group}.png'))
+            
     def test_plot_all_confusion_matrices(self):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
         trainer.load_model(self.model)
         trainer.fit_all(train_datasets=self.train_datasets, verbose=0, epochs=1)
         trainer.calculate_model_predictions(self.val_datasets)
-        figures = trainer.plot_all_confusion_matrices(title='All Confusion Matrices', fontsize=12, show_plot=SHOW_PLOT)
+        figures = trainer.plot_all_confusion_matrices(title='All Confusion Matrices', fontsize=12, show_plot=SHOW_PLOTS)
 
         self.assertIsInstance(figures, dict)
         self.assertEqual(len(figures), len(self.group_names))
         for group in self.group_names:
             self.assertIsInstance(figures[group], type(plt.figure()))
+        
+        if SAVE_PLOTS:
+            for group in self.group_names:
+                figures[group].savefig(os.path.join(PLOTS_DIR, f'all_false_results_{group}.png'))
 
     def test_plot_all_evaluation_metrics(self):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
         trainer.load_model(self.model)
         trainer.fit_all(train_datasets=self.train_datasets, verbose=0, epochs=1)
         trainer.calculate_model_predictions(self.val_datasets)
-        figure = trainer.plot_all_evaluation_metrics(title='All Evaluation Metrics', fontsize=12, show_plot=SHOW_PLOT)
+        figure = trainer.plot_all_evaluation_metrics(title='All Evaluation Metrics', fontsize=12, show_plot=SHOW_PLOTS)
+        
         self.assertIsInstance(figure, plt.Figure)
+
+        if SAVE_PLOTS:
+            figure.savefig(os.path.join(PLOTS_DIR, 'all_evaluation_metrics.png'))
     
     def test_plot_roc_curves(self):
         dataset = self._get_dataset()
@@ -203,7 +226,11 @@ class TestImageClassifiersTrainer(unittest.TestCase):
         trainer.fit_all(train_datasets=datasets, verbose=0, epochs=1)
         trainer.calculate_model_predictions(datasets)
         fig = trainer.plot_roc_curves(title='ROC Curves', fontsize=12, show_plot=True)
+        
         self.assertIsInstance(fig, plt.Figure)
+
+        if SAVE_PLOTS:
+            fig.savefig(os.path.join(PLOTS_DIR, 'roc_curves.png'))
 
 
 if __name__ == '__main__':
