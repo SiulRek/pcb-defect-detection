@@ -8,14 +8,14 @@ class RandomElasticTransformer(StepBase):
     """
     A data augmentation step that applies a Random Elastic Transformer to an image.
     """
-
     arguments_datatype = {'alpha': float, 'sigma': float, 'seed': int}
     name = 'Random Elastic Transformer'
 
     def __init__(self, alpha=34, sigma=4, seed=42):
         """
-        Initializes the RandomElasticTransformer object for integration into an image preprocessing pipeline.
-        
+        Initializes the RandomElasticTransformer object for integration into an image preprocessing
+        pipeline.
+
         Args:
             alpha (float): Intensity of the transformation. Default is 34.
             sigma (float): Standard deviation of the Gaussian filter. Default is 4.
@@ -37,13 +37,16 @@ class RandomElasticTransformer(StepBase):
 
         sdx = cv2.GaussianBlur(dx, kernel_size, 0)
         sdy = cv2.GaussianBlur(dy, kernel_size, 0)
-        
+
         x, y = np.meshgrid(np.arange(col), np.arange(row))
         map_x, map_y = np.float32(x + sdx), np.float32(y + sdy)
 
-        elastic_transformed_image = cv2.remap(image_nparray, map_x, map_y, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT_101)
+        elastic_transformed_image = cv2.remap(image_nparray, map_x, map_y,
+                                                interpolation=cv2.INTER_LINEAR,
+                                                borderMode=cv2.BORDER_REFLECT_101)
 
         return elastic_transformed_image
+
 
 if __name__ == '__main__':
     step = RandomElasticTransformer()

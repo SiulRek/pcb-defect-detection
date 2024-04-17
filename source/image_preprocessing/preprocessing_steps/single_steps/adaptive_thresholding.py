@@ -15,7 +15,15 @@ class AdaptiveThresholder(StepBase):
     name = 'Adaptive Thresholding'
 
     def __init__(self, block_size=15, c=-2):
-        """ Initializes the AdaptiveThresholder object that can be integrated in an image preprocessing pipeline."""
+        """ 
+        Initializes the AdaptiveThresholder object that can be integrated in an image 
+            preprocessing pipeline.
+
+        Args:
+            block_size (int): Size of the pixel neighborhood that is used to calculate the threshold
+                value.
+            c (float): Constant subtracted from the mean or weighted mean.
+        """
         super().__init__(locals())
 
     @StepBase._nparray_pyfunc_wrapper

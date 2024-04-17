@@ -1,4 +1,4 @@
-from tensorflow import image 
+from tensorflow import image
 
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 
@@ -9,7 +9,8 @@ class RGBToGrayscale(StepBase):
     name = 'RGB To Grayscale'
 
     def __init__(self):
-        """ Initializes the RGBToGrayscale object that can be integrated in an image preprocessing pipeline."""
+        """ Initializes the RGBToGrayscale object that can be integrated in an image preprocessing
+        pipeline."""
         super().__init__(locals())
 
     @StepBase._tensor_pyfunc_wrapper
@@ -18,11 +19,8 @@ class RGBToGrayscale(StepBase):
             processed_image = image.rgb_to_grayscale(image_tensor)
             return processed_image
         return image_tensor
-    
+
 
 if __name__ == '__main__':
     step = RGBToGrayscale()
     print(step.get_step_json_representation())
-    
-
-

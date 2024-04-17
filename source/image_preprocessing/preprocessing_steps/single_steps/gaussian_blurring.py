@@ -1,3 +1,4 @@
+
 import cv2
 
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
@@ -9,12 +10,15 @@ class GaussianBlurFilter(StepBase):
     name = 'Gaussian Blur Filter'
 
     def __init__(self, kernel_size=(5,5), sigma=0.3):
-        """ 
-        Initializes the GaussianBlurFilter object that can be integrated in an image preprocessing pipeline.
-        
+        """
+        Initializes the GaussianBlurFilter object that can be integrated in an image preprocessing
+        pipeline.
+
         Args:
-            kernel_size ((int, int)): The size of the Gaussian kernel. Both values should be odd numbers.
-            sigma (float): The standard deviation of the Gaussian kernel. A higher sigma means more blur.
+            kernel_size ((int, int)): The size of the Gaussian kernel. Both values should be odd
+                numbers.
+            sigma (float): The standard deviation of the Gaussian kernel. A higher sigma means more
+                blur.
         """
         super().__init__(locals())
 
@@ -24,11 +28,8 @@ class GaussianBlurFilter(StepBase):
         sigma = self.parameters['sigma']
         blurred_image= cv2.GaussianBlur(image_nparray, k, sigma)
         return blurred_image
-    
+
 
 if __name__ == '__main__':
     step = GaussianBlurFilter()
     print(step.get_step_json_representation)
-    
-
-
