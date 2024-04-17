@@ -130,10 +130,10 @@ class TestImageClassifiersTrainer(unittest.TestCase):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)
         trainer.load_model(self.model)
         trainer.fit_all(train_datasets=self.train_datasets, verbose=0, epochs=10)
-        trainer.plot_histories(plot_show=SHOW_PLOTS)
-        self.assertIsNotNone(trainer.history_plot)
+        fig = trainer.plot_histories(plot_show=SHOW_PLOTS)
+        self.assertIsNotNone(fig)
         if SAVE_PLOTS:
-            trainer.history_plot.savefig(os.path.join(PLOTS_DIR, 'histories.png'))
+            fig.savefig(os.path.join(PLOTS_DIR, 'histories.png'))
 
     def test_calculate_model_predictions(self):
         trainer = ImageClassifiersTrainer(self.group_names, self.categories)

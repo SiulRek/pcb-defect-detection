@@ -143,7 +143,7 @@ class ImageClassifiersTrainer():
         fig.tight_layout()
         if plot_show:
             plt.show()
-        self.history_plot = fig  
+        return fig  
     
     def calculate_model_predictions(self, test_datasets):
         """
