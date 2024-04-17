@@ -13,7 +13,7 @@ class ImageClassifiersTrainer():
     A class to train multiple image classifiers of the same type on different datasets
     and visualize their results.
     """
-    def __init__(self, group_names, category_names):
+    def __init__(self, group_names, category_names, is_multiclass=True):
         """
         Initializes the ImageClassifiersTrainer.
 
@@ -30,7 +30,7 @@ class ImageClassifiersTrainer():
         self.model_predictions_calculated = False
         self.final_results = {group: {} for group in group_names}
         self.visualizers = {}
-        self.visualizers = {group: ImageClassifierVisualizer(category_names) for group in group_names}
+        self.visualizers = {group: ImageClassifierVisualizer(category_names, is_multiclass) for group in group_names}
 
     def load_model(self, model):
         """ 
@@ -39,11 +39,10 @@ class ImageClassifiersTrainer():
         Args:
         - model: A compiled Keras model.
         """
-        optimizer_config = model.optimizer.get_config() 
+        compile_config = model.get_compile_config()
         self.models = {group: tf.keras.models.clone_model(model) for group in self.group_names}
         for m in self.models.values():
-            new_optimizer = type(model.optimizer).from_config(optimizer_config) 
-            m.compile(optimizer=new_optimizer, loss=model.loss, metrics=model.metrics)  
+            m.compile(**compile_config)  
 
     def plot_model_summary(self, title='Model Summary', fontsize=10, show_plot=True):
         """ 
@@ -209,7 +208,7 @@ class ImageClassifiersTrainer():
             figures[group] = visualizer.plot_false_results(n_rows, n_cols, group_title, fontsize, prediction_bar, show_plot)
         return figures
     
-    def plot_all_confusion_matrices(self, title=None, fontsize=12, show_plot=True):
+    def plot_all_confusion_matrices(self, title=None, fontsize=12, fig_size=(10, 10), show_plot=True):
         """ 
         Plot the confusion matrices of all models.
 
@@ -228,31 +227,50 @@ class ImageClassifiersTrainer():
         figures = {}
         for group, visualizer in self.visualizers.items():
             group_title = f"{title} - {group}"
-            figures[group] = visualizer.plot_confusion_matrix(group_title, fontsize=fontsize, show_plot=show_plot)
+            figures[group] = visualizer.plot_confusion_matrix(group_title, fontsize=fontsize, fig_size=fig_size, show_plot=show_plot)
         return figures
     
-    def plot_all_evaluation_metrics(self, title=None, fontsize=12, show_plot=True):
-        """ 
+    def plot_all_evaluation_metrics(self, average='macro', title=None, fontsize=12, fig_size=(5, 3), show_plot=True):
+        """
         Plot the evaluation metrics of all models.
-
+        
         Args:
-        - title (str, optional): Title of the plot.
-        - fontsize (int, optional): Font size for text in the plot.
-        - show_plot (bool, optional): Whether to display the plot.
-
+        - average (str, optional): Type of averaging used for multiclass classification. Default is 'macro'.
+        - title (str, optional): Title of the plot. If None, no title is set. Default is None.
+        - fontsize (int, optional): Font size for text in the plot. Default is 12.
+        - show_plot (bool, optional): Whether to display the plot. Default is True.
+        
         Returns:
-        - figures (dict): A dictionary with group names as keys and Matplotlib figures as values.
+        - figure: Matplotlib figure for the evaluation metrics.
         """
         if not self.model_predictions_calculated:
-            raise Exception("Model predictions have not been calculated. Please run calculate_model_predictions first")
+            raise Exception("Model predictions have not been calculated. Please run calculate_model_predictions first.")
 
-        title = '' if title is None else title    
-        figures = {}
-        for group, visualizer in self.visualizers.items():
-            group_title = f"{title} - {group}"
-            figures[group] = visualizer.plot_evaluation_metrics(average='macro', title=group_title, 
-                                                                fontsize=fontsize, show_plot=show_plot)
-        return figures
+        title = title if title is not None else '' 
+
+        metrics = {group: visualizer.calculate_evaluation_metrics(average=average) for group, visualizer in self.visualizers.items()}
+
+        first_group_metrics = next(iter(metrics.values()))
+        metrics['average'] = {}
+        metrics['std'] = {}
+
+        for metric_name, _ in first_group_metrics.items():
+            metric_values = [metrics[group][metric_name] for group in self.group_names]
+            average_value = sum(metric_values) / len(metric_values)
+            metrics['average'][metric_name] = average_value
+            metrics['std'][metric_name] = sum([(value - average_value) ** 2 for value in metric_values]) / len(metric_values)
+
+        metrics_header = '        ' + ',   '.join(first_group_metrics.keys()) + '\n\n'
+        metrics_lines = [f"{group}:   " + ',  '.join(f"{value:.2f}" for value in group_metrics.values()) for group, group_metrics in metrics.items()]
+        metrics_text = metrics_header + '\n'.join(metrics_lines)
+
+        figure = ImageClassifierVisualizer(None).plot_text(text=metrics_text,
+                                                        title=title,
+                                                        fontsize=fontsize,
+                                                        show_plot=show_plot,
+                                                        fig_size=fig_size)
+        return figure
+
 
     
 
