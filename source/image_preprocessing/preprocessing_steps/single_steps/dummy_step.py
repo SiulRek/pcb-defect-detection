@@ -23,4 +23,4 @@ class DummyStep(StepBase):
 
 if __name__ == '__main__':
     step = DummyStep()
-    print(step.get_step_json_representation()) 
+    print(step.get_step_json_representation())

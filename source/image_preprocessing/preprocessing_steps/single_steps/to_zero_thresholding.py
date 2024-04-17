@@ -10,7 +10,6 @@ class ZeroThreshold(StepBase):
     Note: In the case of RGB images, it processes each color channel (Red, Green, Blue) 
     separately.
     """
-
     arguments_datatype = {'thresh': int}
     name = 'Threshold to Zero'
 
@@ -19,9 +18,9 @@ class ZeroThreshold(StepBase):
         Initializes the ZeroThreshold object for integration into an image preprocessing pipeline. 
 
         Args:
-            thresh (int, optional): The threshold value used for thresholding to zero. Pixel values greater than 
-                                    this threshold remain unchanged, and values less than or equal to the 
-                                    threshold are set to 0 (black). Defaults to 128.
+            thresh (int, optional): The threshold value used for thresholding to zero. Pixel values 
+                                    greater than this threshold remain unchanged, and values less 
+                                    than or equal to the threshold are set to 0. Defaults to 128.
         """
         super().__init__(locals())
 
@@ -41,10 +40,10 @@ class ZeroThreshold(StepBase):
             thresholded_image = apply_zero_threshold(image_nparray)
         else:
             R, G, B = cv2.split(image_nparray)
-            R_thresholded = apply_zero_threshold(R)
-            G_thresholded = apply_zero_threshold(G)
-            B_thresholded = apply_zero_threshold(B)
-            thresholded_image = cv2.merge([R_thresholded, G_thresholded, B_thresholded])
+            r_thresholded = apply_zero_threshold(R)
+            g_thresholded = apply_zero_threshold(G)
+            b_thresholded = apply_zero_threshold(B)
+            thresholded_image = cv2.merge([r_thresholded, g_thresholded, b_thresholded])
 
         return thresholded_image
     

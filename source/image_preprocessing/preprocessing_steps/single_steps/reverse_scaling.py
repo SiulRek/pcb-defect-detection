@@ -14,7 +14,9 @@ class ReverseScaler(StepBase):
     name = 'Reverse Scaler'
 
     def __init__(self, scale_factor=255):
-        """Initializes the ReverseScaler object for integration into an image preprocessing pipeline.
+        """
+        Initializes the ReverseScaler object for integration into an image preprocessing 
+        pipeline.
 
            Args:
                scale_factor (float): The factor used for scaling the image tensor. Default is 255.

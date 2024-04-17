@@ -10,7 +10,8 @@ class MedianBlurFilter(StepBase):
 
     def __init__(self, kernel_size=5):
         """ 
-        Initializes the `MedianBlurFilter` object that can be integrated in an image preprocessing pipeline    
+        Initializes the `MedianBlurFilter` object that can be integrated in an image preprocessing 
+        pipeline.    
         
         Args:
             kernel_size (int): The size of the kernel. It must be an odd and positive integer.

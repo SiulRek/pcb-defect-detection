@@ -4,7 +4,6 @@ from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 
 class DilationFilter(StepBase):
     """ A preprocessing step that applies dilation to an image. """
-
     arguments_datatype = {'kernel_size': int, 'iterations': int}
     name = 'Dilation Filter'
 

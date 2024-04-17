@@ -1,7 +1,9 @@
+import random
 import cv2
 import numpy as np
-import random
+
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
+
 
 class DilateErodeSequencer(StepBase):
     """
@@ -9,8 +11,8 @@ class DilateErodeSequencer(StepBase):
     This class can automatically generate an operation sequence based on the provided iterations
     and erosion probability.
     """
-
-    arguments_datatype = {'kernel_size': int, 'sequence': str, 'iterations': int, 'erosion_probability': float}
+    arguments_datatype = {'kernel_size': int, 'sequence': str,
+                          'iterations': int, 'erosion_probability': float}
     name = 'Dilate Erode Sequencer'
 
     def __init__(self, kernel_size=3, sequence='de', iterations=-1, erosion_probability=0.5):
@@ -23,7 +25,8 @@ class DilateErodeSequencer(StepBase):
             kernel_size (int): Size of the kernel for dilation/erosion.
             sequence (str): The sequence of operations ('d' for dilation, 'e' for erosion).
             iterations (int): Number of times the sequence is repeated.
-            erosion_probability (float): Probability of choosing erosion in the random sequence generation.
+            erosion_probability (float): Probability of choosing erosion in the random sequence
+                generation.
         """
         if not 0 <= erosion_probability <= 1:
             raise ValueError("Erosion probability must be between 0 and 1.")
@@ -52,13 +55,15 @@ class DilateErodeSequencer(StepBase):
             str: The generated sequence of operations.
         """
         if iterations > 1:
-            random_sequence = ''.join(self._choose_operation(erosion_probability) for _ in range(iterations))
+            operations = [self._choose_operation(erosion_probability) for _ in range(iterations)]
+            random_sequence = ''.join(operations)
             return random_sequence
         return sequence
 
     def _choose_operation(self, erosion_probability):
         """
-        Randomly chooses between dilation ('d') and erosion ('e') based on the specified probability.
+        Randomly chooses between dilation ('d') and erosion ('e') based on the specified 
+            probability.
 
         Args:
             erosion_probability (float): Probability of choosing erosion.
@@ -84,13 +89,18 @@ class DilateErodeSequencer(StepBase):
 
         for operation in self.parameters['sequence']:
             if operation == 'd':
-                processed_image = cv2.dilate(processed_image, kernel, iterations=self.parameters['iterations'])
+                processed_image = cv2.dilate(processed_image, kernel,
+                                                iterations=self.parameters['iterations'])
             elif operation == 'e':
-                processed_image = cv2.erode(processed_image, kernel, iterations=self.parameters['iterations'])
+                processed_image = cv2.erode(processed_image, kernel,
+                                             iterations=self.parameters['iterations'])
             else:
-                raise ValueError("Invalid operation in sequence. Only 'd' (dilation) and 'e' (erosion) are allowed.")
+                msg = "Invalid operation in sequence."
+                msg += "Only 'd' (dilation) and 'e' (erosion) are allowed."
+                raise ValueError(msg)
 
         return processed_image
+
 
 if __name__ == '__main__':
     step = DilateErodeSequencer()

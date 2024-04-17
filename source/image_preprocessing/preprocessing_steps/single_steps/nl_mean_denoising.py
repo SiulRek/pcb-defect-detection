@@ -4,8 +4,7 @@ from source.image_preprocessing.preprocessing_steps.step_base import StepBase
 
 
 class NLMeanDenoiser(StepBase):
-    """ A preprocessing step that applies Contrast Limited Adaptive Histogram Equalizer (CLAHE) to an image."""
-
+    """ A preprocessing step that applies Non Local Mean Denoising to an image."""
     arguments_datatype = {'h': float, 'template_window_size': int, 'search_window_size': int}
     name = 'Non Local Mean Denoiser'
 
@@ -14,9 +13,12 @@ class NLMeanDenoiser(StepBase):
         Initializes the NLMeanDenoiser object for integration in an image preprocessing pipeline.
 
         Args:
-            h (float): Filter strength. Higher values remove noise better but may also remove image details.
-            template_window_size (int): Odd size of the window used to compute the weighted average for the given pixel.
-            search_window_size (int): Odd size of the window used to search for patches similar to the one centered at the current pixel.
+            h (float): Filter strength. Higher values remove noise better but may also remove image 
+                details.
+            template_window_size (int): Odd size of the window used to compute the weighted average
+                for the given pixel.
+            search_window_size (int): Odd size of the window used to search for patches similar to 
+                the one centered at the current pixel.
         """
         super().__init__(locals())
 

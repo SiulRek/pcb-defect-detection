@@ -10,21 +10,19 @@ class BinaryThresholder(StepBase):
     Note: In the case of RGB images, it processes each color channel (Red, Green, Blue) 
     separately.
     """
-
     arguments_datatype = {'thresh': int}
     name = 'Binary Thresholding'
 
     def __init__(self, thresh=128):
-        """ Initializes the BinaryThresholder object that can be integrated in an image preprocessing pipeline.
+        """ Initializes the BinaryThresholder object that can be integrated in an image 
+            preprocessing pipeline.
         
         Args:
-            thresh (int, optional): The threshold value used for binary thresholding. Pixel values greater than 
-                               this threshold are set to the maximum value (255, white), and values less than 
-                               or equal to the threshold are set to 0 (black). Defaults to 128.
+            thresh (int, optional): The threshold value used for binary thresholding. Pixel values
+                greater than this threshold are set to the maximum value (255, white), and values 
+                less than or equal to the threshold are set to 0 (black). Defaults to 128.
 
         """
-
-
         super().__init__(locals())
 
     @StepBase._nparray_pyfunc_wrapper
@@ -43,10 +41,10 @@ class BinaryThresholder(StepBase):
             thresholded_image = apply_binary_threshold(image_nparray)
         else:
             R, G, B = cv2.split(image_nparray)
-            R_thresholded = apply_binary_threshold(R)
-            G_thresholded = apply_binary_threshold(G)
-            B_thresholded = apply_binary_threshold(B)
-            thresholded_image = cv2.merge([R_thresholded, G_thresholded, B_thresholded])
+            r_thresholded = apply_binary_threshold(R)
+            g_thresholded = apply_binary_threshold(G)
+            b_thresholded = apply_binary_threshold(B)
+            thresholded_image = cv2.merge([r_thresholded, g_thresholded, b_thresholded])
 
         return thresholded_image
     

@@ -1,4 +1,3 @@
-
 import source.image_preprocessing.preprocessing_steps as steps 
 
 STEP_CLASS_MAPPING = {

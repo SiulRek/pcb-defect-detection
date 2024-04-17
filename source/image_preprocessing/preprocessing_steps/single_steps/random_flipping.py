@@ -9,7 +9,6 @@ class RandomFlipper(StepBase):
     """
     A data augmentation step that flips the image randomly in a specified direction.
     """
-
     arguments_datatype = {'flip_direction': str, 'seed': int}
     name = 'Random Flipper'
 
@@ -18,7 +17,8 @@ class RandomFlipper(StepBase):
         Initializes the RandomFlipper object for integration in an image preprocessing pipeline.
         
         Args:
-            flip_direction (str): Direction of the potential flip. Can be 'horizontal', 'vertical', or 'both'.
+            flip_direction (str): Direction of the potential flip. Can be 'horizontal', 'vertical',
+                or 'both'.
             seed (int): Random seed for reproducible flipping. Default is 42.
         """
         super().__init__(locals())
@@ -43,6 +43,7 @@ class RandomFlipper(StepBase):
             flipped_image = image_nparray  # No flip applied
 
         return flipped_image
+
 
 if __name__ == '__main__':
     step = RandomFlipper()

@@ -14,7 +14,8 @@ class GlobalHistogramEqualizer(StepBase):
     name = 'Global Histogram Equalizer'
 
     def __init__(self):
-        """ Initializes the GlobalHistogramEqualizer object that can be integrated in an image preprocessing pipeline."""
+        """ Initializes the GlobalHistogramEqualizer object that can be integrated in an image
+            preprocessing pipeline."""
         super().__init__(locals())
 
     @StepBase._nparray_pyfunc_wrapper

@@ -10,10 +10,12 @@ class AverageBlurFilter(StepBase):
 
     def __init__(self, kernel_size=(8,8)):
         """
-        Initializes the `AverageBlurFilter` object that can be integrated in an image preprocessing pipeline.
+        Initializes the `AverageBlurFilter` object that can be integrated in an image preprocessing 
+        pipeline.
         
-            Args:
-        kernel_size ((int, int)): The size of the averaging kernel. Both values should be positive integers.
+        Args:
+            kernel_size ((int, int)): The size of the averaging kernel. Both values should be 
+                positive integers.
         """
         super().__init__(locals())
 

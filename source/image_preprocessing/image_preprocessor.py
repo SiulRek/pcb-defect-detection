@@ -1,5 +1,4 @@
 from copy import deepcopy
-
 import tensorflow as tf
 
 from source.image_preprocessing.preprocessing_steps.step_base import StepBase
@@ -15,54 +14,33 @@ class ImagePreprocessor:
 
     The ImagePreprocessor class encapsulates a sequence of preprocessing operations
     defined as steps. Each step is a discrete preprocessing action, such as noise
-    reduction, normalization, etc. The steps are applied in sequence to an input
-    dataset of images.
+    reduction, normalization, etc., applied in sequence to an input dataset of images.
 
-    Attributes (read only):
-        pipeline (list of StepBase Child classes): A list of preprocessing steps to be executed.
-        serializer (ClassInstancesSerializer): Handles the serialization and deserialization of the pipeline to and from a JSON file.
+    Attributes:
+        pipeline (list of StepBase Child classes): Preprocessing steps to be executed.
+        serializer (ClassInstancesSerializer): Serializes/deserializes the pipeline to/from JSON.
 
     Methods:
-        pipeline(self):
-            Property that returns the current pipeline.
-
-        set_default_datatype(self, datatype: tf.DType):
-            Sets the default datatype for the pipeline steps. In case the datatype is not set, 
-            the default datatype is tf.uint8.
-
-        set_pipe(self, pipeline: List[StepBase]):
-            Sets the preprocessing pipeline with a deep copy of the provided steps,
-            ensuring each step is an instance of a StepBase subclass.
-
-        pipe_append(self, step: StepBase):
-            appendes a new step to the pipeline, verifying that it is a subclass of StepBase.
-
-        pipe_pop(self) -> StepBase:
-            Pops a step from pipeline.
-            
-        process(self, image_dataset: tf.data.Dataset) -> tf.data.Dataset:
-            Applies each preprocessing step to the provided dataset and returns the processed dataset.
-
-        save_pipe_to_json(self, filepath: str):
-            Serializes the preprocessing pipeline to a JSON file, saving the steps and hyperparameter configurations.
-
-        load_pipe_from_json(self, filepath: str):
-            Loads and reconstructs a preprocessing pipeline from a JSON file.
-
-        load_randomized_pipe_from_json(self, filepath: str):
-            Loads and reconstructs a preprocessing pipeline from a JSON file. 
-
+        pipeline: Returns the current pipeline.
+        set_default_datatype: Sets the default datatype for the pipeline steps.
+        set_pipe: Sets the preprocessing pipeline with a deep copy of provided steps.
+        pipe_append: Appends a new step to the pipeline, verifying it is a subclass of StepBase.
+        pipe_pop: Pops a step from the pipeline.
+        process: Applies each preprocessing step to the provided dataset.
+        save_pipe_to_json: Serializes the preprocessing pipeline to a JSON file.
+        load_pipe_from_json: Loads and reconstructs a preprocessing pipeline from a JSON file.
+        load_randomized_pipe_from_json: Loads a pipeline from JSON with randomized parameters.
     Notes:
         - The pipeline should only contain instances of classes that inherit from StepBase.
         - The `set_pipe` and `pipe_append` methods include type checks to enforce this.
-        - The JSON serialization and deserialization methods (`save_pipe_to_json` and `load_pipe_from_json`)
-          handle the conversion and reconstruction of the pipeline steps, respectively.
+        - The JSON serialization and deserialization methods handle the conversion and 
+            reconstruction of the pipeline steps, respectively.
         - The `process` method's behavior changes based on the `raise_step_process_exception` flag,
-                allowing for flexible error handling during the preprocessing stage.
-        - The datatype thoughout the pipeline is the default datatype, except if explicitly set in the step.
+            allowing for flexible error handling during the preprocessing stage.
+        - The datatype thoughout the pipeline is the default datatype, except if explicitly set in 
+            the step.
         - tf.uint8 is the only input datatype all pipeline steps can handle.
     """
-
     def __init__(self, raise_step_process_exception=True): 
         """ 
         Initializes the ImagePreprocessor with an empty pipeline.
@@ -89,14 +67,19 @@ class ImagePreprocessor:
         return self._occurred_exception_message
         
     def _initialize_class_instance_serializer(self, step_class_mapping):
-        """ Checks if `step_class_mapping` is a dictionary and mapps to subclasses of `StepBase`, if successfull instanciates the `ClassInstancesSerializer` for pipeline serialization and deserialization."""
-
+        """ 
+        Checks if `step_class_mapping` is a dictionary and mapps to subclasses of `StepBase`, 
+        if successfull instanciates the `ClassInstancesSerializer` for pipeline serialization and
+        deserialization.
+        """
         if not isinstance(step_class_mapping, dict):
-            raise TypeError(f"'step_class_mapping' must be of type dict not {type(step_class_mapping)}.")
+            msg = f"'step_class_mapping' must be of type dict not {type(step_class_mapping)}."
+            raise TypeError(msg)
         
         for mapped_class in step_class_mapping.values():
             if not issubclass(mapped_class, StepBase):
-                raise ValueError("At least one mapped class is not a class or subclass of StepBase.")
+                msg = f"At least one mapped class is not a class or subclass of StepBase."
+                raise ValueError(msg)
         self._serializer = ClassInstancesSerializer(step_class_mapping)
 
     def set_default_datatype(self, datatype):
@@ -119,7 +102,7 @@ class ImagePreprocessor:
         """
         for step in pipeline:
             if not isinstance(step, StepBase):  
-                raise ValueError(f'Expecting a Child of StepBase, got {type(step)} instead.')        
+                raise ValueError(f'Expecting a Child of StepBase, got {type(step)} instead.')      
         self._pipeline = deepcopy(pipeline)
 
     def pipe_pop(self):
@@ -147,7 +130,8 @@ class ImagePreprocessor:
 
     def save_pipe_to_json(self, json_path):
         """
-        Serializes the preprocessing pipeline to the specified JSON file, saving the step hyperparameter configurations.
+        Serializes the preprocessing pipeline to the specified JSON file, saving the step 
+        hyperparameter configurations.
 
         Args:
             json_path (str): File path where the pipeline configuration will be saved.
@@ -166,7 +150,8 @@ class ImagePreprocessor:
     def load_randomized_pipe_from_json(self, json_path):
         """
         Loads and reconstructs a preprocessing pipeline from the specified JSON file.
-        The parameters of preprocessing steps are randomized from the specified range in the JSON file.
+        The parameters of preprocessing steps are randomized from the specified range in the JSON
+        file.
 
         Args:
             json_path (str): File path from where the pipeline configuration will be loaded.
@@ -187,7 +172,9 @@ class ImagePreprocessor:
         repr = "[\n"
         for step in self.pipeline:
             q = "'" 
-            parameters = ", ".join(f"{k}={q + v + q if isinstance(v, str) else v}" for k, v in step.parameters.items()) 
+            items = step.parameters.items()
+            parameter_list = [f"{k}={q + v + q if isinstance(v, str) else v}" for k, v in items]
+            parameters = ", ".join(parameter_list) 
             step_repr = f"{step.__class__.__name__}({parameters})"
             repr += f"    {step_repr},\n"
         repr = repr[:-2] + "\n]"
@@ -209,12 +196,13 @@ class ImagePreprocessor:
     def process(self, image_dataset):
         """
         Applies each preprocessing step to the provided dataset and returns the processed dataset.
-        If `_raise_step_process_exception` is True, exceptions in processing a step will be caught and logged,
-        and the process will return None. If False, it will proceed without exception handling.
+        If `_raise_step_process_exception` is True, exceptions in processing a step will be caught 
+        and logged, and the process will return None. If False, it will proceed without exception
+        handling.
 
         Args:
-            image_dataset (tf.data.Dataset): The TensorFlow dataset to be processed. It can contain images only
-            or images and labels.
+            image_dataset (tf.data.Dataset): The TensorFlow dataset to be processed. It can contain 
+            images only or images and labels.
 
         Returns:
             tf.data.Dataset: The processed dataset after applying all the steps in the pipeline.
@@ -229,8 +217,9 @@ class ImagePreprocessor:
                     processed_dataset = step.process_step(processed_dataset)
                     self._consume_tf_dataset(processed_dataset)
                 except Exception as e:
-                    self._occurred_exception_message = f"An error occurred in step {step.name}: {str(e)}"
-                    print(self._occurred_exception_message)
+                    msg = f"An error occurred in step {step.name}: {str(e)}"
+                    print(msg)
+                    self._occurred_exception_message = msg
                     return None
 
         self._consume_tf_dataset(processed_dataset)
@@ -239,6 +228,3 @@ class ImagePreprocessor:
             processed_dataset = pack_images_and_labels(processed_dataset, label_dataset)
 
         return processed_dataset
-    
-
-

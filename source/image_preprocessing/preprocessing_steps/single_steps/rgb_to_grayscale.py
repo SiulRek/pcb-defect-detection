@@ -9,7 +9,8 @@ class RGBToGrayscale(StepBase):
     name = 'RGB To Grayscale'
 
     def __init__(self):
-        """ Initializes the RGBToGrayscale object that can be integrated in an image preprocessing pipeline."""
+        """ Initializes the RGBToGrayscale object that can be integrated in an image preprocessing 
+        pipeline."""
         super().__init__(locals())
 
     @StepBase._tensor_pyfunc_wrapper
