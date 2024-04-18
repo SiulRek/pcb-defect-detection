@@ -1,11 +1,15 @@
 from copy import deepcopy
 import io
+import os
 
 from sklearn.metrics import roc_curve, auc
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
 from source.model.helpers.image_classifier_visualizer import ImageClassifierVisualizer
+from source.model.definitions.general import STRING_SEPARATOR as SEP
+from source.model.definitions.general import RESULT_FILE_NAME
+from source.model.definitions.image_classifier import FIGURES, METRICS, STATISTICS
 
 
 class ImageClassifiersTrainer():
@@ -67,10 +71,12 @@ class ImageClassifiersTrainer():
         ax.axis('off')
         ax.text(0.01, 0.99, title, fontsize=fontsize + 2, fontweight='bold', verticalalignment='top', transform=ax.transAxes)
         ax.text(0.01, 0.94, summary_text, fontsize=fontsize, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes)
+        
         plt.subplots_adjust(top=0.85) 
         if show_plot:
             plt.show()
 
+        fig.name = FIGURES.MODEL_CONFIGURATION.value
         return fig
 
     def _set_datasets(self, train_datasets, val_datasets):      
@@ -143,6 +149,7 @@ class ImageClassifiersTrainer():
         fig.tight_layout()
         if plot_show:
             plt.show()
+        fig.name = FIGURES.HISTORY.value            
         return fig  
     
     def calculate_model_predictions(self, test_datasets):
@@ -182,6 +189,7 @@ class ImageClassifiersTrainer():
         for group, visualizer in self.visualizers.items():
             group_title = f"{title} - {group}"
             figures[group] = visualizer.plot_results(n_rows, n_cols, group_title, fontsize, prediction_bar, show_plot)
+            figures[group].name = FIGURES.ALL_RESULTS.value + SEP + group 
         return figures
     
     def plot_all_false_results(self, n_rows=3, n_cols=3, title=None, fontsize=12, prediction_bar=True, show_plot=True):
@@ -207,6 +215,7 @@ class ImageClassifiersTrainer():
         for group, visualizer in self.visualizers.items():
             group_title = f"{title} - {group}"
             figures[group] = visualizer.plot_false_results(n_rows, n_cols, group_title, fontsize, prediction_bar, show_plot)
+            figures[group].name = FIGURES.FALSE_RESULTS.value + SEP + group
         return figures
     
     def plot_all_confusion_matrices(self, title=None, fontsize=12, fig_size=(10, 10), show_plot=True):
@@ -229,6 +238,7 @@ class ImageClassifiersTrainer():
         for group, visualizer in self.visualizers.items():
             group_title = f"{title} - {group}"
             figures[group] = visualizer.plot_confusion_matrix(group_title, fontsize=fontsize, fig_size=fig_size, show_plot=show_plot)
+            figures[group].name = FIGURES.CONFUSION_MATRIX.value + SEP + group
         return figures
 
     def calculate_evaluation_metrics(self, average='macro'):
@@ -284,6 +294,7 @@ class ImageClassifiersTrainer():
                                                         fontsize=fontsize,
                                                         show_plot=show_plot,
                                                         fig_size=fig_size)
+        figure.name = FIGURES.EVALUATION_METRICS.value
         return figure
 
     def plot_roc_curves(self, title='ROC Curves for All Models', fontsize=12, show_plot=True):
@@ -325,12 +336,34 @@ class ImageClassifiersTrainer():
 
         if show_plot:
             plt.show()
-
+        fig.name = FIGURES.ROC_CURVE.value
         return fig
     
+    def save_all_figures(self, figures, root, experiment_name = 'experiment'):
+        """
+        Save all figures to a directory.
 
-
-    
-
-    
-    
+        Args:
+        - figures (list): List containing figures or dictionary of figures.
+        - root (str): Root directory to save the figures.
+        - experiment_name (str, optional): Name of the experiment. Default is 'experiment'.
+        """
+        dir = os.path.join(root, experiment_name)
+        os.makedirs(dir, exist_ok=True)
+        true_figures = []
+        for elem in figures:
+            if isinstance(elem, dict):
+                true_figures.extend(elem.values())
+            elif isinstance(elem, plt.Figure):
+                true_figures.append(elem)
+            else:
+                raise ValueError(f'Invalid figure type {type(elem)} in figures list')
+            
+        for fig in true_figures:
+            figure_name = fig.name
+            path = os.path.join(dir, figure_name + '.png')
+            i = 1
+            while os.path.exists(path):
+                i += 1
+                path = os.path.join(dir, figure_name + SEP + f'{i}' + '.png')
+            fig.savefig(path)

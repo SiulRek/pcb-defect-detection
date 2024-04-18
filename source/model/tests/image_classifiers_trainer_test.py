@@ -1,12 +1,14 @@
 import os
+import shutil
 import unittest
 
 import tensorflow as tf
+from matplotlib import pyplot as plt
 
 from source.model.helpers.image_classifiers_trainer import ImageClassifiersTrainer
 from source.utils.test_result_logger import TestResultLogger
-
-from matplotlib import pyplot as plt
+from source.model.definitions.general import STRING_SEPARATOR as SEP
+from source.model.definitions.image_classifier import FIGURES
 
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..","..")
@@ -242,6 +244,38 @@ class TestImageClassifiersTrainer(unittest.TestCase):
 
         if SAVE_PLOTS:
             fig.savefig(os.path.join(PLOTS_DIR, 'roc_curves.png'))
+    
+    def test_save_all_figures(self):
+        trainer = ImageClassifiersTrainer(self.group_names, self.categories)
+        trainer.load_model(self.model)
+        trainer.fit_all(train_datasets=self.train_datasets, verbose=0, epochs=1)
+        trainer.calculate_model_predictions(self.val_datasets)
+
+        figures = []
+        figures.append(trainer.plot_all_results())
+        figures.append(trainer.plot_model_summary())
+
+        trainer.save_all_figures(figures=figures, root=PLOTS_DIR, experiment_name='test_save_all_figures')
+
+        expected_files = [
+            os.path.join(
+                PLOTS_DIR, 
+                'test_save_all_figures', 
+                f"{FIGURES.ALL_RESULTS.value}{SEP}{group}.png"  
+            )
+            for group in self.group_names  
+            ]
+        expected_files.append(
+            os.path.join(
+                PLOTS_DIR, 
+                'test_save_all_figures', 
+                f"{FIGURES.MODEL_CONFIGURATION.value}.png"  
+            )
+        )
+        for file_path in expected_files:
+            self.assertTrue(os.path.exists(file_path), f"File {file_path} does not exist")
+
+        shutil.rmtree(os.path.join(PLOTS_DIR, 'test_save_all_figures'))
 
 
 if __name__ == '__main__':
