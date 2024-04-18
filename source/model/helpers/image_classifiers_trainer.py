@@ -1,5 +1,6 @@
 from copy import deepcopy
 import io
+import pickle
 import os
 
 from sklearn.metrics import roc_curve, auc
@@ -375,16 +376,17 @@ class ImageClassifiersTrainer():
                 path = os.path.join(dir, figure_name + SEP + f'{i}' + '.png')
             fig.savefig(path)
     
-    # def save_results(self, root, experiment_name = 'experiment'):
-    #     """
-    #     Save the evaluation results to a pickle file.
+    def save_evaluation_metrics(self, root, experiment_name = 'experiment'):
+        """
+        Save the evaluation results on test datasets of all models to a pickle file.
 
-    #     Args:
-    #     - root (str): Root directory to save the results.
-    #     - experiment_name (str, optional): Name of the experiment. Default is 'experiment'.
-    #     """
-    #     dir = os.path.join(root, experiment_name)
-    #     os.makedirs(dir, exist_ok=True)
-    #     path = os.path.join(dir, RESULT_FILE_NAME)
-    #     with open(path, 'wb') as f:
-    #         pickle.dump(self.final_results, f)
+        Args:
+        - root (str): Root directory to save the results.
+        - experiment_name (str, optional): Name of the experiment. Default is 'experiment'.
+        """
+        dir = os.path.join(root, experiment_name)
+        os.makedirs(dir, exist_ok=True)
+        path = os.path.join(dir, RESULT_FILE_NAME)
+        metrics = self.calculate_evaluation_metrics()
+        with open(path, 'wb') as f:
+            pickle.dump(metrics, f)

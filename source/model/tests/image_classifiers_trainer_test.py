@@ -1,5 +1,6 @@
 import os
 import shutil
+import pickle
 import unittest
 
 import tensorflow as tf
@@ -8,6 +9,7 @@ from matplotlib import pyplot as plt
 from source.model.helpers.image_classifiers_trainer import ImageClassifiersTrainer
 from source.utils.test_result_logger import TestResultLogger
 from source.model.definitions.general import STRING_SEPARATOR as SEP
+from source.model.definitions.general import RESULT_FILE_NAME 
 from source.model.definitions.image_classifier import FIGURES
 
 
@@ -276,6 +278,23 @@ class TestImageClassifiersTrainer(unittest.TestCase):
             self.assertTrue(os.path.exists(file_path), f"File {file_path} does not exist")
 
         shutil.rmtree(os.path.join(PLOTS_DIR, 'test_save_all_figures'))
+
+    def test_save_evaluation_metrics(self):
+        trainer = ImageClassifiersTrainer(self.group_names, self.categories)
+        trainer.load_model(self.model)
+        trainer.fit_all(train_datasets=self.train_datasets, verbose=0, epochs=1)
+        trainer.calculate_model_predictions(self.val_datasets)
+        expected_metrics = trainer.calculate_evaluation_metrics()
+        trainer.save_evaluation_metrics(root=PLOTS_DIR, experiment_name='test_save_evaluation_metrics')
+
+        expected_file = os.path.join(PLOTS_DIR, 'test_save_evaluation_metrics', RESULT_FILE_NAME)
+        self.assertTrue(os.path.exists(expected_file), f"File {expected_file} does not exist")
+        try:
+            with open(expected_file, 'rb') as f:
+                saved_metrics = pickle.load(f)
+            self.assertEqual(expected_metrics, saved_metrics)
+        finally:
+            shutil.rmtree(os.path.join(PLOTS_DIR, 'test_save_evaluation_metrics'))
 
 
 if __name__ == '__main__':
