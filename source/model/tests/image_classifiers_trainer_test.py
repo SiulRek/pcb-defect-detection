@@ -205,7 +205,7 @@ class TestImageClassifiersTrainer(unittest.TestCase):
         trainer.fit_all(train_datasets=self.train_datasets, verbose=0, epochs=1)
         trainer.calculate_model_predictions(self.val_datasets)
         metrics = trainer.calculate_evaluation_metrics()
-        self.assertEqual(len(metrics), 4) # + mean and stdev
+        self.assertEqual(len(metrics), 7) # + mean and stdev
         self.assertEqual(len(metrics['group1']), 4)
         self.assertEqual(len(metrics['group2']), 4)
 

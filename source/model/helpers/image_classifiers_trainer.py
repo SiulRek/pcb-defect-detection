@@ -257,14 +257,21 @@ class ImageClassifiersTrainer():
             metrics = {group: visualizer.calculate_evaluation_metrics(average=average) for group, visualizer in self.visualizers.items()}
 
             first_group_metrics = next(iter(metrics.values()))
-            metrics['average'] = {}
-            metrics['std'] = {}
+            metrics[STATISTICS.MEAN.value] = {}
+            metrics[STATISTICS.STD.value] = {}
+            metrics[STATISTICS.MIN.value] = {}
+            metrics[STATISTICS.MAX.value] = {}
+            metrics[STATISTICS.MEDIAN.value] = {}
 
             for metric_name, _ in first_group_metrics.items():
                 metric_values = [metrics[group][metric_name] for group in self.group_names]
                 average_value = sum(metric_values) / len(metric_values)
-                metrics['average'][metric_name] = average_value
-                metrics['std'][metric_name] = sum([(value - average_value) ** 2 for value in metric_values]) / len(metric_values)
+                metrics[STATISTICS.MEAN.value][metric_name] = average_value
+                metrics[STATISTICS.STD.value][metric_name] = sum([(value - average_value) ** 2 for value in metric_values]) / len(metric_values)
+                metrics[STATISTICS.MIN.value][metric_name] = min(metric_values)
+                metrics[STATISTICS.MAX.value][metric_name] = max(metric_values)
+                metric_values.sort()
+                metrics[STATISTICS.MEDIAN.value][metric_name] = metric_values[len(metric_values) // 2]
             
             return metrics
 
@@ -285,7 +292,7 @@ class ImageClassifiersTrainer():
         first_group_metrics = next(iter(metrics.values()))
 
         metrics_header = '        ' + ',   '.join(first_group_metrics.keys()) + '\n\n'
-        metrics_lines = [f"{group}:   " + ',  '.join(f"{value:.2f}" for value in group_metrics.values()) for group, group_metrics in metrics.items()]
+        metrics_lines = [f"{group}:   " + ',  '.join(f"{value:.3f}" for value in group_metrics.values()) for group, group_metrics in metrics.items()]
         metrics_text = metrics_header + '\n'.join(metrics_lines)
 
         title = title if title is not None else '' 
@@ -367,3 +374,17 @@ class ImageClassifiersTrainer():
                 i += 1
                 path = os.path.join(dir, figure_name + SEP + f'{i}' + '.png')
             fig.savefig(path)
+    
+    # def save_results(self, root, experiment_name = 'experiment'):
+    #     """
+    #     Save the evaluation results to a pickle file.
+
+    #     Args:
+    #     - root (str): Root directory to save the results.
+    #     - experiment_name (str, optional): Name of the experiment. Default is 'experiment'.
+    #     """
+    #     dir = os.path.join(root, experiment_name)
+    #     os.makedirs(dir, exist_ok=True)
+    #     path = os.path.join(dir, RESULT_FILE_NAME)
+    #     with open(path, 'wb') as f:
+    #         pickle.dump(self.final_results, f)
