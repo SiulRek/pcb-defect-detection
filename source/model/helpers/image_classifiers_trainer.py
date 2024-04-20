@@ -347,7 +347,7 @@ class ImageClassifiersTrainer():
         fig.name = FIGURES.ROC_CURVE.value
         return fig
     
-    def save_all_figures(self, figures, root, experiment_name = 'experiment'):
+    def save_all_figures(self, figures, project_directory, experiment_name = 'experiment'):
         """
         Save all figures to a directory.
 
@@ -356,7 +356,7 @@ class ImageClassifiersTrainer():
         - root (str): Root directory to save the figures.
         - experiment_name (str, optional): Name of the experiment. Default is 'experiment'.
         """
-        dir = os.path.join(root, experiment_name)
+        dir = os.path.join(project_directory, experiment_name)
         os.makedirs(dir, exist_ok=True)
         true_figures = []
         for elem in figures:
@@ -376,15 +376,15 @@ class ImageClassifiersTrainer():
                 path = os.path.join(dir, figure_name + SEP + f'{i}' + '.png')
             fig.savefig(path)
     
-    def save_evaluation_metrics(self, root, experiment_name = 'experiment'):
+    def save_evaluation_metrics(self, project_directory, experiment_name = 'experiment'):
         """
         Save the evaluation results on test datasets of all models to a pickle file.
 
         Args:
-        - root (str): Root directory to save the results.
+        - root (str): Project directory to save the results.
         - experiment_name (str, optional): Name of the experiment. Default is 'experiment'.
         """
-        dir = os.path.join(root, experiment_name)
+        dir = os.path.join(project_directory, experiment_name)
         os.makedirs(dir, exist_ok=True)
         path = os.path.join(dir, RESULT_FILE_NAME)
         metrics = self.calculate_evaluation_metrics()

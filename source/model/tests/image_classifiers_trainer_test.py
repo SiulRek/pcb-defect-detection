@@ -257,7 +257,7 @@ class TestImageClassifiersTrainer(unittest.TestCase):
         figures.append(trainer.plot_all_results())
         figures.append(trainer.plot_model_summary())
 
-        trainer.save_all_figures(figures=figures, root=PLOTS_DIR, experiment_name='test_save_all_figures')
+        trainer.save_all_figures(figures=figures, project_directory=PLOTS_DIR, experiment_name='test_save_all_figures')
 
         expected_files = [
             os.path.join(
@@ -285,7 +285,7 @@ class TestImageClassifiersTrainer(unittest.TestCase):
         trainer.fit_all(train_datasets=self.train_datasets, verbose=0, epochs=1)
         trainer.calculate_model_predictions(self.val_datasets)
         expected_metrics = trainer.calculate_evaluation_metrics()
-        trainer.save_evaluation_metrics(root=PLOTS_DIR, experiment_name='test_save_evaluation_metrics')
+        trainer.save_evaluation_metrics(project_directory=PLOTS_DIR, experiment_name='test_save_evaluation_metrics')
 
         expected_file = os.path.join(PLOTS_DIR, 'test_save_evaluation_metrics', RESULT_FILE_NAME)
         self.assertTrue(os.path.exists(expected_file), f"File {expected_file} does not exist")
