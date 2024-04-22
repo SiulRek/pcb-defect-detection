@@ -7,7 +7,7 @@ import tensorflow as tf
 from matplotlib import pyplot as plt
 
 from source.model.helpers.image_classifiers_trainer import ImageClassifiersTrainer
-from source.utils.test_result_logger import TestResultLogger
+from source.utils import TestResultLogger
 from source.model.definitions.general import STRING_SEPARATOR as SEP
 from source.model.definitions.general import RESULT_FILE_NAME 
 from source.model.definitions.image_classifier import FIGURES

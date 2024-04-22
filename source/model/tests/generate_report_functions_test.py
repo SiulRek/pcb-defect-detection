@@ -2,7 +2,7 @@ import unittest
 import os
 import shutil
 import pickle
-from source.utils.test_result_logger import TestResultLogger
+from source.utils import TestResultLogger
 from source.model.helpers.generate_report_functions import get_experiments_data, sort_experiments_data
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
