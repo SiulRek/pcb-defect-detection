@@ -1,0 +1,153 @@
+{
+    "Adaptive Histogram Equalizer": {
+        "clip_limit": 4.0,
+        "tile_gridsize": [4,4]
+    },
+
+    "Global Histogram Equalizer": {},
+
+    "Gaussian Blur Filter": {
+        "kernel_size": [5,5],
+        "sigma": 0.3
+    },
+
+    "Median Blur Filter": {
+        "kernel_size": 5
+    },
+
+    "Bilateral Filter": {
+        "diameter": 9,
+        "sigma_color": 75.0,
+        "sigma_space": 75.0
+    },
+
+    "Average Blur Filter": {
+        "kernel_size": [8,8]
+    },
+
+    "Non Local Mean Denoiser": {
+        "h": 1.0,
+        "template_window_size": 7,
+        "search_window_size": 21
+    },
+
+    "RGB To Grayscale": {},
+
+    "Grayscale To RGB": {},
+
+    "Otsu Thresholding": {},
+
+    "Adaptive Thresholding": {
+        "block_size": 15,
+        "c": -2.0
+    },
+
+    "Binary Thresholding": {
+        "thresh": 128
+    },
+
+    "Truncated Thresholding": {
+        "thresh": 128
+    },
+
+    "Threshold to Zero": {
+        "thresh": 128
+    },
+
+    "Erosion Filter": {
+        "kernel_size": 3,
+        "iterations": 1
+    },
+
+    "Dilation Filter": {
+        "kernel_size": 3,
+        "iterations": 1
+    },
+
+    "Dilate Erode Sequencer": {
+        "kernel_size": 3,
+        "sequence": "de",
+        "iterations": -1,
+        "erosion_probability": 0.5
+    },
+
+    "Square Shape Padder": {
+        "padding_pixel_value": 0
+    },
+
+    "Shape Resizer": {
+        "desired_shape": [2000,2000],
+        "resize_method": "bilinear"
+    },
+
+    "Min Max Normalizer": {},
+
+    "Standard Normalizer": {},
+
+    "Mean Normalizer": {},
+
+    "Local Contrast Normalizer": {
+        "depth_radius": 5,
+        "bias": 1.0,
+        "alpha": 0.0001,
+        "beta": 0.75
+    },
+
+    "Reverse Scaler": {
+        "scale_factor": 255.0
+    },
+
+    "Type Caster": {
+        "output_dtype": "float16"
+    },
+    "Mirrorer": {
+        "mirror_direction": "horizontal"
+    },    
+    "Rotator": {
+        "angle": 90.0
+    },
+    "Random Rotator": {
+        "angle_range": [-90, 90],
+        "seed": 42
+    },
+    "Random Flipper": {
+        "flip_direction": "horizontal",
+        "seed": 42
+    },
+    "Gaussian Noise Injector": {
+        "mean": 0.0,
+        "sigma": 0.05,
+        "apply_clipping": true,
+        "seed": 42
+    },
+    "Random Color Jitterer": {
+        "brightness": 0.3,
+        "contrast": 0.3,
+        "saturation": 0.3,
+        "hue": 0.1,
+        "seed": 42
+    },
+    "Random Cropper": {
+        "crop_size": [256, 256],
+        "seed": 42
+    },
+    "Random Perspective Transformer": {
+        "warp_scale": 0.2,
+        "seed": 42
+    },
+    "Random Elastic Transformer": {
+        "alpha": 34,
+        "sigma": 4,
+        "seed": 42
+    },
+    "Random Sharpening": {
+        "min_intensity": 0.5,
+        "max_intensity": 2.0,
+        "seed": 42
+    },
+    "Dummy Step": {},
+    "Clipper": {
+        "min_value": 0.0,
+        "max_value": 1.0
+    }
+}

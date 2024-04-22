@@ -6,7 +6,7 @@ import os
 import unittest
 
 import source.utils.tests.test_runner as utils_tests
-import source.image_preprocessing.tests.test_runner as image_preprocessing_tests
+import source.preprocessing.tests.test_runner as image_preprocessing_tests
 from source.utils import SimplePopupHandler
 from source.utils import TestResultLogger
 

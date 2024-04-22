@@ -27,8 +27,8 @@ source/utils/test_result_logger.py
 **/*.tfrecord
 
 # Specific Source Files
-source/image_preprocessing/tests/outputs/
-source/image_preprocessing/notebooks/related/pipeline.json
+source/preprocessing/tests/outputs/
+source/preprocessing/notebooks/related/pipeline.json
 
 # Private References
 references/private/*
