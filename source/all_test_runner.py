@@ -1,5 +1,7 @@
 """
-This module is designed to facilitate the running of all unit tests across the various submodules of the PCB Defect Detection system. It uses Python's built-in unittest framework to run tests located in the 'tests' subdirectory of each module.
+This module is designed to facilitate the running of all unit tests across the various submodules of
+the PCB Defect Detection system. It uses Python's built-in unittest framework to run tests located 
+in the 'tests' subdirectory of each module.
 """
 
 import os
@@ -23,7 +25,8 @@ def run_tests():
     
     result = unittest.TextTestRunner(verbosity=2).run(test_suite)
     
-    num_passed_tests = result.testsRun - len(result.errors) - len(result.failures) - len(result.skipped)
+    num_passed_tests = (result.testsRun - len(result.errors) 
+                        - len(result.failures) - len(result.skipped))
     runned_tests = result.testsRun - len(result.skipped)
     
     if num_passed_tests == runned_tests:
@@ -37,7 +40,7 @@ def run_tests():
 
 if __name__ == '__main__':
 
-    os.makedirs(FILE_DIR, exist_ok=True)    
+    os.makedirs(FILE_DIR, exist_ok=True)
     TestResultLogger(LOG_FILE)
 
     message = run_tests()
