@@ -3,6 +3,10 @@ import tensorflow as tf
 
 from source.preprocessing.helpers.step_base import StepBase
 from source.preprocessing.helpers.step_class_mapping import STEP_CLASS_MAPPING
+from source.preprocessing.helpers.get_pipeline_code_representation import (
+    get_pipeline_code_representation
+)
+
 from source.utils import ClassInstancesSerializer
 from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
 from source.load_raw_data.pack_images_and_labels import pack_images_and_labels
@@ -165,20 +169,7 @@ class ImagePreprocessor:
         Returns:
             str: A string representation of the pipeline in a code-like format.
         """
-
-        if not self.pipeline:
-            return "[]"
-
-        repr = "[\n"
-        for step in self.pipeline:
-            q = "'"
-            items = step.parameters.items()
-            parameter_list = [f"{k}={q + v + q if isinstance(v, str) else v}" for k, v in items]
-            parameters = ", ".join(parameter_list)
-            step_repr = f"{step.__class__.__name__}({parameters})"
-            repr += f"    {step_repr},\n"
-        repr = repr[:-2] + "\n]"
-        return repr
+        return get_pipeline_code_representation(self.pipeline)
 
     def _consume_tf_dataset(self, tf_dataset):
         """

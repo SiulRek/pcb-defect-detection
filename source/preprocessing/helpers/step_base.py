@@ -5,6 +5,9 @@ import tensorflow as tf
 from source.preprocessing.helpers.step_utils import (
     correct_image_tensor_shape,
 )
+from source.preprocessing.helpers.get_step_json_representation import (
+    get_step_json_representation
+)
 
 
 class StepBase(ABC):
@@ -102,35 +105,15 @@ class StepBase(ABC):
         }
         return initialization_parameters
 
-    def _format_parameters(self, parameters):
-        """Formats the parameters dictionary into a string that can be added to a JSON file."""
-        formatted_items = []
-        for k, v in parameters.items():
-            if isinstance(v, str):
-                formatted_value = f'"{v}"'
-            else:
-                formatted_value = str(v).replace("True", "true").replace("False", "false")
-            formatted_item = f'        "{k}": {formatted_value}'
-            formatted_items.append(formatted_item)
-
-        parameters_str = ',\n'.join(formatted_items)
-        return parameters_str
-
     def get_step_json_representation(self):
         """
         Returns strings that corresponds to JSON entry text of the preprocessing step
         to be added to a JSON file.
-        """
-        # Convert datatype of values of parameters to match JSON format
-        conv_parameters = {}
-        for key, value in self._parameters.items():
-            if isinstance(value, tuple):
-                value = list(value)
-            conv_parameters[key] = value
 
-        parameters_str = self._format_parameters(conv_parameters)
-        json_string = f'    "{self.name}": {{\n{parameters_str}\n    }}'
-        return json_string
+        Returns:
+            str: The JSON representation of the preprocessing step.
+        """
+        return get_step_json_representation(self.parameters, self.name)
 
     @staticmethod
     def _tensor_pyfunc_wrapper(function):
