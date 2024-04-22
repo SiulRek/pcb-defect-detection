@@ -1,9 +1,9 @@
-""" This module contains tests for long image preprocessing pipelines. 
+""" This module contains tests for long image preprocessing pipelines.
 
-The task is to build large pipelines (not necessarily the most efficient ones) and 
-test them on a dataset. The purpose of these long pipeline tests is to apply a 
-preconfigured image preprocessing pipeline to a dataset and verify if any issues or 
-bugs occur during the processing. This helps build confidence in the framework's ability 
+The task is to build large pipelines (not necessarily the most efficient ones) and
+test them on a dataset. The purpose of these long pipeline tests is to apply a
+preconfigured image preprocessing pipeline to a dataset and verify if any issues or
+bugs occur during the processing. This helps build confidence in the framework's ability
 to handle complex pipelines without any issues."""
 
 import os
@@ -13,17 +13,17 @@ import random
 import tensorflow as tf
 
 from source.preprocessing.image_preprocessor import ImagePreprocessor
-from source.preprocessing.helpers.step_base import StepBase
-from source.preprocessing.helpers.step_class_mapping import STEP_CLASS_MAPPING
+from source.preprocessing.helpers.for_steps.step_base import StepBase
+from source.preprocessing.helpers.for_preprocessor.step_class_mapping import STEP_CLASS_MAPPING
 from source.load_raw_data.kaggle_dataset import load_tf_record
 from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
 from source.utils import TestResultLogger
-from source.preprocessing.helpers.class_instances_serializer import ClassInstancesSerializer
-from source.preprocessing.tests.copy_json_exclude_entries_test import copy_json_exclude_entries
+from source.preprocessing.helpers.for_preprocessor.class_instances_serializer import ClassInstancesSerializer
+from source.preprocessing.helpers.for_tests.copy_json_exclude_entries import copy_json_exclude_entries
 
 
 N = 10  # Number of Pipelines Tests to run.
-ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
+ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..','..')
 OUTPUT_DIR = os.path.join(ROOT_DIR, r'source/preprocessing/tests/outputs')
 JSON_TEMPLATE_FILE = os.path.join(ROOT_DIR, r'source/preprocessing/pipelines/template.json')
 JSON_TEST_FILE = os.path.join(OUTPUT_DIR, 'test_pipe.json')
@@ -45,34 +45,34 @@ class RGBToGrayscale(StepBase):
                 processed_image = tf.image.rgb_to_grayscale(image_tensor)
                 return processed_image
             return image_tensor
-        
+
 
 class TestLongPipeline(unittest.TestCase):
     """
-    This class is the base class for all the long pipeline tests. 
+    This class is the base class for all the long pipeline tests.
 
-    The goal of the long pipeline tests is to identify if issues occure or bugs appear during processing 
+    The goal of the long pipeline tests is to identify if issues occure or bugs appear during processing
     of long pipelines.
 
-    The class creates an image preprocessor with a preconfigured pipeline. The pipeline is constructed from 
-    a JSON template that contains all the image preprocessing steps of the framewor (some exclusions). The steps in the 
-    pipeline are shuffled randomly. The class includes a method called test_process_pipeline which applies 
-    the preprocessor to a dataset of images and verifies the output. If successful, it attempts to convert the processed 
-    dataset to grayscale and verifies the conversion as well. If the dataset is accurately converted to grayscale, it can be 
+    The class creates an image preprocessor with a preconfigured pipeline. The pipeline is constructed from
+    a JSON template that contains all the image preprocessing steps of the framewor (some exclusions). The steps in the
+    pipeline are shuffled randomly. The class includes a method called test_process_pipeline which applies
+    the preprocessor to a dataset of images and verifies the output. If successful, it attempts to convert the processed
+    dataset to grayscale and verifies the conversion as well. If the dataset is accurately converted to grayscale, it can be
     inferred that the pipeline has processed the dataset without any issues.
     """
     pipeline_id = None
 
     @classmethod
     def setUpClass(cls):
-        
+
         if not os.path.exists(OUTPUT_DIR):
             os.mkdir(OUTPUT_DIR)
-        
+
         kaggle_dataset = load_tf_record().take(9)        # To reduce testing time test cases share this attribute Do not change this attribute.
         cls.image_dataset = unpack_tf_dataset(kaggle_dataset)[0]
         cls.logger = TestResultLogger(LOG_FILE, f'Long Pipeline Test {cls.pipeline_id}')
-    
+
     def setUp(self):
         with open(JSON_TEST_FILE, 'a'):
             pass
@@ -86,9 +86,9 @@ class TestLongPipeline(unittest.TestCase):
 
     def create_preconfigured_image_preprocessor(self):
         excluded_keys  = [
-            "Non Local Mean Denoiser", 
-            "RGB To Grayscale", 
-            "Grayscale To RGB", 
+            "Non Local Mean Denoiser",
+            "RGB To Grayscale",
+            "Grayscale To RGB",
             "Local Contrast Normalizer",
             "Type Caster",
             "Random Color Jitterer"
@@ -116,17 +116,17 @@ class TestLongPipeline(unittest.TestCase):
         return True
 
     def test_process_pipeline(self):
-        
+
         try:
             processed_dataset = self.preprocessor.process(self.image_dataset)
         except Exception as e:
             raise BrokenPipeError('An exception occured while processing the dataset. This is the problematic pipeline: \n'
                        + self.preprocessor.get_pipe_code_representation()) from e
-        
+
         if not self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=3):
             message = 'The processed dataset has unexpected shapes. This is the problematic pipeline: \n' + self.preprocessor.get_pipe_code_representation()
             self.fail(message)
-        
+
         grayscaled_dataset = RGBToGrayscale().process_step(processed_dataset)
         if not self._verify_image_shapes(grayscaled_dataset, self.image_dataset, color_channel_expected=1):
             message = 'The processed dataset could not be converted to grayscale correctly. This is the problematic pipeline: \n' + self.preprocessor.get_pipe_code_representation()
@@ -136,7 +136,7 @@ class TestLongPipeline(unittest.TestCase):
 def load_long_pipeline_tests(n=N):
     """
     This function dynamically creates n classes inheriting from TestLongPipeline
-    and load them into a test suite. 
+    and load them into a test suite.
 
     Args:
     - n (int): Number of TestLongPipeline classes to create. Default to N.
@@ -150,7 +150,7 @@ def load_long_pipeline_tests(n=N):
         test_suites.append(test_suite)
 
     test_suite = unittest.TestSuite(test_suites)  # Combine the suites
-    
+
     return test_suite
 
 

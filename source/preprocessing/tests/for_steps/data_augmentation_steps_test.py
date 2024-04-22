@@ -1,6 +1,6 @@
 """
-This module dynamically creates and manages unittest classes for testing various data augmentation steps, with each class inheriting from `TestDataAugmentationStep`. 
-It utilizes dynamic class creation in Python to generate test cases for different data augmentation techniques. 
+This module dynamically creates and manages unittest classes for testing various data augmentation steps, with each class inheriting from `TestDataAugmentationStep`.
+It utilizes dynamic class creation in Python to generate test cases for different data augmentation techniques.
 This module allows some tests to be skipped based on configuration flags and focuses on evaluating the augmentation's effect on the image.
 
 Key Components:
@@ -17,7 +17,7 @@ from unittest import skip
 import tensorflow as tf
 
 import source.preprocessing.steps as steps
-from source.preprocessing.tests.single_step_test import TestSingleStep
+from source.preprocessing.tests.for_steps.single_step_test import TestSingleStep
 
 
 ENABLE_VISUAL_INSPECTION = True
@@ -33,28 +33,28 @@ def create_test_class_for_augmentation_step(augmentation_class, arguments):
             @skip("Visual inspection not enabled")
             def test_processed_image_visualization(self):
                 pass
-        
+
         if isinstance(augmentation_class(), steps.RandomCropper):
             def _verify_image_shapes(self, processed_images, original_images, color_channel_expected):
-                """ 
+                """
                 Helper method to verify the image dimensions and color channels in a processed dataset.
                 Compa
                 """
                 for processed_image in processed_images:
                     processed_data_shape = tuple(processed_image.shape[:2].as_list())
-                    self.assertEqual(processed_data_shape, self.parameters['crop_size'], 'heights and/or widths are not equal.') 
-                    self.assertEqual(color_channel_expected, processed_image.shape[2], 'Color channels are not equal.')     
+                    self.assertEqual(processed_data_shape, self.parameters['crop_size'], 'heights and/or widths are not equal.')
+                    self.assertEqual(color_channel_expected, processed_image.shape[2], 'Color channels are not equal.')
 
 
         def test_process_execution(self):
-            """ 
+            """
             Test to verify the execution of the data augmentation step.
 
             Tests if at least one image is processed by the augmentation step.
             """
             image_dataset = self.image_dataset
             processed_images = self.test_step.process_step(image_dataset)
-            for _ in processed_images.take(1):  
+            for _ in processed_images.take(1):
                 pass
             equal_flag = True
             for ori_img, prc_img in zip(image_dataset, processed_images):
@@ -87,11 +87,11 @@ augmentation_steps_data = [
 def load_data_augmentation_steps_tests():
     """
     Dynamically loads and aggregates individual test suites for multiple data augmentation steps into a unified test suite.
-    
-    This function iterates over a predefined list of data augmentation steps and their corresponding arguments. For each step, 
-    it dynamically creates a test class using `create_test_class_for_augmentation_step` and then loads the test cases from these 
+
+    This function iterates over a predefined list of data augmentation steps and their corresponding arguments. For each step,
+    it dynamically creates a test class using `create_test_class_for_augmentation_step` and then loads the test cases from these
     classes into individual test suites. These suites are then combined into a single comprehensive test suite.
-    
+
     Returns:
         unittest.TestSuite: A combined test suite that aggregates tests for multiple data augmentation step test classes.
     """
@@ -100,7 +100,7 @@ def load_data_augmentation_steps_tests():
     for step_data in augmentation_steps_data:
         test_class = create_test_class_for_augmentation_step(*step_data)
         test_suites.append(loader.loadTestsFromTestCase(test_class))
-    test_suite = unittest.TestSuite(test_suites) 
+    test_suite = unittest.TestSuite(test_suites)
     return test_suite
 
 

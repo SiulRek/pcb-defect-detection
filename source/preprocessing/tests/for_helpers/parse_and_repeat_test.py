@@ -1,8 +1,8 @@
 import os
 import unittest
 
-from source.preprocessing.helpers.parse_and_repeat import parse_and_repeat
-from source.utils.test_result_logger import TestResultLogger
+from source.preprocessing.helpers.for_preprocessor.parse_and_repeat import parse_and_repeat
+from source.utils import TestResultLogger
 
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..","..")
@@ -40,7 +40,7 @@ class TestParseAndRepeat(unittest.TestCase):
     def test_string_representation(self):
         self.assertEqual(parse_and_repeat("[''] + ['World', 'True']*2 + [['World', 'True']]*2"),
                          ["",'World', 'True','World', 'True',['World', 'True'], ['World', 'True']])
-    
+
     def test_dict_representation(self):
         self.assertEqual(parse_and_repeat("[{'key': 3}]*2 + [{'key': 1}]"),
                          [{'key': 3},{'key': 3},{'key': 1}])
@@ -58,7 +58,7 @@ class TestParseAndRepeat(unittest.TestCase):
             parse_and_repeat("3*6")
         with self.assertRaises(ValueError):
             parse_and_repeat("[3] +, [10]")
-        
+
     def test_invalid_literal(self):
         with self.assertRaises(ValueError):
             parse_and_repeat("[3] + 10]")

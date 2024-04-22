@@ -1,4 +1,4 @@
-""" This module contains all preprocessing steps that can be used in an image preprocessing 
+""" This module contains all preprocessing steps that can be used in an image preprocessing
 pipeline."""
 
 from source.preprocessing.steps.adaptive_histogram_equalization import AdaptiveHistogramEqualizer

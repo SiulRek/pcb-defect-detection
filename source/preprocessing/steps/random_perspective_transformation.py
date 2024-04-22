@@ -3,8 +3,8 @@ import numpy as np
 import random
 import cv2
 
-from source.preprocessing.helpers.step_base import StepBase
-from source.preprocessing.helpers.step_utils import correct_image_tensor_shape
+from source.preprocessing.helpers.for_steps.step_base import StepBase
+from source.preprocessing.helpers.for_steps.step_utils import correct_image_tensor_shape
 
 
 class RandomPerspectiveTransformer(StepBase):

@@ -1,13 +1,10 @@
 from copy import deepcopy
 import tensorflow as tf
 
-from source.preprocessing.helpers.step_base import StepBase
-from source.preprocessing.helpers.step_class_mapping import STEP_CLASS_MAPPING
-from source.preprocessing.helpers.get_pipeline_code_representation import (
-    get_pipeline_code_representation
-)
-
-from source.preprocessing.helpers.class_instances_serializer import ClassInstancesSerializer
+from source.preprocessing.helpers.for_steps.step_base import StepBase
+from source.preprocessing.helpers.for_preprocessor.step_class_mapping import STEP_CLASS_MAPPING
+from source.preprocessing.helpers.for_preprocessor.get_pipeline_code_representation import get_pipeline_code_representation
+from source.preprocessing.helpers.for_preprocessor.class_instances_serializer import ClassInstancesSerializer
 from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
 from source.load_raw_data.pack_images_and_labels import pack_images_and_labels
 

@@ -3,10 +3,10 @@
 import unittest
 from unittest.mock import patch
 
-from source.preprocessing.helpers.step_base import StepBase
+from source.preprocessing.helpers.for_steps.step_base import StepBase
 from source.preprocessing.steps import AdaptiveHistogramEqualizer as ExampleStep
 from source.preprocessing.tests.multiple_steps_test import create_test_class_for_step
-from source.preprocessing.tests.single_step_test import TestSingleStep
+from source.preprocessing.tests.for_steps.single_step_test import TestSingleStep
 
 
 class TestTestFramework(unittest.TestCase):

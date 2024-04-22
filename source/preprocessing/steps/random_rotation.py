@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import random
 
-from source.preprocessing.helpers.step_base import StepBase
+from source.preprocessing.helpers.for_steps.step_base import StepBase
 
 
 class RandomRotator(StepBase):

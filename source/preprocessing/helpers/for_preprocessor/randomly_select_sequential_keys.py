@@ -32,23 +32,24 @@ def remove_second_group(s, pattern):
     - pattern (Pattern): The compiled regular expression pattern with at least two groups.
 
     Returns:
-    - (str): Modified string with the second group content removed, or the original string if no match is found.
+    - (str): Modified string with the second group content removed, or the original string if no
+        match is found.
     """
     match = pattern.search(s)
     if not match:
         return s
 
     def replace_with_first_and_third_group(match):
-        return match.group(1) + match.group(3) 
+        return match.group(1) + match.group(3)
 
     return pattern.sub(replace_with_first_and_third_group, s)
 
 
 def randomly_select_sequential_keys(input_dict, separator='__'):
     """
-    Randomly selects keys from a dictionary that follow a specific sequential pattern. The pattern is defined by a separator
-      followed by 'I' and a number, optionally followed by 'F' and another number. The function selects keys based on their 
-      indices and frequencies, if specified.
+    Randomly selects keys from a dictionary that follow a specific sequential pattern. The pattern
+    is defined by a separator followed by 'I' and a number, optionally followed by 'F' and
+    another number. The function selects keys based on their indices and frequencies, if specified.
 
     Args:
     - input_dict (dict): The input dictionary containing keys to be selected.
@@ -57,11 +58,12 @@ def randomly_select_sequential_keys(input_dict, separator='__'):
     Returns:
     - (dict): A new dictionary containing randomly selected keys and their corresponding values.
 
-    The function first checks if each key matches either the index pattern (e.g., '__I1') or the frequency pattern 
-    (e.g., '__I1F2'). If all keys match one of these patterns, the function then extracts the indices from the keys 
-    and checks if they form a sequential series starting from 0. Afterward, it randomly selects one key per index, 
-    considering the frequency of keys where specified. The selected keys are then processed to remove the pattern, preserving 
-    the parts of the key without the specific sequential pattern.
+    The function first checks if each key matches either the index pattern (e.g., '__I1') or the
+    frequency pattern (e.g., '__I1F2'). If all keys match one of these patterns, the function then
+    extracts the indices from the keys and checks if they form a sequential series starting from 0.
+    Afterward, it randomly selects one key per index, considering the frequency of keys where
+    specified. The selected keys are then processed to remove the pattern, preserving the parts of
+    the key without the specific sequential pattern.
     """
 
     end_pattern = rf'($|{re.escape(separator)}\S+)'
@@ -70,8 +72,10 @@ def randomly_select_sequential_keys(input_dict, separator='__'):
     ind_key_pattern_end = re.compile(rf'(.*?){re.escape(separator)}I(\d+){end_pattern}')
     freq_key_pattern = re.compile(rf'(.*?){re.escape(separator)}I\d+F(\d+){end_pattern}')
     freq_key_pattern_all_groups = re.compile(rf'(.*?)({re.escape(separator)}I\d+F\d+){end_pattern}')
-
-    match_flags = [matches_pattern(key, ind_key_pattern_end) or matches_pattern(key, freq_key_pattern) for key in input_dict]
+    match_flags = []
+    for key in input_dict:
+        match = matches_pattern(key, ind_key_pattern_end) or matches_pattern(key, freq_key_pattern)
+        match_flags.append(match)
     if not any(match_flags):
         return input_dict
 
@@ -85,7 +89,8 @@ def randomly_select_sequential_keys(input_dict, separator='__'):
 
     output_dict = {}
     for index in unique_sorted_indices:
-        temp_keys = filter_keys_by_pattern(input_dict, re.compile(rf'.*{re.escape(separator)}I{index}(F\d+|{end_pattern})'))
+        compiled_pattern = re.compile(rf'.*{re.escape(separator)}I{index}(F\d+|{end_pattern})')
+        temp_keys = filter_keys_by_pattern(input_dict, compiled_pattern)
         keys = []
         for key in temp_keys:
             if match := freq_key_pattern.match(key):

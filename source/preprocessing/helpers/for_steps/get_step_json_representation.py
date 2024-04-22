@@ -19,7 +19,7 @@ def get_step_json_representation(parameters, step_name):
     Args:
         parameters (dict): The parameters of the preprocessing step.
         step_name (str): The name of the preprocessing step.
-    
+
     Returns:
         str: The JSON representation of the preprocessing step.
     """

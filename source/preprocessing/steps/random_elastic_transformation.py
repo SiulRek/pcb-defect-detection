@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-from source.preprocessing.helpers.step_base import StepBase
+from source.preprocessing.helpers.for_steps.step_base import StepBase
 
 
 class RandomElasticTransformer(StepBase):

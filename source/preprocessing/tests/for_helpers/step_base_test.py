@@ -6,12 +6,12 @@ import cv2
 
 from source.load_raw_data.kaggle_dataset import load_tf_record
 from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
-from source.preprocessing.helpers.step_base import StepBase
-from source.preprocessing.helpers.step_utils import correct_image_tensor_shape
+from source.preprocessing.helpers.for_steps.step_base import StepBase
+from source.preprocessing.helpers.for_steps.step_utils import correct_image_tensor_shape
 from source.utils import TestResultLogger
 
 
-ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
+ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..','..')
 OUTPUT_DIR = os.path.join(ROOT_DIR, r'source/preprocessing/tests/outputs')
 LOG_FILE = os.path.join(OUTPUT_DIR, 'test_results.log')
 
@@ -20,7 +20,7 @@ class TfTestStep(StepBase):
 
     arguments_datatype = {'param1': int, 'param2':(int,int), 'param3':bool}
     name = 'Test_Step'
-    
+
     def __init__(self, param1=10 , param2=(10,10), param3=True):
         super().__init__(locals())
 
@@ -31,10 +31,10 @@ class TfTestStep(StepBase):
         return image_grayscale_tensor
 
 class PyTestStep(StepBase):
-    
+
     arguments_datatype = {'param1': int, 'param2':(int,int), 'param3':bool}
     name = 'Test_Step'
-    
+
     def __init__(self, param1=10 , param2=(10,10), param3=True):
         super().__init__(locals())
 
@@ -46,11 +46,11 @@ class PyTestStep(StepBase):
         processed_img = (image_grayscale_tensor.numpy()).astype('uint8')
         return (processed_img)
      # Note in real usage conversion of np.array to tensor and viceversa in one process_step is not recommended.
-    
+
 
 class TestStepBase(unittest.TestCase):
     """    Test suite for validating the functionality of the preprocessing steps parent class `StepBase` in the image preprocessing module.
-    
+
     This test suite is designed to validate the `StepBase` class, focusing on the correct initialization and functionality of both TensorFlow and Python-based preprocessing steps. It incorporates tests for image shape transformations, object equality logic, JSON representation of steps, wrapper functions for processing image data and output datatype handling. The suite employs TfTestStep and PyTestStep for transforming images from RGB to grayscale, a process chosen for its straightforward verification of step effectiveness. This transformation serves as a reliable indicator; if these steps work correctly, it's likely that other steps with a similar structure will function effectively as well.
     """
 
@@ -61,7 +61,7 @@ class TestStepBase(unittest.TestCase):
         kaggle_dataset = load_tf_record().take(9)
         cls.image_dataset = unpack_tf_dataset(kaggle_dataset)[0]
         cls.logger = TestResultLogger(LOG_FILE, 'Step Base Test')
-    
+
     def setUp(self):
         self.local_vars = {'param1': 10, 'param2': (10,10), 'param3': True}
         self.tf_preprocessing_step = TfTestStep(**self.local_vars)
@@ -73,8 +73,8 @@ class TestStepBase(unittest.TestCase):
     def _verify_image_shapes(self, processed_images, original_images, color_channel_expected):
         for original_image, processed_image in zip(original_images, processed_images):
             self.assertEqual(processed_image.shape[:1], original_image.shape[:1]) # Check if height and width are equal.
-            self.assertEqual(color_channel_expected, processed_image.shape[2])   
-        
+            self.assertEqual(color_channel_expected, processed_image.shape[2])
+
     def test_initialization(self):
         self.assertEqual(self.tf_preprocessing_step.name, "Test_Step")
         self.assertEqual(self.tf_preprocessing_step.parameters, {'param1': 10, 'param2': (10,10), 'param3': True})
@@ -91,12 +91,12 @@ class TestStepBase(unittest.TestCase):
         image_rgb_tensor = tf.image.grayscale_to_rgb(image_grayscale_tensor)
         reshaped_image = correct_image_tensor_shape(image_rgb_tensor)
         self.assertEqual(reshaped_image.shape, image_tensor.shape)
-    
+
     def _remove_new_lines_and_spaces(self, string):
         string = string.replace('\n','')
         string = string.replace(' ','')
         return string
-    
+
     def test_get_step_json_representation(self):
         json_repr_output = self.tf_preprocessing_step.get_step_json_representation()
         json_repr_expected = '"Test_Step": {"param1": 10, "param2": [10,10], "param3": true}'
@@ -137,8 +137,8 @@ class TestStepBase(unittest.TestCase):
         # Check if 'default_output_datatypes' in 'StepBase' remains unchanged, when Child Class changes 'output_datatypes' attribute.
         tf_preprocessing_step.output_datatype = tf.uint8
         self.assertEqual(StepBase.default_output_datatype, tf.float16)
-        StepBase.default_output_datatype = image_datatype_kept 
-    
+        StepBase.default_output_datatype = image_datatype_kept
+
     def test_equal_objects(self):
         self.assertEqual(self.py_preprocessing_step, self.tf_preprocessing_step)
 

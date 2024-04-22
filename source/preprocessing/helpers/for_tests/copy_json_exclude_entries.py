@@ -18,4 +18,3 @@ def copy_json_exclude_entries(source_file, dest_file, exclude_keys):
 
     with open(dest_file, 'w') as file:
         json.dump(data, file, indent=4)
-
