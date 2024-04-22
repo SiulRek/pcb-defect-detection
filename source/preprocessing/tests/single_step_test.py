@@ -18,16 +18,16 @@ from unittest.mock import patch
 import tensorflow as tf
 
 from source.preprocessing.image_preprocessor import ImagePreprocessor
-from source.preprocessing.preprocessing_steps.step_base import StepBase
-from source.preprocessing.preprocessing_steps.step_utils import correct_image_tensor_shape
-from source.preprocessing.preprocessing_steps.step_class_mapping import STEP_CLASS_MAPPING
+from source.preprocessing.helpers.step_base import StepBase
+from source.preprocessing.helpers.step_utils import correct_image_tensor_shape
+from source.preprocessing.helpers.step_class_mapping import STEP_CLASS_MAPPING
 from source.load_raw_data.kaggle_dataset import load_tf_record
 from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
 from source.utils import recursive_type_conversion,  PCBVisualizerforTF
 from source.utils import SimplePopupHandler, TestResultLogger
 
 #TODO Select Step to test here!
-from source.preprocessing.preprocessing_steps import Rotator as StepToTest
+from source.preprocessing.steps import Rotator as StepToTest
 STEP_PARAMETERS = {"angle": 180}
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')

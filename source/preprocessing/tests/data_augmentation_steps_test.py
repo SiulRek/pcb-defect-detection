@@ -16,7 +16,7 @@ from unittest import skip
 
 import tensorflow as tf
 
-import source.preprocessing.preprocessing_steps as steps
+import source.preprocessing.steps as steps
 from source.preprocessing.tests.single_step_test import TestSingleStep
 
 

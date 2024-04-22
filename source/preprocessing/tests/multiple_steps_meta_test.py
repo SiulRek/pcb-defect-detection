@@ -3,8 +3,8 @@
 import unittest
 from unittest.mock import patch
 
-from source.preprocessing.preprocessing_steps.step_base import StepBase
-from source.preprocessing.preprocessing_steps import AdaptiveHistogramEqualizer as ExampleStep
+from source.preprocessing.helpers.step_base import StepBase
+from source.preprocessing.steps import AdaptiveHistogramEqualizer as ExampleStep
 from source.preprocessing.tests.multiple_steps_test import create_test_class_for_step
 from source.preprocessing.tests.single_step_test import TestSingleStep
 

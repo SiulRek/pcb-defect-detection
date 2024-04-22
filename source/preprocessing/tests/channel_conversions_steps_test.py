@@ -4,8 +4,8 @@ preprocessing steps within an image preprocessing pipeline. """
 import unittest
 from unittest import skip
 
-from source.preprocessing.preprocessing_steps import GrayscaleToRGB
-from source.preprocessing.preprocessing_steps import RGBToGrayscale
+from source.preprocessing.steps import GrayscaleToRGB
+from source.preprocessing.steps import RGBToGrayscale
 
 from source.preprocessing.image_preprocessor import ImagePreprocessor
 from source.preprocessing.tests.single_step_test import TestSingleStep

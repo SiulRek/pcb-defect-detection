@@ -13,8 +13,8 @@ import random
 import tensorflow as tf
 
 from source.preprocessing.image_preprocessor import ImagePreprocessor
-from source.preprocessing.preprocessing_steps.step_base import StepBase
-from source.preprocessing.preprocessing_steps.step_class_mapping import STEP_CLASS_MAPPING
+from source.preprocessing.helpers.step_base import StepBase
+from source.preprocessing.helpers.step_class_mapping import STEP_CLASS_MAPPING
 from source.load_raw_data.kaggle_dataset import load_tf_record
 from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
 from source.utils import TestResultLogger, copy_json_exclude_entries, ClassInstancesSerializer

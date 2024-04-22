@@ -1,8 +1,8 @@
 from copy import deepcopy
 import tensorflow as tf
 
-from source.preprocessing.preprocessing_steps.step_base import StepBase
-from source.preprocessing.preprocessing_steps.step_class_mapping import STEP_CLASS_MAPPING
+from source.preprocessing.helpers.step_base import StepBase
+from source.preprocessing.helpers.step_class_mapping import STEP_CLASS_MAPPING
 from source.utils import ClassInstancesSerializer
 from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
 from source.load_raw_data.pack_images_and_labels import pack_images_and_labels
