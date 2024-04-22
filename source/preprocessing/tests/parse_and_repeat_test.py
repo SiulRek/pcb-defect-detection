@@ -1,12 +1,12 @@
 import os
 import unittest
 
-from source.utils import parse_and_repeat
+from source.preprocessing.helpers.parse_and_repeat import parse_and_repeat
 from source.utils.test_result_logger import TestResultLogger
 
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..","..")
-OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/utils/tests/outputs")
+OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/preprocessing/tests/outputs")
 LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
 
 

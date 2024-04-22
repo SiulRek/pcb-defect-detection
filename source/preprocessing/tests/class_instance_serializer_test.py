@@ -2,12 +2,12 @@ import unittest
 import os
 import json
 
-from source.utils.class_instances_serializer import ClassInstancesSerializer
+from source.preprocessing.helpers.class_instances_serializer import ClassInstancesSerializer
 from source.utils.test_result_logger import TestResultLogger
 
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
-OUTPUT_DIR = os.path.join(ROOT_DIR, r'source/utils/tests/outputs')
+OUTPUT_DIR = os.path.join(ROOT_DIR, r'source/preprocessing/tests/outputs')
 LOG_FILE = os.path.join(OUTPUT_DIR, 'test_results.log')
 
 

@@ -2,12 +2,12 @@ import os
 import re
 import unittest
 
-from source.utils.randomly_select_sequential_keys import randomly_select_sequential_keys, is_sequential  
+from source.preprocessing.helpers.randomly_select_sequential_keys import randomly_select_sequential_keys, is_sequential  
 from source.utils.test_result_logger import TestResultLogger
 
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
-OUTPUT_DIR = os.path.join(ROOT_DIR, r'source/utils/tests/outputs')
+OUTPUT_DIR = os.path.join(ROOT_DIR, r'source/preprocessing/tests/outputs')
 LOG_FILE = os.path.join(OUTPUT_DIR, 'test_results.log')
 
 

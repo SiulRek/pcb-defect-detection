@@ -1,9 +1,8 @@
 import os
 import unittest
+from unittest import defaultTestLoader as Loader
 
-from source.utils.tests import get_sample_from_distribution_test, recursive_type_conversion_test
-from source.utils.tests import class_instance_serializer_test, parse_and_repeat_test, copy_json_exclude_entries_test
-from source.utils.tests import randomly_select_sequential_keys_test
+from source.utils.tests import get_sample_from_distribution_test
 
 from source.utils.test_result_logger import TestResultLogger
 
@@ -14,12 +13,7 @@ LOG_FILE = os.path.join(OUTPUT_DIR, 'test_results.log')
 
 
 def load_tests(test_suite):
-    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(get_sample_from_distribution_test))
-    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(recursive_type_conversion_test))
-    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(class_instance_serializer_test))
-    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(parse_and_repeat_test))
-    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(copy_json_exclude_entries_test))
-    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(randomly_select_sequential_keys_test))
+    test_suite.addTest(Loader.loadTestsFromModule(get_sample_from_distribution_test))
     return test_suite
 
 if __name__ == '__main__':

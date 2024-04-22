@@ -1,13 +1,25 @@
 import unittest
 import os
+from unittest import defaultTestLoader as Loader
 
 from source.preprocessing.tests import image_preprocessing_test, step_base_test
-from source.preprocessing.tests.channel_conversions_steps_test import load_channel_conversion_steps_tests
-from source.preprocessing.tests.multiple_steps_test import load_multiple_steps_tests
-from source.preprocessing.tests.resize_operations_steps_test import load_resize_operations_steps_tests
 from source.preprocessing.tests.long_pipeline_test import load_long_pipeline_tests
-from source.preprocessing.tests.data_augmentation_steps_test import load_data_augmentation_steps_tests
+from source.preprocessing.tests.multiple_steps_test import load_multiple_steps_tests
+from source.preprocessing.tests.channel_conversions_steps_test import (
+    load_channel_conversion_steps_tests
+)
+from source.preprocessing.tests.resize_operations_steps_test import (
+    load_resize_operations_steps_tests
+)
+from source.preprocessing.tests.data_augmentation_steps_test import (
+    load_data_augmentation_steps_tests
+)
 from source.utils.test_result_logger import TestResultLogger
+from source.preprocessing.tests import copy_json_exclude_entries_test
+from source.preprocessing.tests import recursive_type_conversion_test
+from source.preprocessing.tests import randomly_select_sequential_keys_test
+from source.preprocessing.tests import parse_and_repeat_test
+from source.preprocessing.tests import class_instance_serializer_test
 
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
@@ -17,10 +29,12 @@ LOG_FILE = os.path.join(OUTPUT_DIR, 'test_results.log')
 
 def load_tests(test_suite):
     """
-    Populates the given test suite with a series of test cases from the image preprocessing testing framework.
+    Populates the given test suite with a series of test cases from the image preprocessing testing 
+    framework.
 
-    This function aggregates tests from different aspects of the image preprocessing pipeline. It includes basic tests,
-    tests for multiple steps, specific channel conversion tests, and general image preprocessing tests. 
+    This function aggregates tests from different aspects of the image preprocessing pipeline. It 
+    includes basic tests, tests for multiple steps, specific channel conversion tests, and general 
+    image preprocessing tests. 
 
     Args:
         test_suite (unittest.TestSuite): The test suite to which the tests will be added.
@@ -28,8 +42,12 @@ def load_tests(test_suite):
     Returns:
         unittest.TestSuite: The test suite populated with a range of tests from different modules.
     """
-    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(image_preprocessing_test))
-    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(step_base_test))
+    test_suite.addTest(Loader.loadTestsFromModule(copy_json_exclude_entries_test))
+    test_suite.addTest(Loader.loadTestsFromModule(recursive_type_conversion_test))
+    test_suite.addTest(Loader.loadTestsFromModule(randomly_select_sequential_keys_test))
+    test_suite.addTest(Loader.loadTestsFromModule(parse_and_repeat_test))
+    test_suite.addTest(Loader.loadTestsFromModule(step_base_test))
+    test_suite.addTest(Loader.loadTestsFromModule(image_preprocessing_test))
     test_suite.addTest(load_multiple_steps_tests())
     test_suite.addTest(load_channel_conversion_steps_tests())
     test_suite.addTest(load_resize_operations_steps_tests())

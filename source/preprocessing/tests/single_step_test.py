@@ -20,10 +20,11 @@ import tensorflow as tf
 from source.preprocessing.image_preprocessor import ImagePreprocessor
 from source.preprocessing.helpers.step_base import StepBase
 from source.preprocessing.helpers.step_utils import correct_image_tensor_shape
+from source.preprocessing.helpers.recursive_type_conversion import recursive_type_conversion
 from source.preprocessing.helpers.step_class_mapping import STEP_CLASS_MAPPING
 from source.load_raw_data.kaggle_dataset import load_tf_record
 from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
-from source.utils import recursive_type_conversion,  PCBVisualizerforTF
+from source.utils import PCBVisualizerforTF
 from source.utils import SimplePopupHandler, TestResultLogger
 
 #TODO Select Step to test here!

@@ -3,10 +3,10 @@ import re
 import json
 import random
 
-from source.utils.recursive_type_conversion import recursive_type_conversion
+from source.preprocessing.helpers.recursive_type_conversion import recursive_type_conversion
 from source.utils.get_sample_from_distribution import get_sample_from_distribution
-from source.utils.parse_and_repeat import parse_and_repeat
-from source.utils.randomly_select_sequential_keys import randomly_select_sequential_keys
+from source.preprocessing.helpers.parse_and_repeat import parse_and_repeat
+from source.preprocessing.helpers.randomly_select_sequential_keys import randomly_select_sequential_keys
 
 class ClassInstancesSerializer:
     """

@@ -17,7 +17,9 @@ from source.preprocessing.helpers.step_base import StepBase
 from source.preprocessing.helpers.step_class_mapping import STEP_CLASS_MAPPING
 from source.load_raw_data.kaggle_dataset import load_tf_record
 from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
-from source.utils import TestResultLogger, copy_json_exclude_entries, ClassInstancesSerializer
+from source.utils import TestResultLogger
+from source.preprocessing.helpers.class_instances_serializer import ClassInstancesSerializer
+from source.preprocessing.tests.copy_json_exclude_entries_test import copy_json_exclude_entries
 
 
 N = 10  # Number of Pipelines Tests to run.

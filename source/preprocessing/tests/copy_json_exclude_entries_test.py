@@ -3,12 +3,12 @@ import json
 import os
 
 
-from source.utils.copy_json_exclude_entries import copy_json_exclude_entries
+from source.preprocessing.helpers.copy_json_exclude_entries import copy_json_exclude_entries
 from source.utils.test_result_logger import TestResultLogger
 
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..')
-OUTPUT_DIR = os.path.join(ROOT_DIR, r'source/utils/tests/outputs')
+OUTPUT_DIR = os.path.join(ROOT_DIR, r'source/preprocessing/tests/outputs')
 LOG_FILE = os.path.join(OUTPUT_DIR, 'test_results.log')
 
 
@@ -16,9 +16,12 @@ class TestCopyJsonExcludeEntries(unittest.TestCase):
     """ Test cases for the copy_json_exclude_entries function.
     
     The Test Suite contains the following test cases:
-    - test_copy_json_exclude_entries: Tests the copy_json_exclude_entries function with a non-empty exclude_keys list.
-    - test_copy_json_exclude_entries_empty_exclude_keys: Tests the copy_json_exclude_entries function with an empty exclude_keys list.
-    - test_copy_json_exclude_entries_not_existing_key: Tests the copy_json_exclude_entries function with a non-existing key in the exclude_keys list.
+    - test_copy_json_exclude_entries: Tests the copy_json_exclude_entries function with a non-empty 
+        exclude_keys list.
+    - test_copy_json_exclude_entries_empty_exclude_keys: Tests the copy_json_exclude_entries 
+        function with an empty exclude_keys list.
+    - test_copy_json_exclude_entries_not_existing_key: Tests the copy_json_exclude_entries function 
+        with a non-existing key in the exclude_keys list.
     """
     @classmethod
     def setUpClass(cls):
