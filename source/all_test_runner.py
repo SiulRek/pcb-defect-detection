@@ -9,6 +9,7 @@ import unittest
 
 import source.utils.tests.test_runner as utils_tests
 import source.preprocessing.tests.test_runner as image_preprocessing_tests
+import source.data_handling.tests.test_runner as data_handling_tests
 from source.utils import SimplePopupHandler
 from source.utils import TestResultLogger
 
@@ -22,6 +23,7 @@ def run_tests():
     # Load tests from test modules
     test_suite = utils_tests.load_tests(test_suite)
     test_suite = image_preprocessing_tests.load_tests(test_suite)
+    test_suite = data_handling_tests.load_tests(test_suite)
 
     result = unittest.TextTestRunner(verbosity=2).run(test_suite)
 
