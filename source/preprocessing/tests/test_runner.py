@@ -52,6 +52,7 @@ def load_tests(test_suite):
     test_suite.addTest(Loader.loadTestsFromModule(copy_json_exclude_entries_test))
     test_suite.addTest(Loader.loadTestsFromModule(recursive_type_conversion_test))
     test_suite.addTest(Loader.loadTestsFromModule(randomly_select_sequential_keys_test))
+    test_suite.addTest(Loader.loadTestsFromModule(class_instance_serializer_test))
     test_suite.addTest(Loader.loadTestsFromModule(parse_and_repeat_test))
     test_suite.addTest(Loader.loadTestsFromModule(step_base_test))
     test_suite.addTest(Loader.loadTestsFromModule(image_preprocessing_test))
