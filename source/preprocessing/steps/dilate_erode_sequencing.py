@@ -11,11 +11,18 @@ class DilateErodeSequencer(StepBase):
     This class can automatically generate an operation sequence based on the provided iterations
     and erosion probability.
     """
-    arguments_datatype = {'kernel_size': int, 'sequence': str,
-                          'iterations': int, 'erosion_probability': float}
-    name = 'Dilate Erode Sequencer'
 
-    def __init__(self, kernel_size=3, sequence='de', iterations=-1, erosion_probability=0.5):
+    arguments_datatype = {
+        "kernel_size": int,
+        "sequence": str,
+        "iterations": int,
+        "erosion_probability": float,
+    }
+    name = "Dilate Erode Sequencer"
+
+    def __init__(
+        self, kernel_size=3, sequence="de", iterations=-1, erosion_probability=0.5
+    ):
         """
         Initializes the DilateErodeSequencer object. If iterations are positive and the
         erosion probability is within a valid range (0 to 1), it automatically creates an operation
@@ -34,10 +41,10 @@ class DilateErodeSequencer(StepBase):
         sequence = self.generate_sequence(sequence, iterations, erosion_probability)
 
         parameters = {
-            'kernel_size': kernel_size,
-            'sequence': sequence,
-            'iterations': iterations,
-            'erosion_probability': erosion_probability
+            "kernel_size": kernel_size,
+            "sequence": sequence,
+            "iterations": iterations,
+            "erosion_probability": erosion_probability,
         }
 
         super().__init__(parameters)
@@ -55,8 +62,10 @@ class DilateErodeSequencer(StepBase):
             str: The generated sequence of operations.
         """
         if iterations > 1:
-            operations = [self._choose_operation(erosion_probability) for _ in range(iterations)]
-            random_sequence = ''.join(operations)
+            operations = [
+                self._choose_operation(erosion_probability) for _ in range(iterations)
+            ]
+            random_sequence = "".join(operations)
             return random_sequence
         return sequence
 
@@ -71,7 +80,7 @@ class DilateErodeSequencer(StepBase):
         Returns:
             str: 'd' for dilation or 'e' for erosion.
         """
-        return 'e' if random.random() < erosion_probability else 'd'
+        return "e" if random.random() < erosion_probability else "d"
 
     @StepBase._nparray_pyfunc_wrapper
     def process_step(self, image_nparray):
@@ -84,16 +93,20 @@ class DilateErodeSequencer(StepBase):
         Returns:
             np.array: The processed image.
         """
-        kernel = np.ones((self.parameters['kernel_size'], self.parameters['kernel_size']), np.uint8)
+        kernel = np.ones(
+            (self.parameters["kernel_size"], self.parameters["kernel_size"]), np.uint8
+        )
         processed_image = image_nparray
 
-        for operation in self.parameters['sequence']:
-            if operation == 'd':
-                processed_image = cv2.dilate(processed_image, kernel,
-                                                iterations=self.parameters['iterations'])
-            elif operation == 'e':
-                processed_image = cv2.erode(processed_image, kernel,
-                                             iterations=self.parameters['iterations'])
+        for operation in self.parameters["sequence"]:
+            if operation == "d":
+                processed_image = cv2.dilate(
+                    processed_image, kernel, iterations=self.parameters["iterations"]
+                )
+            elif operation == "e":
+                processed_image = cv2.erode(
+                    processed_image, kernel, iterations=self.parameters["iterations"]
+                )
             else:
                 msg = "Invalid operation in sequence."
                 msg += "Only 'd' (dilation) and 'e' (erosion) are allowed."
@@ -102,6 +115,6 @@ class DilateErodeSequencer(StepBase):
         return processed_image
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     step = DilateErodeSequencer()
     print(step.get_step_json_representation())

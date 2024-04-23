@@ -11,8 +11,9 @@ class StandardNormalizer(StepBase):
 
     Note: The data type of the output image tensor is tf.float16.
     """
+
     arguments_datatype = {}
-    name = 'Standard Normalizer'
+    name = "Standard Normalizer"
 
     def __init__(self):
         """Initializes the StandardNormalizer object for integration into an image preprocessing
@@ -29,6 +30,6 @@ class StandardNormalizer(StepBase):
         return normalized_image
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     step = StandardNormalizer()
     print(step.get_step_json_representation())

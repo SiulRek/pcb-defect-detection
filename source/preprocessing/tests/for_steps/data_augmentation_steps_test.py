@@ -11,6 +11,7 @@ Key Components:
 Note:
     - This module accommodates variations in data augmentation steps, recognizing that not all test cases in `TestDataAugmentationStep` are universally applicable. Certain augmentations may necessitate customized modifications to the standard test cases, reflecting the diverse nature of image augmentation challenges.
 """
+
 import unittest
 from unittest import skip
 
@@ -30,21 +31,32 @@ def create_test_class_for_augmentation_step(augmentation_class, arguments):
         parameters = arguments
 
         if not ENABLE_VISUAL_INSPECTION:
+
             @skip("Visual inspection not enabled")
             def test_processed_image_visualization(self):
                 pass
 
         if isinstance(augmentation_class(), steps.RandomCropper):
-            def _verify_image_shapes(self, processed_images, original_images, color_channel_expected):
+
+            def _verify_image_shapes(
+                self, processed_images, original_images, color_channel_expected
+            ):
                 """
                 Helper method to verify the image dimensions and color channels in a processed dataset.
                 Compa
                 """
                 for processed_image in processed_images:
                     processed_data_shape = tuple(processed_image.shape[:2].as_list())
-                    self.assertEqual(processed_data_shape, self.parameters['crop_size'], 'heights and/or widths are not equal.')
-                    self.assertEqual(color_channel_expected, processed_image.shape[2], 'Color channels are not equal.')
-
+                    self.assertEqual(
+                        processed_data_shape,
+                        self.parameters["crop_size"],
+                        "heights and/or widths are not equal.",
+                    )
+                    self.assertEqual(
+                        color_channel_expected,
+                        processed_image.shape[2],
+                        "Color channels are not equal.",
+                    )
 
         def test_process_execution(self):
             """
@@ -65,23 +77,28 @@ def create_test_class_for_augmentation_step(augmentation_class, arguments):
                     equal_flag = False
             self.assertFalse(equal_flag)
 
-    name = augmentation_class.name.replace(' ', '')
-    DynamicDataAugmentationTest.__name__ = f'Test{name}'
+    name = augmentation_class.name.replace(" ", "")
+    DynamicDataAugmentationTest.__name__ = f"Test{name}"
 
     return DynamicDataAugmentationTest
 
 
 augmentation_steps_data = [
-    (steps.RandomRotator, {'angle_range': (-90, 90), 'seed': 42}),
-    (steps.RandomFlipper, {'flip_direction': 'horizontal', 'seed': 42}),
-    (steps.GaussianNoiseInjector, {'mean': 0.0, 'sigma': 0.2, 'apply_clipping': True, 'seed': 42}),
-    (steps.RandomColorJitterer, {'brightness': 0.3, 'contrast': 0.3, 'saturation': 0.3, 'hue': 0.1, 'seed': 42}),
-    (steps.RandomCropper, {'crop_size': (250, 250), 'seed': 42}),
-    (steps.RandomPerspectiveTransformer, {'warp_scale': 0.2, 'seed': 42}),
-    (steps.RandomElasticTransformer, {'alpha': 34, 'sigma': 4, 'seed': 42}),
-    (steps.RandomSharpening, {'min_intensity': 2, 'max_intensity': 5.0, 'seed': 42}),
+    (steps.RandomRotator, {"angle_range": (-90, 90), "seed": 42}),
+    (steps.RandomFlipper, {"flip_direction": "horizontal", "seed": 42}),
+    (
+        steps.GaussianNoiseInjector,
+        {"mean": 0.0, "sigma": 0.2, "apply_clipping": True, "seed": 42},
+    ),
+    (
+        steps.RandomColorJitterer,
+        {"brightness": 0.3, "contrast": 0.3, "saturation": 0.3, "hue": 0.1, "seed": 42},
+    ),
+    (steps.RandomCropper, {"crop_size": (250, 250), "seed": 42}),
+    (steps.RandomPerspectiveTransformer, {"warp_scale": 0.2, "seed": 42}),
+    (steps.RandomElasticTransformer, {"alpha": 34, "sigma": 4, "seed": 42}),
+    (steps.RandomSharpening, {"min_intensity": 2, "max_intensity": 5.0, "seed": 42}),
 ]
-
 
 
 def load_data_augmentation_steps_tests():
@@ -104,8 +121,8 @@ def load_data_augmentation_steps_tests():
     return test_suite
 
 
-if __name__ == '__main__':
-    """ Main execution block for running the loaded test suite."""
+if __name__ == "__main__":
+    """Main execution block for running the loaded test suite."""
     runner = unittest.TextTestRunner()
     test_suites = load_data_augmentation_steps_tests()
     runner.run(test_suites)

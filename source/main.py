@@ -1,14 +1,14 @@
 from source.preprocessing.image_preprocessor import ImagePreprocessor
 from source.model.pcb_defect_detector import PCBDefectDetector
 
-#IMPORTANT ANNOTATIONS: The current functionality serves just as a template and as documentation of the current software plan.  Simplified Training procedure is shown here.
+# IMPORTANT ANNOTATIONS: The current functionality serves just as a template and as documentation of the current software plan.  Simplified Training procedure is shown here.
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pipeline = {
         # Add preprocessing steps here.
     }
-    
+
     model = {
         # Add model layers here.
     }

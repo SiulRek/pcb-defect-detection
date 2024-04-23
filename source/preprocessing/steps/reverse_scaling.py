@@ -1,6 +1,7 @@
 import tensorflow as tf
 from source.preprocessing.helpers.for_steps.step_base import StepBase
 
+
 class ReverseScaler(StepBase):
     """
     A preprocessing step that scales an image tensor by a specified factor.
@@ -10,8 +11,8 @@ class ReverseScaler(StepBase):
     Note: The data type of the output image tensor is tf.float16.
     """
 
-    arguments_datatype = {'scale_factor': float}
-    name = 'Reverse Scaler'
+    arguments_datatype = {"scale_factor": float}
+    name = "Reverse Scaler"
 
     def __init__(self, scale_factor=255):
         """
@@ -27,11 +28,13 @@ class ReverseScaler(StepBase):
     @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
         image_tensor = tf.cast(image_tensor, self.output_datatype)
-        scale_factor = tf.constant(self.parameters['scale_factor'], self.output_datatype)
+        scale_factor = tf.constant(
+            self.parameters["scale_factor"], self.output_datatype
+        )
         scaled_image = image_tensor / scale_factor
         return scaled_image
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     step = ReverseScaler()
     print(step.get_step_json_representation())

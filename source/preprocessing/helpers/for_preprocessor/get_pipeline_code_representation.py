@@ -16,7 +16,9 @@ def get_pipeline_code_representation(pipeline):
     for step in pipeline:
         q = "'"
         items = step.parameters.items()
-        parameter_list = [f"{k}={q + v + q if isinstance(v, str) else v}" for k, v in items]
+        parameter_list = [
+            f"{k}={q + v + q if isinstance(v, str) else v}" for k, v in items
+        ]
         parameters = ", ".join(parameter_list)
         step_repr = f"{step.__class__.__name__}({parameters})"
         repr += f"    {step_repr},\n"

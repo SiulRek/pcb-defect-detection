@@ -14,7 +14,11 @@ def matches_pattern(key, pattern):
 
 def extract_indices(input_dict, pattern):
     """Extract indices from keys in the input dictionary based on a given pattern."""
-    return [int(pattern.match(key).group(2)) for key in input_dict if matches_pattern(key, pattern)]
+    return [
+        int(pattern.match(key).group(2))
+        for key in input_dict
+        if matches_pattern(key, pattern)
+    ]
 
 
 def filter_keys_by_pattern(input_dict, pattern):
@@ -45,7 +49,7 @@ def remove_second_group(s, pattern):
     return pattern.sub(replace_with_first_and_third_group, s)
 
 
-def randomly_select_sequential_keys(input_dict, separator='__'):
+def randomly_select_sequential_keys(input_dict, separator="__"):
     """
     Randomly selects keys from a dictionary that follow a specific sequential pattern. The pattern
     is defined by a separator followed by 'I' and a number, optionally followed by 'F' and
@@ -66,30 +70,38 @@ def randomly_select_sequential_keys(input_dict, separator='__'):
     the key without the specific sequential pattern.
     """
 
-    end_pattern = rf'($|{re.escape(separator)}\S+)'
-    ind_key_pattern = re.compile(rf'(.*?){re.escape(separator)}I(\d+)(.*?)')
-    ind_key_pattern_all_groups = re.compile(rf'(.*?)({re.escape(separator)}I\d+)(.*?)')
-    ind_key_pattern_end = re.compile(rf'(.*?){re.escape(separator)}I(\d+){end_pattern}')
-    freq_key_pattern = re.compile(rf'(.*?){re.escape(separator)}I\d+F(\d+){end_pattern}')
-    freq_key_pattern_all_groups = re.compile(rf'(.*?)({re.escape(separator)}I\d+F\d+){end_pattern}')
+    end_pattern = rf"($|{re.escape(separator)}\S+)"
+    ind_key_pattern = re.compile(rf"(.*?){re.escape(separator)}I(\d+)(.*?)")
+    ind_key_pattern_all_groups = re.compile(rf"(.*?)({re.escape(separator)}I\d+)(.*?)")
+    ind_key_pattern_end = re.compile(rf"(.*?){re.escape(separator)}I(\d+){end_pattern}")
+    freq_key_pattern = re.compile(
+        rf"(.*?){re.escape(separator)}I\d+F(\d+){end_pattern}"
+    )
+    freq_key_pattern_all_groups = re.compile(
+        rf"(.*?)({re.escape(separator)}I\d+F\d+){end_pattern}"
+    )
     match_flags = []
     for key in input_dict:
-        match = matches_pattern(key, ind_key_pattern_end) or matches_pattern(key, freq_key_pattern)
+        match = matches_pattern(key, ind_key_pattern_end) or matches_pattern(
+            key, freq_key_pattern
+        )
         match_flags.append(match)
     if not any(match_flags):
         return input_dict
 
     if not all(match_flags):
-        raise KeyError('Some keys do not follow a sequential pattern.')
+        raise KeyError("Some keys do not follow a sequential pattern.")
 
     indices = extract_indices(input_dict, ind_key_pattern)
     unique_sorted_indices = sorted(set(indices))
     if not is_sequential(unique_sorted_indices):
-        raise KeyError('Indices of the keys are not sequential.')
+        raise KeyError("Indices of the keys are not sequential.")
 
     output_dict = {}
     for index in unique_sorted_indices:
-        compiled_pattern = re.compile(rf'.*{re.escape(separator)}I{index}(F\d+|{end_pattern})')
+        compiled_pattern = re.compile(
+            rf".*{re.escape(separator)}I{index}(F\d+|{end_pattern})"
+        )
         temp_keys = filter_keys_by_pattern(input_dict, compiled_pattern)
         keys = []
         for key in temp_keys:
@@ -104,7 +116,7 @@ def randomly_select_sequential_keys(input_dict, separator='__'):
         new_key = remove_second_group(new_key, ind_key_pattern_all_groups)
 
         if new_key in output_dict:
-            raise KeyError('The selected key already exists in the output dictionary.')
+            raise KeyError("The selected key already exists in the output dictionary.")
         output_dict[new_key] = input_dict[selected_key]
 
     return output_dict

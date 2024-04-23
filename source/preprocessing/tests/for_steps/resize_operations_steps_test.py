@@ -14,7 +14,7 @@ ENABLE_VISUAL_INSPECTION = False
 
 
 class TestSquareShapePadder(TestSingleStep):
-    """ A test suite for the SquareShapePadder step in the image preprocessing pipeline.
+    """A test suite for the SquareShapePadder step in the image preprocessing pipeline.
 
     This class inherits from TestSingleStep and is specifically designed to test the
     SquareShapePadder step, which pads images to make them square. It includes tests
@@ -26,14 +26,17 @@ class TestSquareShapePadder(TestSingleStep):
     """
 
     TestStep = steps.SquareShapePadder
-    parameters = {'padding_pixel_value': 0}
+    parameters = {"padding_pixel_value": 0}
 
     if not ENABLE_VISUAL_INSPECTION:
+
         @skip("Visual inspection not enabled")
         def test_processed_image_visualization(self):
             pass
 
-    def _verify_image_shapes(self, processed_dataset, original_dataset, color_channel_expected):
+    def _verify_image_shapes(
+        self, processed_dataset, original_dataset, color_channel_expected
+    ):
         """
         Helper method to verify the image dimensions and color channels in a processed dataset.
         Compares the processed images to the original dataset to ensure correct height, width,
@@ -43,8 +46,16 @@ class TestSquareShapePadder(TestSingleStep):
             processed_image_shape = tuple(processed_image.shape[:2].as_list())
             original_image_shape = tuple(original_image.shape[:2].as_list())
             self.assertNotEqual(processed_image_shape, original_image_shape)
-            self.assertEqual(color_channel_expected, processed_image.shape[2], 'Color channels are not equal.')
-            self.assertEqual(processed_image_shape[0], processed_image_shape[1], 'Heights and widths are not equal.')
+            self.assertEqual(
+                color_channel_expected,
+                processed_image.shape[2],
+                "Color channels are not equal.",
+            )
+            self.assertEqual(
+                processed_image_shape[0],
+                processed_image_shape[1],
+                "Heights and widths are not equal.",
+            )
 
 
 class TestShapeResizer(TestSingleStep):
@@ -61,15 +72,17 @@ class TestShapeResizer(TestSingleStep):
     """
 
     TestStep = steps.ShapeResizer
-    parameters = {'desired_shape': (1900, 2100), 'resize_method': 'nearest'}
-
+    parameters = {"desired_shape": (1900, 2100), "resize_method": "nearest"}
 
     if not ENABLE_VISUAL_INSPECTION:
+
         @skip("Visual inspection not enabled")
         def test_processed_image_visualization(self):
             pass
 
-    def _verify_image_shapes(self, processed_dataset, original_dataset, color_channel_expected):
+    def _verify_image_shapes(
+        self, processed_dataset, original_dataset, color_channel_expected
+    ):
         """
         Helper method to verify the image dimensions and color channels in a processed dataset.
         Compares the processed images to the original dataset to ensure correct height, width,
@@ -79,9 +92,21 @@ class TestShapeResizer(TestSingleStep):
             processed_image_shape = tuple(processed_image.shape[:2].as_list())
             original_image_shape = tuple(original_image.shape[:2].as_list())
             self.assertNotEqual(processed_image_shape, original_image_shape)
-            self.assertEqual(color_channel_expected, processed_image.shape[2], 'Color channels are not equal.')
-            self.assertEqual(self.parameters['desired_shape'][0], processed_image_shape[0], 'heights are not like desired.')
-            self.assertEqual(self.parameters['desired_shape'][1], processed_image_shape[1], 'widths are not like desired.')
+            self.assertEqual(
+                color_channel_expected,
+                processed_image.shape[2],
+                "Color channels are not equal.",
+            )
+            self.assertEqual(
+                self.parameters["desired_shape"][0],
+                processed_image_shape[0],
+                "heights are not like desired.",
+            )
+            self.assertEqual(
+                self.parameters["desired_shape"][1],
+                processed_image_shape[1],
+                "widths are not like desired.",
+            )
 
 
 def load_resize_operations_steps_tests():
@@ -103,6 +128,6 @@ def load_resize_operations_steps_tests():
     return test_suite
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     runner = unittest.TextTestRunner()
     runner.run(load_resize_operations_steps_tests())

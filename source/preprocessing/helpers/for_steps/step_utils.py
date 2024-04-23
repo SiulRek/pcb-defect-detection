@@ -1,5 +1,6 @@
 import tensorflow as tf
 
+
 def correct_image_tensor_shape(image_tensor):
     """
     Corrects the shape of a TensorFlow image tensor based on the inferred dimensions.
@@ -24,6 +25,7 @@ def correct_image_tensor_shape(image_tensor):
 
     return reshaped_image
 
+
 def reduce_std(tensor):
     """
     Computes the standard deviation of a tensor.
@@ -40,6 +42,7 @@ def reduce_std(tensor):
     std_dev = tf.sqrt(variance)
     return std_dev
 
+
 def squared_difference(tensor_a, tensor_b):
     """
     Compute the squared difference of a tensor and a scalar or another tensor.
@@ -51,6 +54,8 @@ def squared_difference(tensor_a, tensor_b):
     Returns:
     - Tensor: A `Tensor` containing the squared difference of the input tensor and the scalar or tensor.
     """
-    difference = tensor_a - tensor_b  # Broadcasting happens here if tensor_b is a scalar
+    difference = (
+        tensor_a - tensor_b
+    )  # Broadcasting happens here if tensor_b is a scalar
     squared_diff = tf.square(difference)
     return squared_diff

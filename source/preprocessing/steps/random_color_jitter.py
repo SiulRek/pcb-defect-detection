@@ -9,10 +9,15 @@ class RandomColorJitterer(StepBase):
     only brightness and contrast adjustments are applied, as saturation and hue changes are
     not applicable.
     """
+
     arguments_datatype = {
-        'brightness': float, 'contrast': float, 'saturation': float, 'hue': float, 'seed': int
+        "brightness": float,
+        "contrast": float,
+        "saturation": float,
+        "hue": float,
+        "seed": int,
     }
-    name = 'Random Color Jitterer'
+    name = "Random Color Jitterer"
 
     def __init__(self, brightness=0.3, contrast=0.3, saturation=0.3, hue=0.1, seed=42):
         """
@@ -32,25 +37,33 @@ class RandomColorJitterer(StepBase):
     def process_step(self, image_tensor):
         is_grayscale = tf.shape(image_tensor)[-1] == 1
         image_tensor = tf.image.random_brightness(
-            image_tensor, max_delta=self.parameters['brightness'], seed=self.parameters['seed']
+            image_tensor,
+            max_delta=self.parameters["brightness"],
+            seed=self.parameters["seed"],
         )
         image_tensor = tf.image.random_contrast(
-            image_tensor, lower=1-self.parameters['contrast'],
-            upper=1+self.parameters['contrast'], seed=self.parameters['seed']
+            image_tensor,
+            lower=1 - self.parameters["contrast"],
+            upper=1 + self.parameters["contrast"],
+            seed=self.parameters["seed"],
         )
 
         if not is_grayscale:
             image_tensor = tf.image.random_saturation(
-                image_tensor, lower=1-self.parameters['saturation'],
-                upper=1+self.parameters['saturation'], seed=self.parameters['seed']
+                image_tensor,
+                lower=1 - self.parameters["saturation"],
+                upper=1 + self.parameters["saturation"],
+                seed=self.parameters["seed"],
             )
             image_tensor = tf.image.random_hue(
-                image_tensor, max_delta=self.parameters['hue'], seed=self.parameters['seed']
+                image_tensor,
+                max_delta=self.parameters["hue"],
+                seed=self.parameters["seed"],
             )
 
         return image_tensor
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     step = RandomColorJitterer()
     print(step.get_step_json_representation())

@@ -10,11 +10,12 @@ class BinaryThresholder(StepBase):
     Note: In the case of RGB images, it processes each color channel (Red, Green, Blue)
     separately.
     """
-    arguments_datatype = {'thresh': int}
-    name = 'Binary Thresholding'
+
+    arguments_datatype = {"thresh": int}
+    name = "Binary Thresholding"
 
     def __init__(self, thresh=128):
-        """ Initializes the BinaryThresholder object that can be integrated in an image
+        """Initializes the BinaryThresholder object that can be integrated in an image
             preprocessing pipeline.
 
         Args:
@@ -29,12 +30,12 @@ class BinaryThresholder(StepBase):
     def process_step(self, image_nparray):
 
         def apply_binary_threshold(np_array):
-            _, thresholded_np_array= cv2.threshold(
+            _, thresholded_np_array = cv2.threshold(
                 src=np_array,
-                thresh=self.parameters['thresh'],
+                thresh=self.parameters["thresh"],
                 maxval=255,
-                type=cv2.THRESH_BINARY
-                )
+                type=cv2.THRESH_BINARY,
+            )
             return thresholded_np_array
 
         if image_nparray.shape[2] == 1:
@@ -49,6 +50,6 @@ class BinaryThresholder(StepBase):
         return thresholded_image
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     step = BinaryThresholder()
     print(step.get_step_json_representation())

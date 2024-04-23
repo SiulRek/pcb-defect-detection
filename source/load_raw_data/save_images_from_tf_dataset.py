@@ -4,8 +4,10 @@ from PIL import Image
 import numpy as np
 
 
-def save_images_from_tf_dataset(tf_dataset, directory, name_prefix='image', max_images=None):
-    """     
+def save_images_from_tf_dataset(
+    tf_dataset, directory, name_prefix="image", max_images=None
+):
+    """
     Save images from a tf.data.Dataset object to a directory.
 
     Args:
@@ -23,7 +25,11 @@ def save_images_from_tf_dataset(tf_dataset, directory, name_prefix='image', max_
             break
         image = image_tensor.numpy()
 
-        if image.dtype == np.float32 or image.dtype == np.float64 or image.dtype == np.float16:
+        if (
+            image.dtype == np.float32
+            or image.dtype == np.float64
+            or image.dtype == np.float16
+        ):
             image = (image * 255).astype(np.uint8)
         elif image.dtype == np.uint8:
             pass
@@ -31,14 +37,11 @@ def save_images_from_tf_dataset(tf_dataset, directory, name_prefix='image', max_
             raise ValueError(f"Unsupported image data type: {image.dtype}")
 
         if image.shape[2] == 1:
-            image = Image.fromarray(image.squeeze(-1), mode='L')
+            image = Image.fromarray(image.squeeze(-1), mode="L")
         elif image.shape[2] == 3 and image.shape[2] == 3:
-            image = Image.fromarray(image, mode='RGB')
+            image = Image.fromarray(image, mode="RGB")
         else:
             raise ValueError("Unsupported image format")
 
-        file_path = os.path.join(directory, f'{name_prefix}_{i+1}.png')
+        file_path = os.path.join(directory, f"{name_prefix}_{i+1}.png")
         image.save(file_path)
-
-
-

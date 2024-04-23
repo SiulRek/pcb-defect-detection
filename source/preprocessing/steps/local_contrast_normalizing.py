@@ -9,13 +9,14 @@ class LocalContrastNormalizer(StepBase):
 
     Note: The data type of the output image tensor is tf.float16.
     """
+
     arguments_datatype = {
-        'depth_radius': int,
-        'bias': float,
-        'alpha': float,
-        'beta': float
+        "depth_radius": int,
+        "bias": float,
+        "alpha": float,
+        "beta": float,
     }
-    name = 'Local Contrast Normalizer'
+    name = "Local Contrast Normalizer"
 
     def __init__(self, depth_radius=5, bias=1.0, alpha=1e-4, beta=0.75):
         """Initializes the LocalContrastNormalizer object for integration into an image
@@ -46,10 +47,10 @@ class LocalContrastNormalizer(StepBase):
 
         image_lcn = tf.nn.local_response_normalization(
             image_tensor,
-            depth_radius=self.parameters['depth_radius'],
-            bias=self.parameters['bias'],
-            alpha=self.parameters['alpha'],
-            beta=self.parameters['beta']
+            depth_radius=self.parameters["depth_radius"],
+            bias=self.parameters["bias"],
+            alpha=self.parameters["alpha"],
+            beta=self.parameters["beta"],
         )
 
         # Remove the batch dimension if it was added earlier
@@ -59,6 +60,6 @@ class LocalContrastNormalizer(StepBase):
         return image_lcn
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     step = LocalContrastNormalizer()
     print(step.get_step_json_representation())

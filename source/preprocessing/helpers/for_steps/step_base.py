@@ -3,7 +3,9 @@ from abc import ABC, abstractmethod
 import tensorflow as tf
 
 from source.preprocessing.helpers.for_steps.step_utils import correct_image_tensor_shape
-from source.preprocessing.helpers.for_steps.get_step_json_representation import get_step_json_representation
+from source.preprocessing.helpers.for_steps.get_step_json_representation import (
+    get_step_json_representation,
+)
 
 
 class StepBase(ABC):
@@ -86,18 +88,22 @@ class StepBase(ABC):
         """The parameters property is read-only."""
         return self._parameters
 
-    def __eq__(self, obj: 'StepBase') -> bool:
-        return (self.name.split('__')[0] == obj.name.split('__')[0] and
-                self._parameters == obj.parameters)
+    def __eq__(self, obj: "StepBase") -> bool:
+        return (
+            self.name.split("__")[0] == obj.name.split("__")[0]
+            and self._parameters == obj.parameters
+        )
 
     def _extract_parameters(self, local_vars):
         """
         Extracts parameters needed for the preprocessing step based on local variables.
         It considers if parameters should be randomized or extracted directly from `local_vars`.
         """
-        excluded_parameters = ['self', '__class__']
+        excluded_parameters = ["self", "__class__"]
         initialization_parameters = {
-            key: value for key, value in local_vars.items() if key not in excluded_parameters
+            key: value
+            for key, value in local_vars.items()
+            if key not in excluded_parameters
         }
         return initialization_parameters
 
@@ -125,7 +131,7 @@ class StepBase(ABC):
                 lambda img: tf.py_function(
                     func=lambda i: tensor_to_py_function_wrapper(self, i),
                     inp=[img],
-                    Tout=(self.output_datatype)
+                    Tout=(self.output_datatype),
                 )
             )
 
@@ -135,9 +141,11 @@ class StepBase(ABC):
     def _nparray_pyfunc_wrapper(function):
         @functools.wraps(function)  # Preserve function metadata
         def numpy_to_py_function_wrapper(self, image_tensor):
-            image_nparray = image_tensor.numpy().astype('uint8')
+            image_nparray = image_tensor.numpy().astype("uint8")
             processed_image = function(self, image_nparray)
-            processed_image = tf.convert_to_tensor(processed_image, dtype=self.output_datatype)
+            processed_image = tf.convert_to_tensor(
+                processed_image, dtype=self.output_datatype
+            )
             processed_image = correct_image_tensor_shape(processed_image)
             return processed_image
 
@@ -147,7 +155,7 @@ class StepBase(ABC):
                 lambda img: tf.py_function(
                     func=lambda i: numpy_to_py_function_wrapper(self, i),
                     inp=[img],
-                    Tout=(self.output_datatype)
+                    Tout=(self.output_datatype),
                 )
             )
 
@@ -159,5 +167,5 @@ class StepBase(ABC):
         raise NotImplementedError
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(StepBase.default_output_datatype)

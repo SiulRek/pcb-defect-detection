@@ -22,6 +22,7 @@ class TestRGBToGrayscale(TestSingleStep):
     compared to general steps, due to the channel conversion. The `TestSingleStep` class focuses on ensuring the correct
     functioning of these steps, both in isolation and when integrated into a pipeline.
     """
+
     parameters = {}
     TestStep = RGBToGrayscale
     process_grayscale_only = False
@@ -31,12 +32,15 @@ class TestRGBToGrayscale(TestSingleStep):
         preprocessor = ImagePreprocessor()
         preprocessor.set_pipe(pipeline)
         processed_dataset = preprocessor.process(self.image_dataset)
-        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=1)
+        self._verify_image_shapes(
+            processed_dataset, self.image_dataset, color_channel_expected=1
+        )
 
     if not ENABLE_VISUAL_INSPECTION:
+
         @skip("Visual inspection not enabled")
         def test_processed_image_visualization(self):
-                pass
+            pass
 
 
 class TestGrayscaleToRGB(TestSingleStep):
@@ -53,6 +57,7 @@ class TestGrayscaleToRGB(TestSingleStep):
         The suite depends on `RGBToGrayscale` for full pipeline testing.
 
     """
+
     parameters = {}
     TestStep = GrayscaleToRGB
     process_grayscale_only = False
@@ -62,23 +67,32 @@ class TestGrayscaleToRGB(TestSingleStep):
         preprocessor = ImagePreprocessor()
         preprocessor.set_pipe(pipeline)
         processed_dataset = preprocessor.process(self.image_dataset)
-        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=1)
+        self._verify_image_shapes(
+            processed_dataset, self.image_dataset, color_channel_expected=1
+        )
 
     def test_process_grayscaled_images(self):
         pipeline = [RGBToGrayscale(), self.test_step]
         preprocessor = ImagePreprocessor()
         preprocessor.set_pipe(pipeline)
         processed_dataset = preprocessor.process(self.image_dataset)
-        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=3)
+        self._verify_image_shapes(
+            processed_dataset, self.image_dataset, color_channel_expected=3
+        )
         preprocessor.process(processed_dataset)
-        self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=3)
+        self._verify_image_shapes(
+            processed_dataset, self.image_dataset, color_channel_expected=3
+        )
 
     def test_process_execution(self):
         processed_dataset = self.test_step.process_step(self.image_dataset)
-        for _ in processed_dataset.take(1):  # Consumes the dataset to force execution of the step.
+        for _ in processed_dataset.take(
+            1
+        ):  # Consumes the dataset to force execution of the step.
             pass
 
     if not ENABLE_VISUAL_INSPECTION:
+
         @skip("Visual inspection not enabled")
         def test_processed_image_visualization(self):
             pass
@@ -101,6 +115,6 @@ def load_channel_conversion_steps_tests():
     return test_suite
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     runner = unittest.TextTestRunner()
     runner.run(load_channel_conversion_steps_tests())

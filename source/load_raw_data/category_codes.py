@@ -1,7 +1,9 @@
 from enum import Enum
 
+
 class Category(Enum):
-    """ Enum class for PCB defect categories."""
+    """Enum class for PCB defect categories."""
+
     NO_DEFECT = 0
     MISSING_HOLE = 1
     MOUSE_BITE = 2

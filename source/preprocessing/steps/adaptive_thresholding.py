@@ -11,8 +11,8 @@ class AdaptiveThresholder(StepBase):
     separately.
     """
 
-    arguments_datatype = {'block_size': int, 'c': float}
-    name = 'Adaptive Thresholding'
+    arguments_datatype = {"block_size": int, "c": float}
+    name = "Adaptive Thresholding"
 
     def __init__(self, block_size=15, c=-2):
         """
@@ -30,12 +30,14 @@ class AdaptiveThresholder(StepBase):
     def process_step(self, image_nparray):
 
         def apply_adaptive_threshold(np_array):
-            return cv2.adaptiveThreshold(np_array,
-                                         255,
-                                         cv2.ADAPTIVE_THRESH_MEAN_C,
-                                         cv2.THRESH_BINARY,
-                                         blockSize=self.parameters['block_size'], # Block size.
-                                         C=self.parameters['c'])
+            return cv2.adaptiveThreshold(
+                np_array,
+                255,
+                cv2.ADAPTIVE_THRESH_MEAN_C,
+                cv2.THRESH_BINARY,
+                blockSize=self.parameters["block_size"],  # Block size.
+                C=self.parameters["c"],
+            )
 
         if image_nparray.shape[2] == 1:
             thresholded_image = apply_adaptive_threshold(image_nparray)
@@ -49,6 +51,6 @@ class AdaptiveThresholder(StepBase):
         return thresholded_image
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     step = AdaptiveThresholder()
     print(step.get_step_json_representation())

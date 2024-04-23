@@ -9,8 +9,9 @@ def format_parameters(parameters):
         formatted_item = f'        "{k}": {formatted_value}'
         formatted_items.append(formatted_item)
 
-    parameters_str = ',\n'.join(formatted_items)
+    parameters_str = ",\n".join(formatted_items)
     return parameters_str
+
 
 def get_step_json_representation(parameters, step_name):
     """

@@ -4,9 +4,14 @@ from source.preprocessing.helpers.for_steps.step_base import StepBase
 
 
 class NLMeanDenoiser(StepBase):
-    """ A preprocessing step that applies Non Local Mean Denoising to an image."""
-    arguments_datatype = {'h': float, 'template_window_size': int, 'search_window_size': int}
-    name = 'Non Local Mean Denoiser'
+    """A preprocessing step that applies Non Local Mean Denoising to an image."""
+
+    arguments_datatype = {
+        "h": float,
+        "template_window_size": int,
+        "search_window_size": int,
+    }
+    name = "Non Local Mean Denoiser"
 
     def __init__(self, h=1.0, template_window_size=7, search_window_size=21):
         """
@@ -25,13 +30,14 @@ class NLMeanDenoiser(StepBase):
     @StepBase._nparray_pyfunc_wrapper
     def process_step(self, image_nparray):
         denoised_image = cv2.fastNlMeansDenoising(
-                src=image_nparray,
-                h=self.parameters['h'],
-                templateWindowSize=self.parameters['template_window_size'],
-                searchWindowSize=self.parameters['search_window_size'])
+            src=image_nparray,
+            h=self.parameters["h"],
+            templateWindowSize=self.parameters["template_window_size"],
+            searchWindowSize=self.parameters["search_window_size"],
+        )
         return denoised_image
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     step = NLMeanDenoiser()
     print(step.get_step_json_representation())

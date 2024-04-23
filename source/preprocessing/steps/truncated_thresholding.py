@@ -10,8 +10,9 @@ class TruncatedThresholder(StepBase):
     Note: In the case of RGB images, it processes each color channel (Red, Green, Blue)
     separately.
     """
-    arguments_datatype = {'thresh': int}
-    name = 'Truncated Thresholding'
+
+    arguments_datatype = {"thresh": int}
+    name = "Truncated Thresholding"
 
     def __init__(self, thresh=128):
         """
@@ -32,9 +33,9 @@ class TruncatedThresholder(StepBase):
         def apply_truncated_threshold(np_array):
             _, thresholded_np_array = cv2.threshold(
                 src=np_array,
-                thresh=self.parameters['thresh'],
+                thresh=self.parameters["thresh"],
                 maxval=255,
-                type=cv2.THRESH_TRUNC
+                type=cv2.THRESH_TRUNC,
             )
             return thresholded_np_array
 
@@ -50,6 +51,6 @@ class TruncatedThresholder(StepBase):
         return thresholded_image
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     step = TruncatedThresholder()
     print(step.get_step_json_representation())

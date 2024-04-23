@@ -10,12 +10,13 @@ class GlobalHistogramEqualizer(StepBase):
     Note:     In the case of RGB images, it processes each color channel (Red, Green, Blue)
     separately.
     """
+
     arguments_datatype = {}
-    name = 'Global Histogram Equalizer'
+    name = "Global Histogram Equalizer"
 
     def __init__(self):
-        """ Initializes the GlobalHistogramEqualizer object that can be integrated in an image
-            preprocessing pipeline."""
+        """Initializes the GlobalHistogramEqualizer object that can be integrated in an image
+        preprocessing pipeline."""
         super().__init__(locals())
 
     @StepBase._nparray_pyfunc_wrapper
@@ -26,6 +27,6 @@ class GlobalHistogramEqualizer(StepBase):
         return eq_image
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     step = GlobalHistogramEqualizer()
     print(step.get_step_json_representation())

@@ -5,10 +5,10 @@ from source.preprocessing.helpers.for_steps.step_base import StepBase
 
 
 class ErosionFilter(StepBase):
-    """ A preprocessing step that applies erosion to an image. """
+    """A preprocessing step that applies erosion to an image."""
 
-    arguments_datatype = {'kernel_size': int, 'iterations': int}
-    name = 'Erosion Filter'
+    arguments_datatype = {"kernel_size": int, "iterations": int}
+    name = "Erosion Filter"
 
     def __init__(self, kernel_size=3, iterations=1):
         """
@@ -24,11 +24,15 @@ class ErosionFilter(StepBase):
 
     @StepBase._nparray_pyfunc_wrapper
     def process_step(self, image_nparray):
-        kernel = np.ones((self.parameters['kernel_size'], self.parameters['kernel_size']), np.uint8)
-        eroded_image = cv2.erode(image_nparray, kernel, iterations=self.parameters['iterations'])
+        kernel = np.ones(
+            (self.parameters["kernel_size"], self.parameters["kernel_size"]), np.uint8
+        )
+        eroded_image = cv2.erode(
+            image_nparray, kernel, iterations=self.parameters["iterations"]
+        )
         return eroded_image
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     step = ErosionFilter()
     print(step.get_step_json_representation())

@@ -3,10 +3,16 @@ import re
 import json
 import random
 
-from source.preprocessing.helpers.for_preprocessor.recursive_type_conversion import recursive_type_conversion
+from source.preprocessing.helpers.for_preprocessor.recursive_type_conversion import (
+    recursive_type_conversion,
+)
 from source.utils import get_sample_from_distribution
-from source.preprocessing.helpers.for_preprocessor.parse_and_repeat import parse_and_repeat
-from source.preprocessing.helpers.for_preprocessor.randomly_select_sequential_keys import randomly_select_sequential_keys
+from source.preprocessing.helpers.for_preprocessor.parse_and_repeat import (
+    parse_and_repeat,
+)
+from source.preprocessing.helpers.for_preprocessor.randomly_select_sequential_keys import (
+    randomly_select_sequential_keys,
+)
 
 
 class ClassInstancesSerializer:
@@ -32,7 +38,7 @@ class ClassInstancesSerializer:
     - The 'instance_mapping' is essential for class instantiation.
     """
 
-    KEY_SEPARATOR = '__'
+    KEY_SEPARATOR = "__"
 
     def __init__(self, instance_mapping):
         """
@@ -56,7 +62,9 @@ class ClassInstancesSerializer:
     @instance_mapping.setter
     def instance_mapping(self, value):
         if not type(value) is dict:
-            raise ValueError(f"The specified instance mapping is not of type dict: {value}.")
+            raise ValueError(
+                f"The specified instance mapping is not of type dict: {value}."
+            )
         self._instance_mapping = value
 
     def _verify_json_path(self, json_path):
@@ -67,8 +75,10 @@ class ClassInstancesSerializer:
             json_path (str): The file path to verify.
         """
         if not os.path.exists(os.path.dirname(json_path)):
-            raise ValueError(f"The Base Directory of JSON path {json_path} does not exists.")
-        if not json_path.endswith('.json'):
+            raise ValueError(
+                f"The Base Directory of JSON path {json_path} does not exists."
+            )
+        if not json_path.endswith(".json"):
             raise ValueError(f"Specified JSON path '{json_path}' is not JSON.")
 
     def _serialize_to_json_value(self, obj):
@@ -85,11 +95,15 @@ class ClassInstancesSerializer:
         if type(obj) is tuple or type(obj) is list:
             return [self._serialize_to_json_value(item) for item in obj]
         elif type(obj) is dict:
-            return {key: self._serialize_to_json_value(value) for key, value in obj.items()}
+            return {
+                key: self._serialize_to_json_value(value) for key, value in obj.items()
+            }
         elif type(obj) in {int, float, str, bool}:
             return obj
         else:
-            raise TypeError(f"Object with value '{obj} cannot not be serialized to JSON format.")
+            raise TypeError(
+                f"Object with value '{obj} cannot not be serialized to JSON format."
+            )
 
     def _add_instance_to_configurations(self, instance, configurations):
         """
@@ -105,17 +119,21 @@ class ClassInstancesSerializer:
         for class_name, mapped_class in self.instance_mapping.items():
             if isinstance(instance, mapped_class):
                 class_name = self._generate_unique_key_name(class_name, configurations)
-                if not hasattr(instance, 'parameters'):
+                if not hasattr(instance, "parameters"):
                     msg = f"Mapped class: "
                     msg += f"'{mapped_class}' does not have the attribute 'parameters'."
                     raise AttributeError(msg)
                 if not isinstance(instance.parameters, dict):
                     msg = f"Mapped class: "
-                    msg += f"'{mapped_class}' attribute 'parameters' is not of type dict."
+                    msg += (
+                        f"'{mapped_class}' attribute 'parameters' is not of type dict."
+                    )
                     raise AttributeError(msg)
                 configurations[class_name] = instance.parameters
                 return configurations
-        raise KeyError(f"Instance '{instance}' is not a value in 'instance_mapping' dict.")
+        raise KeyError(
+            f"Instance '{instance}' is not a value in 'instance_mapping' dict."
+        )
 
     def _generate_unique_key_name(self, current_key, dictionary):
         """
@@ -129,8 +147,10 @@ class ClassInstancesSerializer:
             str: A unique key name for the dictionary.
         """
         key = current_key
-        i = 2             # Starts from 2 as 1 is the case of key name without identification.
-        while key in dictionary.keys():         # Same namining of entries are not allowed in json.
+        i = 2  # Starts from 2 as 1 is the case of key name without identification.
+        while (
+            key in dictionary.keys()
+        ):  # Same namining of entries are not allowed in json.
             sep = ClassInstancesSerializer.KEY_SEPARATOR
             key = key.split(sep)[0] + sep + str(i)
             i += 1
@@ -145,7 +165,7 @@ class ClassInstancesSerializer:
         Returns:
             str: The matched string with newlines and spaces removed.
         """
-        return match.group().replace('\n', '').replace(' ', '')
+        return match.group().replace("\n", "").replace(" ", "")
 
     def _save_configurations_to_json(self, configurations, json_path):
         """
@@ -169,10 +189,10 @@ class ClassInstancesSerializer:
 
         # Write 'json_data' to JSON file in a readable way.
         json_string = json.dumps(json_data, indent=4)
-        json_string = json_string.replace('},', '},\n')
-        pattern = r'\[[^\[\]]*(?:\[[^\[\]]*\][^\[\]]*)*\]'
+        json_string = json_string.replace("},", "},\n")
+        pattern = r"\[[^\[\]]*(?:\[[^\[\]]*\][^\[\]]*)*\]"
         result = re.sub(pattern, self._remove_newlines, json_string)
-        with open(json_path, 'w') as file:
+        with open(json_path, "w") as file:
             file.write(result)
 
     def save_instances_to_json(self, instance_list, json_path):
@@ -185,7 +205,9 @@ class ClassInstancesSerializer:
         """
         configurations = {}
         for instance in instance_list:
-            configurations = self._add_instance_to_configurations(instance, configurations)
+            configurations = self._add_instance_to_configurations(
+                instance, configurations
+            )
 
         self._save_configurations_to_json(configurations, json_path)
 
@@ -198,7 +220,9 @@ class ClassInstancesSerializer:
             elif isinstance(param_val, list):
                 deserialized_parameters[param_name] = random.choice(param_val)
             elif isinstance(param_val, dict):
-                deserialized_parameters[param_name] = get_sample_from_distribution(param_val)
+                deserialized_parameters[param_name] = get_sample_from_distribution(
+                    param_val
+                )
             elif isinstance(param_val, str):
                 param_range = parse_and_repeat(param_val)
                 deserialized_parameters[param_name] = random.choice(param_range)
@@ -210,7 +234,7 @@ class ClassInstancesSerializer:
         return deserialized_parameters
 
     def _extract_arguments(self, json_data, class_name, mapped_class, randomized):
-        """    Extracts and converts initialization parameters for a class instance from JSON data.
+        """Extracts and converts initialization parameters for a class instance from JSON data.
 
         Args:
             json_data (dict): The JSON data from which to extract initialization parameters.
@@ -225,10 +249,12 @@ class ClassInstancesSerializer:
         json_parameters = json_data.get(class_name)
         arguments = self._deserialize_json_parameters(json_parameters, randomized)
 
-        if hasattr(mapped_class, 'arguments_datatype'):
+        if hasattr(mapped_class, "arguments_datatype"):
 
             if type(mapped_class.arguments_datatype) is not dict:
-                msg = f"The class attribute 'arguments_datatype' of class {mapped_class}"
+                msg = (
+                    f"The class attribute 'arguments_datatype' of class {mapped_class}"
+                )
                 msg += " must be of type dict. This allows to create a class instance."
                 raise AttributeError(msg)
 
@@ -258,10 +284,14 @@ class ClassInstancesSerializer:
         class_name_parts = class_name.split(ClassInstancesSerializer.KEY_SEPARATOR)
 
         if class_name_parts[0] not in self.instance_mapping.keys():
-            raise KeyError(f"Class Name '{class_name_parts[0]}' from json file has no instance mapping.")
+            raise KeyError(
+                f"Class Name '{class_name_parts[0]}' from json file has no instance mapping."
+            )
         mapped_class = self.instance_mapping[class_name_parts[0]]
 
-        arguments = self._extract_arguments(json_data, class_name, mapped_class, randomized)
+        arguments = self._extract_arguments(
+            json_data, class_name, mapped_class, randomized
+        )
 
         try:
             return mapped_class(**arguments)
@@ -288,10 +318,12 @@ class ClassInstancesSerializer:
         """
         self._verify_json_path(json_path)
         try:
-            with open(json_path, 'r') as file:
+            with open(json_path, "r") as file:
                 separator = ClassInstancesSerializer.KEY_SEPARATOR
                 json_data = json.load(file)
-                json_data = randomly_select_sequential_keys(json_data, separator=separator)
+                json_data = randomly_select_sequential_keys(
+                    json_data, separator=separator
+                )
                 class_names = list(json_data.keys())
         except FileNotFoundError as e:
             msg = f"Specified JSON file storing the instance list to be loaded was not found: "
@@ -303,7 +335,9 @@ class ClassInstancesSerializer:
 
         instance_list = []
         for class_name in class_names:
-            instance = self._create_class_instance(class_name, json_data, randomized=randomized)
+            instance = self._create_class_instance(
+                class_name, json_data, randomized=randomized
+            )
             instance_list.append(instance)
 
         return instance_list

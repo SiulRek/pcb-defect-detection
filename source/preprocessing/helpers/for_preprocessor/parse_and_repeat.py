@@ -1,6 +1,7 @@
 import ast
 import re
 
+
 def parse_and_repeat(input_string):
     """
     Parses the input string and repeats elements based on the specified pattern.
@@ -20,7 +21,7 @@ def parse_and_repeat(input_string):
         list: A list containing the elements from the input string, repeated as specified.
     """
     # Split the input string by '+' outside of brackets
-    elements = re.split(r'\+\s*(?=[\[\]])', input_string)
+    elements = re.split(r"\+\s*(?=[\[\]])", input_string)
 
     result = []
 
@@ -32,7 +33,7 @@ def parse_and_repeat(input_string):
             raise ValueError(f"Empty element found in input_string '{input_string}'.")
 
         # Check for the pattern [list]*number
-        repeat_pattern_match = re.match(r'(\[.*\])\*(\d+)', elem)
+        repeat_pattern_match = re.match(r"(\[.*\])\*(\d+)", elem)
         if repeat_pattern_match:
             try:
                 list_part = ast.literal_eval(repeat_pattern_match.group(1))
@@ -44,8 +45,8 @@ def parse_and_repeat(input_string):
             continue
 
         # Handle non-repeating elements
-        non_repeating_match = re.fullmatch(r'\[.*\]', elem)
-        non_repeating_match_num = len(re.findall(r'(\[.*?\])', elem))
+        non_repeating_match = re.fullmatch(r"\[.*\]", elem)
+        non_repeating_match_num = len(re.findall(r"(\[.*?\])", elem))
         if non_repeating_match and non_repeating_match_num == 1:
             try:
                 list_part = ast.literal_eval(elem)
@@ -55,6 +56,8 @@ def parse_and_repeat(input_string):
             result.extend(list_part)
             continue
 
-        raise ValueError(f"Cannot parse element '{elem}' in input_string '{input_string}'.")
+        raise ValueError(
+            f"Cannot parse element '{elem}' in input_string '{input_string}'."
+        )
 
     return result

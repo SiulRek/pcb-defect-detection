@@ -9,8 +9,9 @@ class MeanNormalizer(StepBase):
 
     Note: The data type of the output image tensor is tf.float16.
     """
+
     arguments_datatype = {}
-    name = 'Mean Normalizer'
+    name = "Mean Normalizer"
 
     def __init__(self):
         """Initializes the MeanNormalizer object for integration into an image preprocessing
@@ -26,6 +27,7 @@ class MeanNormalizer(StepBase):
         normalized_image = (image_tensor - mean_val) / (range_val + 1e-8)
         return normalized_image
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     step = MeanNormalizer()
     print(step.get_step_json_representation())

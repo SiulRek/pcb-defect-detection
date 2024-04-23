@@ -1,6 +1,6 @@
 import os
 
-ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
+ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")
 
 
 def search_files_with_name(root_path, filename):
@@ -21,9 +21,10 @@ def search_files_with_name(root_path, filename):
                 matches.append(os.path.join(root, file))
     return matches
 
-if __name__ == '__main__':
-    
+
+if __name__ == "__main__":
+
     i = 1
-    for file_path in search_files_with_name(ROOT_DIR, 'test_runner.py'):
-        print(i,': ', file_path)
+    for file_path in search_files_with_name(ROOT_DIR, "test_runner.py"):
+        print(i, ": ", file_path)
         i += 1

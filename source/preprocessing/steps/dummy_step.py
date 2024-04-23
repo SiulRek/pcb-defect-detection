@@ -7,7 +7,8 @@ class DummyStep(StepBase):
     """
     A dummy preprocessing step that does nothing to the image.
     """
-    name = 'Dummy Step'
+
+    name = "Dummy Step"
     arguments_datatype = {}
 
     def __init__(self):
@@ -21,6 +22,6 @@ class DummyStep(StepBase):
         return image_tensor
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     step = DummyStep()
     print(step.get_step_json_representation())

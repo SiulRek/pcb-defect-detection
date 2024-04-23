@@ -9,8 +9,9 @@ class MinMaxNormalizer(StepBase):
 
     Note: The data type of the output image tensor is tf.float16.
     """
+
     arguments_datatype = {}
-    name = 'Min Max Normalizer'
+    name = "Min Max Normalizer"
 
     def __init__(self):
         """Initializes the MinMaxNormalizer object for integration into an image preprocessing
@@ -27,6 +28,7 @@ class MinMaxNormalizer(StepBase):
         normalized_image = (image_tensor - min_val) / (max_val - min_val)
         return normalized_image
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     step = MinMaxNormalizer()
     print(step.get_step_json_representation())

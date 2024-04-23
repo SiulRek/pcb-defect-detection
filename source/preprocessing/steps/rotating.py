@@ -12,8 +12,8 @@ class Rotator(StepBase):
         rounded to the nearest multiple of 90 degrees.
     """
 
-    arguments_datatype = {'angle': float}
-    name = 'Rotator'
+    arguments_datatype = {"angle": float}
+    name = "Rotator"
 
     def __init__(self, angle=90.0):
         """
@@ -26,10 +26,12 @@ class Rotator(StepBase):
 
     @StepBase._tensor_pyfunc_wrapper
     def process_step(self, image_tensor):
-        rotated_image = tf.image.rot90(image_tensor, k=int(self.parameters['angle'] / 90))
+        rotated_image = tf.image.rot90(
+            image_tensor, k=int(self.parameters["angle"] / 90)
+        )
         return rotated_image
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     step = Rotator()
     print(step.get_step_json_representation())

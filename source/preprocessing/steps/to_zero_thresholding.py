@@ -10,8 +10,9 @@ class ZeroThreshold(StepBase):
     Note: In the case of RGB images, it processes each color channel (Red, Green, Blue)
     separately.
     """
-    arguments_datatype = {'thresh': int}
-    name = 'Threshold to Zero'
+
+    arguments_datatype = {"thresh": int}
+    name = "Threshold to Zero"
 
     def __init__(self, thresh=128):
         """
@@ -30,9 +31,9 @@ class ZeroThreshold(StepBase):
         def apply_zero_threshold(np_array):
             _, thresholded_np_array = cv2.threshold(
                 src=np_array,
-                thresh=self.parameters['thresh'],
+                thresh=self.parameters["thresh"],
                 maxval=255,
-                type=cv2.THRESH_TOZERO
+                type=cv2.THRESH_TOZERO,
             )
             return thresholded_np_array
 
@@ -48,6 +49,6 @@ class ZeroThreshold(StepBase):
         return thresholded_image
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     step = ZeroThreshold()
     print(step.get_step_json_representation())

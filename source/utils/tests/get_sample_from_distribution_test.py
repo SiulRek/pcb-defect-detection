@@ -1,17 +1,17 @@
 import os
 
 import unittest
-from source.utils import get_sample_from_distribution  
+from source.utils import get_sample_from_distribution
 from source.utils import TestResultLogger
 
 
-ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..","..")
+ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
 OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/utils/tests/outputs")
 LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
 
-        
+
 class TestGetSampleFromDistribution(unittest.TestCase):
-    
+
     @classmethod
     def setUpClass(cls) -> None:
         os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -25,7 +25,7 @@ class TestGetSampleFromDistribution(unittest.TestCase):
         data = {"distribution": "gaussian", "loc": 0, "scale": 1}
         sample = get_sample_from_distribution(data)
         self.assertIsInstance(sample, float)
-        
+
     def test_gaussian(self):
         data = {"distribution": "gaussian", "loc": 0, "scale": 1}
         self.assertIsInstance(get_sample_from_distribution(data), float)

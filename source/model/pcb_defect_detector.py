@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-#IMPORTANT ANNOTATIONS: The current class implementation serves just as a template and as documentation of the current software plan.
+# IMPORTANT ANNOTATIONS: The current class implementation serves just as a template and as documentation of the current software plan.
 
 
 class PCBDefectDetector:
@@ -17,9 +17,8 @@ class PCBDefectDetector:
         Define and compile the machine learning model for PCB defect detection.
         """
 
-        self.model = tf.keras.Sequential([ # Add the Layers
-        ])
-        
+        self.model = tf.keras.Sequential([])  # Add the Layers
+
         self.model.compile(
             # Set suitable parameters
         )
@@ -33,8 +32,8 @@ class PCBDefectDetector:
         if self.model is None:
             self.build_model()
         self.history = self.model.fit(
-            #Call with Args
-            )
+            # Call with Args
+        )
 
         return self.history
 
@@ -55,4 +54,3 @@ class PCBDefectDetector:
         Load a trained model.
         """
         self.model = tf.keras.models.load_model(path)
-

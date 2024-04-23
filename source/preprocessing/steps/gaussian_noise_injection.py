@@ -10,8 +10,13 @@ class GaussianNoiseInjector(StepBase):
     An optional boolean argument 'apply_clipping' controls whether to clip the output values.
     """
 
-    arguments_datatype = {'mean': float, 'sigma': float, 'apply_clipping': bool, 'seed': int}
-    name = 'Gaussian Noise Injector'
+    arguments_datatype = {
+        "mean": float,
+        "sigma": float,
+        "apply_clipping": bool,
+        "seed": int,
+    }
+    name = "Gaussian Noise Injector"
 
     def __init__(self, mean=0.0, sigma=0.05, apply_clipping=True, seed=42):
         """
@@ -32,15 +37,15 @@ class GaussianNoiseInjector(StepBase):
     def process_step(self, image_tensor):
         shape = tf.shape(image_tensor)
         gaussian_noise = tf.random.normal(
-                            shape,
-                            mean=self.parameters['mean'],
-                            stddev=self.parameters['sigma'],
-                            seed=self.parameters['seed']
-                        )
+            shape,
+            mean=self.parameters["mean"],
+            stddev=self.parameters["sigma"],
+            seed=self.parameters["seed"],
+        )
         gaussian_noise = tf.cast(gaussian_noise, self.output_datatype)
         noisy_image = image_tensor + gaussian_noise
 
-        if self.parameters['apply_clipping']:
+        if self.parameters["apply_clipping"]:
             if self.output_datatype == tf.uint8:
                 noisy_image = tf.clip_by_value(noisy_image, 0, 255)
             else:
@@ -49,6 +54,6 @@ class GaussianNoiseInjector(StepBase):
         return noisy_image
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     step = GaussianNoiseInjector()
     print(step.get_step_json_representation())

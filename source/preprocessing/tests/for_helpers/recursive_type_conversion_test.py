@@ -1,13 +1,17 @@
 import os
 import unittest
 
-from source.preprocessing.helpers.for_preprocessor.recursive_type_conversion import recursive_type_conversion
+from source.preprocessing.helpers.for_preprocessor.recursive_type_conversion import (
+    recursive_type_conversion,
+)
 from source.utils import TestResultLogger
 
 
-ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..','..')
-OUTPUT_DIR = os.path.join(ROOT_DIR, r'source/preprocessing/tests/outputs')
-LOG_FILE = os.path.join(OUTPUT_DIR, 'test_results.log')
+ROOT_DIR = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", ".."
+)
+OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/preprocessing/tests/outputs")
+LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
 
 
 class TestRecursiveTypeConversion(unittest.TestCase):
@@ -15,7 +19,7 @@ class TestRecursiveTypeConversion(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         os.makedirs(OUTPUT_DIR, exist_ok=True)
-        cls.logger = TestResultLogger(LOG_FILE, 'Recursive Type Conversion Test')
+        cls.logger = TestResultLogger(LOG_FILE, "Recursive Type Conversion Test")
 
     def tearDown(self):
         self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
@@ -27,40 +31,48 @@ class TestRecursiveTypeConversion(unittest.TestCase):
         self.assertEqual(recursive_type_conversion(123, str), "123")
 
     def test_list_conversion(self):
-        self.assertEqual(recursive_type_conversion(["1", "2", "3"], [int, int, int]), [1, 2, 3])
-        self.assertEqual(recursive_type_conversion(("1", 2, ""), [str, int, bool]), ['1', 2, False])
+        self.assertEqual(
+            recursive_type_conversion(["1", "2", "3"], [int, int, int]), [1, 2, 3]
+        )
+        self.assertEqual(
+            recursive_type_conversion(("1", 2, ""), [str, int, bool]), ["1", 2, False]
+        )
 
     def test_tuple_conversion(self):
-        self.assertEqual(recursive_type_conversion(["1", "2", "True"], (int, int, bool)), (1, 2, True))
-        self.assertEqual(recursive_type_conversion(("1", 2, "3"), (str, str, int)), ('1', '2', 3))
+        self.assertEqual(
+            recursive_type_conversion(["1", "2", "True"], (int, int, bool)),
+            (1, 2, True),
+        )
+        self.assertEqual(
+            recursive_type_conversion(("1", 2, "3"), (str, str, int)), ("1", "2", 3)
+        )
 
     def test_dict_conversion(self):
-        self.assertEqual(recursive_type_conversion({"key1": "123", "key2": 456}, {"key1": int, "key2": str}), {"key1": 123, "key2": '456'})
+        self.assertEqual(
+            recursive_type_conversion(
+                {"key1": "123", "key2": 456}, {"key1": int, "key2": str}
+            ),
+            {"key1": 123, "key2": "456"},
+        )
 
     def test_dict_conversion_1(self):
         source = {
             "number_str": "123",
             "list_of_str": ["1", "2", "3"],
-            "nested_dict": {
-                "bool_str": "True"
-            },
-            "tuple_of_mixed": ('30','',['30',10])
+            "nested_dict": {"bool_str": "True"},
+            "tuple_of_mixed": ("30", "", ["30", 10]),
         }
         template = {
             "number_str": int,
-            "list_of_str": [int,int,int],
-            "nested_dict": {
-                "bool_str": bool
-            },
-            "tuple_of_mixed": (int,bool,[int, str])
+            "list_of_str": [int, int, int],
+            "nested_dict": {"bool_str": bool},
+            "tuple_of_mixed": (int, bool, [int, str]),
         }
         expected = {
             "number_str": 123,
             "list_of_str": [1, 2, 3],
-            "nested_dict": {
-                "bool_str": True
-            },
-            "tuple_of_mixed": (30,False,[30,'10'])
+            "nested_dict": {"bool_str": True},
+            "tuple_of_mixed": (30, False, [30, "10"]),
         }
         self.assertEqual(recursive_type_conversion(source, template), expected)
 
@@ -72,8 +84,8 @@ class TestRecursiveTypeConversion(unittest.TestCase):
         }
         template = {
             "number_str": int,
-            "list_of_str": [int,int,int],
-            "tuple_of_mixed": (int,bool,[int, str])
+            "list_of_str": [int, int, int],
+            "tuple_of_mixed": (int, bool, [int, str]),
         }
         expected = {
             "number_str": 123,
@@ -89,9 +101,10 @@ class TestRecursiveTypeConversion(unittest.TestCase):
         with self.assertRaises(TypeError):
             recursive_type_conversion(["not an int"], int)
         with self.assertRaises(TypeError):
-            recursive_type_conversion([1,"string but missing bool"], (int, str, bool))
+            recursive_type_conversion([1, "string but missing bool"], (int, str, bool))
         with self.assertRaises(TypeError):
-            recursive_type_conversion((1,"string but missing bool"), [int, str, bool])
+            recursive_type_conversion((1, "string but missing bool"), [int, str, bool])
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

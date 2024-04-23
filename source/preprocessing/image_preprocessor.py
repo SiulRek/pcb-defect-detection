@@ -2,9 +2,15 @@ from copy import deepcopy
 import tensorflow as tf
 
 from source.preprocessing.helpers.for_steps.step_base import StepBase
-from source.preprocessing.helpers.for_preprocessor.step_class_mapping import STEP_CLASS_MAPPING
-from source.preprocessing.helpers.for_preprocessor.get_pipeline_code_representation import get_pipeline_code_representation
-from source.preprocessing.helpers.for_preprocessor.class_instances_serializer import ClassInstancesSerializer
+from source.preprocessing.helpers.for_preprocessor.step_class_mapping import (
+    STEP_CLASS_MAPPING,
+)
+from source.preprocessing.helpers.for_preprocessor.get_pipeline_code_representation import (
+    get_pipeline_code_representation,
+)
+from source.preprocessing.helpers.for_preprocessor.class_instances_serializer import (
+    ClassInstancesSerializer,
+)
 from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
 from source.load_raw_data.pack_images_and_labels import pack_images_and_labels
 
@@ -42,6 +48,7 @@ class ImagePreprocessor:
             the step.
         - tf.uint8 is the only input datatype all pipeline steps can handle.
     """
+
     def __init__(self, raise_step_process_exception=True):
         """
         Initializes the ImagePreprocessor with an empty pipeline.
@@ -52,7 +59,7 @@ class ImagePreprocessor:
         self._serializer = None
         self._initialize_class_instance_serializer(STEP_CLASS_MAPPING)
         self._raise_step_process_exception = raise_step_process_exception
-        self._occurred_exception_message = ''
+        self._occurred_exception_message = ""
         self.set_default_datatype(tf.uint8)
 
     @property
@@ -79,7 +86,9 @@ class ImagePreprocessor:
 
         for mapped_class in step_class_mapping.values():
             if not issubclass(mapped_class, StepBase):
-                msg = f"At least one mapped class is not a class or subclass of StepBase."
+                msg = (
+                    f"At least one mapped class is not a class or subclass of StepBase."
+                )
                 raise ValueError(msg)
         self._serializer = ClassInstancesSerializer(step_class_mapping)
 
@@ -103,11 +112,13 @@ class ImagePreprocessor:
         """
         for step in pipeline:
             if not isinstance(step, StepBase):
-                raise ValueError(f'Expecting a Child of StepBase, got {type(step)} instead.')
+                raise ValueError(
+                    f"Expecting a Child of StepBase, got {type(step)} instead."
+                )
         self._pipeline = deepcopy(pipeline)
 
     def pipe_pop(self):
-        """ Pops the last step from the pipeline.
+        """Pops the last step from the pipeline.
 
         Returns:
             StepBase: The last step that was removed from the pipeline.
@@ -122,11 +133,13 @@ class ImagePreprocessor:
             step (StepBase): The preprocessing step to be appended to the pipeline.
         """
         if not isinstance(step, StepBase):
-                    raise ValueError(f'Expecting a Child of StepBase, got {type(step)} instead.')
+            raise ValueError(
+                f"Expecting a Child of StepBase, got {type(step)} instead."
+            )
         self._pipeline.append(deepcopy(step))
 
     def pipe_clear(self):
-        """ Clears all steps from the pipeline"""
+        """Clears all steps from the pipeline"""
         self._pipeline.clear()
 
     def save_pipe_to_json(self, json_path):

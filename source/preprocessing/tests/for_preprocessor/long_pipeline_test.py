@@ -14,37 +14,48 @@ import tensorflow as tf
 
 from source.preprocessing.image_preprocessor import ImagePreprocessor
 from source.preprocessing.helpers.for_steps.step_base import StepBase
-from source.preprocessing.helpers.for_preprocessor.step_class_mapping import STEP_CLASS_MAPPING
+from source.preprocessing.helpers.for_preprocessor.step_class_mapping import (
+    STEP_CLASS_MAPPING,
+)
 from source.load_raw_data.kaggle_dataset import load_tf_record
 from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
 from source.utils import TestResultLogger
-from source.preprocessing.helpers.for_preprocessor.class_instances_serializer import ClassInstancesSerializer
-from source.preprocessing.helpers.for_tests.copy_json_exclude_entries import copy_json_exclude_entries
+from source.preprocessing.helpers.for_preprocessor.class_instances_serializer import (
+    ClassInstancesSerializer,
+)
+from source.preprocessing.helpers.for_tests.copy_json_exclude_entries import (
+    copy_json_exclude_entries,
+)
 
 
 N = 10  # Number of Pipelines Tests to run.
-ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..','..','..')
-OUTPUT_DIR = os.path.join(ROOT_DIR, r'source/preprocessing/tests/outputs')
-JSON_TEMPLATE_FILE = os.path.join(ROOT_DIR, r'source/preprocessing/pipelines/template.json')
-JSON_TEST_FILE = os.path.join(OUTPUT_DIR, 'test_pipe.json')
-LOG_FILE = os.path.join(OUTPUT_DIR, 'test_results.log')
+ROOT_DIR = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", ".."
+)
+OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/preprocessing/tests/outputs")
+JSON_TEMPLATE_FILE = os.path.join(
+    ROOT_DIR, r"source/preprocessing/pipelines/template.json"
+)
+JSON_TEST_FILE = os.path.join(OUTPUT_DIR, "test_pipe.json")
+LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
 
 
 class RGBToGrayscale(StepBase):
-        """  A preprocessing step that converts RGB image to Grayscale image."""
-        arguments_datatype = {}
-        name = 'RGB To Grayscale'
+    """A preprocessing step that converts RGB image to Grayscale image."""
 
-        def __init__(self):
-            """ Initializes the RGBToGrayscale object that can be integrated in an image preprocessing pipeline."""
-            super().__init__(locals())
+    arguments_datatype = {}
+    name = "RGB To Grayscale"
 
-        @StepBase._tensor_pyfunc_wrapper
-        def process_step(self, image_tensor):
-            if image_tensor.shape[2] == 3:
-                processed_image = tf.image.rgb_to_grayscale(image_tensor)
-                return processed_image
-            return image_tensor
+    def __init__(self):
+        """Initializes the RGBToGrayscale object that can be integrated in an image preprocessing pipeline."""
+        super().__init__(locals())
+
+    @StepBase._tensor_pyfunc_wrapper
+    def process_step(self, image_tensor):
+        if image_tensor.shape[2] == 3:
+            processed_image = tf.image.rgb_to_grayscale(image_tensor)
+            return processed_image
+        return image_tensor
 
 
 class TestLongPipeline(unittest.TestCase):
@@ -61,6 +72,7 @@ class TestLongPipeline(unittest.TestCase):
     dataset to grayscale and verifies the conversion as well. If the dataset is accurately converted to grayscale, it can be
     inferred that the pipeline has processed the dataset without any issues.
     """
+
     pipeline_id = None
 
     @classmethod
@@ -69,15 +81,17 @@ class TestLongPipeline(unittest.TestCase):
         if not os.path.exists(OUTPUT_DIR):
             os.mkdir(OUTPUT_DIR)
 
-        kaggle_dataset = load_tf_record().take(9)        # To reduce testing time test cases share this attribute Do not change this attribute.
+        kaggle_dataset = load_tf_record().take(
+            9
+        )  # To reduce testing time test cases share this attribute Do not change this attribute.
         cls.image_dataset = unpack_tf_dataset(kaggle_dataset)[0]
-        cls.logger = TestResultLogger(LOG_FILE, f'Long Pipeline Test {cls.pipeline_id}')
+        cls.logger = TestResultLogger(LOG_FILE, f"Long Pipeline Test {cls.pipeline_id}")
 
     def setUp(self):
-        with open(JSON_TEST_FILE, 'a'):
+        with open(JSON_TEST_FILE, "a"):
             pass
         self.preprocessor = self.create_preconfigured_image_preprocessor()
-        #print(self.preprocessor.get_pipe_code_representation())
+        # print(self.preprocessor.get_pipe_code_representation())
 
     def tearDown(self):
         if os.path.exists(JSON_TEST_FILE):
@@ -85,13 +99,13 @@ class TestLongPipeline(unittest.TestCase):
         self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
 
     def create_preconfigured_image_preprocessor(self):
-        excluded_keys  = [
+        excluded_keys = [
             "Non Local Mean Denoiser",
             "RGB To Grayscale",
             "Grayscale To RGB",
             "Local Contrast Normalizer",
             "Type Caster",
-            "Random Color Jitterer"
+            "Random Color Jitterer",
         ]
         copy_json_exclude_entries(JSON_TEMPLATE_FILE, JSON_TEST_FILE, excluded_keys)
 
@@ -103,13 +117,17 @@ class TestLongPipeline(unittest.TestCase):
         preprocessor.set_pipe(pipeline)
         return preprocessor
 
-    def _verify_image_shapes(self, processed_dataset, original_dataset, color_channel_expected):
+    def _verify_image_shapes(
+        self, processed_dataset, original_dataset, color_channel_expected
+    ):
         for original_image, processed_image in zip(original_dataset, processed_dataset):
             original_image = tf.cast(original_image, processed_image.dtype)
             if original_image.shape == processed_image.shape:
-               if tf.reduce_all(tf.math.equal(original_image, processed_image)):
+                if tf.reduce_all(tf.math.equal(original_image, processed_image)):
                     return False
-            if processed_image.shape[0] != processed_image.shape[1]: # Check if height and width are equal in processed data.
+            if (
+                processed_image.shape[0] != processed_image.shape[1]
+            ):  # Check if height and width are equal in processed data.
                 return False
             if color_channel_expected != processed_image.shape[2]:
                 return False
@@ -120,16 +138,28 @@ class TestLongPipeline(unittest.TestCase):
         try:
             processed_dataset = self.preprocessor.process(self.image_dataset)
         except Exception as e:
-            raise BrokenPipeError('An exception occured while processing the dataset. This is the problematic pipeline: \n'
-                       + self.preprocessor.get_pipe_code_representation()) from e
+            raise BrokenPipeError(
+                "An exception occured while processing the dataset. This is the problematic pipeline: \n"
+                + self.preprocessor.get_pipe_code_representation()
+            ) from e
 
-        if not self._verify_image_shapes(processed_dataset, self.image_dataset, color_channel_expected=3):
-            message = 'The processed dataset has unexpected shapes. This is the problematic pipeline: \n' + self.preprocessor.get_pipe_code_representation()
+        if not self._verify_image_shapes(
+            processed_dataset, self.image_dataset, color_channel_expected=3
+        ):
+            message = (
+                "The processed dataset has unexpected shapes. This is the problematic pipeline: \n"
+                + self.preprocessor.get_pipe_code_representation()
+            )
             self.fail(message)
 
         grayscaled_dataset = RGBToGrayscale().process_step(processed_dataset)
-        if not self._verify_image_shapes(grayscaled_dataset, self.image_dataset, color_channel_expected=1):
-            message = 'The processed dataset could not be converted to grayscale correctly. This is the problematic pipeline: \n' + self.preprocessor.get_pipe_code_representation()
+        if not self._verify_image_shapes(
+            grayscaled_dataset, self.image_dataset, color_channel_expected=1
+        ):
+            message = (
+                "The processed dataset could not be converted to grayscale correctly. This is the problematic pipeline: \n"
+                + self.preprocessor.get_pipe_code_representation()
+            )
             self.fail(message)
 
 
@@ -144,8 +174,8 @@ def load_long_pipeline_tests(n=N):
 
     test_suites = []
     for i in range(1, N + 1):
-        test_class_name = f'{TestLongPipeline.__name__}{i}'
-        test_class = type(test_class_name, (TestLongPipeline,), {'pipeline_id': i})
+        test_class_name = f"{TestLongPipeline.__name__}{i}"
+        test_class = type(test_class_name, (TestLongPipeline,), {"pipeline_id": i})
         test_suite = unittest.TestLoader().loadTestsFromTestCase(test_class)
         test_suites.append(test_suite)
 
@@ -154,6 +184,6 @@ def load_long_pipeline_tests(n=N):
     return test_suite
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     runner = unittest.TextTestRunner()
     runner.run(load_long_pipeline_tests(N))
