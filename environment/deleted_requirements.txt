@@ -2,3 +2,6 @@
 tensorflow-intel==2.14.0
 pywin32==306
 pywinpty==2.0.13
+
+# Only used locally
+pylint==3.0.2
