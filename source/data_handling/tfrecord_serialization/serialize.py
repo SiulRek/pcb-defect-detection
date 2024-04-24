@@ -5,6 +5,8 @@ import tensorflow as tf
 
 def _bytes_feature(value):
     """Returns a bytes_list from a string / byte."""
+    if isinstance(value, type(tf.constant(0))):  # if value is a Tensor
+        value = value.numpy()  # get its numpy value
     return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
 
