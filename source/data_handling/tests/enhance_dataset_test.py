@@ -21,14 +21,12 @@ class TestEnhanceDataset(unittest.TestCase):
         cls.logger.log_title("Enhance Dataset Test")
 
     def setUp(self):
-        # Create a sample dataset of 100 elements
         self.dataset = tf.data.Dataset.range(100)
 
     def tearDown(self):
         self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
 
     def test_shuffling(self):
-        # Check for changes in the dataset order
         original_first_element = next(iter(self.dataset)).numpy()
         enhanced = enhance_dataset(self.dataset, shuffle=True, random_seed=42)
         enhanced_first_element = next(iter(enhanced)).numpy()

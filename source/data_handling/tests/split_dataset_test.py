@@ -6,17 +6,19 @@ import numpy as np
 from source.data_handling.manipulation.split_dataset import split_dataset
 from source.utils import TestResultLogger
 
+
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
 OUTPUT_DIR = os.path.join(ROOT_DIR, "source", "data_handling", "tests", "outputs")
 DATA_DIR = os.path.join(ROOT_DIR, "source", "data_handling", "tests", "data")
 LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
+
 
 class TestDatasetFunctions(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         os.makedirs(OUTPUT_DIR, exist_ok=True)
         cls.logger = TestResultLogger(LOG_FILE)
-        cls.logger.log_title("TensorFlow Dataset Enhancement and Splitting Test")
+        cls.logger.log_title("Dataset Splitting Test")
 
     def setUp(self):
         self.dataset = tf.data.Dataset.range(100)
