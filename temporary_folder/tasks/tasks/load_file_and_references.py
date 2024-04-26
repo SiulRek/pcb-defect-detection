@@ -6,10 +6,11 @@ ROOT_DIR = sys.argv[1]
 FILE_PATH = sys.argv[2]
 sys.path.append(ROOT_DIR)
 from temporary_folder.tasks.helpers.process_file import process_file
-from temporary_folder.tasks.helpers.extract_references_and_contents import extract_references_and_content
+from temporary_folder.tasks.helpers.extract_comments_references_and_contents import extract_content_references_and_comments
 import temporary_folder.tasks.helpers.print_statements as task_prints
 from temporary_folder.tasks.helpers.add_text_tags import add_text_tags
 from temporary_folder.tasks.constants.getters import get_temporary_file_path
+from temporary_folder.tasks.constants.definitions import REFERENCE_TYPE
 
 TEMPORARY_FILE = get_temporary_file_path(ROOT_DIR)
 
@@ -24,15 +25,18 @@ def load_file_and_references(file_path, root_dir, query_path):
         root_dir (str): The root directory of the project.
         query_path (str): The path to the file where the query will be saved.
     """
-    referenced_files, contents = extract_references_and_content(file_path, root_dir)
+    contents, referenced_contents = extract_content_references_and_comments(file_path, root_dir)
     start_text, updated_content, end_text = process_file(file_path, contents)
 
-    query = "--- Original Python File ---\n" + updated_content
-    for path, content in referenced_files.items():
-        if path.endswith("test.py"):
-            query += f"\n\n--- Test File ({path}) ---\n{content}"
-        else:
-            query += f"\n\n--- Additional File ({path}) ---\n{content}"
+    query = f"--- File at: {file_path} ---\n{updated_content}"
+    print(referenced_contents)
+    for content_type, data in referenced_contents:
+        if content_type == REFERENCE_TYPE.COMMENT:
+            query += f"\n\n--- Comment ---\n{data}"
+        elif content_type == REFERENCE_TYPE.FILE:
+            file_path, file_content = data
+            query += f"\n\n--- File at: {file_path} ---\n{file_content}"
+
 
     query = add_text_tags(start_text, end_text, query)
 

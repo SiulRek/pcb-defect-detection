@@ -20,7 +20,9 @@ class Car:
     
     #S What is the output of the following code?
     # reference_1.py
+    #C Wow Thats a good comment
     # reference_2.py
+    #C This is another comment
     # preprocessing/tests/test_runner.py
     # reference_3.txt
     #Err

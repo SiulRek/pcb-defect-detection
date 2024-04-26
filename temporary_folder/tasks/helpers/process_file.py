@@ -41,7 +41,7 @@ def process_file(filepath, contents=None):
     with open(filepath, "w") as file:
         file.writelines(updated_lines)
     if error_text:
-        end_text += f"\n\nOccurred Error:{error_text}"
+        end_text += f"\n\n---Occurred Error:---{error_text}"
     return start_text, ''.join(updated_lines), end_text
 
 ## ------- Functionality to extract Errors from logger
