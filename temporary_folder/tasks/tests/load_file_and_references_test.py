@@ -18,7 +18,7 @@ class Car:
     def get_car(self):
         return self.brand, self.model
 
-    #S What is the output of the following code?
+    #S Hello Darkness my Old Friend
     # reference_1.py
     #C Wow Thats a good comment
     # reference_2.py

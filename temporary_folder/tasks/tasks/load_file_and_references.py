@@ -36,8 +36,8 @@ def load_file_and_references(file_path, root_dir, query_path):
         for content_type, _ in referenced_contents
     ):
         referenced_contents.insert(0, (REFERENCE_TYPE.CURRENT_FILE, None))
-
-    query = f"--- File at: {file_path} ---\n{updated_content}"
+    relative_path = os.path.relpath(file_path, root_dir)
+    query = f"--- File at: {relative_path} ---\n{updated_content}"
     for content_type, data in referenced_contents:
         if content_type == REFERENCE_TYPE.COMMENT:
             query += f"\n\n--- Comment ---\n{data}"

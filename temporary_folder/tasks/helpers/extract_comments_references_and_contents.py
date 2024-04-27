@@ -1,6 +1,5 @@
 import re
 
-from temporary_folder.tasks.helpers.find_nearest_file import find_nearest_file
 from temporary_folder.tasks.constants.patterns import (
     FILE_PATTERN,
     FILE_PATTERN_WITH_DIR,
@@ -11,9 +10,7 @@ from temporary_folder.tasks.constants.definitions import (
     ERROR_TAG,
     REFERENCE_TYPE,
 )
-from temporary_folder.tasks.helpers.find_file_from_path_fragment import (
-    find_file_from_path_fragment,
-)
+from temporary_folder.tasks.helpers.file_finder import file_finder
 from temporary_folder.tasks.helpers.get_error_text import get_error_text
 
 
@@ -25,30 +22,20 @@ def extract_comments(line):
 
 def handle_file_pattern(line, root_dir, current_file_path):
     """Handle file pattern extraction and fetch file content."""
-    match_with_dir = re.search(FILE_PATTERN_WITH_DIR, line)
-    referenced_file_path = None
-    if match_with_dir:
-        path_fragment = match_with_dir.group(1)
-        referenced_file_path = find_file_from_path_fragment(path_fragment, root_dir)
-    else:
-        match = re.search(FILE_PATTERN, line)
-        if match:
-            referenced_file_name = match.group(1)
-            referenced_file_path = find_nearest_file(
-                referenced_file_name, root_dir, current_file_path
-            )
-
-    if referenced_file_path:
+    match = re.search(FILE_PATTERN, line)
+    if match:
+        referenced_file_path = file_finder(match.group(1), root_dir, current_file_path)
         with open(referenced_file_path, "r", encoding="utf-8") as ref_file:
             file_contents = ref_file.read()
             return (REFERENCE_TYPE.FILE, (referenced_file_path, file_contents))
-
+        
 
 def handle_error_tags(line, root_dir, current_file_path):
     """Extract error information based on tags."""
     if ERROR_TAG in line:
         error_text = get_error_text(root_dir, current_file_path)
         return (REFERENCE_TYPE.LOGGED_ERROR, error_text)
+    
 
 def handle_current_file_tag(line):
     """Extract the current file tag."""
@@ -79,3 +66,4 @@ def extract_content_references_and_comments(file_path, root_dir):
 
     non_referenced_content = "".join(content_lines)
     return non_referenced_content, referenced_contents
+
