@@ -4,9 +4,9 @@ import os
 ROOT_DIR = sys.argv[1]
 FILE_PATH = sys.argv[2]
 sys.path.append(ROOT_DIR)
-from temporary_folder.tasks.helpers.process_file import process_file
-from temporary_folder.tasks.helpers.extract_comments_references_and_contents import (
-    extract_content_references_and_comments,
+from temporary_folder.tasks.helpers.extract_start_and_end_text import extract_start_and_end_text
+from temporary_folder.tasks.helpers.extract_referenced_contents import (
+    extract_referenced_contents,
 )
 from temporary_folder.tasks.helpers.add_text_tags import add_text_tags
 from temporary_folder.tasks.constants.getters import get_temporary_file_path
@@ -69,17 +69,10 @@ def load_file_and_references(file_path, root_dir, query_path):
         root_dir (str): The root directory of the project.
         query_path (str): The path to the file where the query will be saved.
     """
-    contents, referenced_contents = extract_content_references_and_comments(
+    referenced_contents, updated_content = extract_referenced_contents(
         file_path, root_dir
     )
-    with open('test.txt', 'w') as f:
-        f.write('This is the contents\n' + contents + '\n')
-        f.write('These are the referenced contents\n' + str(referenced_contents) + '\n')
-    start_text, updated_content, end_text = process_file(file_path, contents)
-    # with open('test.txt', 'a') as f:
-    #     f.write('This is the start text\n' + start_text + '\n')
-    #     f.write('This is the updated content\n' + updated_content + '\n')
-    #     f.write('This is the end text\n' + end_text + '\n')
+    start_text, updated_content, end_text = extract_start_and_end_text(file_path, updated_content)
 
     query = format_text_from_references(
         referenced_contents, file_path, updated_content, root_dir

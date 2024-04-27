@@ -51,10 +51,17 @@ def handle_current_file_reference(line):
        return (REFERENCE_TYPE.CURRENT_FILE, None)
 
 
-def extract_content_references_and_comments(file_path, root_dir):
+def extract_referenced_contents(file_path, root_dir):
     """
     Extracts referenced files, comments, and other content from a specified file, maintaining
     the order of their occurrence.
+
+    Args:
+        file_path (str): The path to the file.
+        root_dir (str): The root directory of the project.
+    
+    Returns:
+        tuple: A tuple containing a list of referenced contents and the non-referenced content.
     """
     referenced_contents = []
     content_lines = []
@@ -76,5 +83,5 @@ def extract_content_references_and_comments(file_path, root_dir):
                 content_lines.append(line)
 
     non_referenced_content = "".join(content_lines)
-    return non_referenced_content, referenced_contents
+    return referenced_contents, non_referenced_content
 
