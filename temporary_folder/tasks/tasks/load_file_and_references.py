@@ -13,7 +13,47 @@ from temporary_folder.tasks.constants.getters import get_temporary_file_path
 from temporary_folder.tasks.constants.definitions import REFERENCE_TYPE
 import temporary_folder.tasks.helpers.print_statements as task_prints
 
+
 TEMPORARY_FILE = get_temporary_file_path(ROOT_DIR)
+
+
+def format_text_from_references(referenced_contents, file_path, updated_content, root_dir):
+    """
+    Formats a query string from file references and updated content.
+    
+    Args:
+        referenced_contents (list): A list of tuples detailing references (type, data).
+        file_path (str): The path to the current file.
+        updated_content (str): The updated content of the current file.
+        root_dir (str): The root directory of the project.
+
+    Returns:
+        str: Formatted query based on file references.
+    """
+    if not any(
+        content_type == REFERENCE_TYPE.CURRENT_FILE
+        for content_type, _ in referenced_contents
+    ):
+        referenced_contents.insert(0, (REFERENCE_TYPE.CURRENT_FILE, None))
+
+    query = ""
+    relative_path = os.path.relpath(file_path, root_dir)
+    query += f"--- File at: {relative_path} ---\n{updated_content}"
+
+    for content_type, data in referenced_contents:
+        if content_type == REFERENCE_TYPE.COMMENT:
+            query += f"\n\n--- Comment ---\n{data}"
+        elif content_type == REFERENCE_TYPE.FILE:
+            file_path, file_content = data
+            relative_path = os.path.relpath(file_path, root_dir)
+            query += f"\n\n--- File at: {relative_path} ---\n{file_content}"
+        elif content_type == REFERENCE_TYPE.LOGGED_ERROR:
+            query += f"\n\n--- Occurred Error ---\n{data}"
+        elif content_type == REFERENCE_TYPE.CURRENT_FILE:
+            relative_path = os.path.relpath(file_path, root_dir)
+            query += f"\n\n--- FILE at: {relative_path} ---\n{updated_content}"
+    
+    return query
 
 
 def load_file_and_references(file_path, root_dir, query_path):
@@ -31,25 +71,9 @@ def load_file_and_references(file_path, root_dir, query_path):
     )
     start_text, updated_content, end_text = process_file(file_path, contents)
 
-    if not any(
-        content_type == REFERENCE_TYPE.CURRENT_FILE
-        for content_type, _ in referenced_contents
-    ):
-        referenced_contents.insert(0, (REFERENCE_TYPE.CURRENT_FILE, None))
-    relative_path = os.path.relpath(file_path, root_dir)
-    query = f"--- File at: {relative_path} ---\n{updated_content}"
-    for content_type, data in referenced_contents:
-        if content_type == REFERENCE_TYPE.COMMENT:
-            query += f"\n\n--- Comment ---\n{data}"
-        elif content_type == REFERENCE_TYPE.FILE:
-            file_path, file_content = data
-            relative_path = os.path.relpath(file_path, root_dir)
-            query += f"\n\n--- File at: {relative_path} ---\n{file_content}"
-        elif content_type == REFERENCE_TYPE.LOGGED_ERROR:
-            query += f"\n\n--- Occurred Error ---\n{data}"
-        elif content_type == REFERENCE_TYPE.CURRENT_FILE:
-            relative_path = os.path.relpath(file_path, root_dir)
-            query += f"\n\n--- FILE at: {relative_path} ---\n{updated_content}"
+    query = format_text_from_references(
+        referenced_contents, file_path, updated_content, root_dir
+    )
 
     query = add_text_tags(start_text, end_text, query)
 
