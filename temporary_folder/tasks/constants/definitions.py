@@ -11,7 +11,7 @@ from enum import Enum
 class REFERENCE_TYPE(Enum):
     COMMENT = "comment"
     FILE = "reference"
-    OTHER = "other"
-
+    LOGGED_ERROR = "error"
+    
 # General Constants
 TEST_RESULTS_FILE = "test_results.log"

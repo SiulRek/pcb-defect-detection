@@ -27,7 +27,6 @@ def process_file(filepath, contents=None):
         lines = contents.splitlines()
     start_text = ''
     end_text = ''
-    error_text = ''
     updated_lines = []
 
     for line in lines:
@@ -35,13 +34,9 @@ def process_file(filepath, contents=None):
             start_text = line.split(START_TAG, 1)[1].strip()
         elif END_TAG in line and end_text == '':
             end_text = line.split(END_TAG, 1)[1].strip()
-        elif ERROR_TAG in line and error_text == '':
-            error_text = get_error_text(ROOT_DIR, filepath)
         else:
             updated_lines.append(line + '\n')
 
     with open(filepath, "w") as file:
         file.writelines(updated_lines)
-    if error_text:
-        end_text += f"\n\n---Occurred Error:---{error_text}"
     return start_text, ''.join(updated_lines), end_text

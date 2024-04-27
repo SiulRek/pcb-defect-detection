@@ -35,7 +35,10 @@ def load_file_and_references(file_path, root_dir, query_path):
             query += f"\n\n--- Comment ---\n{data}"
         elif content_type == REFERENCE_TYPE.FILE:
             file_path, file_content = data
-            query += f"\n\n--- File at: {file_path} ---\n{file_content}"
+            relative_path = os.path.relpath(file_path, root_dir)
+            query += f"\n\n--- File at: {relative_path} ---\n{file_content}"
+        elif content_type == REFERENCE_TYPE.LOGGED_ERROR:
+            query += f"\n\n--- Occurred Error ---\n{data}" 
 
 
     query = add_text_tags(start_text, end_text, query)

@@ -5,10 +5,15 @@ from temporary_folder.tasks.constants.patterns import (
     FILE_PATTERN,
     FILE_PATTERN_WITH_DIR,
 )
-from temporary_folder.tasks.constants.definitions import COMMENT_TAG, REFERENCE_TYPE
+from temporary_folder.tasks.constants.definitions import (
+    COMMENT_TAG,
+    REFERENCE_TYPE,
+    ERROR_TAG,
+)
 from temporary_folder.tasks.helpers.find_file_from_path_fragment import (
     find_file_from_path_fragment,
 )
+from temporary_folder.tasks.helpers.get_error_text import get_error_text
 
 
 def extract_content_references_and_comments(file_path, root_dir):
@@ -52,6 +57,9 @@ def extract_content_references_and_comments(file_path, root_dir):
                         referenced_contents.append(
                             (REFERENCE_TYPE.FILE, (referenced_file_path, file_contents))
                         )
+            elif ERROR_TAG in line:
+                error_text = get_error_text(root_dir, file_path)
+                referenced_contents.append((REFERENCE_TYPE.LOGGED_ERROR, error_text))
             else:
                 content_lines.append(line)
 
