@@ -4,14 +4,14 @@ import os
 ROOT_DIR = sys.argv[1]
 FILE_PATH = sys.argv[2]
 sys.path.append(ROOT_DIR)
-from temporary_folder.tasks.helpers.extract_start_and_end_text import extract_start_and_end_text
-from temporary_folder.tasks.helpers.extract_referenced_contents import (
+from temporary_folder.tasks.helpers.general.extract_start_and_end_text import extract_start_and_end_text
+from temporary_folder.tasks.helpers.general.extract_referenced_contents import (
     extract_referenced_contents,
 )
-from temporary_folder.tasks.helpers.add_text_tags import add_text_tags
+from temporary_folder.tasks.helpers.general.add_text_tags import add_text_tags
 from temporary_folder.tasks.constants.getters import get_temporary_file_path
 from temporary_folder.tasks.constants.definitions import REFERENCE_TYPE
-import temporary_folder.tasks.helpers.print_statements as task_prints
+import temporary_folder.tasks.helpers.general.print_statements as task_prints
 
 
 TEMPORARY_FILE = get_temporary_file_path(ROOT_DIR)

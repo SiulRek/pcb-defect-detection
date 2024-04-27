@@ -1,6 +1,6 @@
 import re
 
-from temporary_folder.tasks.helpers.file_finder import file_finder
+from temporary_folder.tasks.helpers.general.file_finder import file_finder
 from temporary_folder.tasks.constants.definitions import TEST_RESULTS_FILE
 from temporary_folder.tasks.constants.patterns import TEST_RESULT_PATTERN
 

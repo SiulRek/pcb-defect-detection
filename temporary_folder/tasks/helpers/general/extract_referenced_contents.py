@@ -10,9 +10,9 @@ from temporary_folder.tasks.constants.definitions import (
     ERROR_TAG,
     REFERENCE_TYPE,
 )
-from temporary_folder.tasks.helpers.file_finder import file_finder
-from temporary_folder.tasks.helpers.get_error_text import get_error_text
-from temporary_folder.tasks.helpers.get_fill_text import get_fill_text
+from temporary_folder.tasks.helpers.general.file_finder import file_finder
+from temporary_folder.tasks.helpers.general.get_error_text import get_error_text
+from temporary_folder.tasks.helpers.general.get_fill_text import get_fill_text
 
 
 def handle_referenced_comment(line):
