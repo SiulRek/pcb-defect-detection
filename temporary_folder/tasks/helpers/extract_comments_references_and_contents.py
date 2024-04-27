@@ -2,7 +2,7 @@ import re
 
 from temporary_folder.tasks.constants.patterns import (
     FILE_PATTERN,
-    FILE_PATTERN_WITH_DIR,
+    FILL_TEXT_PATTERN,
 )
 from temporary_folder.tasks.constants.definitions import (
     COMMENT_TAG,
@@ -12,6 +12,7 @@ from temporary_folder.tasks.constants.definitions import (
 )
 from temporary_folder.tasks.helpers.file_finder import file_finder
 from temporary_folder.tasks.helpers.get_error_text import get_error_text
+from temporary_folder.tasks.helpers.get_fill_text import get_fill_text
 
 
 def handle_referenced_comment(line):
@@ -35,6 +36,13 @@ def handle_referenced_error(line, root_dir, current_file_path):
     if ERROR_TAG in line:
         error_text = get_error_text(root_dir, current_file_path)
         return (REFERENCE_TYPE.LOGGED_ERROR, error_text)
+
+def handle_fill_text(line, root_dir):
+    """Extract the fill text tag."""
+    if match := FILL_TEXT_PATTERN.match(line):
+        placeholder = match.group(1)
+        fill_text, title = get_fill_text(placeholder, root_dir)
+        return (REFERENCE_TYPE.FILL_TEXT, (fill_text, title))
     
 
 def handle_current_file_reference(line):
@@ -53,13 +61,16 @@ def extract_content_references_and_comments(file_path, root_dir):
 
     with open(file_path, "r", encoding="utf-8") as file:
         for line in file:
-            if referenced_comment := handle_referenced_comment(line):
+            stripped_line = line.strip()
+            if referenced_comment := handle_referenced_comment(stripped_line):
                 referenced_contents.append(referenced_comment)
-            elif referenced_file := handle_referenced_file(line, root_dir, file_path):
+            elif referenced_file := handle_referenced_file(stripped_line, root_dir, file_path):
                 referenced_contents.append(referenced_file)
-            elif referenced_error := handle_referenced_error(line, root_dir, file_path):
+            elif referenced_error := handle_referenced_error(stripped_line, root_dir, file_path):
                 referenced_contents.append(referenced_error)
-            elif current_file_tag := handle_current_file_reference(line):
+            elif referenced_fill_text :=  handle_fill_text(stripped_line, root_dir):
+                referenced_contents.append(referenced_fill_text)
+            elif current_file_tag := handle_current_file_reference(stripped_line):
                 referenced_contents.append(current_file_tag)
             else:
                 content_lines.append(line)

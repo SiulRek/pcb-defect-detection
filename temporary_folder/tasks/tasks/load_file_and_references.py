@@ -49,6 +49,9 @@ def format_text_from_references(referenced_contents, file_path, updated_content,
             query += f"\n\n--- File at: {relative_path} ---\n{file_content}"
         elif content_type == REFERENCE_TYPE.LOGGED_ERROR:
             query += f"\n\n--- Occurred Error ---\n{data}"
+        elif content_type == REFERENCE_TYPE.FILL_TEXT:
+            fill_text, title = data
+            query += f"\n\n--- {title} ---\n{fill_text}"
         elif content_type == REFERENCE_TYPE.CURRENT_FILE:
             relative_path = os.path.relpath(file_path, root_dir)
             query += f"\n\n--- FILE at: {relative_path} ---\n{updated_content}"
@@ -69,7 +72,14 @@ def load_file_and_references(file_path, root_dir, query_path):
     contents, referenced_contents = extract_content_references_and_comments(
         file_path, root_dir
     )
+    with open('test.txt', 'w') as f:
+        f.write('This is the contents\n' + contents + '\n')
+        f.write('These are the referenced contents\n' + str(referenced_contents) + '\n')
     start_text, updated_content, end_text = process_file(file_path, contents)
+    # with open('test.txt', 'a') as f:
+    #     f.write('This is the start text\n' + start_text + '\n')
+    #     f.write('This is the updated content\n' + updated_content + '\n')
+    #     f.write('This is the end text\n' + end_text + '\n')
 
     query = format_text_from_references(
         referenced_contents, file_path, updated_content, root_dir

@@ -14,6 +14,8 @@ class REFERENCE_TYPE(Enum):
     FILE = "reference"
     LOGGED_ERROR = "error"
     CURRENT_FILE = "current_file"
+    # RUN_PYTHON_SCRIPT = "run_python_script"
+    FILL_TEXT = "fill_text"
     
 # General Constants
 TEST_RESULTS_FILE = "test_results.log"
