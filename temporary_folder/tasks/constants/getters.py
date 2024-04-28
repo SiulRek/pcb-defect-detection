@@ -6,5 +6,5 @@ def get_temporary_file_path(root_dir):
 def get_fill_text_directory(root_dir):
     return os.path.join(root_dir, "temporary_folder", "tasks", "fill_texts")
 
-def get_environment_python_path(root_dir):
-    return os.path.join(root_dir, "venv", "bin", "python")
+def get_python_environment_path(root_dir):
+    return os.path.join(root_dir, "venv")

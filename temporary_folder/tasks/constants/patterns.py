@@ -13,3 +13,6 @@ FILL_TEXT_PATTERN = re.compile(r'^#\*\s*(.*)')
 
 # Run Python Script Name Pattern
 RUN_SCRIPT_PATTERN = re.compile(r"#run (\S+\.py)")
+
+# Run Pylint Pattern
+RUN_PYLINT_PATTERN = re.compile(r"#pylint (\S+\.py)")

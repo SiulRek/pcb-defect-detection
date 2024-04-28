@@ -1,5 +1,5 @@
 import subprocess
-
+import os
 
 def execute_python_script(script_path, env_python_path):
     """
@@ -13,9 +13,10 @@ def execute_python_script(script_path, env_python_path):
     Returns:
         str: The output from the script execution or an error message if execution fails.
     """
+    python_path = os.path.join(env_python_path, "bin", "python")
     try:
         completed_process = subprocess.run(
-            [env_python_path, "-u", script_path],
+            [python_path, "-u", script_path],
             capture_output=True,
             text=True,
             check=True,
