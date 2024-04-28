@@ -1,7 +1,8 @@
 import re
 
 # Reference File Pattern
-FILE_PATTERN = re.compile(r"#\s*(\S+\.(py|txt|log|md|csv))")
+FILE_PATTERN = re.compile(r"#\s*((?:\S+\.(?:py|txt|log|md|csv))\s*(?:,\s*\S+\.(?:py|txt|log|md|csv)\s*)*)")
+
 FILE_WITH_DIR_PATTERN = re.compile(r"#\s([\w/\\.-]+[\\/][\w.-]+\.(py|txt|log|md|csv))")
 
 # Test Result Pattern

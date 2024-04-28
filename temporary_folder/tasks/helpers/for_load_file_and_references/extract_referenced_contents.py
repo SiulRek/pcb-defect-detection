@@ -21,14 +21,19 @@ def handle_referenced_comment(line):
         return (REFERENCE_TYPE.COMMENT, line.replace(COMMENT_TAG, "").strip())
 
 
-def handle_referenced_file(line, root_dir, current_file_path):
+def handle_referenced_files(line, root_dir, current_file_path):
     """Handle file pattern extraction and fetch file content."""
     match = re.search(FILE_PATTERN, line)
     if match:
-        referenced_file_path = file_finder(match.group(1), root_dir, current_file_path)
-        with open(referenced_file_path, "r", encoding="utf-8") as ref_file:
-            file_contents = ref_file.read()
-            return (REFERENCE_TYPE.FILE, (referenced_file_path, file_contents))
+        referenced_files = []
+        file_names = match.group(1).split(",")
+        file_names	= [file_name.strip() for file_name in file_names]
+        for file_name in file_names:
+            file_path = file_finder(file_name, root_dir, current_file_path)
+            with open(file_path, "r", encoding="utf-8") as file:
+                referenced_file = (REFERENCE_TYPE.FILE, (file_path, file.read()))
+                referenced_files.append(referenced_file)
+        return referenced_files
         
 
 def handle_referenced_error(line, root_dir, current_file_path):
@@ -36,6 +41,7 @@ def handle_referenced_error(line, root_dir, current_file_path):
     if ERROR_TAG in line:
         error_text = get_error_text(root_dir, current_file_path)
         return (REFERENCE_TYPE.LOGGED_ERROR, error_text)
+
 
 def handle_fill_text(line, root_dir):
     """Extract the fill text tag."""
@@ -71,8 +77,8 @@ def extract_referenced_contents(file_path, root_dir):
             stripped_line = line.strip()
             if referenced_comment := handle_referenced_comment(stripped_line):
                 referenced_contents.append(referenced_comment)
-            elif referenced_file := handle_referenced_file(stripped_line, root_dir, file_path):
-                referenced_contents.append(referenced_file)
+            elif referenced_files := handle_referenced_files(stripped_line, root_dir, file_path):
+                referenced_contents.extend(referenced_files)
             elif referenced_error := handle_referenced_error(stripped_line, root_dir, file_path):
                 referenced_contents.append(referenced_error)
             elif referenced_fill_text :=  handle_fill_text(stripped_line, root_dir):

@@ -21,11 +21,14 @@ class Car:
     #S Hello Darkness my Old Friend
     # reference_1.py
     #*test
+    #T Comment Title
     #C Wow Thats a good comment
-    # reference_2.py
+    #C The line continues even here
+    #C The comment is so long.
+    #T Reference File Title
+    # reference_2.py, reference_3.txt
     #File
     #C This is another comment
     # preprocessing/tests/test_runner.py
-    # reference_3.txt
     #Err
     #E The end of the code

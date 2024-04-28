@@ -1,14 +1,19 @@
 import sys
 import os
+from copy import deepcopy
 
 ROOT_DIR = sys.argv[1]
 FILE_PATH = sys.argv[2]
 sys.path.append(ROOT_DIR)
-from temporary_folder.tasks.helpers.for_load_file_and_references.extract_start_and_end_text import extract_start_and_end_text
+from temporary_folder.tasks.helpers.for_load_file_and_references.extract_start_and_end_text import (
+    extract_start_and_end_text,
+)
 from temporary_folder.tasks.helpers.for_load_file_and_references.extract_referenced_contents import (
     extract_referenced_contents,
 )
-from temporary_folder.tasks.helpers.for_load_file_and_references.add_text_tags import add_text_tags
+from temporary_folder.tasks.helpers.for_load_file_and_references.add_text_tags import (
+    add_text_tags,
+)
 from temporary_folder.tasks.constants.getters import get_temporary_file_path
 from temporary_folder.tasks.constants.definitions import REFERENCE_TYPE
 import temporary_folder.tasks.helpers.general.print_statements as task_prints
@@ -17,10 +22,26 @@ import temporary_folder.tasks.helpers.general.print_statements as task_prints
 TEMPORARY_FILE = get_temporary_file_path(ROOT_DIR)
 
 
-def format_text_from_references(referenced_contents, file_path, updated_content, root_dir):
+class ReferenceTitleManager:
+
+    def __init__(self):
+        self.title = None
+
+    def set(self, title):
+        self.title = title
+
+    def get(self):
+        title = deepcopy(self.title)
+        self.title = None
+        return title
+
+
+def format_text_from_references(
+    referenced_contents, file_path, updated_content, root_dir
+):
     """
     Formats a query string from file references and updated content.
-    
+
     Args:
         referenced_contents (list): A list of tuples detailing references (type, data).
         file_path (str): The path to the current file.
@@ -39,23 +60,35 @@ def format_text_from_references(referenced_contents, file_path, updated_content,
     query = ""
     relative_path = os.path.relpath(file_path, root_dir)
     query += f"--- File at: {relative_path} ---\n{updated_content}"
-
+    current_file_path = file_path
+    title_manager = ReferenceTitleManager()
     for content_type, data in referenced_contents:
-        if content_type == REFERENCE_TYPE.COMMENT:
-            query += f"\n\n--- Comment ---\n{data}"
+        current_title = title_manager.get()
+
+        if content_type == REFERENCE_TYPE.TITLE:
+            title_manager.set(data)
+        elif content_type == REFERENCE_TYPE.COMMENT:
+            title = current_title or "Comment"
+            query += f"\n\n--- {title} ---\n{data}"
         elif content_type == REFERENCE_TYPE.FILE:
             file_path, file_content = data
             relative_path = os.path.relpath(file_path, root_dir)
-            query += f"\n\n--- File at: {relative_path} ---\n{file_content}"
+            title = current_title or f"File at: {relative_path}"
+            query += f"\n\n--- {title} ---\n{file_content}"
         elif content_type == REFERENCE_TYPE.LOGGED_ERROR:
-            query += f"\n\n--- Occurred Error ---\n{data}"
+            title = current_title or "Occurred Error"
+            query += f"\n\n--- {title} ---\n{data}"
         elif content_type == REFERENCE_TYPE.FILL_TEXT:
-            fill_text, title = data
+            fill_text, text_title = data
+            title = current_title or text_title
             query += f"\n\n--- {title} ---\n{fill_text}"
         elif content_type == REFERENCE_TYPE.CURRENT_FILE:
-            relative_path = os.path.relpath(file_path, root_dir)
-            query += f"\n\n--- FILE at: {relative_path} ---\n{updated_content}"
-    
+            relative_path = os.path.relpath(current_file_path, root_dir)
+            title = current_title or f"File at: {relative_path}"
+            query += f"\n\n--- {title} ---\n{updated_content}"
+        else:
+            raise ValueError(f"Unknown content type: {content_type}")
+
     return query
 
 
@@ -72,7 +105,9 @@ def load_file_and_references(file_path, root_dir, query_path):
     referenced_contents, updated_content = extract_referenced_contents(
         file_path, root_dir
     )
-    start_text, updated_content, end_text = extract_start_and_end_text(file_path, updated_content)
+    start_text, updated_content, end_text = extract_start_and_end_text(
+        file_path, updated_content
+    )
 
     query = format_text_from_references(
         referenced_contents, file_path, updated_content, root_dir
