@@ -1,6 +1,6 @@
 import re
 
-from temporary_folder.tasks.helpers.general.file_finder import file_finder
+from temporary_folder.tasks.helpers.general.find_file import find_file
 from temporary_folder.tasks.constants.definitions import TEST_RESULTS_FILE
 from temporary_folder.tasks.constants.patterns import TEST_RESULT_PATTERN
 
@@ -35,7 +35,7 @@ def get_error_text(root_dir, reference_file_path):
     Returns:
         str: The error text.
     """
-    log_path = file_finder(TEST_RESULTS_FILE, root_dir, reference_file_path)
+    log_path = find_file(TEST_RESULTS_FILE, root_dir, reference_file_path)
     with open(log_path) as f:
         log_text = f.read()
     return _extract_error_messages(log_text)

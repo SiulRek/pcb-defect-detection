@@ -14,7 +14,7 @@ from temporary_folder.tasks.constants.definitions import (
     ERROR_TAG,
     REFERENCE_TYPE,
 )
-from temporary_folder.tasks.helpers.general.file_finder import file_finder
+from temporary_folder.tasks.helpers.general.find_file import find_file
 from temporary_folder.tasks.helpers.for_load_file_and_references.get_error_text import (
     get_error_text,
 )
@@ -49,7 +49,7 @@ def handle_referenced_files(line, root_dir, current_file_path):
         file_names = match.group(1).split(",")
         file_names = [file_name.strip() for file_name in file_names]
         for file_name in file_names:
-            file_path = file_finder(file_name, root_dir, current_file_path)
+            file_path = find_file(file_name, root_dir, current_file_path)
             with open(file_path, "r", encoding="utf-8") as file:
                 referenced_file = (REFERENCE_TYPE.FILE, (file_path, file.read()))
                 referenced_files.append(referenced_file)
@@ -78,7 +78,7 @@ def handle_run_python_script(line, root_dir, current_file_path):
     """Extract the run python script tag."""
     if match := RUN_SCRIPT_PATTERN.match(line):
         script_name = match.group(1)
-        script_path = file_finder(script_name, root_dir, current_file_path)
+        script_path = find_file(script_name, root_dir, current_file_path)
         environment_path = get_python_environment_path(root_dir)
         script_output = execute_python_script(script_path, environment_path)
         return (REFERENCE_TYPE.RUN_PYTHON_SCRIPT, script_output)
@@ -89,7 +89,7 @@ def handle_run_pylint(line, root_dir, current_file_path):
     """Extract the run pylint tag."""
     if match := RUN_PYLINT_PATTERN.match(line):
         script_name = match.group(1)
-        script_path = file_finder(script_name, root_dir, current_file_path)
+        script_path = find_file(script_name, root_dir, current_file_path)
         environment_path = get_python_environment_path(root_dir)
         pylint_output = execute_pylint(script_path, environment_path)
         return (REFERENCE_TYPE.RUN_PYLINT, pylint_output)

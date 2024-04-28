@@ -43,7 +43,7 @@ def find_file_from_path_fragment(path_fragment, root_dir):
     )
 
 
-def file_finder(string, root_dir, current_file_path):
+def find_file(string, root_dir, current_file_path):
     """ 
     Function to find the file from the string. If the string contains a path fragment, the function
     will search for the file from the path fragment. If the string contains only the file name, the
