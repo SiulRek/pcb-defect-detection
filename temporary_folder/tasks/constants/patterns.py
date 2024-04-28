@@ -10,3 +10,6 @@ TEST_RESULT_PATTERN = re.compile(r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3} - 
 
 # Fill Text Pattern 
 FILL_TEXT_PATTERN = re.compile(r'^#\*\s*(.*)')
+
+# Run Python Script Name Pattern
+RUN_SCRIPT_PATTERN = re.compile(r"#run (\S+\.py)")

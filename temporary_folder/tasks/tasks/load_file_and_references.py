@@ -82,6 +82,9 @@ def format_text_from_references(
             fill_text, text_title = data
             title = current_title or text_title
             query += f"\n\n--- {title} ---\n{fill_text}"
+        elif content_type == REFERENCE_TYPE.RUN_PYTHON_SCRIPT:
+            title = current_title or "Python Script Output"
+            query += f"\n\n--- {title} ---\n{data}"
         elif content_type == REFERENCE_TYPE.CURRENT_FILE:
             relative_path = os.path.relpath(current_file_path, root_dir)
             title = current_title or f"File at: {relative_path}"
