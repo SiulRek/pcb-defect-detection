@@ -12,6 +12,9 @@ from temporary_folder.tasks.helpers.general.find_dir import find_dir
 from temporary_folder.tasks.helpers.for_load_file_and_references.get_error_text import (
     get_error_text,
 )
+from temporary_folder.tasks.helpers.for_load_file_and_references.summarize_python_script import (
+    summarize_python_file,
+)
 from temporary_folder.tasks.helpers.for_load_file_and_references.get_fill_text import (
     get_fill_text,
 )
@@ -30,6 +33,7 @@ from temporary_folder.tasks.helpers.for_load_file_and_references.line_validation
     line_validation_for_run_pylint,
     line_validation_for_current_file_reference,
     line_validation_for_directory_tree,
+    line_validation_for_summarize_python_script,
 )
 
 
@@ -107,6 +111,15 @@ def handle_directory_tree(line, root_dir, current_file_path):
     return None
 
 
+def handle_summarize_python_script(line, root_dir, current_file_path):
+    """Extract the summarize python script tag."""
+    if result := line_validation_for_summarize_python_script(line):
+        script_path = find_file(result, root_dir, current_file_path)
+        script_summary = summarize_python_file(script_path)
+        return (REFERENCE_TYPE.SUMMARIZE_PYTHON_SCRIPT, script_summary)
+    return None
+
+
 def handle_current_file_reference(line):
     """Extract the current file tag."""
     if line_validation_for_current_file_reference(line):
@@ -167,6 +180,10 @@ def extract_referenced_contents(file_path, root_dir):
                 stripped_line, root_dir, file_path
             ):
                 referenced_contents.append(referenced_directory_tree)
+            elif summarized_script := handle_summarize_python_script(
+                stripped_line, root_dir, file_path
+            ):
+                referenced_contents.append(summarized_script)
             elif current_file_tag := handle_current_file_reference(stripped_line):
                 referenced_contents.append(current_file_tag)
             else:

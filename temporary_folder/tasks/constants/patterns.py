@@ -19,3 +19,6 @@ RUN_PYLINT_PATTERN = re.compile(r"#pylint (\S+\.py)")
 
 # Directory Tree Pattern
 DIRECTORY_TREE_PATTERN = re.compile(r"#tree (\S+)")
+
+# Summarize Python Script Pattern
+SUMMARIZE_PYTHON_SCRIPT_PATTERN = re.compile(r"#summarize (\S+\.py)")

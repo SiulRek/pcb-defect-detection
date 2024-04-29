@@ -6,6 +6,7 @@ from temporary_folder.tasks.constants.patterns import (
     RUN_SCRIPT_PATTERN,
     RUN_PYLINT_PATTERN,
     DIRECTORY_TREE_PATTERN,
+    SUMMARIZE_PYTHON_SCRIPT_PATTERN,
 )
 from temporary_folder.tasks.constants.definitions import (
     TITLE_TAG,
@@ -100,4 +101,10 @@ def line_validation_for_directory_tree(line):
                 additional_ignore_list = match.group(1).split(";")
                 ignore_list.extend([ignore.strip() for ignore in additional_ignore_list])
         return (dir, max_depth, include_files, ignore_list)
+    return None
+
+def line_validation_for_summarize_python_script(line):
+    """ Validate if the line is a summarize python script."""
+    if match := SUMMARIZE_PYTHON_SCRIPT_PATTERN.match(line):
+        return match.group(1)
     return None
