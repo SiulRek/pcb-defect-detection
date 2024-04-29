@@ -5,6 +5,7 @@ from temporary_folder.tasks.constants.patterns import (
     FILL_TEXT_PATTERN,
     RUN_SCRIPT_PATTERN,
     RUN_PYLINT_PATTERN,
+    DIRECTORY_TREE_PATTERN,
 )
 from temporary_folder.tasks.constants.definitions import (
     TITLE_TAG,
@@ -12,6 +13,10 @@ from temporary_folder.tasks.constants.definitions import (
     CURRENT_FILE_TAG,
     ERROR_TAG,
 )
+from temporary_folder.tasks.constants.defaults import DIRECTORY_TREE_DEFAULTS
+
+ROUND_BRACKET_PATTERN = re.compile(r"\((.*?)\)")
+SQUARE_BRACKET_PATTERN = re.compile(r"\[(.*?)\]")
 
 
 def line_validation_for_title(line):
@@ -70,4 +75,29 @@ def line_validation_for_current_file_reference(line):
     """ Validate if the line is a current file reference."""
     if CURRENT_FILE_TAG in line:
         return True
+    return None
+
+
+def line_validation_for_directory_tree(line):
+    """ Validate if the line is a directory tree."""
+    if match := DIRECTORY_TREE_PATTERN.match(line):
+        dir = match.group(1)
+        max_depth = DIRECTORY_TREE_DEFAULTS.MAX_DEPTH.value
+        include_files = DIRECTORY_TREE_DEFAULTS.INCLUDE_FILES.value
+        ignore_list = DIRECTORY_TREE_DEFAULTS.IGNORE_LIST.value
+        result = re.search(ROUND_BRACKET_PATTERN, line)
+        if result:
+            arguments = result.group(1).split(",")
+            arguments = [arg.strip() for arg in arguments]
+            if len(arguments) >= 1:
+                max_depth = int(arguments[0])
+            if len(arguments) >= 2:
+                include_files = True if arguments[1].lower() == "true" else False
+            if len(arguments) == 3:
+                match = SQUARE_BRACKET_PATTERN.match(arguments[2])
+                if not match:
+                    raise ValueError("Invalid directory tree arguments")
+                additional_ignore_list = match.group(1).split(";")
+                ignore_list.extend([ignore.strip() for ignore in additional_ignore_list])
+        return (dir, max_depth, include_files, ignore_list)
     return None

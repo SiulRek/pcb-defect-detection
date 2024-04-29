@@ -4,7 +4,11 @@ from temporary_folder.tasks.constants.getters import get_python_environment_path
 from temporary_folder.tasks.constants.definitions import (
     REFERENCE_TYPE,
 )
+from temporary_folder.tasks.helpers.general.generate_directory_tree import (
+    generate_directory_tree
+)
 from temporary_folder.tasks.helpers.general.find_file import find_file
+from temporary_folder.tasks.helpers.general.find_dir import find_dir
 from temporary_folder.tasks.helpers.for_load_file_and_references.get_error_text import (
     get_error_text,
 )
@@ -25,8 +29,8 @@ from temporary_folder.tasks.helpers.for_load_file_and_references.line_validation
     line_validation_for_run_python_script,
     line_validation_for_run_pylint,
     line_validation_for_current_file_reference,
+    line_validation_for_directory_tree,
 )
-# from temporary_folder.tasks.helpers.general.generate_directory_tree import generate_directory_tree
 
 
 def handle_referenced_title(line):
@@ -54,7 +58,6 @@ def handle_referenced_files(line, root_dir, current_file_path):
                 referenced_files.append(referenced_file)
         return referenced_files
     return None
-
 
 
 def handle_referenced_error(line, root_dir, current_file_path):
@@ -92,14 +95,16 @@ def handle_run_pylint(line, root_dir, current_file_path):
     return None
 
 
-# def handle_directory_tree(line):
-#     """Extract the directory tree tag."""
-#     if match := DIRECTORY_TREE_PATTERN.match(line):
-#         dir_name = match.group(1)
-#         #TODO make dir finder like path finder.
-#         #TODO Allow to specify the include_files and also the max depth.
-#         # directory_tree = generate_directory_tree(dir_path, include_files=False)
-#     return None
+def handle_directory_tree(line, root_dir, current_file_path):
+    """Extract the directory tree tag."""
+    if result := line_validation_for_directory_tree(line):
+        dir, max_depth, include_files, ignore_list = result
+        dir = find_dir(dir, root_dir, current_file_path)
+        directory_tree = generate_directory_tree(
+            dir, max_depth, include_files, ignore_list
+        )
+        return (REFERENCE_TYPE.DIRECTORY_TREE, directory_tree)
+    return None
 
 
 def handle_current_file_reference(line):
@@ -158,10 +163,10 @@ def extract_referenced_contents(file_path, root_dir):
                 stripped_line, root_dir, file_path
             ):
                 referenced_contents.append(referenced_run_pylint)
-            # elif referenced_directory_tree := generate_directory_tree(
-            #     root_dir, include_files=False
-            # ):
-            #     referenced_contents.append((REFERENCE_TYPE.DIRECTORY_TREE, referenced_directory_tree))
+            elif referenced_directory_tree := handle_directory_tree(
+                stripped_line, root_dir, file_path
+            ):
+                referenced_contents.append(referenced_directory_tree)
             elif current_file_tag := handle_current_file_reference(stripped_line):
                 referenced_contents.append(current_file_tag)
             else:

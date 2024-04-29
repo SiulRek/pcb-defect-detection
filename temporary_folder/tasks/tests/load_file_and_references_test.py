@@ -27,8 +27,9 @@ class Car:
     #C The comment is so long.
     #run data/example_script.py
     #T Reference File Title
-    # reference_2.py, reference_3.txt
+    # reference_2.py, data/reference_3.txt
     #File
+    #tree . (2, true, [temp; log])
     #pylint data/example_script.py
     #C This is another comment
     # preprocessing/tests/test_runner.py

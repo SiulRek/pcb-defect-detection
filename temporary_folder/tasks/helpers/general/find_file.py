@@ -31,7 +31,7 @@ def find_nearest_file(file_name, root_dir, reference_file):
 
 def find_file_from_path_fragment(path_fragment, root_dir):
     root_dir = os.path.abspath(root_dir)
-    path_fragment = path_fragment.lower()
+    path_fragment = path_fragment.replace("\\", os.sep).replace("/", os.sep)
 
     for dirpath, _, filenames in os.walk(root_dir):
         for filename in filenames:
@@ -51,6 +51,7 @@ def find_file(string, root_dir, current_file_path):
 
     Args:
         string (str): The string to be searched.
+        root_dir (str): The root directory of the project.
         root_dir (str): The root directory of the project.
         current_file_path (str): The path to the current file.
     

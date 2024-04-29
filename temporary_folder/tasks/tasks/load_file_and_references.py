@@ -88,6 +88,9 @@ def format_text_from_references(
         elif content_type == REFERENCE_TYPE.RUN_PYLINT:
             title = current_title or "Pylint Output"
             query += f"\n\n--- {title} ---\n{data}"
+        elif content_type == REFERENCE_TYPE.DIRECTORY_TREE:
+            title = current_title or "Directory Tree"
+            query += f"\n\n--- {title} ---\n{data}"
         elif content_type == REFERENCE_TYPE.CURRENT_FILE:
             relative_path = os.path.relpath(current_file_path, root_dir)
             title = current_title or f"File at: {relative_path}"
