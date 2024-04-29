@@ -17,6 +17,7 @@ class REFERENCE_TYPE(Enum):
     CURRENT_FILE = "current_file"
     RUN_PYTHON_SCRIPT = "run_python_script"
     RUN_PYLINT = "run_pylint"
+    DIRECTORY_TREE = "directory_tree"
     FILL_TEXT = "fill_text"
     TITLE = "title"
     
