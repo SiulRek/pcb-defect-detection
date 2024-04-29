@@ -36,3 +36,4 @@ class Car:
     # preprocessing/tests/test_runner.py
     #L
     #E The end of the code
+    #makequery

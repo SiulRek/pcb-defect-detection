@@ -35,7 +35,4 @@ def extract_start_and_end_text(filepath, contents=None):
             end_text = line.split(END_TAG, 1)[1].strip()
         else:
             updated_lines.append(line + "\n")
-
-    with open(filepath, "w") as file:
-        file.writelines(updated_lines)
     return start_text, "".join(updated_lines), end_text

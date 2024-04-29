@@ -6,7 +6,7 @@ ERROR_TAG = "#L"    # As the Errors are derived from Logged Test Results
 TITLE_TAG = "#T "
 COMMENT_TAG = "#C "
 CURRENT_FILE_TAG = "#File"
-
+MAKE_QUERY_TAG = "#makequery"
 # Enums
 from enum import Enum
 

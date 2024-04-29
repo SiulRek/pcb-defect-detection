@@ -14,12 +14,14 @@ from temporary_folder.tasks.helpers.for_load_file_and_references.extract_referen
 from temporary_folder.tasks.helpers.for_load_file_and_references.add_text_tags import (
     add_text_tags,
 )
-from temporary_folder.tasks.constants.getters import get_temporary_file_path
-from temporary_folder.tasks.constants.definitions import REFERENCE_TYPE
+from temporary_folder.tasks.constants.getters import get_temporary_file_path, get_response_file_path
+from temporary_folder.tasks.constants.definitions import REFERENCE_TYPE, MAKE_QUERY_TAG
 import temporary_folder.tasks.helpers.general.print_statements as task_prints
+from temporary_folder.tasks.helpers.general.make_query import make_query
 
 
 TEMPORARY_FILE = get_temporary_file_path(ROOT_DIR)
+RESPONSE_FILE = get_response_file_path(ROOT_DIR)
 
 
 class ReferenceTitleManager:
@@ -104,7 +106,44 @@ def format_text_from_references(
     return query
 
 
-def load_file_and_references(file_path, root_dir, query_path):
+def write_to_file(file_path, content):
+    """ Write the content to the specified file. """
+    with open(file_path, "w", encoding="utf-8") as file:
+        file.write(content)
+
+
+class Finalizer:
+    """
+    Class to finalize the process of loading a file and references.
+    This includes writing the updated content to the file, writing the query to a file,
+    and making a query if required.
+    """
+    def __init__(self):
+        self.file_path = None
+        self.query_path = None
+        self.response_path = None
+    
+    def set_paths(self, file_path, query_path, response_path):
+        self.file_path = file_path
+        self.query_path = query_path
+        self.response_path = response_path
+    
+    def finalize(self, updated_contents, query):
+        for line in updated_contents.splitlines():
+            if make_query_flag := MAKE_QUERY_TAG in line:
+                query = query.replace(MAKE_QUERY_TAG, "")
+                updated_contents = updated_contents.replace(line, "")
+                break
+        write_to_file(self.file_path, updated_contents)
+        write_to_file(self.query_path, query)
+        if make_query_flag:
+            print("Making query...")
+            response = make_query(query)
+            write_to_file(self.response_path, response)
+            print(f"Response saved to {self.response_path}")
+
+
+def load_file_and_references(file_path, root_dir, query_path, response_path):
     """
     Load the content of the specified Python file and additionally load any files
     referenced on lines with a '#' symbol.
@@ -113,6 +152,7 @@ def load_file_and_references(file_path, root_dir, query_path):
         file_path (str): The path to the Python file.
         root_dir (str): The root directory of the project.
         query_path (str): The path to the file where the query will be saved.
+        response_path (str): The path to the file where the response will be saved.
     """
     referenced_contents, updated_content = extract_referenced_contents(
         file_path, root_dir
@@ -121,21 +161,21 @@ def load_file_and_references(file_path, root_dir, query_path):
         file_path, updated_content
     )
 
+
     query = format_text_from_references(
         referenced_contents, file_path, updated_content, root_dir
     )
 
     query = add_text_tags(start_text, end_text, query)
 
-    with open(query_path, "w", encoding="utf-8") as output_file:
-        output_file.write(query)
-
-    print(f"Query generated and saved to: {query_path}")
+    finalizer = Finalizer()
+    finalizer.set_paths(file_path, query_path, response_path)
+    finalizer.finalize(updated_content, query)
 
 
 def main():
     task_prints.process_start("Load File and References")
-    load_file_and_references(FILE_PATH, ROOT_DIR, TEMPORARY_FILE)
+    load_file_and_references(FILE_PATH, ROOT_DIR, TEMPORARY_FILE, RESPONSE_FILE)
     task_prints.process_end()
 
 
