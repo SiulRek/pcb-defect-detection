@@ -1,0 +1,2 @@
+- Change load_file_and_references to more concise name
+- Make line_validation for make_query, start_text and end_text

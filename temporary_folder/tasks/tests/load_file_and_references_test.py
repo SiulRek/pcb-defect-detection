@@ -30,10 +30,11 @@ class Car:
     #T Reference File Title
     # reference_2.py, data/reference_3.txt
     #File
-    #tree . (2, true, [temp; log])
+    #tree . (2, False, [temp; log])
     #pylint data/example_script.py
     #C This is another comment
     # preprocessing/tests/test_runner.py
     #L
     #E The end of the code
-    #makequery
+    #makequery (100)
+    #checksum 20

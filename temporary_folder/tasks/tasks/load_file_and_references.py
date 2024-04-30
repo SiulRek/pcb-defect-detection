@@ -2,9 +2,15 @@ import sys
 import os
 from copy import deepcopy
 
-ROOT_DIR = sys.argv[1]
-FILE_PATH = sys.argv[2]
-sys.path.append(ROOT_DIR)
+if len(sys.argv) == 3:
+    ROOT_DIR = sys.argv[1]
+    FILE_PATH = sys.argv[2]
+    sys.path.append(ROOT_DIR)
+else:
+    ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
+    FILE_PATH = os.path.join(ROOT_DIR, "temporary_folder", "tasks", "tests", "load_file_and_references_test.py")
+
+
 from temporary_folder.tasks.helpers.for_load_file_and_references.extract_start_and_end_text import (
     extract_start_and_end_text,
 )
@@ -15,10 +21,9 @@ from temporary_folder.tasks.helpers.for_load_file_and_references.add_text_tags i
     add_text_tags,
 )
 from temporary_folder.tasks.constants.getters import get_temporary_file_path, get_response_file_path
-from temporary_folder.tasks.constants.definitions import REFERENCE_TYPE, MAKE_QUERY_TAG
+from temporary_folder.tasks.constants.definitions import REFERENCE_TYPE
 import temporary_folder.tasks.helpers.general.print_statements as task_prints
-from temporary_folder.tasks.helpers.general.make_query import make_query
-
+from temporary_folder.tasks.helpers.for_load_file_and_references.finalizer import Finalizer
 
 TEMPORARY_FILE = get_temporary_file_path(ROOT_DIR)
 RESPONSE_FILE = get_response_file_path(ROOT_DIR)
@@ -104,43 +109,6 @@ def format_text_from_references(
             raise ValueError(f"Unknown content type: {content_type}")
 
     return query
-
-
-def write_to_file(file_path, content):
-    """ Write the content to the specified file. """
-    with open(file_path, "w", encoding="utf-8") as file:
-        file.write(content)
-
-
-class Finalizer:
-    """
-    Class to finalize the process of loading a file and references.
-    This includes writing the updated content to the file, writing the query to a file,
-    and making a query if required.
-    """
-    def __init__(self):
-        self.file_path = None
-        self.query_path = None
-        self.response_path = None
-    
-    def set_paths(self, file_path, query_path, response_path):
-        self.file_path = file_path
-        self.query_path = query_path
-        self.response_path = response_path
-    
-    def finalize(self, updated_contents, query):
-        for line in updated_contents.splitlines():
-            if make_query_flag := MAKE_QUERY_TAG in line:
-                query = query.replace(MAKE_QUERY_TAG, "")
-                updated_contents = updated_contents.replace(line, "")
-                break
-        write_to_file(self.file_path, updated_contents)
-        write_to_file(self.query_path, query)
-        if make_query_flag:
-            print("Making query...")
-            response = make_query(query)
-            write_to_file(self.response_path, response)
-            print(f"Response saved to {self.response_path}")
 
 
 def load_file_and_references(file_path, root_dir, query_path, response_path):

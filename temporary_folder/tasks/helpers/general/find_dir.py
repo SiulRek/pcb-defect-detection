@@ -7,6 +7,8 @@ def find_nearest_dir(dir_name, root_dir, reference_dir):
     closest_dir = None
     min_distance = float("inf")
 
+    if dir_name == '.':
+        return root_dir
     for dirpath, dirnames, _ in os.walk(root_dir):
         if dir_name in dirnames:
             current_dir = os.path.join(dirpath, dir_name)
@@ -41,15 +43,15 @@ def find_dir_from_path_fragment(path_fragment, root_dir):
     raise FileNotFoundError(f"Directory from fragment '{path_fragment}' not found in '{root_dir}'")
 
 
-def find_dir(root_dir, string, reference_dir):
+def find_dir(string, root_dir, reference_dir):
     """
     Function to find the directory from the string. If the string contains a path fragment,
     the function will search for the directory from the path fragment. If the string contains
     only the directory name, the function will search for the nearest directory to the reference directory.
 
     Args:
-        root_dir (str): The root directory of the project.
         string (str): The string to be searched, which could be a path fragment or directory name.
+        root_dir (str): The root directory of the project.
         reference_dir (str): The path to the reference directory, used when finding the nearest directory.
 
     Returns:

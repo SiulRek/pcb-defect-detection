@@ -7,12 +7,14 @@ from temporary_folder.tasks.constants.patterns import (
     RUN_PYLINT_PATTERN,
     DIRECTORY_TREE_PATTERN,
     SUMMARIZE_PYTHON_SCRIPT_PATTERN,
+    CHECKSUM_PATTERN,
 )
 from temporary_folder.tasks.constants.definitions import (
     TITLE_TAG,
     COMMENT_TAG,
     CURRENT_FILE_TAG,
     ERROR_TAG,
+    MAKE_QUERY_TAG
 )
 from temporary_folder.tasks.constants.defaults import DIRECTORY_TREE_DEFAULTS
 
@@ -103,8 +105,35 @@ def line_validation_for_directory_tree(line):
         return (dir, max_depth, include_files, ignore_list)
     return None
 
+
 def line_validation_for_summarize_python_script(line):
     """ Validate if the line is a summarize python script."""
     if match := SUMMARIZE_PYTHON_SCRIPT_PATTERN.match(line):
         return match.group(1)
+    return None
+
+
+def line_validation_for_make_query(line):
+    """
+    Validate the line to check if it is a valid line to make a query.
+    """
+    if MAKE_QUERY_TAG in line:
+        max_tokens = None
+        if result := re.search(ROUND_BRACKET_PATTERN, line):
+            max_tokens = int(result.group(1))
+        return True, max_tokens
+    return None
+
+
+def line_validation_for_checksum(line):
+    """
+    Validate the line to check if it is a valid line to add checksum.
+    """
+    if result := CHECKSUM_PATTERN.match(line):
+        try:
+            checksum = int(result.group(1).strip())
+            return checksum
+        except ValueError as e:
+            msg = "Invalid checksum line. Must be in the format: #checksum (checksum)"
+            raise ValueError(msg) from e
     return None
