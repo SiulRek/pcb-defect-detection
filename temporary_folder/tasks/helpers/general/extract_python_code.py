@@ -13,7 +13,8 @@ def extract_python_code(text):
         or match.strip().startswith(("def", "import", "from", "class"))
     ]
     python_code = "\n\n".join(python_code_blocks)
-    python_code = python_code.replace("python", "#python")
+    if python_code.startswith("python"):
+        python_code = python_code[6:]
     python_code = python_code.replace("`", "")
     return python_code
 
