@@ -119,9 +119,13 @@ def line_validation_for_make_query(line):
     """
     if MAKE_QUERY_TAG in line:
         max_tokens = None
+        create_python_script = False
         if result := re.search(ROUND_BRACKET_PATTERN, line):
-            max_tokens = int(result.group(1))
-        return True, max_tokens
+            arguments = result.group(1).split(",")
+            max_tokens = int(arguments[0])
+            if len(arguments) > 1:
+                create_python_script = True if arguments[1].strip().lower() == "true" else False
+        return True, max_tokens, create_python_script
     return None
 
 
