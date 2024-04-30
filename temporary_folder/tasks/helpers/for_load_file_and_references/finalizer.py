@@ -23,6 +23,7 @@ class Finalizer:
         self.file_path = None
         self.query_path = None
         self.response_path = None
+        self.checksum = None
 
     def set_paths(self, file_path, query_path, response_path):
         self.file_path = file_path
