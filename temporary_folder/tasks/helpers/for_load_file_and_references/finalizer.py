@@ -45,7 +45,7 @@ class Finalizer:
 
         for line in self.updated_contents.splitlines():
             if result := line_validation_for_make_query(line.strip()):
-                make_query_flag, max_tokens, create_python_script = result
+                make_query_flag, create_python_script , max_tokens = result
             elif result := line_validation_for_checksum(line.strip()):
                 self.checksum = result
             else:
@@ -64,6 +64,7 @@ class Finalizer:
     def write_results(self, final_lines, query, make_query_flag, max_tokens, create_python_script):
         write_to_file(self.file_path, "\n".join(final_lines))
         write_to_file(self.query_path, query)
+        print(f"Query saved to {self.query_path}")
         if make_query_flag:
             self.handle_query(query, max_tokens, create_python_script)
 

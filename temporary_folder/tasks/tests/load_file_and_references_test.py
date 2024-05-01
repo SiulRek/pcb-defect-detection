@@ -36,5 +36,5 @@ class Car:
     # preprocessing/tests/test_runner.py
     #L
     #E The end of the code
-    #makequery (100, True)
+    #makequery (True, 100)
     #checksum 20
