@@ -21,3 +21,4 @@ def function():
     print("This is inside a function")
 # Another comment
 y = x + 5
+import sklearn

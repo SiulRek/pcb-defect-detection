@@ -28,4 +28,6 @@ def get_modules_info(root_dir=ROOT_DIR):
     )
     with open(path, "r") as file:
         modules_info = json.load(file)
+    list_dirs = os.listdir(root_dir)
+    modules_info["local"] = [dir for dir in list_dirs if os.path.isdir(dir)]
     return modules_info

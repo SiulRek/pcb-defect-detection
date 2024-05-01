@@ -53,6 +53,7 @@ def process_import_statements(import_statements, modules_info_getter=get_modules
     modules_info = modules_info_getter()
     standard_library = modules_info["standard_library"]
     third_party = modules_info["third_party"]
+    local = modules_info["local"]
     module_paths = [extract_module_path(line) for line in import_statements]
     package_names = [path.split(".")[0] for path in module_paths]
     import_statements = zip(import_statements, module_paths, package_names)
@@ -67,8 +68,11 @@ def process_import_statements(import_statements, modules_info_getter=get_modules
             standard_library_imports.append(import_statement)
         elif import_statement[2] in third_party:
             third_party_imports.append(import_statement)
+        elif import_statement[2] in local:
+            local_imports.append(import_statement)
         else:
             local_imports.append(import_statement)
+            print(f"Warning: '{import_statement[2]}' does not appear in loaded modules information.")
 
     updated_import_statements = []
     if standard_library_imports != []:

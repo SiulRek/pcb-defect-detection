@@ -459,7 +459,7 @@
         "rfc3986-validator",
         "rpds-py",
         "rsa",
-        "sklearn",
+        "scikit-learn",
         "scipy",
         "seaborn",
         "setuptools",
