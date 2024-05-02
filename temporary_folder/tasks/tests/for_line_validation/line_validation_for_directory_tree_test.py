@@ -1,7 +1,7 @@
 import unittest
 
 from temporary_folder.tasks.constants.defaults import DIRECTORY_TREE_DEFAULTS as DEFAULTS
-from temporary_folder.tasks.helpers.for_load_file_and_references.line_validation import line_validation_for_directory_tree
+from temporary_folder.tasks.helpers.for_create_query.line_validation import line_validation_for_directory_tree
 
 
 class TestLineValidationForDirectoryTree(unittest.TestCase):

@@ -18,13 +18,13 @@ else:
     )
 
 
-from temporary_folder.tasks.helpers.for_load_file_and_references.extract_start_and_end_text import (
+from temporary_folder.tasks.helpers.for_create_query.extract_start_and_end_text import (
     extract_start_and_end_text,
 )
-from temporary_folder.tasks.helpers.for_load_file_and_references.extract_referenced_contents import (
+from temporary_folder.tasks.helpers.for_create_query.extract_referenced_contents import (
     extract_referenced_contents,
 )
-from temporary_folder.tasks.helpers.for_load_file_and_references.add_text_tags import (
+from temporary_folder.tasks.helpers.for_create_query.add_text_tags import (
     add_text_tags,
 )
 from temporary_folder.tasks.constants.getters import (
@@ -33,7 +33,7 @@ from temporary_folder.tasks.constants.getters import (
 )
 from temporary_folder.tasks.constants.definitions import REFERENCE_TYPE
 import temporary_folder.tasks.helpers.general.print_statements as task_prints
-from temporary_folder.tasks.helpers.for_load_file_and_references.finalizer import (
+from temporary_folder.tasks.helpers.for_create_query.finalizer import (
     Finalizer,
 )
 
@@ -86,16 +86,15 @@ def format_text_from_references(referenced_contents, updated_content):
     return query
 
 
-def load_file_and_references(file_path, root_dir, query_path, response_path):
+def create_query(file_path, root_dir, query_path, response_path):
     """
-    Load the content of the specified Python file and additionally load any files
-    referenced on lines with a '#' symbol.
+    Create a query from the file and referenced contents in the file.
 
     Args:
-        file_path (str): The path to the Python file.
+        file_path (str): The path to the file to be processed.
         root_dir (str): The root directory of the project.
-        query_path (str): The path to the file where the query will be saved.
-        response_path (str): The path to the file where the response will be saved.
+        query_path (str): The path to the query file.
+        response_path (str): The path to the response file.
     """
     referenced_contents, updated_content = extract_referenced_contents(
         file_path, root_dir
@@ -114,8 +113,8 @@ def load_file_and_references(file_path, root_dir, query_path, response_path):
 
 
 def main():
-    task_prints.process_start("Load File and References")
-    load_file_and_references(FILE_PATH, ROOT_DIR, TEMPORARY_FILE, RESPONSE_FILE)
+    task_prints.process_start("Create Query")
+    create_query(FILE_PATH, ROOT_DIR, TEMPORARY_FILE, RESPONSE_FILE)
     task_prints.process_end()
 
 

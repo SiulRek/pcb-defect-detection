@@ -1,6 +1,6 @@
 import os
 
-from temporary_folder.tasks.helpers.for_load_file_and_references.line_validation import (
+from temporary_folder.tasks.helpers.for_create_query.line_validation import (
     line_validation_for_make_query,
     line_validation_for_checksum,
 )

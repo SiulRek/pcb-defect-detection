@@ -10,13 +10,13 @@ from temporary_folder.tasks.helpers.general.generate_directory_tree import (
 )
 from temporary_folder.tasks.helpers.general.find_file import find_file
 from temporary_folder.tasks.helpers.general.find_dir import find_dir
-from temporary_folder.tasks.helpers.for_load_file_and_references.get_error_text import (
+from temporary_folder.tasks.helpers.for_create_query.get_error_text import (
     get_error_text,
 )
-from temporary_folder.tasks.helpers.for_load_file_and_references.summarize_python_script import (
+from temporary_folder.tasks.helpers.for_create_query.summarize_python_script import (
     summarize_python_file,
 )
-from temporary_folder.tasks.helpers.for_load_file_and_references.get_fill_text import (
+from temporary_folder.tasks.helpers.for_create_query.get_fill_text import (
     get_fill_text,
 )
 from temporary_folder.tasks.helpers.general.execute_python_script import (
@@ -24,7 +24,7 @@ from temporary_folder.tasks.helpers.general.execute_python_script import (
 )
 from temporary_folder.tasks.helpers.general.execute_pylint import execute_pylint
 
-from temporary_folder.tasks.helpers.for_load_file_and_references.line_validation import (
+from temporary_folder.tasks.helpers.for_create_query.line_validation import (
     line_validation_for_title,
     line_validation_for_comment,
     line_validation_for_files,

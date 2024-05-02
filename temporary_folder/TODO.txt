@@ -1,2 +1,7 @@
 - Change load_file_and_references to more concise name
-- Make line_validation for make_query, start_text and end_text
+- Make line_validation for start_text and end_text
+- Make command summarize_folder.
+- Is summmarization commands allow to specify optionally if tokens without docstring should be included?
+- Allow for run File and so on.
+- Remove File always included in query.
+- Why does checksum and makequery line appear  in the query?
