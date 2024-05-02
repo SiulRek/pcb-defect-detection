@@ -1,5 +1,11 @@
-# Process File Definitions
+from enum import Enum
 
+
+# ----------------- General Constants -----------------
+TEST_RESULTS_FILE = "test_results.log"
+
+
+# ----------------- For Make Query -----------------
 START_TAG = "#S "
 END_TAG = "#E "
 ERROR_TAG = "#L"    # As the Errors are derived from Logged Test Results 
@@ -7,8 +13,6 @@ TITLE_TAG = "#T "
 COMMENT_TAG = "#C "
 CURRENT_FILE_TAG = "#File"
 MAKE_QUERY_TAG = "#makequery"
-# Enums
-from enum import Enum
 
 class REFERENCE_TYPE(Enum):
     COMMENT = "comment"
@@ -21,6 +25,8 @@ class REFERENCE_TYPE(Enum):
     SUMMARIZE_PYTHON_SCRIPT = "summarize_python_script"
     FILL_TEXT = "fill_text"
     TITLE = "title"
-    
-# General Constants
-TEST_RESULTS_FILE = "test_results.log"
+
+# ----------------- For Clean Up -----------------
+LINE_WIDTH = 80
+INTEND = " " * 4
+DOC_QUOTE = '"""'
