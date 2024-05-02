@@ -1,3 +1,12 @@
+""" This module creates a query from the file and referenced contents in the file.
+
+TODO when adding new reference:
+    1. Make line validation function in line_validation.py.
+    2. Add the reference type to REFERENCE_TYPE.
+    3. Add a new handler function with the reference functionality in extract_referenced_contents.py.
+    4. Add the handler function to the reference_handlers dictionary.
+"""
+
 import sys
 import os
 
