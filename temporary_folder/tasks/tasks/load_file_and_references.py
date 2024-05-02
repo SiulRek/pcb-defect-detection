@@ -1,14 +1,21 @@
 import sys
 import os
-from copy import deepcopy
 
 if len(sys.argv) == 3:
     ROOT_DIR = sys.argv[1]
     FILE_PATH = sys.argv[2]
     sys.path.append(ROOT_DIR)
 else:
-    ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
-    FILE_PATH = os.path.join(ROOT_DIR, "temporary_folder", "tasks", "tests", "load_file_and_references_test.py")
+    ROOT_DIR = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "..", "..", ".."
+    )
+    FILE_PATH = os.path.join(
+        ROOT_DIR,
+        "temporary_folder",
+        "tasks",
+        "tests",
+        "load_file_and_references_test.py",
+    )
 
 
 from temporary_folder.tasks.helpers.for_load_file_and_references.extract_start_and_end_text import (
@@ -20,10 +27,15 @@ from temporary_folder.tasks.helpers.for_load_file_and_references.extract_referen
 from temporary_folder.tasks.helpers.for_load_file_and_references.add_text_tags import (
     add_text_tags,
 )
-from temporary_folder.tasks.constants.getters import get_temporary_file_path, get_response_file_path
+from temporary_folder.tasks.constants.getters import (
+    get_temporary_file_path,
+    get_response_file_path,
+)
 from temporary_folder.tasks.constants.definitions import REFERENCE_TYPE
 import temporary_folder.tasks.helpers.general.print_statements as task_prints
-from temporary_folder.tasks.helpers.for_load_file_and_references.finalizer import Finalizer
+from temporary_folder.tasks.helpers.for_load_file_and_references.finalizer import (
+    Finalizer,
+)
 
 TEMPORARY_FILE = get_temporary_file_path(ROOT_DIR)
 RESPONSE_FILE = get_response_file_path(ROOT_DIR)
@@ -38,14 +50,11 @@ class ReferenceTitleManager:
         self.title = title
 
     def get(self):
-        title = deepcopy(self.title)
-        self.title = None
+        title, self.title = self.title, None
         return title
 
 
-def format_text_from_references(
-    referenced_contents, file_path, updated_content, root_dir
-):
+def format_text_from_references(referenced_contents, updated_content):
     """
     Formats a query string from file references and updated content.
 
@@ -58,53 +67,19 @@ def format_text_from_references(
     Returns:
         str: Formatted query based on file references.
     """
-    if not any(
-        content_type == REFERENCE_TYPE.CURRENT_FILE
-        for content_type, _ in referenced_contents
-    ):
-        referenced_contents.insert(0, (REFERENCE_TYPE.CURRENT_FILE, None))
-
     query = ""
-    relative_path = os.path.relpath(file_path, root_dir)
-    query += f"--- File at: {relative_path} ---\n{updated_content}"
-    current_file_path = file_path
     title_manager = ReferenceTitleManager()
-    for content_type, data in referenced_contents:
+    for referenced_content in referenced_contents:
+        content_type, default_title, text = referenced_content
         current_title = title_manager.get()
+        title = current_title if current_title else default_title
 
         if content_type == REFERENCE_TYPE.TITLE:
-            title_manager.set(data)
-        elif content_type == REFERENCE_TYPE.COMMENT:
-            title = current_title or "Comment"
-            query += f"\n\n--- {title} ---\n{data}"
-        elif content_type == REFERENCE_TYPE.FILE:
-            file_path, file_content = data
-            relative_path = os.path.relpath(file_path, root_dir)
-            title = current_title or f"File at: {relative_path}"
-            query += f"\n\n--- {title} ---\n{file_content}"
-        elif content_type == REFERENCE_TYPE.LOGGED_ERROR:
-            title = current_title or "Occurred Error"
-            query += f"\n\n--- {title} ---\n{data}"
-        elif content_type == REFERENCE_TYPE.FILL_TEXT:
-            fill_text, text_title = data
-            title = current_title or text_title
-            query += f"\n\n--- {title} ---\n{fill_text}"
-        elif content_type == REFERENCE_TYPE.RUN_PYTHON_SCRIPT:
-            title = current_title or "Python Script Output"
-            query += f"\n\n--- {title} ---\n{data}"
-        elif content_type == REFERENCE_TYPE.RUN_PYLINT:
-            title = current_title or "Pylint Output"
-            query += f"\n\n--- {title} ---\n{data}"
-        elif content_type == REFERENCE_TYPE.DIRECTORY_TREE:
-            title = current_title or "Directory Tree"
-            query += f"\n\n--- {title} ---\n{data}"
-        elif content_type == REFERENCE_TYPE.SUMMARIZE_PYTHON_SCRIPT:
-            title = current_title or "Summarized Python Script"
-            query += f"\n\n--- {title} ---\n{data}"
+            title_manager.set(default_title)
         elif content_type == REFERENCE_TYPE.CURRENT_FILE:
-            relative_path = os.path.relpath(current_file_path, root_dir)
-            title = current_title or f"File at: {relative_path}"
             query += f"\n\n--- {title} ---\n{updated_content}"
+        elif content_type in REFERENCE_TYPE:
+            query += f"\n\n--- {title} ---\n{text}"
         else:
             raise ValueError(f"Unknown content type: {content_type}")
 
@@ -129,10 +104,7 @@ def load_file_and_references(file_path, root_dir, query_path, response_path):
         file_path, updated_content
     )
 
-
-    query = format_text_from_references(
-        referenced_contents, file_path, updated_content, root_dir
-    )
+    query = format_text_from_references(referenced_contents, file_path)
 
     query = add_text_tags(start_text, end_text, query)
 
