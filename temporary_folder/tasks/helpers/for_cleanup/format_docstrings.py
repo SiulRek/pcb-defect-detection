@@ -48,8 +48,7 @@ def get_docstrings(code):
 
 def clean_docstrings(docstrings):
     """
-    Cleans the docstrings by removing leading and trailing whitespaces and
-    ensuring that the triple quotes are on their own lines.
+    Cleans the docstrings by ensuring that the triple quotes are on their own lines.
 
     Args:
         docstrings (list): A list of docstrings to be cleaned.
@@ -84,7 +83,7 @@ def clean_docstrings(docstrings):
 
 
 def check_new_item(line):
-    return line.strip().endswith(":") or line.strip().endswith("-")
+    return ':' in line.strip() or line.strip().startswith("-")
 
 
 def wrap_metadata_text(text, leading_spaces):
@@ -109,17 +108,21 @@ def wrap_metadata_text(text, leading_spaces):
             items.append(line)
         else:
             items[-1] += line + "\n"
-    if items[0] != "":
+    if items[0] == "":
         items.pop(0)
 
     updated_items = []
     for item in items:
-        item = wrap_text(item, width=LINE_WIDTH - len(intended_leading_spaces))
-        item = [INTEND + line for line in item.splitlines()]
+        prefix = "- " if not item.startswith("-") else ""
+        item = prefix + item
+        max_intend_length = len(intended_leading_spaces) + len(INTEND) ## Following line of item intend more than first
+        item = wrap_text(item, width=LINE_WIDTH - max_intend_length)
+        item = [2*INTEND + line for line in item.splitlines()]
         item = "\n".join(item)
+        item = item[len(INTEND):]
         updated_items.append(item)
 
-    wrapped_text = first_line + "\n".join(updated_items)
+    wrapped_text = first_line + "\n" +  "\n".join(updated_items)
     return wrapped_text
 
 
@@ -223,6 +226,6 @@ def format_docstrings_from_file(file_path):
 
 
 if __name__ == "__main__":
-    path = r"path/to/your/file"
+    path = r"path/to/file.py"
     format_docstrings_from_file(path)
     print(f"Docstrings formatted of {path}")
