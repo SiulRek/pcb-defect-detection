@@ -1,7 +1,7 @@
 import re
 import os
 
-from temporary_folder.tasks.constants.getters import get_python_environment_path
+from temporary_folder.tasks.constants.getters import get_environment_path
 from temporary_folder.tasks.constants.definitions import (
     REFERENCE_TYPE,
 )
@@ -88,7 +88,7 @@ def handle_run_python_script(line, root_dir, current_file_path):
     """Extract the run python script tag."""
     if result := line_validation_for_run_python_script(line):
         script_path = find_file(result, root_dir, current_file_path)
-        environment_path = get_python_environment_path(root_dir)
+        environment_path = get_environment_path(root_dir)
         script_output = execute_python_script(script_path, environment_path)
         default_title = "Python Script Output"
         return (REFERENCE_TYPE.RUN_PYTHON_SCRIPT, default_title, script_output)
@@ -99,7 +99,7 @@ def handle_run_pylint(line, root_dir, current_file_path):
     """Extract the run pylint tag."""
     if result := line_validation_for_run_pylint(line):
         script_path = find_file(result, root_dir, current_file_path)
-        environment_path = get_python_environment_path(root_dir)
+        environment_path = get_environment_path(root_dir)
         pylint_output = execute_pylint(script_path, environment_path)
         default_title = "Pylint Output"
         return (REFERENCE_TYPE.RUN_PYLINT, default_title, pylint_output)

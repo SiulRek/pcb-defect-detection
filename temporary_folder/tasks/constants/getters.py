@@ -18,7 +18,16 @@ def get_fill_text_directory(root_dir=ROOT_DIR):
     return os.path.join(root_dir, "temporary_folder", "tasks", "fill_texts")
 
 
-def get_python_environment_path(root_dir=ROOT_DIR):
+def get_output_directory(root_dir=ROOT_DIR):
+    return os.path.join(root_dir, "temporary_folder", "tasks", "outputs")
+
+
+def get_checkpoints_directory(root_dir=ROOT_DIR):
+    output_dir = get_output_directory(root_dir)
+    return os.path.join(output_dir, "checkpoints")
+
+
+def get_environment_path(root_dir=ROOT_DIR):
     return os.path.join(root_dir, "venv")
 
 

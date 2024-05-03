@@ -60,6 +60,16 @@ def clean_docstrings(docstrings):
     for docstring in docstrings:
         cleaned_docstring = ""
         docstring_lines = docstring.splitlines()
+
+        if len(docstring_lines) == 1:
+            leading_spaces = " " * count_leading_spaces(docstring_lines[0])
+            text = docstring_lines[0].replace(DOC_QUOTE, "").strip()
+            cleaned_docstring += leading_spaces + DOC_QUOTE  + "\n"
+            cleaned_docstring += leading_spaces + text + "\n"
+            cleaned_docstring += leading_spaces + DOC_QUOTE
+            cleaned_docstrings.append(cleaned_docstring)
+            continue
+
         for line in docstring_lines:
             stripped_line = line.strip()
             if stripped_line.startswith(DOC_QUOTE) and not stripped_line.endswith(
@@ -68,7 +78,7 @@ def clean_docstrings(docstrings):
                 parts = line.split(DOC_QUOTE)
                 leading_spaces = " " * count_leading_spaces(parts[0])
                 cleaned_docstring += leading_spaces + DOC_QUOTE + "\n"
-                cleaned_docstring += leading_spaces + parts[1] + "\n"
+                cleaned_docstring += leading_spaces + parts[1]
             elif stripped_line.endswith(DOC_QUOTE) and not stripped_line.startswith(
                 DOC_QUOTE
             ):
@@ -78,7 +88,7 @@ def clean_docstrings(docstrings):
                 cleaned_docstring += leading_spaces + DOC_QUOTE
             else:
                 cleaned_docstring += line + "\n"
-        cleaned_docstrings.append(cleaned_docstring[:-1])
+        cleaned_docstrings.append(cleaned_docstring)
     return cleaned_docstrings
 
 

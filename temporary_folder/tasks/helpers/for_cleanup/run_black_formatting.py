@@ -1,29 +1,30 @@
+import os
 import subprocess
 
-def format_with_black(script_path, env_python_path):
-    """
-    Formats a Python script located at the specified path using black, run from the Python interpreter in the virtual environment.
-    
-    Args:
-        script_path (str): The absolute path to the Python script to be formatted.
-        env_python_path (str): The path to the Python interpreter in the virtual environment.
 
-    Returns:
-        str: The result of the formatting operation or an error message if the operation fails.
-    """
+def format_with_black(script_path, environment_path):
+    python_executable = os.path.join(
+        environment_path, "bin" if os.name == "posix" else "Scripts", "python"
+    )
+    black_script = os.path.join(
+        environment_path, "bin" if os.name == "posix" else "Scripts", "black"
+    )
+
+    black_command = [black_script, script_path]
     try:
-        completed_process = subprocess.run(
-            [env_python_path, "-m", "black", script_path],
-            capture_output=True,
+        result = subprocess.run(
+            [python_executable] + black_command,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             text=True,
-            check=True
         )
-        return completed_process.stdout if completed_process.stdout else "No changes made."
+        return result.stdout
     except subprocess.CalledProcessError as e:
         return f"Formatting error: {e}\nOutput: {e.stdout}\nError Output: {e.stderr}"
+
 
 if __name__ == "__main__":
     script_path = "/path/to/python/script.py"
     env_python_path = "/path/to/venv/bin/python"
-    formatting_result = format_with_black(script_path, env_python_path)
-    print(formatting_result)
+    formatted_code = format_with_black(script_path, env_python_path)
