@@ -33,12 +33,12 @@ def separate_imports(code_text):
                     while continue_reading_import:
                         try:
                             line = next(lines)
-                            import_statement += line
+                            import_statement += line.strip() + "\n"
                             if ")" in line:
                                 continue_reading_import = False
                         except StopIteration:
                             continue_reading_import = False
-                import_statements.append(import_statement)
+                import_statements.append(import_statement.strip())
             else:
                 if not previous_line_is_import or not line.strip() == "":
                     other_code += line
