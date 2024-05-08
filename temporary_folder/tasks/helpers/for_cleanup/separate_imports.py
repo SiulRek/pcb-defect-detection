@@ -26,14 +26,14 @@ def separate_imports(code_text):
             line = next(lines)
             stripped_line = line.strip()
             if stripped_line.startswith("import ") or stripped_line.startswith("from "):
-                import_statement = stripped_line + "\n"
+                import_statement = line
                 previous_line_is_import = True
                 if "(" in line and ")" not in line:
                     continue_reading_import = True
                     while continue_reading_import:
                         try:
                             line = next(lines)
-                            import_statement += line.strip() + "\n"
+                            import_statement += line
                             if ")" in line:
                                 continue_reading_import = False
                         except StopIteration:
