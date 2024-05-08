@@ -25,6 +25,7 @@ else:
         "tests",
         "load_file_and_references_test.py",
     )
+    FILE_PATH = r'/home/krakerlu/github/pcb-defect-detection/temporary_folder/tasks/helpers/for_cleanup/is_specifier_used.py'
 
 
 from temporary_folder.tasks.helpers.for_create_query.extract_start_and_end_text import (
@@ -112,7 +113,7 @@ def create_query(file_path, root_dir, query_path, response_path):
         file_path, updated_content
     )
 
-    query = format_text_from_references(referenced_contents, file_path)
+    query = format_text_from_references(referenced_contents, updated_content)
 
     query = add_text_tags(start_text, end_text, query)
 
