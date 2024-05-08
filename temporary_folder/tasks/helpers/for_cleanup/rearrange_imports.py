@@ -99,7 +99,7 @@ def rearrange_imports(code_text):
     """
     import_statements, other_code = separate_imports(code_text)
     updated_import_statements = process_import_statements(import_statements)
-    updated_import_statements = "".join(updated_import_statements)
+    updated_import_statements = "\n".join(updated_import_statements)
     module_docstring = extract_module_docstring(code_text)
     if module_docstring:
         other_code = other_code.replace(module_docstring, "")
