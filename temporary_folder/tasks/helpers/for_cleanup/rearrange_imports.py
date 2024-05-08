@@ -1,5 +1,3 @@
-import re
-
 from temporary_folder.tasks.helpers.for_cleanup.extract_module_path import (
     extract_module_path,
 )
@@ -76,14 +74,17 @@ def process_import_statements(import_statements, modules_info_getter=get_modules
 
     updated_import_statements = []
     if standard_library_imports != []:
+        standard_library_imports = [item[0] for item in standard_library_imports]
         updated_import_statements.extend(standard_library_imports)
-        updated_import_statements.append("\n")
+        updated_import_statements.append("")
     if third_party_imports != []:
+        third_party_imports = [item[0] for item in third_party_imports]
         updated_import_statements.extend(third_party_imports)
-        updated_import_statements.append("\n")
-    updated_import_statements.extend(local_imports)
-    updated_import_statements.append("\n")
-    updated_import_statements = [item[0] for item in updated_import_statements]
+        updated_import_statements.append("")
+    if local_imports != []:
+        local_imports = [item[0] for item in local_imports]
+        updated_import_statements.extend(local_imports)
+        updated_import_statements.append("")
     return updated_import_statements
 
 
@@ -103,7 +104,7 @@ def rearrange_imports(code_text):
     module_docstring = extract_module_docstring(code_text)
     if module_docstring:
         other_code = other_code.replace(module_docstring, "")
-        return module_docstring + '\n' + updated_import_statements + other_code
+        return module_docstring + '\n' + updated_import_statements + '\n' + other_code
     return updated_import_statements + other_code
 
 
