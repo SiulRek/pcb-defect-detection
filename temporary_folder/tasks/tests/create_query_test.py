@@ -21,7 +21,7 @@ class Car:
     #S Hello Darkness my Old Friend
     # reference_1.py
     #*test
-    #summarize data/example_script_2.py
+    #summarize data/example_script_2.py (True)
     #T Comment Title
     #C Wow Thats a good comment
     #C The line continues even here

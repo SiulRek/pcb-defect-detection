@@ -2,7 +2,6 @@ class FileManager:
     """Class to handle file management operations."""
     
     def __init__(self, directory):
-        """Initialize FileManager with a directory to manage."""
         self.directory = directory
     
     def create_file(self, filename, content):
@@ -20,6 +19,9 @@ class FileManager:
 class Calculator:
     """Simple calculator class to perform basic arithmetic operations."""
     
+    def __init__(self):
+        pass
+
     @staticmethod
     def add(a, b):
         """Return the sum of two numbers."""

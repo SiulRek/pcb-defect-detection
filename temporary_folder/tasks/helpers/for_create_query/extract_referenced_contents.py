@@ -122,8 +122,9 @@ def handle_directory_tree(line, root_dir, current_file_path):
 def handle_summarize_python_script(line, root_dir, current_file_path):
     """Extract the summarize python script tag."""
     if result := line_validation_for_summarize_python_script(line):
-        script_path = find_file(result, root_dir, current_file_path)
-        script_summary = summarize_python_file(script_path)
+        name, include_definitions_without_docstrings = result
+        script_path = find_file(name, root_dir, current_file_path)
+        script_summary = summarize_python_file(script_path, include_definitions_without_docstrings)
         default_title = f"Summorized Python Script {os.path.basename(script_path)}"
         return (REFERENCE_TYPE.SUMMARIZE_PYTHON_SCRIPT, default_title, script_summary)
     return None

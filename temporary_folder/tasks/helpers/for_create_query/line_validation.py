@@ -125,7 +125,11 @@ def line_validation_for_directory_tree(line):
 def line_validation_for_summarize_python_script(line):
     """ Validate if the line is a summarize python script."""
     if match := SUMMARIZE_PYTHON_SCRIPT_PATTERN.match(line):
-        return match.group(1)
+        include_definitions_without_docstrings = False
+        if result := re.search(ROUND_BRACKET_PATTERN, line):
+            bool = True if result.group(1).strip().lower() == "true" else False
+            include_definitions_without_docstrings = bool
+        return match.group(1), include_definitions_without_docstrings
     return None
 
 

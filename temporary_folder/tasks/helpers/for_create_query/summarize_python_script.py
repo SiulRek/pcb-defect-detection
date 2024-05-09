@@ -1,13 +1,15 @@
 import ast
 
 
-def summarize_python_file(file_path):
+def summarize_python_file(file_path, include_definitions_without_docstrings=False):
     """
     Summarizes a Python file by extracting classes, functions, and their respective docstrings,
     maintaining proper indentation to reflect the structure.
 
     Args:
         file_path (str): The path to the Python file to be summarized.
+        include_definitions_without_docstrings (bool, optional): Whether to include classes and
+            functions without docstrings in the summary. Defaults to False.
 
     Returns:
         str: A summary of the classes and functions with docstrings.
@@ -35,15 +37,21 @@ def summarize_python_file(file_path):
         """Recursively summarize a node."""
         summary = []
         if isinstance(node, ast.ClassDef):
+            docstring = get_docstring(node)
+            if not docstring and not include_definitions_without_docstrings:
+                return []
             summary.append(f"{' ' * indent}class {node.name}:")
-            summary.append(format_docstring(get_docstring(node), indent))
+            summary.append(format_docstring(docstring, indent))
             for child in node.body:
                 summary.extend(summarize_node(child, indent + 4))
 
         elif isinstance(node, ast.FunctionDef):
+            docstring = get_docstring(node)
+            if not docstring and not include_definitions_without_docstrings:
+                return []
             args = ", ".join(arg.arg for arg in node.args.args)
             summary.append(f"{' ' * indent}def {node.name}({args}):")
-            summary.append(format_docstring(get_docstring(node), indent))
+            summary.append(format_docstring(docstring, indent))
 
         return summary
 
