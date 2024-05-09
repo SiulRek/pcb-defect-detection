@@ -17,6 +17,9 @@ RUN_SCRIPT_PATTERN = re.compile(r"#run (\S+\.py)")
 # Run Pylint Pattern
 RUN_PYLINT_PATTERN = re.compile(r"#pylint (\S+\.py)")
 
+# Unittest Pattern
+UNITTEST_PATTERN = re.compile(r"#unittest (\S+\.py)")
+
 # Directory Tree Pattern
 DIRECTORY_TREE_PATTERN = re.compile(r"#tree (\S+)")
 

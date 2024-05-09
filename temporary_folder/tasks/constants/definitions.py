@@ -21,6 +21,7 @@ class REFERENCE_TYPE(Enum):
     CURRENT_FILE = "current_file"
     RUN_PYTHON_SCRIPT = "run_python_script"
     RUN_PYLINT = "run_pylint"
+    RUN_UNITTEST = "run_unittest"
     DIRECTORY_TREE = "directory_tree"
     SUMMARIZE_PYTHON_SCRIPT = "summarize_python_script"
     SUMMARIZE_FOLDER = "summarize_folder" # Summarize all Python scripts in a folder

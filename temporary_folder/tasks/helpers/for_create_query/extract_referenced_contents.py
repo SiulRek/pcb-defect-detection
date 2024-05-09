@@ -23,6 +23,9 @@ from temporary_folder.tasks.helpers.general.execute_python_script import (
     execute_python_script,
 )
 from temporary_folder.tasks.helpers.general.execute_pylint import execute_pylint
+from temporary_folder.tasks.helpers.general.execute_unittests_from_file import (
+    execute_unittests_from_file,
+)
 
 from temporary_folder.tasks.helpers.for_create_query.line_validation import (
     line_validation_for_title,
@@ -32,6 +35,7 @@ from temporary_folder.tasks.helpers.for_create_query.line_validation import (
     line_validation_for_fill_text,
     line_validation_for_run_python_script,
     line_validation_for_run_pylint,
+    line_validation_for_run_unittest,
     line_validation_for_current_file_reference,
     line_validation_for_directory_tree,
     line_validation_for_summarize_python_script,
@@ -116,6 +120,17 @@ def handle_run_pylint(line, root_dir, current_file_path):
     return None
 
 
+def handle_run_unittest(line, root_dir, current_file_path):
+    """Extract the run unittest tag."""
+    if result := line_validation_for_run_unittest(line):
+        name, verbosity = result
+        script_path = find_file(name, root_dir, current_file_path)
+        unittest_output = execute_unittests_from_file(script_path, verbosity)
+        default_title = "Unittest Output"
+        return (REFERENCE_TYPE.RUN_UNITTEST, default_title, unittest_output)
+    return None
+
+
 def handle_directory_tree(line, root_dir, current_file_path):
     """Extract the directory tree tag."""
     if result := line_validation_for_directory_tree(line):
@@ -172,6 +187,7 @@ handlers = [
     handle_fill_text,
     handle_run_python_script,
     handle_run_pylint,
+    handle_run_unittest,
     handle_directory_tree,
     handle_summarize_python_script,
     handle_summarize_folder,

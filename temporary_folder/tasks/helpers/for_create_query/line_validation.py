@@ -5,6 +5,7 @@ from temporary_folder.tasks.constants.patterns import (
     FILL_TEXT_PATTERN,
     RUN_SCRIPT_PATTERN,
     RUN_PYLINT_PATTERN,
+    UNITTEST_PATTERN,
     DIRECTORY_TREE_PATTERN,
     SUMMARIZE_PYTHON_SCRIPT_PATTERN,
     SUMMARIZE_FOLDER_PATTERN,
@@ -122,6 +123,16 @@ def line_validation_for_run_pylint(line):
     """ Validate if the line is a run pylint."""
     if match := RUN_PYLINT_PATTERN.match(line):
         return match.group(1)
+    return None
+
+
+def line_validation_for_run_unittest(line):
+    """ Validate if the line is a run unittest."""
+    if match := re.search(UNITTEST_PATTERN, line):
+        verbosity = 1
+        if arguments := get_optional_arguments(line):
+            verbosity = int(arguments[0])
+        return match.group(1), verbosity
     return None
 
 

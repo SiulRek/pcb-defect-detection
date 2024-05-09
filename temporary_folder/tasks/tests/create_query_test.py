@@ -27,15 +27,16 @@ class Car:
     #C The line continues even here
     #C The comment is so long.
     #run data/example_script.py
-    #summarize_folder data (True, [], [reference_1.py; reference_2.py])
+    #summarize_folder data (True, [], [reference_1.py; reference_2.py; example_script_6.py])
     #T Reference File Title
     # reference_2.py, data/reference_3.txt
     #File
     #tree . (2, False, [temp; log])
+    #unittest example_script_6.py (2)
     #pylint data/example_script.py
     #C This is another comment
     # preprocessing/tests/test_runner.py
     #L
     #E The end of the code
     #makequery (True, 100)
-    #checksum 20
+    #checksum 22
