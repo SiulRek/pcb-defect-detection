@@ -1,11 +1,33 @@
-""" This module creates a query from the file and referenced contents in the file.
+"""
+This module creates a query from the file and referenced contents in the file.
+
+Available reference types:
+| Name                    | Description                           | Pattern                                          | Arguments                                            |
+|-------------------------|---------------------------------------|--------------------------------------------------|-----------------------------------------------------|
+| start tag               | Place start text                      | #S <start_text>                                  | -                                                   |
+| end tag                 | Place end text                        | #E <end_text>                                    | -                                                   |
+| title                   | Title of the reference                | #T <title>                                       | -                                                   |
+| comment                 | Comment text                          | #C <comment>                                     | -                                                   |
+| file reference          | Reference to file/s                   | #File <file_path> or <file_path_1, file_path_2>  | -                                                   |
+| current_file_reference  | Current file content                  | #File                                            | -                                                   |
+| error                   | Get logged errors                     | #L                                               | -                                                   |
+| fill_text               | Add a fill text                       | #*<fill_text_name>                               | -                                                   |
+| run_python_script       | Run a Python script                   | #run <script_path>                 | -                                                   |
+| run_pylint              | Run pylint on a file                  | #run_pylint <file_path>                          | -                                                   |
+| directory_tree          | Get directory tree                    | #tree <directory_path>                 | <max_depth, include_files, ignore_list (semicolon-separated list)> |
+| summarize_python_script | Summarize a Python script             | #summarize <script_path>           | <include_definitions_with_docstrings>               |
+| make_query              | Make a query from a temporary file    | #makequery                                       | <create_python_script, max_tokens>                  |
+| checksum                | Check if provided checksum corresponds | #checksum <number_of_references>                 | -                                                   |
+
+Note: Replace angled brackets and their contents with appropriate values when using patterns.
 
 TODO when adding new reference:
-    1. Make line validation function in line_validation.py.
-    2. Add the reference type to REFERENCE_TYPE.
-    3. Add a new handler function with the reference functionality in extract_referenced_contents.py.
-    4. Add the handler function to the reference_handlers dictionary.
+1. Make line validation function in line_validation.py.
+2. Add the reference type to REFERENCE_TYPE.
+3. Add a new handler function with the reference functionality in extract_referenced_contents.py.
+4. Add the handler function to the reference_handlers dictionary.
 """
+
 
 import sys
 import os
