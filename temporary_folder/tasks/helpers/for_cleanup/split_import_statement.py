@@ -1,38 +1,78 @@
-import re
+SEPARATOR = "import"
 
 
-SEPARATORS = ["import", "as"]
+def is_word(string):
+    accepted_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_."
+    for char in string:
+        if char not in accepted_chars:
+            return False
+    return True
 
 
-def get_alias_names(alias_string):
-    cleaned = re.sub(r"[()]", "", alias_string).replace("\n", "").split(",")
-    cleaned = [name.strip() for name in cleaned if name.strip()]
+def process_name_specifications(name_specifications):
+    """
+    Processes the name specifications of an import statement. The name specifications are a list of
+    strings containing the original name and alias name of the imported module. The alias name is
+    the name after the 'as' keyword. If the alias name is not provided, the original name is used as
+    the alias name.
 
-    return cleaned
+    Args:
+    name_specifications (str): A string containing the name specifications of an import statement.
 
+    Returns:
+    tuple: A tuple containing two lists. The first list contains the original names of the imported
+        modules. The second list contains the alias names of the imported modules.
+    """
+    original_names = []
+    alias_names = []
+
+    name_specifications = name_specifications.replace("(", "").replace(")", "")
+    parts = name_specifications.split(",")
+    for part in parts:
+        part = part.strip()
+        if " as " in part:
+            original_name, alias_name = part.split(" as ")
+            original_name = original_name.strip()
+            alias_name = alias_name.strip()
+            if not is_word(alias_name):
+                raise ValueError(f"{alias_name} is not a valid alias name.")
+            if not is_word(original_name):
+                raise ValueError(f"{original_name} is not a valid original name.")
+            original_names.append(original_name)
+            alias_names.append(alias_name)
+        else:
+            if not is_word(part):
+                raise ValueError(f"{part} is not a valid original name.")
+            original_names.append(part)
+            alias_names.append(part)
+    return original_names, alias_names
 
 def split_import_statement(import_statement):
-    words = import_statement.split()
-    words.reverse()
+    """ 
+    Splits an import statement into its base, original names, and alias names. The base is the
+    keyword used to import the module. The original names are the names of the modules being imported.
+    The alias names are the names used to refer to the imported modules in the code.
 
-    separator_detected = False
-    specifiers = ""
-    base = []
-    for word in words:
-        if word in SEPARATORS and not separator_detected:
-            separator_detected = True
-            base.append(word)
-        elif separator_detected:
-            base.append(word)
-        else:
-            specifiers = word + " " + specifiers
+    Args:
+    import_statement (str): The import statement to split.
 
-    base.reverse()
-    base = " ".join(base).strip()
+    Returns:
+    tuple: A tuple containing the base, original names, and alias names of the import statement.
+    """
+    words = import_statement.strip().split()
+    if "import" not in words:
+        raise ValueError(f"Import Statement does not contain 'import' keyword: {import_statement}")
 
-    specifiers = get_alias_names(specifiers)
+    if import_statement.startswith("import"):
+        base = "import"
+        name_specifications = import_statement.split("import ")[1]
+    else:
+        base = import_statement.split(" import ")[0] + " import"
+        name_specifications = import_statement.split(" import ")[1]
 
-    return base, specifiers
+    original_names, alias_names = process_name_specifications(name_specifications)
+
+    return base, original_names, alias_names
 
 
 if __name__ == "__main__":
