@@ -3,7 +3,10 @@ import re
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
-from temporary_folder.tasks.constants.definitions import START_TAG, END_TAG
+from temporary_folder.tasks.helpers.for_create_query.line_validation import (
+    line_validation_for_start_tag,
+    line_validation_for_end_tag,
+)
 
 
 def extract_start_and_end_text(filepath, contents=None):
@@ -29,10 +32,10 @@ def extract_start_and_end_text(filepath, contents=None):
     updated_lines = []
 
     for line in lines:
-        if START_TAG in line and start_text == "":
-            start_text = line.split(START_TAG, 1)[1].strip()
-        elif END_TAG in line and end_text == "":
-            end_text = line.split(END_TAG, 1)[1].strip()
+        if result := line_validation_for_start_tag(line):
+            start_text = start_text or result
+        elif result := line_validation_for_end_tag(line):
+            end_text = end_text or result
         else:
             updated_lines.append(line + "\n")
     return start_text, "".join(updated_lines), end_text

@@ -10,16 +10,32 @@ from temporary_folder.tasks.constants.patterns import (
     CHECKSUM_PATTERN,
 )
 from temporary_folder.tasks.constants.definitions import (
+    START_TAG,
+    END_TAG,
     TITLE_TAG,
     COMMENT_TAG,
     CURRENT_FILE_TAG,
     ERROR_TAG,
-    MAKE_QUERY_TAG
+    MAKE_QUERY_TAG,
 )
 from temporary_folder.tasks.constants.defaults import DIRECTORY_TREE_DEFAULTS
 
 ROUND_BRACKET_PATTERN = re.compile(r"\((.*?)\)")
 SQUARE_BRACKET_PATTERN = re.compile(r"\[(.*?)\]")
+
+
+def line_validation_for_start_tag(line):
+    """ Validate if the line is a start tag."""
+    if START_TAG in line:
+        return line.split(START_TAG, 1)[1].strip()
+    return None
+
+    
+def line_validation_for_end_tag(line):
+    """ Validate if the line is an end tag."""
+    if END_TAG in line:
+        return line.split(END_TAG, 1)[1].strip()
+    return None
 
 
 def line_validation_for_title(line):
