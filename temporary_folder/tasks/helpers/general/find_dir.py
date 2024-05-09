@@ -58,7 +58,7 @@ def find_dir(string, root_dir, reference_dir):
         dir_path (str): The path to the directory.
     """
     if "\\" in string or "/" in string:
-        return find_dir_from_path_fragment(string, root_dir)
+        dir = find_dir_from_path_fragment(string, root_dir)
     else:
-        return find_nearest_dir(string, root_dir, reference_dir)
-
+        dir = find_nearest_dir(string, root_dir, reference_dir)
+    return os.path.normpath(dir)

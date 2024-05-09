@@ -59,7 +59,7 @@ def find_file(string, root_dir, current_file_path):
         file_path (str): The path to the file.
     """
     if "\\" in string or "/" in string:
-        return find_file_from_path_fragment(string, root_dir)
+        file = find_file_from_path_fragment(string, root_dir)
     else:
-        return find_nearest_file(string, root_dir, current_file_path)
-        
+        file = find_nearest_file(string, root_dir, current_file_path)
+    return os.path.normpath(file)
