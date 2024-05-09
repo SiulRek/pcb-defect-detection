@@ -2,17 +2,17 @@ import os
 import sys
 import json
 from math import (
-    sqrt,
-    pow,
-    ceil,
+    sqrt as square_root,
+    pow as power,
+    ceil as ceiling,
     floor
 )
-from random import randint, shuffle
-from datetime import datetime, timedelta
+from random import randint, shuffle as mix
+from datetime import datetime as date, timedelta
 
 import xml.etree.ElementTree as ET
 
-from collections import defaultdict, OrderedDict
+from collections import defaultdict as defdict, OrderedDict as odict
 
 from urllib.parse import urlparse
 
@@ -23,7 +23,7 @@ def parse_url(url):
 
 
 def calculate_square_root(number):
-    return sqrt(number)
+    return square_root(number)
 
 
 def generate_random_number():
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     print("Square root of", number, "is", root_value)
     print("Random number:", random_number)
 
-    current_time = datetime.now()
+    current_time = date.now()
     future_time = current_time + timedelta(days=1)
     print("Current time:", current_time)
     print("Future time:", future_time)
