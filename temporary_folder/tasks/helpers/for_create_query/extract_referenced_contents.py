@@ -35,6 +35,7 @@ from temporary_folder.tasks.helpers.for_create_query.line_validation import (
     line_validation_for_current_file_reference,
     line_validation_for_directory_tree,
     line_validation_for_summarize_python_script,
+    line_validation_for_summarize_folder,
 )
 
 
@@ -65,6 +66,15 @@ def handle_referenced_files(line, root_dir, current_file_path):
                 referenced_file = (REFERENCE_TYPE.FILE, default_title, file.read())
                 referenced_files.append(referenced_file)
         return referenced_files
+    return None
+
+
+def handle_current_file_reference(line, root_dir, current_file_path):
+    """Extract the current file tag."""
+    if line_validation_for_current_file_reference(line):
+        relative_path = os.path.relpath(current_file_path, root_dir)
+        default_title = f"File at {relative_path}"
+        return (REFERENCE_TYPE.CURRENT_FILE, default_title, None)
     return None
 
 
@@ -130,12 +140,27 @@ def handle_summarize_python_script(line, root_dir, current_file_path):
     return None
 
 
-def handle_current_file_reference(line, root_dir, current_file_path):
-    """Extract the current file tag."""
-    if line_validation_for_current_file_reference(line):
-        relative_path = os.path.relpath(current_file_path, root_dir)
-        default_title = f"File at {relative_path}"
-        return (REFERENCE_TYPE.CURRENT_FILE, default_title, None)
+def handle_summarize_folder(line, root_dir, current_file_path):
+    """Extract the summarize folder tag."""
+    if result := line_validation_for_summarize_folder(line):
+        folder_path, include_definitions_without_docstrings, excluded_dirs, excluded_files = result
+        folder_path = find_dir(folder_path, root_dir, current_file_path)
+        excluded_dirs = [find_dir(dir, root_dir, current_file_path) for dir in excluded_dirs]
+        excluded_files = [find_file(file, root_dir, current_file_path) for file in excluded_files]
+        referenced_contents = []
+        for root, _, files in os.walk(folder_path):
+            root = os.path.normpath(root)
+            if any([excluded_folder in root for excluded_folder in excluded_dirs]):
+                continue
+            for file in files:
+                file = os.path.join(root, file)
+                file = os.path.normpath(file)
+                if file in excluded_files or not file.endswith(".py"):
+                    continue
+                if script_summary := summarize_python_file(file, include_definitions_without_docstrings):
+                    default_title = f"Summorized Python Script {os.path.basename(file)}"
+                    referenced_contents.append((REFERENCE_TYPE.SUMMARIZE_PYTHON_SCRIPT, default_title, script_summary))
+        return referenced_contents
     return None
 
 
@@ -149,6 +174,7 @@ handlers = [
     handle_run_pylint,
     handle_directory_tree,
     handle_summarize_python_script,
+    handle_summarize_folder,
     handle_current_file_reference,
 ]
 

@@ -27,6 +27,7 @@ class Car:
     #C The line continues even here
     #C The comment is so long.
     #run data/example_script.py
+    #summarize_folder data (True, [], [reference_1.py; reference_2.py])
     #T Reference File Title
     # reference_2.py, data/reference_3.txt
     #File

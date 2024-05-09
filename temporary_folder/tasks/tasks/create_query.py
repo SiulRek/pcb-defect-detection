@@ -16,6 +16,7 @@ Available reference types:
 | run_pylint              | Run pylint on a file                  | #run_pylint <file_path>                          | -                                                   |
 | directory_tree          | Get directory tree                    | #tree <directory_path>                 | <max_depth, include_files, ignore_list (semicolon-separated list)> |
 | summarize_python_script | Summarize a Python script             | #summarize <script_path>           | <include_definitions_with_docstrings>               |
+| summarize_folder       | Summarize Python scripts in a folder  | #summarize_folder <folder_path>     | <include_definitions_with_docstrings, excluded_dirs, excluded_files> |
 | make_query              | Make a query from a temporary file    | #makequery                                       | <create_python_script, max_tokens>                  |
 | checksum                | Check if provided checksum corresponds | #checksum <number_of_references>                 | -                                                   |
 
@@ -45,9 +46,8 @@ else:
         "temporary_folder",
         "tasks",
         "tests",
-        "load_file_and_references_test.py",
+        "create_query_test.py",
     )
-    FILE_PATH = r'/home/krakerlu/github/pcb-defect-detection/temporary_folder/tasks/helpers/for_cleanup/is_specifier_used.py'
 
 
 from temporary_folder.tasks.helpers.for_create_query.extract_start_and_end_text import (

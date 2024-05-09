@@ -7,6 +7,7 @@ from temporary_folder.tasks.constants.patterns import (
     RUN_PYLINT_PATTERN,
     DIRECTORY_TREE_PATTERN,
     SUMMARIZE_PYTHON_SCRIPT_PATTERN,
+    SUMMARIZE_FOLDER_PATTERN,
     CHECKSUM_PATTERN,
 )
 from temporary_folder.tasks.constants.definitions import (
@@ -23,6 +24,19 @@ from temporary_folder.tasks.constants.defaults import DIRECTORY_TREE_DEFAULTS
 ROUND_BRACKET_PATTERN = re.compile(r"\((.*?)\)")
 SQUARE_BRACKET_PATTERN = re.compile(r"\[(.*?)\]")
 
+
+def get_list_in_square_brackets(string, error_message):
+    """ Get the list in square brackets."""
+    match = SQUARE_BRACKET_PATTERN.match(string)
+    if not match:
+        raise ValueError(error_message)
+    out_list = match.group(1).split(";")
+    out_list = [elem.strip() for elem in out_list]
+    out_list = '' if (len(out_list) == 1 and out_list[0] == '') else out_list
+    return out_list
+
+
+def get_optional_arguments(string): pass #TODO
 
 def line_validation_for_start_tag(line):
     """ Validate if the line is a start tag."""
@@ -61,6 +75,13 @@ def line_validation_for_files(line):
     return None
 
 
+def line_validation_for_current_file_reference(line):
+    """ Validate if the line is a current file reference."""
+    if CURRENT_FILE_TAG in line:
+        return True
+    return None
+
+
 def line_validation_for_error(line):
     """ Validate if the line is an error."""
     if ERROR_TAG in line:
@@ -87,13 +108,6 @@ def line_validation_for_run_pylint(line):
     """ Validate if the line is a run pylint."""
     if match := RUN_PYLINT_PATTERN.match(line):
         return match.group(1)
-    return None
-
-
-def line_validation_for_current_file_reference(line):
-    """ Validate if the line is a current file reference."""
-    if CURRENT_FILE_TAG in line:
-        return True
     return None
 
 
@@ -133,6 +147,26 @@ def line_validation_for_summarize_python_script(line):
     return None
 
 
+def line_validation_for_summarize_folder(line):
+    """ Validate if the line is a summarize folder."""
+    if match := SUMMARIZE_FOLDER_PATTERN.match(line):
+        dir = match.group(1)
+        include_definitions_without_docstrings = False
+        err_msg = "Invalid summarize folder arguments"
+        excluded_dirs = []
+        excluded_files = []
+        if result := re.search(ROUND_BRACKET_PATTERN, line):
+            arguments = result.group(1).split(",")
+            arguments = [argument.strip() for argument in arguments]
+            bool = True if arguments[0].lower() == "true" else False
+            include_definitions_without_docstrings = bool
+            if len(arguments) > 1:
+                excluded_dirs = get_list_in_square_brackets(arguments[1], err_msg)
+            if len(arguments) > 2:
+                excluded_files = get_list_in_square_brackets(arguments[2], err_msg)
+        return dir, include_definitions_without_docstrings, excluded_dirs, excluded_files
+    
+
 def line_validation_for_make_query(line):
     """
     Validate the line to check if it is a valid line to make a query.
@@ -142,6 +176,7 @@ def line_validation_for_make_query(line):
         create_python_script = False
         if result := re.search(ROUND_BRACKET_PATTERN, line):
             arguments = result.group(1).split(",")
+            arguments = [argument.strip() for argument in arguments]
             create_python_script = True if arguments[0].strip().lower() == "true" else False
             if len(arguments) > 1:
                 max_tokens = int(arguments[1])

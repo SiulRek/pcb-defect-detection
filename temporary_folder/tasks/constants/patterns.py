@@ -23,5 +23,8 @@ DIRECTORY_TREE_PATTERN = re.compile(r"#tree (\S+)")
 # Summarize Python Script Pattern
 SUMMARIZE_PYTHON_SCRIPT_PATTERN = re.compile(r"#summarize (\S+\.py)")
 
+# Summarize Python Scripts in Folder Pattern
+SUMMARIZE_FOLDER_PATTERN = re.compile(r"#summarize_folder (\S+)")
+
 # Checksum Pattern
 CHECKSUM_PATTERN = re.compile(r"#checksum (\S+)")

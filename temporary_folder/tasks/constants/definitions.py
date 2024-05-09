@@ -23,6 +23,7 @@ class REFERENCE_TYPE(Enum):
     RUN_PYLINT = "run_pylint"
     DIRECTORY_TREE = "directory_tree"
     SUMMARIZE_PYTHON_SCRIPT = "summarize_python_script"
+    SUMMARIZE_FOLDER = "summarize_folder" # Summarize all Python scripts in a folder
     FILL_TEXT = "fill_text"
     TITLE = "title"
 
