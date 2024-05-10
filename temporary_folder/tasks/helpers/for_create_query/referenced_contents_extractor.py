@@ -42,104 +42,107 @@ from temporary_folder.tasks.helpers.for_create_query.line_validation import (
     line_validation_for_directory_tree,
     line_validation_for_summarize_python_script,
     line_validation_for_summarize_folder,
+    line_validation_for_unittest_query,
 )
 
 
 class ReferencedContentExtractor(ExtractorBase):
-    def handler_referenced_title(self, line, *unused_args):
+    def handler_referenced_title(self, line):
         if result := line_validation_for_title(line):
             return (REFERENCE_TYPE.TITLE, result, None)
         return None
 
-    def handler_referenced_comment(self, line, *unused_args):
+    def handler_referenced_comment(self, line):
         if result := line_validation_for_comment(line):
             default_title = "Comment"
             return (REFERENCE_TYPE.COMMENT, default_title, result)
         return None
 
-    def handler_referenced_files(self, line, root_dir, current_file_path):
+    def handler_referenced_files(self, line):
         if result := line_validation_for_files(line):
             referenced_files = []
             for file_name in result:
-                file_path = find_file(file_name, root_dir, current_file_path)
+                file_path = find_file(file_name, self.root_dir, self.file_path)
                 with open(file_path, "r", encoding="utf-8") as file:
-                    relative_path = os.path.relpath(file_path, root_dir)
+                    relative_path = os.path.relpath(file_path, self.root_dir)
                     default_title = f"File at {relative_path}"
                     referenced_file = (REFERENCE_TYPE.FILE, default_title, file.read())
                     referenced_files.append(referenced_file)
             return referenced_files
         return None
 
-    def handler_current_file_reference(self, line, root_dir, current_file_path):
+    def handler_current_file_reference(self, line):
         if line_validation_for_current_file_reference(line):
-            relative_path = os.path.relpath(current_file_path, root_dir)
+            relative_path = os.path.relpath(self.file_path, self.root_dir)
             default_title = f"File at {relative_path}"
             return (REFERENCE_TYPE.CURRENT_FILE, default_title, None)
         return None
-
-    def handler_referenced_error(self, line, root_dir, current_file_path):
+        
+        
+    def handler_referenced_error(self, line):
         if line_validation_for_error(line):
-            error_text = get_error_text(root_dir, current_file_path)
+            error_text = get_error_text(self.root_dir, self.file_path)
             default_title = "Occured Errors"
             return (REFERENCE_TYPE.LOGGED_ERROR, default_title, error_text)
         return None
 
-    def handler_fill_text(self, line, root_dir, *unused_args):
+    def handler_fill_text(self, line):
         if result := line_validation_for_fill_text(line):
-            fill_text, default_title = get_fill_text(result, root_dir)
+            fill_text, default_title = get_fill_text(result, self.root_dir)
             return (REFERENCE_TYPE.FILL_TEXT, default_title, fill_text)
+        return None
 
-    def handler_run_python_script(self, line, root_dir, current_file_path):
+    def handler_run_python_script(self, line):
         if result := line_validation_for_run_python_script(line):
-            script_path = find_file(result, root_dir, current_file_path)
-            environment_path = get_environment_path(root_dir)
+            script_path = find_file(result, self.root_dir, self.file_path)
+            environment_path = get_environment_path(self.root_dir)
             script_output = execute_python_script(script_path, environment_path)
             default_title = "Python Script Output"
             return (REFERENCE_TYPE.RUN_PYTHON_SCRIPT, default_title, script_output)
         return None
 
-    def handler_run_pylint(self, line, root_dir, current_file_path):
+    def handler_run_pylint(self, line):
         if result := line_validation_for_run_pylint(line):
-            script_path = find_file(result, root_dir, current_file_path)
-            environment_path = get_environment_path(root_dir)
+            script_path = find_file(result, self.root_dir, self.file_path)
+            environment_path = get_environment_path(self.root_dir)
             pylint_output = execute_pylint(script_path, environment_path)
             default_title = "Pylint Output"
             return (REFERENCE_TYPE.RUN_PYLINT, default_title, pylint_output)
         return None
 
-    def handler_run_unittest(self, line, root_dir, current_file_path):
+    def handler_run_unittest(self, line):
         if result := line_validation_for_run_unittest(line):
             name, verbosity = result
-            script_path = find_file(name, root_dir, current_file_path)
+            script_path = find_file(name, self.root_dir, self.file_path)
             unittest_output = execute_unittests_from_file(script_path, verbosity)
             default_title = "Unittest Output"
             return (REFERENCE_TYPE.RUN_UNITTEST, default_title, unittest_output)
         return None
 
-    def handler_directory_tree(self, line, root_dir, current_file_path):
+    def handler_directory_tree(self, line):
         if result := line_validation_for_directory_tree(line):
             dir, max_depth, include_files, ignore_list = result
-            dir = find_dir(dir, root_dir, current_file_path)
+            dir = find_dir(dir, self.root_dir, self.file_path)
             directory_tree = generate_directory_tree(dir, max_depth, include_files, ignore_list)
             default_title = "Directory Tree"
             return (REFERENCE_TYPE.DIRECTORY_TREE, default_title, directory_tree)
         return None
 
-    def handler_summarize_python_script(self, line, root_dir, current_file_path):
+    def handler_summarize_python_script(self, line):
         if result := line_validation_for_summarize_python_script(line):
             name, include_definitions_without_docstrings = result
-            script_path = find_file(name, root_dir, current_file_path)
+            script_path = find_file(name, self.root_dir, self.file_path)
             script_summary = summarize_python_file(script_path, include_definitions_without_docstrings)
             default_title = f"Summarized Python Script {os.path.basename(script_path)}"
             return (REFERENCE_TYPE.SUMMARIZE_PYTHON_SCRIPT, default_title, script_summary)
         return None
 
-    def handler_summarize_folder(self, line, root_dir, current_file_path):
+    def handler_summarize_folder(self, line):
         if result := line_validation_for_summarize_folder(line):
             folder_path, include_definitions_without_docstrings, excluded_dirs, excluded_files = result
-            folder_path = find_dir(folder_path, root_dir, current_file_path)
-            excluded_dirs = [find_dir(dir, root_dir, current_file_path) for dir in excluded_dirs]
-            excluded_files = [find_file(file, root_dir, current_file_path) for file in excluded_files]
+            folder_path = find_dir(folder_path, self.root_dir, self.file_path)
+            excluded_dirs = [find_dir(dir, self.root_dir, self.file_path) for dir in excluded_dirs]
+            excluded_files = [find_file(file, self.root_dir, self.file_path) for file in excluded_files]
             referenced_contents = []
             for root, _, files in os.walk(folder_path):
                 root = os.path.normpath(root)
@@ -155,6 +158,7 @@ class ReferencedContentExtractor(ExtractorBase):
                         referenced_contents.append((REFERENCE_TYPE.SUMMARIZE_PYTHON_SCRIPT, default_title, script_summary))
             return referenced_contents
         return None
+
     
     def post_process_referenced_contents(self, referenced_contents):
         # Merge comments in sequence to one comment
