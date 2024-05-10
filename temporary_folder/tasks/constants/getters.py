@@ -15,7 +15,7 @@ def get_temporary_file_path(root_dir=ROOT_DIR):
 
 
 def get_fill_text_directory(root_dir=ROOT_DIR):
-    return os.path.join(root_dir, "temporary_folder", "tasks", "fill_texts")
+    return os.path.join(root_dir, "temporary_folder", "tasks", "data", "fill_texts")
 
 
 def get_output_directory(root_dir=ROOT_DIR):
