@@ -1,8 +1,8 @@
 import unittest
 import re
 
-
-FILE_PATTERN = re.compile(r"#\s*((?:\S+\.(?:py|txt|log|md|csv))\s*(?:,\s*\S+\.(?:py|txt|log|md|csv)\s*)*)")
+FILE_TAG = "File"
+FILE_PATTERN = re.compile(rf"#\s*((?:\S+\.(?:py|txt|log|md|csv))\s*(?:,\s*\S+\.(?:py|txt|log|md|csv)\s*)*|{FILE_TAG})")
 
 
 class TestFilePatternRegex(unittest.TestCase):
@@ -23,6 +23,12 @@ class TestFilePatternRegex(unittest.TestCase):
         match = FILE_PATTERN.search(test_string)
         self.assertIsNotNone(match)
         self.assertEqual(match.group(1), 'file_1.py ,  file_2.txt , dir/dir/file_3.log')
+    
+    def test_file_with_file_tag(self):
+        test_string = "# File"
+        match = FILE_PATTERN.search(test_string)
+        self.assertIsNotNone(match)
+        self.assertEqual(match.group(1), 'File')
 
     def test_no_files(self):
         test_string = "# Just a comment without a file"
