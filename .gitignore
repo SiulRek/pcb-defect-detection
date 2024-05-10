@@ -32,3 +32,6 @@ source/preprocessing/notebooks/related/pipeline.json
 
 # Private References
 references/private/*
+
+# From Temporary Folder
+temporary_folder/tasks/outputs/temporary_file.txt
