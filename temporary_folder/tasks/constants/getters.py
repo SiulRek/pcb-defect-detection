@@ -26,9 +26,9 @@ def get_output_directory(root_dir=ROOT_DIR):
     return os.path.join(root_dir, "temporary_folder", "tasks", "outputs")
 
 
-def get_checkpoints_directory(root_dir=ROOT_DIR):
+def get_checkpoint_directory(root_dir=ROOT_DIR):
     output_dir = get_output_directory(root_dir)
-    return os.path.join(output_dir, "checkpoints")
+    return os.path.join(output_dir, "checkpoint")
 
 
 def get_environment_path(root_dir=ROOT_DIR):
