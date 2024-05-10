@@ -7,11 +7,11 @@ ROOT_DIR = os.path.join(FILE_DIR, "..", "..", "..")
 
 
 def get_response_file_path(root_dir=ROOT_DIR):
-    return os.path.join(root_dir, "local", "scripts", "generate", "answer.txt")
+    return os.path.join(root_dir, "temporary_folder", "tasks", "outputs", "answer.txt")
 
 
 def get_temporary_file_path(root_dir=ROOT_DIR):
-    return os.path.join(root_dir, "local", "scripts", "generate", "temporary_file.txt")
+    return os.path.join(root_dir, "temporary_folder", "tasks", "outputs", "temporary_file.txt")
 
 
 def get_fill_text_directory(root_dir=ROOT_DIR):
