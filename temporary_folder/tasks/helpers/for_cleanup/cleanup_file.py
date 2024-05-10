@@ -1,7 +1,7 @@
 import os
 
 from temporary_folder.tasks.constants.getters import (
-    get_checkpoints_directory,
+    get_checkpoint_directory,
     get_environment_path,
 )
 from temporary_folder.tasks.helpers.for_cleanup.format_docstrings import (
@@ -19,6 +19,9 @@ from temporary_folder.tasks.helpers.for_cleanup.remove_trailing_parts import (
 from temporary_folder.tasks.helpers.for_cleanup.remove_line_comments import (
     remove_line_comments,
 )
+from temporary_folder.tasks.helpers.for_cleanup.remove_unused_imports import (
+    remove_unused_imports,
+)
 from temporary_folder.tasks.helpers.for_cleanup.run_black_formatting import (
     format_with_black,
 )
@@ -31,6 +34,7 @@ STRATEGIES = {
     "RL": (remove_line_comments, "Remove line comments", False),
     "RE": (refactor_exception, "Refactor exception", False),
     "RI": (rearrange_imports, "Rearrange imports", False),
+    "RU": (remove_unused_imports, "Remove unused imports", False),
     "FM": (format_docstrings, "Format docstrings", False),
     "BF": (format_with_black, "Run Black formatting", True),
     "PL": (execute_pylint, "Execute Pylint", True),
@@ -102,9 +106,12 @@ def cleanup_file(
         raise ValueError("Output directory is required for checkpointing")
     os.makedirs(checkpoint_dir, exist_ok=True)
 
+    if select_only and select_not:
+        raise ValueError("Cannot have both select_only and select_not options specified.")
+
     if select_only:
         strategies = {key: STRATEGIES[key] for key in select_only}
-    if select_not:
+    elif select_not:
         strategies = {
             key: STRATEGIES[key] for key in STRATEGIES if key not in select_not
         }
@@ -127,7 +134,8 @@ def cleanup_file(
                 updated_code = file.read()
         else:
             updated_code = function(updated_code)
-        print(f"--------> {description} applied to {file_path}")
+        file_name = os.path.basename(file_path)
+        print(f"--------> {description} applied to {file_name}")
         if checkpointing:
             make_checkpoint(file_path, updated_code, description, checkpoint_dir)
 
@@ -139,7 +147,7 @@ if __name__ == "__main__":
         path,
         # select_not=["PL", "BF", "FD"],
         checkpointing=True,
-        checkpoint_dir=get_checkpoints_directory(),
+        checkpoint_dir=get_checkpoint_directory(),
         python_env_path=get_environment_path(),
     )
     print(f"File cleaned of {path}")
