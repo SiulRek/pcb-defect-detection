@@ -22,6 +22,7 @@ class Car:
     # reference_1.py
     #*test
     #summarize data/example_script_2.py (True)
+    #test_1_query
     #T Comment Title
     #C Wow Thats a good comment
     #C The line continues even here
@@ -39,4 +40,4 @@ class Car:
     #L
     #E The end of the code
     # makequery (True, 100)
-    #checksum 21
+    #checksum 22

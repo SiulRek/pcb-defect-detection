@@ -31,5 +31,8 @@ SUMMARIZE_PYTHON_SCRIPT_PATTERN = re.compile(rf"#summarize (\S+\.py|{FILE_TAG})"
 # Summarize Python Scripts in Folder Pattern
 SUMMARIZE_FOLDER_PATTERN = re.compile(r"#summarize_folder (\S+)")
 
+# Template Pattern
+QUERY_TEMPLATE_PATTERN = re.compile(r'#(.*?)_query')
+
 # Checksum Pattern
 CHECKSUM_PATTERN = re.compile(r"#checksum (\S+)")

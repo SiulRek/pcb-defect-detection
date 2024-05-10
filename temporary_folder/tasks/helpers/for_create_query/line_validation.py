@@ -9,6 +9,7 @@ from temporary_folder.tasks.constants.patterns import (
     DIRECTORY_TREE_PATTERN,
     SUMMARIZE_PYTHON_SCRIPT_PATTERN,
     SUMMARIZE_FOLDER_PATTERN,
+    QUERY_TEMPLATE_PATTERN,
     CHECKSUM_PATTERN,
 )
 from temporary_folder.tasks.constants.definitions import (
@@ -157,6 +158,12 @@ def line_validation_for_summarize_folder(line):
                 excluded_files = retrieve_list_in_square_brackets(arguments[2], err_msg)
         return dir, include_definitions_without_docstrings, excluded_dirs, excluded_files
     
+
+def line_validation_for_query_template(line):
+    if result := QUERY_TEMPLATE_PATTERN.match(line):
+        return result.group(1)
+    return None
+
 
 def line_validation_for_make_query(line):
     """

@@ -21,6 +21,9 @@ from temporary_folder.tasks.helpers.for_create_query.summarize_python_script imp
 from temporary_folder.tasks.helpers.for_create_query.get_fill_text import (
     get_fill_text,
 )
+from temporary_folder.tasks.helpers.for_create_query.get_query_template import (
+    get_query_template
+)
 from temporary_folder.tasks.helpers.general.execute_python_script import (
     execute_python_script,
 )
@@ -42,7 +45,7 @@ from temporary_folder.tasks.helpers.for_create_query.line_validation import (
     line_validation_for_directory_tree,
     line_validation_for_summarize_python_script,
     line_validation_for_summarize_folder,
-    line_validation_for_unittest_query,
+    line_validation_for_query_template,
 )
 
 
@@ -77,7 +80,6 @@ class ReferencedContentExtractor(ExtractorBase):
             default_title = f"File at {relative_path}"
             return (REFERENCE_TYPE.CURRENT_FILE, default_title, None)
         return None
-        
         
     def handler_referenced_error(self, line):
         if line_validation_for_error(line):
@@ -159,6 +161,13 @@ class ReferencedContentExtractor(ExtractorBase):
             return referenced_contents
         return None
 
+
+    def handler_query_template(self, line):
+        if result := line_validation_for_query_template(line):
+            query_template = get_query_template(result, self.root_dir)
+            referenced_contents, _ = self._extract_referenced_contents(query_template)
+            return referenced_contents
+        return None
     
     def post_process_referenced_contents(self, referenced_contents):
         # Merge comments in sequence to one comment

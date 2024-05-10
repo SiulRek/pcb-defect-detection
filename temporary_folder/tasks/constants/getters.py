@@ -18,6 +18,10 @@ def get_fill_text_directory(root_dir=ROOT_DIR):
     return os.path.join(root_dir, "temporary_folder", "tasks", "data", "fill_texts")
 
 
+def get_query_templates_directory(root_dir=ROOT_DIR):
+    return os.path.join(root_dir, "temporary_folder", "tasks", "data", "query_templates")
+
+
 def get_output_directory(root_dir=ROOT_DIR):
     return os.path.join(root_dir, "temporary_folder", "tasks", "outputs")
 
