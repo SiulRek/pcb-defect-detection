@@ -54,8 +54,8 @@ else:
 from temporary_folder.tasks.helpers.for_create_query.extract_start_and_end_text import (
     extract_start_and_end_text,
 )
-from temporary_folder.tasks.helpers.for_create_query.extract_referenced_contents import (
-    extract_referenced_contents,
+from temporary_folder.tasks.helpers.for_create_query.referenced_contents_extractor import (
+    ReferencedContentExtractor
 )
 from temporary_folder.tasks.helpers.for_create_query.add_text_tags import (
     add_text_tags,
@@ -72,6 +72,7 @@ from temporary_folder.tasks.helpers.for_create_query.finalizer import (
 
 TEMPORARY_FILE = get_temporary_file_path(ROOT_DIR)
 RESPONSE_FILE = get_response_file_path(ROOT_DIR)
+extract_referenced_contents = ReferencedContentExtractor().extract_referenced_contents
 
 
 class ReferenceTitleManager:
