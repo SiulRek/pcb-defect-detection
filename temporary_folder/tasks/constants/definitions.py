@@ -15,7 +15,7 @@ COMMENT_TAG = "#C "
 CURRENT_FILE_TAG = "#File"
 MAKE_QUERY_TAG = "#makequery"
 
-class REFERENCE_TYPE(Enum):
+class MAKE_QUERY_REFERENCE_TYPES(Enum):
     COMMENT = "comment"
     FILE = "reference"
     LOGGED_ERROR = "error"

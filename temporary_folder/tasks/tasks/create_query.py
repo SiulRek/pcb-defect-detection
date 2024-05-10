@@ -64,7 +64,7 @@ from temporary_folder.tasks.constants.getters import (
     get_temporary_file_path,
     get_response_file_path,
 )
-from temporary_folder.tasks.constants.definitions import REFERENCE_TYPE
+from temporary_folder.tasks.constants.definitions import MAKE_QUERY_REFERENCE_TYPES as REFERENCE_TYPES
 import temporary_folder.tasks.helpers.general.print_statements as task_prints
 from temporary_folder.tasks.helpers.for_create_query.finalizer import (
     Finalizer,
@@ -108,11 +108,11 @@ def format_text_from_references(referenced_contents, updated_content):
         current_title = title_manager.get()
         title = current_title if current_title else default_title
 
-        if content_type == REFERENCE_TYPE.TITLE:
+        if content_type == REFERENCE_TYPES.TITLE:
             title_manager.set(default_title)
-        elif content_type == REFERENCE_TYPE.CURRENT_FILE:
+        elif content_type == REFERENCE_TYPES.CURRENT_FILE:
             query += f"\n\n--- {title} ---\n{updated_content}"
-        elif content_type in REFERENCE_TYPE:
+        elif content_type in REFERENCE_TYPES:
             query += f"\n\n--- {title} ---\n{text}"
         else:
             raise ValueError(f"Unknown content type: {content_type}")

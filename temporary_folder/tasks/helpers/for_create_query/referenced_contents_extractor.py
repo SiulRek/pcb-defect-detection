@@ -2,7 +2,7 @@ import os
 
 from temporary_folder.tasks.constants.getters import get_environment_path
 from temporary_folder.tasks.constants.definitions import (
-    REFERENCE_TYPE,
+    MAKE_QUERY_REFERENCE_TYPES as REFERENCE_TYPES,
 )
 from temporary_folder.tasks.helpers.general.generate_directory_tree import (
     generate_directory_tree,
@@ -52,13 +52,13 @@ from temporary_folder.tasks.helpers.for_create_query.line_validation import (
 class ReferencedContentExtractor(ExtractorBase):
     def handler_referenced_title(self, line):
         if result := line_validation_for_title(line):
-            return (REFERENCE_TYPE.TITLE, result, None)
+            return (REFERENCE_TYPES.TITLE, result, None)
         return None
 
     def handler_referenced_comment(self, line):
         if result := line_validation_for_comment(line):
             default_title = "Comment"
-            return (REFERENCE_TYPE.COMMENT, default_title, result)
+            return (REFERENCE_TYPES.COMMENT, default_title, result)
         return None
 
     def handler_referenced_files(self, line):
@@ -69,7 +69,7 @@ class ReferencedContentExtractor(ExtractorBase):
                 with open(file_path, "r", encoding="utf-8") as file:
                     relative_path = os.path.relpath(file_path, self.root_dir)
                     default_title = f"File at {relative_path}"
-                    referenced_file = (REFERENCE_TYPE.FILE, default_title, file.read())
+                    referenced_file = (REFERENCE_TYPES.FILE, default_title, file.read())
                     referenced_files.append(referenced_file)
             return referenced_files
         return None
@@ -78,20 +78,20 @@ class ReferencedContentExtractor(ExtractorBase):
         if line_validation_for_current_file_reference(line):
             relative_path = os.path.relpath(self.file_path, self.root_dir)
             default_title = f"File at {relative_path}"
-            return (REFERENCE_TYPE.CURRENT_FILE, default_title, None)
+            return (REFERENCE_TYPES.CURRENT_FILE, default_title, None)
         return None
         
     def handler_referenced_error(self, line):
         if line_validation_for_error(line):
             error_text = get_error_text(self.root_dir, self.file_path)
             default_title = "Occured Errors"
-            return (REFERENCE_TYPE.LOGGED_ERROR, default_title, error_text)
+            return (REFERENCE_TYPES.LOGGED_ERROR, default_title, error_text)
         return None
 
     def handler_fill_text(self, line):
         if result := line_validation_for_fill_text(line):
             fill_text, default_title = get_fill_text(result, self.root_dir)
-            return (REFERENCE_TYPE.FILL_TEXT, default_title, fill_text)
+            return (REFERENCE_TYPES.FILL_TEXT, default_title, fill_text)
         return None
 
     def handler_run_python_script(self, line):
@@ -100,7 +100,7 @@ class ReferencedContentExtractor(ExtractorBase):
             environment_path = get_environment_path(self.root_dir)
             script_output = execute_python_script(script_path, environment_path)
             default_title = "Python Script Output"
-            return (REFERENCE_TYPE.RUN_PYTHON_SCRIPT, default_title, script_output)
+            return (REFERENCE_TYPES.RUN_PYTHON_SCRIPT, default_title, script_output)
         return None
 
     def handler_run_pylint(self, line):
@@ -109,7 +109,7 @@ class ReferencedContentExtractor(ExtractorBase):
             environment_path = get_environment_path(self.root_dir)
             pylint_output = execute_pylint(script_path, environment_path)
             default_title = "Pylint Output"
-            return (REFERENCE_TYPE.RUN_PYLINT, default_title, pylint_output)
+            return (REFERENCE_TYPES.RUN_PYLINT, default_title, pylint_output)
         return None
 
     def handler_run_unittest(self, line):
@@ -118,7 +118,7 @@ class ReferencedContentExtractor(ExtractorBase):
             script_path = find_file(name, self.root_dir, self.file_path)
             unittest_output = execute_unittests_from_file(script_path, verbosity)
             default_title = "Unittest Output"
-            return (REFERENCE_TYPE.RUN_UNITTEST, default_title, unittest_output)
+            return (REFERENCE_TYPES.RUN_UNITTEST, default_title, unittest_output)
         return None
 
     def handler_directory_tree(self, line):
@@ -127,7 +127,7 @@ class ReferencedContentExtractor(ExtractorBase):
             dir = find_dir(dir, self.root_dir, self.file_path)
             directory_tree = generate_directory_tree(dir, max_depth, include_files, ignore_list)
             default_title = "Directory Tree"
-            return (REFERENCE_TYPE.DIRECTORY_TREE, default_title, directory_tree)
+            return (REFERENCE_TYPES.DIRECTORY_TREE, default_title, directory_tree)
         return None
 
     def handler_summarize_python_script(self, line):
@@ -136,7 +136,7 @@ class ReferencedContentExtractor(ExtractorBase):
             script_path = find_file(name, self.root_dir, self.file_path)
             script_summary = summarize_python_file(script_path, include_definitions_without_docstrings)
             default_title = f"Summarized Python Script {os.path.basename(script_path)}"
-            return (REFERENCE_TYPE.SUMMARIZE_PYTHON_SCRIPT, default_title, script_summary)
+            return (REFERENCE_TYPES.SUMMARIZE_PYTHON_SCRIPT, default_title, script_summary)
         return None
 
     def handler_summarize_folder(self, line):
@@ -157,7 +157,7 @@ class ReferencedContentExtractor(ExtractorBase):
                         continue
                     if script_summary := summarize_python_file(file, include_definitions_without_docstrings):
                         default_title = f"Summarized Python Script {os.path.basename(file)}"
-                        referenced_contents.append((REFERENCE_TYPE.SUMMARIZE_PYTHON_SCRIPT, default_title, script_summary))
+                        referenced_contents.append((REFERENCE_TYPES.SUMMARIZE_PYTHON_SCRIPT, default_title, script_summary))
             return referenced_contents
         return None
 
@@ -172,12 +172,12 @@ class ReferencedContentExtractor(ExtractorBase):
     def post_process_referenced_contents(self, referenced_contents):
         # Merge comments in sequence to one comment
         for referenced_content in referenced_contents:
-            if referenced_content[0] == REFERENCE_TYPE.COMMENT:
+            if referenced_content[0] == REFERENCE_TYPES.COMMENT:
                 start = referenced_contents.index(referenced_content)
                 index = start + 1
                 while (
                     index < len(referenced_contents)
-                    and referenced_contents[index][0] == REFERENCE_TYPE.COMMENT
+                    and referenced_contents[index][0] == REFERENCE_TYPES.COMMENT
                 ):
                     merged_text = f"{referenced_content[2].strip()}\n"
                     merged_text += f"{referenced_contents[index][2].strip()}"
