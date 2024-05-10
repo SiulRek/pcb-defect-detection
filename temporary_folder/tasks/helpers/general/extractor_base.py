@@ -28,6 +28,8 @@ class ExtractorBase:
         Returns:
             tuple: A tuple containing a list of referenced contents and the string of non-referenced content.
         """
+        self.file_path = file_path
+        self.root_dir = root_dir
         handlers = [
             getattr(self, method)
             for method in dir(self)
@@ -42,7 +44,7 @@ class ExtractorBase:
                 result = None
                 stripped_line = line.strip()
                 for handler in handlers:
-                    if result := handler(stripped_line, root_dir, file_path):
+                    if result := handler(stripped_line):
                         if isinstance(result, list):
                             referenced_contents.extend(result)
                         else:
