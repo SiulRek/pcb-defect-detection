@@ -121,6 +121,12 @@ def wrap_metadata_text(text, leading_spaces):
     if items[0] == "":
         items.pop(0)
 
+    if len(items) == 0:
+        return first_line
+    
+    if len(items) == 1:
+        return first_line + "\n" + items[0]
+
     updated_items = []
     for item in items:
         prefix = "- " if not item.startswith("-") else ""
