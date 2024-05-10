@@ -32,11 +32,11 @@ class Car:
     # reference_2.py, data/reference_3.txt
     #File
     #tree . (2, False, [temp; log])
-    #unittest example_script_6.py (2)
+    #unittest File (2)
     #pylint data/example_script.py
     #C This is another comment
     # preprocessing/tests/test_runner.py
     #L
     #E The end of the code
-    #makequery (True, 100)
-    #checksum 22
+    # makequery (True, 100)
+    #checksum 21
