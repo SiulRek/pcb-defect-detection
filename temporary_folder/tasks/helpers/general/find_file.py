@@ -1,5 +1,7 @@
 import os
 
+from temporary_folder.tasks.constants.definitions import FILE_TAG
+
 
 def find_nearest_file(file_name, root_dir, reference_file):
     root_dir = os.path.abspath(root_dir)
@@ -7,6 +9,8 @@ def find_nearest_file(file_name, root_dir, reference_file):
     closest_file = None
     min_distance = float("inf")
 
+    if file_name == FILE_TAG:
+        return reference_file
     for dirpath, _, filenames in os.walk(root_dir):
         if file_name in filenames:
             current_file = os.path.join(dirpath, file_name)
