@@ -3,6 +3,7 @@ from enum import Enum
 
 # ----------------- General Constants -----------------
 TEST_RESULTS_FILE = "test_results.log"
+FILE_TAG = "File"
 
 
 # ----------------- For Make Query -----------------
