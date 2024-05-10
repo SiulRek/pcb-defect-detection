@@ -20,7 +20,7 @@ class Car:
 
     #S Hello Darkness my Old Friend
     # reference_1.py
-    #*test
+    #*test_1
     #summarize data/example_script_2.py (True)
     #test_1_query
     #T Comment Title
