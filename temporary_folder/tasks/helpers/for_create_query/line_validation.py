@@ -21,36 +21,11 @@ from temporary_folder.tasks.constants.definitions import (
     MAKE_QUERY_TAG,
 )
 from temporary_folder.tasks.constants.defaults import DIRECTORY_TREE_DEFAULTS
-
-
-ROUND_BRACKET_PATTERN = re.compile(r"\((.*?)\)")
-SQUARE_BRACKET_PATTERN = re.compile(r"\[(.*?)\]")
-
-
-def get_list_in_square_brackets(string, error_message):
-    """ Get the list in square brackets."""
-    match = SQUARE_BRACKET_PATTERN.match(string)
-    if not match:
-        raise ValueError(error_message)
-    out_list = match.group(1).split(";")
-    out_list = [elem.strip() for elem in out_list]
-    out_list = '' if (len(out_list) == 1 and out_list[0] == '') else out_list
-    return out_list
-
-
-def get_optional_arguments(string):
-    """ Get optional arguments from a string."""
-    result = re.search(ROUND_BRACKET_PATTERN, string)
-    if result:
-        arguments = result.group(1).split(",")
-        arguments = [argument.strip() for argument in arguments]
-        return arguments
-    return None
-
-
-def get_bool(string):
-    """ Get a boolean value from a string."""
-    return True if string.strip().lower() == "true" else False
+from temporary_folder.tasks.helpers.general.line_validation_utils import (
+    retrieve_list_in_square_brackets,
+    retrieve_optional_arguments,
+    retrieve_bool,
+)
 
 
 def line_validation_for_start_tag(line):
@@ -130,7 +105,7 @@ def line_validation_for_run_unittest(line):
     """ Validate if the line is a run unittest."""
     if match := re.search(UNITTEST_PATTERN, line):
         verbosity = 1
-        if arguments := get_optional_arguments(line):
+        if arguments := retrieve_optional_arguments(line):
             verbosity = int(arguments[0])
         return match.group(1), verbosity
     return None
@@ -143,14 +118,14 @@ def line_validation_for_directory_tree(line):
         max_depth = DIRECTORY_TREE_DEFAULTS.MAX_DEPTH.value
         include_files = DIRECTORY_TREE_DEFAULTS.INCLUDE_FILES.value
         ignore_list = DIRECTORY_TREE_DEFAULTS.IGNORE_LIST.value
-        if arguments := get_optional_arguments(line):
+        if arguments := retrieve_optional_arguments(line):
             if len(arguments) >= 1:
                 max_depth = int(arguments[0])
             if len(arguments) >= 2:
-                include_files = get_bool(arguments[1])
+                include_files = retrieve_bool(arguments[1])
             if len(arguments) == 3:
                 err_msg = "Invalid ignore list in directory tree"
-                ignore_list = get_list_in_square_brackets(arguments[2], err_msg)
+                ignore_list = retrieve_list_in_square_brackets(arguments[2], err_msg)
         return (dir, max_depth, include_files, ignore_list)
     return None
 
@@ -159,8 +134,8 @@ def line_validation_for_summarize_python_script(line):
     """ Validate if the line is a summarize python script."""
     if match := SUMMARIZE_PYTHON_SCRIPT_PATTERN.match(line):
         include_definitions_without_docstrings = False
-        if result := re.search(ROUND_BRACKET_PATTERN, line):
-            bool = True if result.group(1).strip().lower() == "true" else False
+        if arguments := retrieve_optional_arguments(line):
+            bool = True if arguments[0].lower() == "true" else False
             include_definitions_without_docstrings = bool
         return match.group(1), include_definitions_without_docstrings
     return None
@@ -174,12 +149,12 @@ def line_validation_for_summarize_folder(line):
         err_msg = "Invalid summarize folder arguments"
         excluded_dirs = []
         excluded_files = []
-        if arguments := get_optional_arguments(line):
-            include_definitions_without_docstrings = get_bool(arguments[0])
+        if arguments := retrieve_optional_arguments(line):
+            include_definitions_without_docstrings = retrieve_bool(arguments[0])
             if len(arguments) > 1:
-                excluded_dirs = get_list_in_square_brackets(arguments[1], err_msg)
+                excluded_dirs = retrieve_list_in_square_brackets(arguments[1], err_msg)
             if len(arguments) > 2:
-                excluded_files = get_list_in_square_brackets(arguments[2], err_msg)
+                excluded_files = retrieve_list_in_square_brackets(arguments[2], err_msg)
         return dir, include_definitions_without_docstrings, excluded_dirs, excluded_files
     
 
@@ -190,8 +165,8 @@ def line_validation_for_make_query(line):
     if MAKE_QUERY_TAG in line:
         max_tokens = None
         create_python_script = False
-        if arguments := get_optional_arguments(line):
-            create_python_script = get_bool(arguments[0])
+        if arguments := retrieve_optional_arguments(line):
+            create_python_script = retrieve_bool(arguments[0])
             if len(arguments) > 1:
                 max_tokens = int(arguments[1])
         return True, create_python_script, max_tokens
