@@ -11,6 +11,46 @@ class ExtractorBase:
         extract_referenced_contents: Extract referenced contents from a file and separates them from non-referenced content.
         post_process_referenced_contents: Provide a hook for child classes to further process the referenced contents.
     """
+    def __init__(self):
+        self.initialize_handlers()
+    
+    def initialize_handlers(self):
+        """
+        Initializes the handlers for extracting referenced content.
+        """
+        self.handlers  = [
+                getattr(self, method)
+                for method in dir(self)
+                if callable(getattr(self, method)) and method.startswith("handler_")
+            ]
+    
+    def _extract_referenced_contents(self, text):
+        """
+        Extracts referenced and updated text from the input text.
+
+        Args:
+            text (str): The text to extract referenced content from.
+        
+        Returns:
+            tuple: A tuple containing a list of referenced contents and the updated text.
+        """
+        referenced_contents = []
+        updated_text_lines = []
+        
+        for line in text.splitlines():
+            result = None
+            stripped_line = line.strip()
+            for handler in self.handlers:
+                if result := handler(stripped_line):
+                    if isinstance(result, list):
+                        referenced_contents.extend(result)
+                    else:
+                        referenced_contents.append(result)
+                    break
+            if not result:
+                updated_text_lines.append(line)
+        updated_text = "\n".join(updated_text_lines)
+        return referenced_contents, updated_text
 
     def extract_referenced_contents(self, file_path, root_dir):
         """
@@ -26,36 +66,17 @@ class ExtractorBase:
             root_dir (str): The root directory path, used to resolve relative paths and environment settings.
 
         Returns:
-            tuple: A tuple containing a list of referenced contents and the string of non-referenced content.
+            tuple: A tuple containing a list of referenced contents and the updated text.
         """
         self.file_path = file_path
         self.root_dir = root_dir
-        handlers = [
-            getattr(self, method)
-            for method in dir(self)
-            if callable(getattr(self, method)) and method.startswith("handler_")
-        ]
-
-        referenced_contents = []
-        content_lines = []
 
         with open(file_path, "r", encoding="utf-8") as file:
-            for line in file:
-                result = None
-                stripped_line = line.strip()
-                for handler in handlers:
-                    if result := handler(stripped_line):
-                        if isinstance(result, list):
-                            referenced_contents.extend(result)
-                        else:
-                            referenced_contents.append(result)
-                        break
-                if not result:
-                    content_lines.append(line)
+            text = file.read()
+            referenced_contents, updated_text = self._extract_referenced_contents(text)
 
-        non_referenced_content = "".join(content_lines)
         referenced_contents = self.post_process_referenced_contents(referenced_contents)
-        return referenced_contents, non_referenced_content
+        return referenced_contents, updated_text
 
     def post_process_referenced_contents(self, referenced_contents):
         """
