@@ -1,3 +1,4 @@
+#TODO: Run Cleanup this file from cleanup.py
 #only RL, RE, RI
 #checkpointing
 import os
