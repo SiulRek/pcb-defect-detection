@@ -7,16 +7,10 @@ FILE_TAG = "File"
 
 
 # ----------------- For Create Query -----------------
-START_TAG = "#S "
-END_TAG = "#E "
-ERROR_TAG = "#L"    # As the Errors are derived from Logged Test Results 
-TITLE_TAG = "#T "
-COMMENT_TAG = "#C "
-CURRENT_FILE_TAG = "#File"
 MAKE_QUERY_TAG = "#makequery"
 
 class CREATE_QUERY_TAGS(Enum):
-    START = "#S "
+    BEGIN = "#B "
     END = "#E "
     ERROR = "#L"
     TITLE = "#T "
@@ -26,6 +20,8 @@ class CREATE_QUERY_TAGS(Enum):
 
 
 class MAKE_QUERY_REFERENCE_TYPES(Enum):
+    BEGIN_TEXT = "begin_text",
+    END_TEXT = "end_text",
     COMMENT = "comment"
     FILE = "reference"
     LOGGED_ERROR = "error"

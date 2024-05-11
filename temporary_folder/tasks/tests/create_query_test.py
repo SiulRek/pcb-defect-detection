@@ -18,7 +18,7 @@ class Car:
     def get_car(self):
         return self.brand, self.model
 
-    #S Hello Darkness my Old Friend
+    #B Hello Darkness my Old Friend
     # reference_1.py
     #*test_1
     #summarize data/example_script_2.py (True)

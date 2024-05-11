@@ -51,9 +51,6 @@ else:
     )
 
 
-from temporary_folder.tasks.helpers.for_create_query.extract_start_and_end_text import (
-    extract_start_and_end_text,
-)
 from temporary_folder.tasks.helpers.for_create_query.referenced_contents_extractor import (
     ReferencedContentExtractor
 )
@@ -130,16 +127,14 @@ def create_query(file_path, root_dir, query_path, response_path):
         query_path (str): The path to the query file.
         response_path (str): The path to the response file.
     """
-    referenced_contents, updated_content = extract_referenced_contents(
+    extracted_contents, updated_content = extract_referenced_contents(
         file_path, root_dir
     )
-    start_text, updated_content, end_text = extract_start_and_end_text(
-        file_path, updated_content
-    )
+    referenced_contents, begin_text, end_text = extracted_contents
 
     query = format_text_from_references(referenced_contents, updated_content)
 
-    query = add_text_tags(start_text, end_text, query)
+    query = add_text_tags(begin_text, end_text, query)
 
     finalizer = Finalizer()
     finalizer.set_paths(file_path, query_path, response_path)

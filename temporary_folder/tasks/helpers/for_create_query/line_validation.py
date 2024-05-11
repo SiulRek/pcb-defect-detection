@@ -25,7 +25,7 @@ SUMMARIZE_FOLDER_PATTERN = PATTERNS.SUMMARIZE_FOLDER.value
 QUERY_TEMPLATE_PATTERN = PATTERNS.QUERY_TEMPLATE.value
 CHECKSUM_PATTERN = PATTERNS.CHECKSUM.value
 
-START_TAG = TAGS.START.value
+BEGIN_TAG = TAGS.BEGIN.value
 END_TAG = TAGS.END.value
 TITLE_TAG = TAGS.TITLE.value
 COMMENT_TAG = TAGS.COMMENT.value
@@ -34,14 +34,14 @@ ERROR_TAG = TAGS.ERROR.value
 MAKE_QUERY_TAG = TAGS.MAKE_QUERY.value
 
 
-def line_validation_for_start_tag(line):
+def line_validation_for_begin_text(line):
     """ Validate if the line is a start tag."""
-    if START_TAG in line:
-        return line.split(START_TAG, 1)[1].strip()
+    if BEGIN_TAG in line:
+        return line.split(BEGIN_TAG, 1)[1].strip()
     return None
 
     
-def line_validation_for_end_tag(line):
+def line_validation_for_end_text(line):
     """ Validate if the line is an end tag."""
     if END_TAG in line:
         return line.split(END_TAG, 1)[1].strip()

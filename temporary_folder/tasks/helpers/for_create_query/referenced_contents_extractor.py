@@ -33,6 +33,8 @@ from temporary_folder.tasks.helpers.general.execute_unittests_from_file import (
 )
 
 from temporary_folder.tasks.helpers.for_create_query.line_validation import (
+    line_validation_for_begin_text,
+    line_validation_for_end_text,
     line_validation_for_title,
     line_validation_for_comment,
     line_validation_for_files,
@@ -50,6 +52,17 @@ from temporary_folder.tasks.helpers.for_create_query.line_validation import (
 
 
 class ReferencedContentExtractor(ExtractorBase):
+
+    def validate_begin_text_reference(self, line):
+        if result := line_validation_for_begin_text(line):
+            return (REFERENCE_TYPES.BEGIN_TEXT, result, None)
+        return None
+    
+    def validate_end_text_reference(self, line):
+        if result := line_validation_for_end_text(line):
+            return (REFERENCE_TYPES.END_TEXT, result, None)
+        return None
+    
     def validate_title_reference(self, line):
         if result := line_validation_for_title(line):
             return (REFERENCE_TYPES.TITLE, result, None)
@@ -188,4 +201,15 @@ class ReferencedContentExtractor(ExtractorBase):
                     )
                     referenced_contents.pop(index)
                 referenced_contents[start] = referenced_content
-        return referenced_contents
+
+        begin_text = ""
+        end_text = ""
+        for referenced_content in referenced_contents:
+            if referenced_content[0] == REFERENCE_TYPES.BEGIN_TEXT:
+                begin_text += referenced_content[1]
+                referenced_contents.remove(referenced_content)
+            elif referenced_content[0] == REFERENCE_TYPES.END_TEXT:
+                end_text += referenced_content[1]
+                referenced_contents.remove(referenced_content)
+
+        return (referenced_contents, begin_text, end_text)
