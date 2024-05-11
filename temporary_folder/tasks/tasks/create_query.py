@@ -130,7 +130,7 @@ def create_query(file_path, root_dir, query_path, response_path):
     extracted_contents, updated_content = extract_referenced_contents(
         file_path, root_dir
     )
-    referenced_contents, begin_text, end_text = extracted_contents
+    referenced_contents, begin_text, end_text, make_query_kwargs = extracted_contents
 
     query = format_text_from_references(referenced_contents, updated_content)
 
@@ -138,7 +138,7 @@ def create_query(file_path, root_dir, query_path, response_path):
 
     finalizer = Finalizer()
     finalizer.set_paths(file_path, query_path, response_path)
-    finalizer.finalize(updated_content, query)
+    finalizer.finalize(updated_content, query, make_query_kwargs)
 
 
 def main():

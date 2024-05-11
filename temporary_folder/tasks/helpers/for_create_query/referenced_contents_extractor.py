@@ -48,6 +48,7 @@ from temporary_folder.tasks.helpers.for_create_query.line_validation import (
     line_validation_for_summarize_python_script,
     line_validation_for_summarize_folder,
     line_validation_for_query_template,
+    line_validation_for_make_query,
 )
 
 
@@ -181,7 +182,14 @@ class ReferencedContentExtractor(ExtractorBase):
             referenced_contents, _ = self._extract_referenced_contents(query_template)
             return referenced_contents
         return None
-    
+
+
+    def validate_make_query_reference(self, line):
+        if results := line_validation_for_make_query(line):
+            return (REFERENCE_TYPES.MAKE_QUERY, results, None)
+        return None
+
+
     def post_process_referenced_contents(self, referenced_contents):
         # Merge comments in sequence to one comment
         for referenced_content in referenced_contents:
@@ -202,6 +210,7 @@ class ReferencedContentExtractor(ExtractorBase):
                     referenced_contents.pop(index)
                 referenced_contents[start] = referenced_content
 
+        # Merge begin_text and end_text in the referenced contents
         begin_text = ""
         end_text = ""
         for referenced_content in referenced_contents:
@@ -211,5 +220,15 @@ class ReferencedContentExtractor(ExtractorBase):
             elif referenced_content[0] == REFERENCE_TYPES.END_TEXT:
                 end_text += referenced_content[1]
                 referenced_contents.remove(referenced_content)
-
-        return (referenced_contents, begin_text, end_text)
+        
+        # Organize the make query reference
+        make_query_kwargs = {}
+        for referenced_content in referenced_contents:
+            if referenced_content[0] == REFERENCE_TYPES.MAKE_QUERY:
+                if len(make_query_kwargs) > 0:
+                    raise ValueError("Multiple make_query references found in the query.")
+                create_python_script, max_tokens = referenced_content[1]
+                make_query_kwargs["create_python_script"] = create_python_script
+                make_query_kwargs["max_tokens"] = max_tokens
+        make_query_kwargs = make_query_kwargs or None
+        return (referenced_contents, begin_text, end_text, make_query_kwargs)

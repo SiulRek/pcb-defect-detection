@@ -34,6 +34,7 @@ class MAKE_QUERY_REFERENCE_TYPES(Enum):
     SUMMARIZE_FOLDER = "summarize_folder" # Summarize all Python scripts in a folder
     FILL_TEXT = "fill_text"
     TITLE = "title"
+    MAKE_QUERY = "make_query"
 
 # ----------------- For Clean Up -----------------
 LINE_WIDTH = 80

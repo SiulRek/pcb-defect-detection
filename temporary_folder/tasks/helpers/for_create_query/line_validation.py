@@ -181,7 +181,7 @@ def line_validation_for_make_query(line):
             create_python_script = retrieve_bool(arguments[0])
             if len(arguments) > 1:
                 max_tokens = int(arguments[1])
-        return True, create_python_script, max_tokens
+        return create_python_script, max_tokens
     return None
 
 
