@@ -23,7 +23,7 @@ class ReferencedContentExtractor(ExtractorBase):
 
     def handler_checkpoints(self, line):
         if line_validation_for_checkpoints(line):
-            return (REFERENCE_TYPE.CHECKPOINTS, None)
+            return (REFERENCE_TYPE.CHECKPOINTING, True)
         return None
     
     def post_process_referenced_contents(self, referenced_contents):
@@ -35,7 +35,7 @@ class ReferencedContentExtractor(ExtractorBase):
                 select_not.extend(content)
             elif ref_type == REFERENCE_TYPE.SELECT_ONLY:
                 select_only.extend(content)
-            elif ref_type == REFERENCE_TYPE.CHECKPOINTS:
+            elif ref_type == REFERENCE_TYPE.CHECKPOINTING:
                 checkpoint_tag = True
 
         select_not = list(set(select_not)) or None

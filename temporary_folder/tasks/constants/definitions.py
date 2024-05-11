@@ -47,9 +47,9 @@ DOC_QUOTE = '"""'
 class CLEANUP_TAGS(Enum):
     SELECT_ONLY = "#only"
     SELECT_NOT = "#not"
-    CHECKPOINTS = "#checkpoints"
+    CHECKPOINTS = "#checkpointing"
 
 class CLEANUP_REFERENCE_TYPES(Enum):
     SELECT_ONLY = "select_only"
     SELECT_NOT = "select_not"
-    CHECKPOINTS = "checkpoints"
+    CHECKPOINTING = "checkpointing"
