@@ -1,25 +1,10 @@
 import re
 
 from temporary_folder.tasks.constants.patterns import (
-    FILE_PATTERN,
-    FILL_TEXT_PATTERN,
-    RUN_SCRIPT_PATTERN,
-    RUN_PYLINT_PATTERN,
-    UNITTEST_PATTERN,
-    DIRECTORY_TREE_PATTERN,
-    SUMMARIZE_PYTHON_SCRIPT_PATTERN,
-    SUMMARIZE_FOLDER_PATTERN,
-    QUERY_TEMPLATE_PATTERN,
-    CHECKSUM_PATTERN,
+    CREATE_QUERY_PATTERNS as PATTERNS
 )
 from temporary_folder.tasks.constants.definitions import (
-    START_TAG,
-    END_TAG,
-    TITLE_TAG,
-    COMMENT_TAG,
-    CURRENT_FILE_TAG,
-    ERROR_TAG,
-    MAKE_QUERY_TAG,
+    CREATE_QUERY_TAGS as TAGS
 )
 from temporary_folder.tasks.constants.defaults import DIRECTORY_TREE_DEFAULTS
 from temporary_folder.tasks.helpers.general.line_validation_utils import (
@@ -27,6 +12,26 @@ from temporary_folder.tasks.helpers.general.line_validation_utils import (
     retrieve_optional_arguments,
     retrieve_bool,
 )
+
+FILE_PATTERN = PATTERNS.FILE.value
+FILE_WITH_DIR = PATTERNS.FILE_WITH_DIR.value
+FILL_TEXT_PATTERN = PATTERNS.FILL_TEXT.value
+RUN_SCRIPT_PATTERN = PATTERNS.RUN_SCRIPT.value
+RUN_PYLINT_PATTERN = PATTERNS.RUN_PYLINT.value
+UNITTEST_PATTERN = PATTERNS.UNITTEST.value
+DIRECTORY_TREE_PATTERN = PATTERNS.DIRECTORY_TREE.value
+SUMMARIZE_PYTHON_SCRIPT_PATTERN = PATTERNS.SUMMARIZE_PYTHON_SCRIPT.value
+SUMMARIZE_FOLDER_PATTERN = PATTERNS.SUMMARIZE_FOLDER.value
+QUERY_TEMPLATE_PATTERN = PATTERNS.QUERY_TEMPLATE.value
+CHECKSUM_PATTERN = PATTERNS.CHECKSUM.value
+
+START_TAG = TAGS.START.value
+END_TAG = TAGS.END.value
+TITLE_TAG = TAGS.TITLE.value
+COMMENT_TAG = TAGS.COMMENT.value
+CURRENT_FILE_TAG = TAGS.CURRENT_FILE.value
+ERROR_TAG = TAGS.ERROR.value
+MAKE_QUERY_TAG = TAGS.MAKE_QUERY.value
 
 
 def line_validation_for_start_tag(line):

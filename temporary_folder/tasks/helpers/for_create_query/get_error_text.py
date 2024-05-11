@@ -2,7 +2,10 @@ import re
 
 from temporary_folder.tasks.helpers.general.find_file import find_file
 from temporary_folder.tasks.constants.definitions import TEST_RESULTS_FILE
-from temporary_folder.tasks.constants.patterns import TEST_RESULT_PATTERN
+from temporary_folder.tasks.constants.patterns import CREATE_QUERY_PATTERNS
+
+
+TEST_RESULT_PATTERN = CREATE_QUERY_PATTERNS.TEST_RESULT.value
 
 
 def _extract_error_messages(log_text):
