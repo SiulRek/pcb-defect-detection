@@ -1,3 +1,5 @@
+import warnings
+
 from temporary_folder.tasks.helpers.for_cleanup.extract_module_path import (
     extract_module_path,
 )
@@ -70,7 +72,8 @@ def process_import_statements(import_statements, modules_info_getter=get_modules
             local_imports.append(import_statement)
         else:
             local_imports.append(import_statement)
-            print(f"Warning: '{import_statement[2]}' does not appear in loaded modules information.")
+            msg = f"Warning: '{import_statement[2]}' does not appear in loaded modules information."
+            warnings.warn(msg)
 
     updated_import_statements = []
     if standard_library_imports != []:
