@@ -1,41 +1,13 @@
-import os
-
-
 from temporary_folder.tasks.helpers.general.extractor_base import ExtractorBase
+from temporary_folder.tasks.helpers.for_cleanup.line_validation import (
+    line_validation_for_select_only,
+    line_validation_for_select_not,
+    line_validation_for_checkpoints,
+)
+from temporary_folder.tasks.constants.definitions import (
+    CLEANUP_REFERENCE_TYPES as REFERENCE_TYPE
+)
 
-# from temporary_folder.tasks.helpers.for_cleanup.line_validation import (
-# )
-
-#----- Definitions to be extracted later -------------
-SELECT_ONLY_TAG = "#only"
-SELECT_NOT_TAG = "#not"
-CHECKPOINTS_TAG  = "#checkpoints"
-
-def line_validation_for_select_only(line):
-    if SELECT_ONLY_TAG in line:
-        options = line.replace(SELECT_ONLY_TAG, "").strip().split(",")
-        options = [option.strip().upper() for option in options]
-        return options
-
-
-def line_validation_for_select_not(line):
-    if SELECT_NOT_TAG in line:
-        options = line.replace(SELECT_NOT_TAG, "").strip().split(",")
-        options = [option.strip().upper() for option in options]
-        return options
-
-
-def line_validation_for_checkpoints(line):
-    return CHECKPOINTS_TAG in line
-
-from enum import Enum
-
-class REFERENCE_TYPE(Enum):
-    SELECT_ONLY = "select_only"
-    SELECT_NOT = "select_not"
-    CHECKPOINTS = "checkpoints"
-
-# ---------------------------------------------------
 
 class ReferencedContentExtractor(ExtractorBase):
     
@@ -69,5 +41,3 @@ class ReferencedContentExtractor(ExtractorBase):
         select_not = list(set(select_not)) or None
         select_only = list(set(select_only)) or None
         return select_only, select_not, checkpoint_tag
-            
-

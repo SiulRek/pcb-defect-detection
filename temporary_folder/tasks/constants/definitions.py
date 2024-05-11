@@ -33,3 +33,13 @@ class MAKE_QUERY_REFERENCE_TYPES(Enum):
 LINE_WIDTH = 80
 INTEND = " " * 4
 DOC_QUOTE = '"""'
+
+class CLEANUP_TAGS(Enum):
+    SELECT_ONLY = "#only"
+    SELECT_NOT = "#not"
+    CHECKPOINTS = "#checkpoints"
+
+class CLEANUP_REFERENCE_TYPES(Enum):
+    SELECT_ONLY = "select_only"
+    SELECT_NOT = "select_not"
+    CHECKPOINTS = "checkpoints"
