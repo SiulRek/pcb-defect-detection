@@ -50,18 +50,18 @@ from temporary_folder.tasks.helpers.for_create_query.line_validation import (
 
 
 class ReferencedContentExtractor(ExtractorBase):
-    def handler_referenced_title(self, line):
+    def validate_title_reference(self, line):
         if result := line_validation_for_title(line):
             return (REFERENCE_TYPES.TITLE, result, None)
         return None
 
-    def handler_referenced_comment(self, line):
+    def validate_comment_reference(self, line):
         if result := line_validation_for_comment(line):
             default_title = "Comment"
             return (REFERENCE_TYPES.COMMENT, default_title, result)
         return None
 
-    def handler_referenced_files(self, line):
+    def validate_files_reference(self, line):
         if result := line_validation_for_files(line):
             referenced_files = []
             for file_name in result:
@@ -74,27 +74,27 @@ class ReferencedContentExtractor(ExtractorBase):
             return referenced_files
         return None
 
-    def handler_current_file_reference(self, line):
+    def validate_current_file_reference(self, line):
         if line_validation_for_current_file_reference(line):
             relative_path = os.path.relpath(self.file_path, self.root_dir)
             default_title = f"File at {relative_path}"
             return (REFERENCE_TYPES.CURRENT_FILE, default_title, None)
         return None
         
-    def handler_referenced_error(self, line):
+    def validate_error_reference(self, line):
         if line_validation_for_error(line):
             error_text = get_error_text(self.root_dir, self.file_path)
             default_title = "Occured Errors"
             return (REFERENCE_TYPES.LOGGED_ERROR, default_title, error_text)
         return None
 
-    def handler_fill_text(self, line):
+    def validate_fill_text_reference(self, line):
         if result := line_validation_for_fill_text(line):
             fill_text, default_title = get_fill_text(result, self.root_dir)
             return (REFERENCE_TYPES.FILL_TEXT, default_title, fill_text)
         return None
 
-    def handler_run_python_script(self, line):
+    def validate_run_python_script_reference(self, line):
         if result := line_validation_for_run_python_script(line):
             script_path = find_file(result, self.root_dir, self.file_path)
             environment_path = get_environment_path(self.root_dir)
@@ -103,7 +103,7 @@ class ReferencedContentExtractor(ExtractorBase):
             return (REFERENCE_TYPES.RUN_PYTHON_SCRIPT, default_title, script_output)
         return None
 
-    def handler_run_pylint(self, line):
+    def validate_run_pylint_reference(self, line):
         if result := line_validation_for_run_pylint(line):
             script_path = find_file(result, self.root_dir, self.file_path)
             environment_path = get_environment_path(self.root_dir)
@@ -112,7 +112,7 @@ class ReferencedContentExtractor(ExtractorBase):
             return (REFERENCE_TYPES.RUN_PYLINT, default_title, pylint_output)
         return None
 
-    def handler_run_unittest(self, line):
+    def validate_run_unittest_reference(self, line):
         if result := line_validation_for_run_unittest(line):
             name, verbosity = result
             script_path = find_file(name, self.root_dir, self.file_path)
@@ -121,7 +121,7 @@ class ReferencedContentExtractor(ExtractorBase):
             return (REFERENCE_TYPES.RUN_UNITTEST, default_title, unittest_output)
         return None
 
-    def handler_directory_tree(self, line):
+    def validate_directory_tree_reference(self, line):
         if result := line_validation_for_directory_tree(line):
             dir, max_depth, include_files, ignore_list = result
             dir = find_dir(dir, self.root_dir, self.file_path)
@@ -130,7 +130,7 @@ class ReferencedContentExtractor(ExtractorBase):
             return (REFERENCE_TYPES.DIRECTORY_TREE, default_title, directory_tree)
         return None
 
-    def handler_summarize_python_script(self, line):
+    def validate_summarize_python_script_reference(self, line):
         if result := line_validation_for_summarize_python_script(line):
             name, include_definitions_without_docstrings = result
             script_path = find_file(name, self.root_dir, self.file_path)
@@ -139,7 +139,7 @@ class ReferencedContentExtractor(ExtractorBase):
             return (REFERENCE_TYPES.SUMMARIZE_PYTHON_SCRIPT, default_title, script_summary)
         return None
 
-    def handler_summarize_folder(self, line):
+    def validate_summarize_folder_reference(self, line):
         if result := line_validation_for_summarize_folder(line):
             folder_path, include_definitions_without_docstrings, excluded_dirs, excluded_files = result
             folder_path = find_dir(folder_path, self.root_dir, self.file_path)
@@ -162,7 +162,7 @@ class ReferencedContentExtractor(ExtractorBase):
         return None
 
 
-    def handler_query_template(self, line):
+    def validate_query_template_reference(self, line):
         if result := line_validation_for_query_template(line):
             query_template = get_query_template(result, self.root_dir)
             referenced_contents, _ = self._extract_referenced_contents(query_template)

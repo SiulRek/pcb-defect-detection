@@ -11,17 +11,17 @@ from temporary_folder.tasks.constants.definitions import (
 
 class ReferencedContentExtractor(ExtractorBase):
     
-    def handler_select_only(self, line):
+    def validate_select_only_reference(self, line):
         if result := line_validation_for_select_only(line):
             return (REFERENCE_TYPE.SELECT_ONLY, result)
         return None
     
-    def handler_select_not(self, line):
+    def validate_select_not_reference(self, line):
         if result := line_validation_for_select_not(line):
             return (REFERENCE_TYPE.SELECT_NOT, result)
         return None
 
-    def handler_checkpoints(self, line):
+    def validate_checkpoints_reference(self, line):
         if line_validation_for_checkpoints(line):
             return (REFERENCE_TYPE.CHECKPOINTING, True)
         return None

@@ -1,32 +1,32 @@
 class ExtractorBase:
     """
-    Base class for extracting referenced content from files based on specified handlers.
+    Base class for extracting referenced content from files based on specified validation methods.
 
-    This class scans files for specific content patterns using a series of handler methods
-    prefixed with 'handler_'. Each handler processes a line from the file to detect and extract
-    different types of referenced content. The extracted content can include references to other
-    files, scripts, errors, or any specific tags defined within the handler methods.
+    This class scans files for specific content patterns using a series of validation methods
+    prefixed with 'validate_'. Each validation method processes a line from the file to detect
+    and extract different types of referenced content. The extracted content can include references
+    to other files, scripts, errors, or any specific tags defined within the validation methods.
 
     Methods:
         extract_referenced_contents: Extract referenced contents from a file and separates them from non-referenced content.
         post_process_referenced_contents: Provide a hook for child classes to further process the referenced contents.
     """
     def __init__(self):
-        self.initialize_handlers()
+        self.initialize_validation_methods()
     
-    def initialize_handlers(self):
+    def initialize_validation_methods(self):
         """
-        Initializes the handlers for extracting referenced content.
+        Initializes the validation methods for extracting referenced content from the text.
         """
-        self.handlers  = [
+        self.validation_methods  = [
                 getattr(self, method)
                 for method in dir(self)
-                if callable(getattr(self, method)) and method.startswith("handler_")
+                if callable(getattr(self, method)) and method.startswith("validate_")
             ]
     
     def _extract_referenced_contents(self, text):
         """
-        Extracts referenced and updated text from the input text.
+        Extracts referenced and updated text from the input text based on validation methods.
 
         Args:
             text (str): The text to extract referenced content from.
@@ -40,8 +40,8 @@ class ExtractorBase:
         for line in text.splitlines():
             result = None
             stripped_line = line.strip()
-            for handler in self.handlers:
-                if result := handler(stripped_line):
+            for val in self.validation_methods:
+                if result := val(stripped_line):
                     if isinstance(result, list):
                         referenced_contents.extend(result)
                     else:
@@ -54,10 +54,10 @@ class ExtractorBase:
 
     def extract_referenced_contents(self, file_path, root_dir):
         """
-        Extracts referenced contents from a specified file, maintaining the order of their occurrence.
+        Extracts referenced contents from a specified file using validation methods, maintaining the order of their occurrence.
 
-        This method iterates through each line of the file, applying handler methods that start
-        with 'handler_' to extract specific content based on tags or patterns. Each handler can
+        This method iterates through each line of the file, applying validation methods that start
+        with 'validate_' to extract specific content based on tags or patterns. Each validation can
         return a single item or a list of items, which are collected into a list of referenced contents.
         Non-referenced lines are gathered into a separate list.
 
@@ -87,7 +87,7 @@ class ExtractorBase:
         By default, it returns the referenced contents as they were collected.
 
         Args:
-            referenced_contents (list): The list of referenced contents collected by the handlers.
+            referenced_contents (list): The list of referenced contents collected by the validation methods.
 
         Returns:
             list: The processed list of referenced contents.
