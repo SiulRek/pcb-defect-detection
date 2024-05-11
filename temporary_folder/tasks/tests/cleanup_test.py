@@ -220,13 +220,3 @@ class BackupHandler:
             self.load_context()
             filtered_context = self.context_data
         return [(entry['previous_file_path'], entry['backup_file_name'], entry['comment']) for entry in filtered_context]
-
-# Example Usage:
-if __name__ == "__main__":
-    backup_dir = r'C:/MEIN_PLATZ/Git/utility_box/backup_mechanism/test_storage'
-    max_backups = 2  # Adjust this value as needed
-    backup_handler = BackupHandler(backup_dir, max_backups)
-    backup_handler.store_backup(r'C:/Users/43664/Downloads/2023-03-03_Lecture_PDT_temporary.pdf', 'Backup comment')
-    backup_handler.store_backup(r'C:/Users/43664/Downloads/2023-03-03_Lecture_PDT_temporary.pdf', 'Backup comment')
-    backup_handler.store_backup(r'C:/Users/43664/Downloads/2023-03-03_Lecture_PDT_temporary.pdf', 'Backup comment')
-    # Perform other backup operations as needed.
