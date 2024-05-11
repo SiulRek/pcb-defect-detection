@@ -23,8 +23,9 @@ def extract_module_path(import_statement):
         parts = stripped_line.split()
         if len(parts) > 1:
             module_part = parts[1].split(" as ")[0]
+            if module_part.endswith(","):
+                return module_part[:-1]
             return module_part
-
     return ""
 
 
