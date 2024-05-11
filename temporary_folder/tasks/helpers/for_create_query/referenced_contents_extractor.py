@@ -1,37 +1,16 @@
 import os
 
-from temporary_folder.tasks.constants.getters import get_environment_path
 from temporary_folder.tasks.constants.definitions import (
     MAKE_QUERY_REFERENCE_TYPES as REFERENCE_TYPES,
 )
-from temporary_folder.tasks.helpers.general.generate_directory_tree import (
-    generate_directory_tree,
-)
-from temporary_folder.tasks.helpers.general.find_file import find_file
-from temporary_folder.tasks.helpers.general.find_dir import find_dir
-from temporary_folder.tasks.helpers.general.extractor_base import (
-    ExtractorBase,
-)
+from temporary_folder.tasks.constants.getters import get_environment_path
 from temporary_folder.tasks.helpers.for_create_query.get_error_text import (
     get_error_text,
 )
-from temporary_folder.tasks.helpers.for_create_query.summarize_python_script import (
-    summarize_python_file,
-)
-from temporary_folder.tasks.helpers.for_create_query.get_fill_text import (
-    get_fill_text,
-)
+from temporary_folder.tasks.helpers.for_create_query.get_fill_text import get_fill_text
 from temporary_folder.tasks.helpers.for_create_query.get_query_template import (
-    get_query_template
+    get_query_template,
 )
-from temporary_folder.tasks.helpers.general.execute_python_script import (
-    execute_python_script,
-)
-from temporary_folder.tasks.helpers.general.execute_pylint import execute_pylint
-from temporary_folder.tasks.helpers.general.execute_unittests_from_file import (
-    execute_unittests_from_file,
-)
-
 from temporary_folder.tasks.helpers.for_create_query.line_validation import (
     line_validation_for_begin_text,
     line_validation_for_end_text,
@@ -50,6 +29,22 @@ from temporary_folder.tasks.helpers.for_create_query.line_validation import (
     line_validation_for_query_template,
     line_validation_for_make_query,
 )
+from temporary_folder.tasks.helpers.for_create_query.summarize_python_script import (
+    summarize_python_file,
+)
+from temporary_folder.tasks.helpers.general.execute_pylint import execute_pylint
+from temporary_folder.tasks.helpers.general.execute_python_script import (
+    execute_python_script,
+)
+from temporary_folder.tasks.helpers.general.execute_unittests_from_file import (
+    execute_unittests_from_file,
+)
+from temporary_folder.tasks.helpers.general.extractor_base import ExtractorBase
+from temporary_folder.tasks.helpers.general.find_dir import find_dir
+from temporary_folder.tasks.helpers.general.find_file import find_file
+from temporary_folder.tasks.helpers.general.generate_directory_tree import (
+    generate_directory_tree,
+)
 
 
 class ReferencedContentExtractor(ExtractorBase):
@@ -58,12 +53,12 @@ class ReferencedContentExtractor(ExtractorBase):
         if result := line_validation_for_begin_text(line):
             return (REFERENCE_TYPES.BEGIN_TEXT, result, None)
         return None
-    
+
     def validate_end_text_reference(self, line):
         if result := line_validation_for_end_text(line):
             return (REFERENCE_TYPES.END_TEXT, result, None)
         return None
-    
+
     def validate_title_reference(self, line):
         if result := line_validation_for_title(line):
             return (REFERENCE_TYPES.TITLE, result, None)
@@ -94,7 +89,7 @@ class ReferencedContentExtractor(ExtractorBase):
             default_title = f"File at {relative_path}"
             return (REFERENCE_TYPES.CURRENT_FILE, default_title, None)
         return None
-        
+
     def validate_error_reference(self, line):
         if line_validation_for_error(line):
             error_text = get_error_text(self.root_dir, self.file_path)
@@ -139,7 +134,9 @@ class ReferencedContentExtractor(ExtractorBase):
         if result := line_validation_for_directory_tree(line):
             dir, max_depth, include_files, ignore_list = result
             dir = find_dir(dir, self.root_dir, self.file_path)
-            directory_tree = generate_directory_tree(dir, max_depth, include_files, ignore_list)
+            directory_tree = generate_directory_tree(
+                dir, max_depth, include_files, ignore_list
+            )
             default_title = "Directory Tree"
             return (REFERENCE_TYPES.DIRECTORY_TREE, default_title, directory_tree)
         return None
@@ -148,17 +145,33 @@ class ReferencedContentExtractor(ExtractorBase):
         if result := line_validation_for_summarize_python_script(line):
             name, include_definitions_without_docstrings = result
             script_path = find_file(name, self.root_dir, self.file_path)
-            script_summary = summarize_python_file(script_path, include_definitions_without_docstrings)
+            script_summary = summarize_python_file(
+                script_path, include_definitions_without_docstrings
+            )
             default_title = f"Summarized Python Script {os.path.basename(script_path)}"
-            return (REFERENCE_TYPES.SUMMARIZE_PYTHON_SCRIPT, default_title, script_summary)
+            return (
+                REFERENCE_TYPES.SUMMARIZE_PYTHON_SCRIPT,
+                default_title,
+                script_summary,
+            )
         return None
 
     def validate_summarize_folder_reference(self, line):
         if result := line_validation_for_summarize_folder(line):
-            folder_path, include_definitions_without_docstrings, excluded_dirs, excluded_files = result
+            (
+                folder_path,
+                include_definitions_without_docstrings,
+                excluded_dirs,
+                excluded_files,
+            ) = result
             folder_path = find_dir(folder_path, self.root_dir, self.file_path)
-            excluded_dirs = [find_dir(dir, self.root_dir, self.file_path) for dir in excluded_dirs]
-            excluded_files = [find_file(file, self.root_dir, self.file_path) for file in excluded_files]
+            excluded_dirs = [
+                find_dir(dir, self.root_dir, self.file_path) for dir in excluded_dirs
+            ]
+            excluded_files = [
+                find_file(file, self.root_dir, self.file_path)
+                for file in excluded_files
+            ]
             referenced_contents = []
             for root, _, files in os.walk(folder_path):
                 root = os.path.normpath(root)
@@ -169,12 +182,21 @@ class ReferencedContentExtractor(ExtractorBase):
                     file = os.path.normpath(file)
                     if file in excluded_files or not file.endswith(".py"):
                         continue
-                    if script_summary := summarize_python_file(file, include_definitions_without_docstrings):
-                        default_title = f"Summarized Python Script {os.path.basename(file)}"
-                        referenced_contents.append((REFERENCE_TYPES.SUMMARIZE_PYTHON_SCRIPT, default_title, script_summary))
+                    if script_summary := summarize_python_file(
+                        file, include_definitions_without_docstrings
+                    ):
+                        default_title = (
+                            f"Summarized Python Script {os.path.basename(file)}"
+                        )
+                        referenced_contents.append(
+                            (
+                                REFERENCE_TYPES.SUMMARIZE_PYTHON_SCRIPT,
+                                default_title,
+                                script_summary,
+                            )
+                        )
             return referenced_contents
         return None
-
 
     def validate_query_template_reference(self, line):
         if result := line_validation_for_query_template(line):
@@ -183,12 +205,10 @@ class ReferencedContentExtractor(ExtractorBase):
             return referenced_contents
         return None
 
-
     def validate_make_query_reference(self, line):
         if results := line_validation_for_make_query(line):
             return (REFERENCE_TYPES.MAKE_QUERY, results, None)
         return None
-
 
     def post_process_referenced_contents(self, referenced_contents):
         # Merge comments in sequence to one comment
@@ -220,13 +240,14 @@ class ReferencedContentExtractor(ExtractorBase):
             elif referenced_content[0] == REFERENCE_TYPES.END_TEXT:
                 end_text += referenced_content[1]
                 referenced_contents.remove(referenced_content)
-        
+
         # Organize the make query reference
         make_query_kwargs = {}
         for referenced_content in referenced_contents:
             if referenced_content[0] == REFERENCE_TYPES.MAKE_QUERY:
                 if len(make_query_kwargs) > 0:
-                    raise ValueError("Multiple make_query references found in the query.")
+                    msg = "Multiple make_query references found in the query."
+                    raise ValueError(msg)
                 create_python_script, max_tokens = referenced_content[1]
                 make_query_kwargs["create_python_script"] = create_python_script
                 make_query_kwargs["max_tokens"] = max_tokens

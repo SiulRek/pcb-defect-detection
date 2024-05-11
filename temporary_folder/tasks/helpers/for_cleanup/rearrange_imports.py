@@ -1,23 +1,23 @@
 import warnings
 
+from temporary_folder.tasks.constants.getters import get_modules_info
 from temporary_folder.tasks.helpers.for_cleanup.extract_module_path import (
     extract_module_path,
 )
-from temporary_folder.tasks.helpers.for_cleanup.separate_imports import (
-    separate_imports,
-)
-from temporary_folder.tasks.constants.getters import get_modules_info
+from temporary_folder.tasks.helpers.for_cleanup.separate_imports import separate_imports
 
 
 def extract_module_docstring(code_text):
     """
-    Extracts the module-level docstring from a given string of Python code using regular expressions.
+    Extracts the module-level docstring from a given string of Python code using
+    regular expressions.
 
     Args:
-    code_text (str): A string containing Python code.
+        - code_text (str): A string containing Python code.
 
     Returns:
-    str or None: The module-level docstring, if present, otherwise None.
+        - str or None: The module-level docstring, if present, otherwise
+            None.
     """
     docstring_lines = []
     if code_text.startswith("'''") or code_text.startswith('"""'):
@@ -26,15 +26,20 @@ def extract_module_docstring(code_text):
         docstring_lines.append(first_line)
         stripped_line = first_line.strip()[3:]
         try:
-            while not stripped_line.endswith("'''") and not stripped_line.endswith('"""'):
+            while not stripped_line.endswith("'''") and not stripped_line.endswith(
+                '"""'
+            ):
                 line = next(line_iterator)
                 stripped_line = line.strip()
                 docstring_lines.append(line)
         except StopIteration:
-            raise ValueError("Module Docstring not closed properly.")
-        if next(line_iterator).strip() == "":  #\ Add the empty line after the docstring.
+            msg = "Module Docstring not closed properly."
+            raise ValueError(msg)
+        if (
+            next(line_iterator).strip() == ""
+        ):  # \ Add the empty line after the docstring.
             docstring_lines.append("")
-    docstring = "\n".join(docstring_lines) + '\n' if docstring_lines else None
+    docstring = "\n".join(docstring_lines) + "\n" if docstring_lines else None
     return docstring
 
 
@@ -43,12 +48,13 @@ def process_import_statements(import_statements, modules_info_getter=get_modules
     Rearranges the import staments in alphabetical order.
 
     Args:
-        import_statements (list): A list of import lines.
-        modules_info_getter (function): A function that returns a dictionary containing information
-            about Python modules. Defaults to get_modules_info.
+        - import_statements (list): A list of import lines.
+        - modules_info_getter (function): A function that returns a
+            dictionary containing informationabout Python modules. Defaults to
+            get_modules_info.
 
     Returns:
-        list: A list of import lines
+        - list: A list of import lines
     """
     modules_info = modules_info_getter()
     standard_library = modules_info["standard_library"]
@@ -96,10 +102,10 @@ def rearrange_imports(code_text):
     Rearranges the import statements in a Python script.
 
     Args:
-        code_text (str): A string containing Python code.
+        - code_text (str): A string containing Python code.
 
     Returns:
-        str: The Python code with the import statements rearranged.
+        - str: The Python code with the import statements rearranged.
     """
     import_statements, other_code = separate_imports(code_text)
     updated_import_statements = process_import_statements(import_statements)
@@ -107,7 +113,7 @@ def rearrange_imports(code_text):
     module_docstring = extract_module_docstring(code_text)
     if module_docstring:
         other_code = other_code.replace(module_docstring, "")
-        return module_docstring + '\n' + updated_import_statements + '\n' + other_code
+        return module_docstring + "\n" + updated_import_statements + "\n" + other_code
     return updated_import_statements + other_code
 
 
@@ -116,7 +122,7 @@ def rearrange_imports_from_file(file_path):
     Rearranges the import statements in a Python script file.
 
     Args:
-        file_path (str): The path to the Python script file.
+        - file_path (str): The path to the Python script file.
     """
     with open(file_path, "r", encoding="utf-8") as file:
         code_text = file.read()

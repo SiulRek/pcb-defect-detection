@@ -4,16 +4,23 @@ def wrap_text(text, width):
     current_line = []
 
     for word in words:
-        if sum(len(word) for word in current_line) + len(current_line) - 1 + len(word) + 1 > width:
-            lines.append(' '.join(current_line))
+        if (
+            sum(len(word) for word in current_line)
+            + len(current_line)
+            - 1
+            + len(word)
+            + 1
+            > width
+        ):
+            lines.append(" ".join(current_line))
             current_line = [word]
         else:
             current_line.append(word)
 
     if current_line:
-        lines.append(' '.join(current_line))
+        lines.append(" ".join(current_line))
 
-    return '\n'.join(lines)
+    return "\n".join(lines)
 
 
 if __name__ == "__main__":

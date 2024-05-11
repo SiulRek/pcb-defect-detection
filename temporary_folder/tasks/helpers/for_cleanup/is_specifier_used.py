@@ -38,4 +38,3 @@ def is_specifier_used(name, source, include_imports=False):
     visitor = Visitor()
     visitor.visit(tree)
     return visitor.result
-

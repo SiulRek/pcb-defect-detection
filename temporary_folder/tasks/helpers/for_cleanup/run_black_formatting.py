@@ -3,6 +3,17 @@ import subprocess
 
 
 def format_with_black(script_path, environment_path):
+    """
+    Formats a Python script using the Black code formatter.
+
+    Args:
+        - script_path (str): The path to the Python script to format.
+        - environment_path (str): The path to the virtual environment
+            containing the Black package.
+    
+    Returns:
+        - str: The formatted code or an error message if formatting fails.
+    """
     python_executable = os.path.join(
         environment_path, "bin" if os.name == "posix" else "Scripts", "python"
     )

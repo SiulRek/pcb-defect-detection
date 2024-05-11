@@ -2,15 +2,18 @@ def extract_module_path(import_statement):
     """
     Extracts the module name from an import statement.
 
-    This function parses a line of Python code that starts with 'import' or 'from' and extracts the
-    first module or package name mentioned immediately after these keywords. The function handles
-    different import styles and returns the full name of the module or package as specified in the import statement.
+    This function parses a line of Python code that starts with 'import' or
+    'from' and extracts the first module or package name mentioned immediately
+    after these keywords. The function handles different import styles and
+    returns the full name of the module or package as specified in the import
+    statement.
 
     Args:
-    import_statement (str): A string containing a single line of a Python import statement.
+        - import_statement (str): A string containing a single line of a
+            Python import statement.
 
     Returns:
-    str: The name of the module or package imported.
+        - str: The name of the module or package imported.
     """
     stripped_line = import_statement.strip()
 

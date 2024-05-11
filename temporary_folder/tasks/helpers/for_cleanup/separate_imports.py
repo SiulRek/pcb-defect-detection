@@ -1,19 +1,21 @@
 def separate_imports(code_text):
     """
-    Reads Python code from a string and separates the lines into import statements and other code.
+    Reads Python code from a string and separates the lines into import
+    statements and other code.
 
-    This function handles both single-line and multi-line import statements. Multi-line
-    imports are assumed to start with 'from ... import (' or 'import (' and end with ')'.
-    Lines that are part of a multi-line import statement are grouped together in the import list.
-    All other lines, including blank lines outside of import statements, are categorized separately.
+    This function handles both single-line and multi-line import statements.
+    Multi-line imports are assumed to start with 'from ... import (' or 'import
+    (' and end with ')'. Lines that are part of a multi-line import statement
+    are grouped together in the import list. All other lines, including blank
+    lines outside of import statements, are categorized separately.
 
     Args:
-    code_text (str): A string containing Python code.
+        - code_text (str): A string containing Python code.
 
     Returns:
-    tuple: A tuple containing two lists:
-        - First list contains lines that are import statements.
-        - Second list contains all other lines.
+        - tuple: A tuple containing two lists:
+            - First list contains lines that are import statements.
+            - Second list contains all other lines.
     """
     import_statements = []
     other_code = ""

@@ -7,13 +7,14 @@ from temporary_folder.tasks.helpers.general.wrap_text import wrap_text
 def refactor_exception(code):
     """
     Refactors the exception code in the provided code. The refactored code will
-    have the exception message stored in a variable before raising the exception.
+    have the exception message stored in a variable before raising the
+    exception.
 
     Args:
-        code (str): The code to be refactored.
-    
+        - code (str): The code to be refactored.
+
     Returns:
-        str: The refactored code.
+        - str: The refactored code.
     """
     lines = code.splitlines()
     updated_lines = []
@@ -54,11 +55,11 @@ def refactor_exception(code):
 
 
 def refactor_exception_from_file(file_path):
-    """ 
+    """
     Refactors the exception code in the file.
 
     Args:
-        file_path (str): The path to the file to be refactored.
+        - file_path (str): The path to the file to be refactored.
     """
     with open(file_path, "r", encoding="utf-8") as file:
         code = file.read()

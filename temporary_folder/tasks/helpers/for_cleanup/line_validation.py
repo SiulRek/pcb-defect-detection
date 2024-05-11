@@ -1,7 +1,4 @@
-from temporary_folder.tasks.constants.definitions import (
-    CLEANUP_TAGS as TAGS
-)
-
+from temporary_folder.tasks.constants.definitions import CLEANUP_TAGS as TAGS
 
 SELECT_ONLY_TAG = TAGS.SELECT_ONLY.value
 SELECT_NOT_TAG = TAGS.SELECT_NOT.value

@@ -29,7 +29,8 @@ def find_nearest_file(file_name, root_dir, reference_file):
                 closest_file = current_file
 
     if not closest_file:
-        raise FileNotFoundError(f"File '{file_name}' not found in '{root_dir}'")
+        msg = f"File '{file_name}' not found in '{root_dir}'"
+        raise FileNotFoundError(msg)
     return closest_file
 
 
@@ -48,19 +49,20 @@ def find_file_from_path_fragment(path_fragment, root_dir):
 
 
 def find_file(string, root_dir, current_file_path):
-    """ 
-    Function to find the file from the string. If the string contains a path fragment, the function
-    will search for the file from the path fragment. If the string contains only the file name, the
-    function will search for the nearest file to the current file.
+    """
+    Function to find the file from the string. If the string contains a path
+    fragment, the function will search for the file from the path fragment. If
+    the string contains only the file name, the function will search for the
+    nearest file to the current file.
 
     Args:
-        string (str): The string to be searched.
-        root_dir (str): The root directory of the project.
-        root_dir (str): The root directory of the project.
-        current_file_path (str): The path to the current file.
-    
+        - string (str): The string to be searched.
+        - root_dir (str): The root directory of the project.
+        - root_dir (str): The root directory of the project.
+        - current_file_path (str): The path to the current file.
+
     Returns:
-        file_path (str): The path to the file.
+        - file_path (str): The path to the file.
     """
     if "\\" in string or "/" in string:
         file = find_file_from_path_fragment(string, root_dir)

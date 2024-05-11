@@ -30,9 +30,23 @@ TODO when adding new reference:
 4. Add the handler function to the reference_handlers dictionary.
 """
 
-
-import sys
 import os
+import sys
+
+from temporary_folder.tasks.constants.definitions import (
+    MAKE_QUERY_REFERENCE_TYPES as REFERENCE_TYPES,
+)
+from temporary_folder.tasks.constants.getters import (
+    get_temporary_file_path,
+    get_response_file_path,
+)
+from temporary_folder.tasks.helpers.for_create_query.add_text_tags import add_text_tags
+from temporary_folder.tasks.helpers.for_create_query.finalizer import Finalizer
+from temporary_folder.tasks.helpers.for_create_query.referenced_contents_extractor import (
+    ReferencedContentExtractor,
+)
+import temporary_folder.tasks.helpers.general.print_statements as task_prints
+
 
 if len(sys.argv) == 3:
     ROOT_DIR = sys.argv[1]
@@ -50,22 +64,6 @@ else:
         "create_query_test.py",
     )
 
-
-from temporary_folder.tasks.helpers.for_create_query.referenced_contents_extractor import (
-    ReferencedContentExtractor
-)
-from temporary_folder.tasks.helpers.for_create_query.add_text_tags import (
-    add_text_tags,
-)
-from temporary_folder.tasks.constants.getters import (
-    get_temporary_file_path,
-    get_response_file_path,
-)
-from temporary_folder.tasks.constants.definitions import MAKE_QUERY_REFERENCE_TYPES as REFERENCE_TYPES
-import temporary_folder.tasks.helpers.general.print_statements as task_prints
-from temporary_folder.tasks.helpers.for_create_query.finalizer import (
-    Finalizer,
-)
 
 TEMPORARY_FILE = get_temporary_file_path(ROOT_DIR)
 RESPONSE_FILE = get_response_file_path(ROOT_DIR)
@@ -90,13 +88,14 @@ def format_text_from_references(referenced_contents, updated_content):
     Formats a query string from file references and updated content.
 
     Args:
-        referenced_contents (list): A list of tuples detailing references (type, data).
-        file_path (str): The path to the current file.
-        updated_content (str): The updated content of the current file.
-        root_dir (str): The root directory of the project.
+        - referenced_contents (list): A list of tuples detailing references
+            (type, data).
+        - file_path (str): The path to the current file.
+        - updated_content (str): The updated content of the current file.
+        - root_dir (str): The root directory of the project.
 
     Returns:
-        str: Formatted query based on file references.
+        - str: Formatted query based on file references.
     """
     query = ""
     title_manager = ReferenceTitleManager()
@@ -112,7 +111,8 @@ def format_text_from_references(referenced_contents, updated_content):
         elif content_type in REFERENCE_TYPES:
             query += f"\n\n--- {title} ---\n{text}"
         else:
-            raise ValueError(f"Unknown content type: {content_type}")
+            msg = f"Unknown content type: {content_type}"
+            raise ValueError(msg)
 
     return query
 
@@ -122,10 +122,10 @@ def create_query(file_path, root_dir, query_path, response_path):
     Create a query from the file and referenced contents in the file.
 
     Args:
-        file_path (str): The path to the file to be processed.
-        root_dir (str): The root directory of the project.
-        query_path (str): The path to the query file.
-        response_path (str): The path to the response file.
+        - file_path (str): The path to the file to be processed.
+        - root_dir (str): The root directory of the project.
+        - query_path (str): The path to the query file.
+        - response_path (str): The path to the response file.
     """
     extracted_contents, updated_content = extract_referenced_contents(
         file_path, root_dir

@@ -3,16 +3,18 @@ import ast
 
 def summarize_python_file(file_path, include_definitions_without_docstrings=False):
     """
-    Summarizes a Python file by extracting classes, functions, and their respective docstrings,
-    maintaining proper indentation to reflect the structure.
+    Summarizes a Python file by extracting classes, functions, and their
+    respective docstrings, maintaining proper indentation to reflect the
+    structure.
 
     Args:
-        file_path (str): The path to the Python file to be summarized.
-        include_definitions_without_docstrings (bool, optional): Whether to include classes and
-            functions without docstrings in the summary. Defaults to False.
+        - file_path (str): The path to the Python file to be summarized.
+        - include_definitions_without_docstrings (bool, optional): Whether
+            to include classes andfunctions without docstrings in the summary.
+            Defaults to False.
 
     Returns:
-        str: A summary of the classes and functions with docstrings.
+        - str: A summary of the classes and functions with docstrings.
     """
     with open(file_path, "r", encoding="utf-8") as file:
         tree = ast.parse(file.read(), filename=file_path)

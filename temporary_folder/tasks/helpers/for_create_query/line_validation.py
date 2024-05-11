@@ -1,11 +1,7 @@
 import re
 
-from temporary_folder.tasks.constants.patterns import (
-    CREATE_QUERY_PATTERNS as PATTERNS
-)
-from temporary_folder.tasks.constants.definitions import (
-    CREATE_QUERY_TAGS as TAGS
-)
+from temporary_folder.tasks.constants.patterns import CREATE_QUERY_PATTERNS as PATTERNS
+from temporary_folder.tasks.constants.definitions import CREATE_QUERY_TAGS as TAGS
 from temporary_folder.tasks.constants.defaults import DIRECTORY_TREE_DEFAULTS
 from temporary_folder.tasks.helpers.general.line_validation_utils import (
     retrieve_list_in_square_brackets,
@@ -35,35 +31,35 @@ MAKE_QUERY_TAG = TAGS.MAKE_QUERY.value
 
 
 def line_validation_for_begin_text(line):
-    """ Validate if the line is a start tag."""
+    """Validate if the line is a start tag."""
     if BEGIN_TAG in line:
         return line.split(BEGIN_TAG, 1)[1].strip()
     return None
 
-    
+
 def line_validation_for_end_text(line):
-    """ Validate if the line is an end tag."""
+    """Validate if the line is an end tag."""
     if END_TAG in line:
         return line.split(END_TAG, 1)[1].strip()
     return None
 
 
 def line_validation_for_title(line):
-    """ Validate if the line is a title."""
+    """Validate if the line is a title."""
     if TITLE_TAG in line:
         return line.replace(TITLE_TAG, "").strip()
     return None
 
 
 def line_validation_for_comment(line):
-    """ Validate if the line is a comment."""
+    """Validate if the line is a comment."""
     if COMMENT_TAG in line:
         return line.replace(COMMENT_TAG, "").strip()
     return None
 
 
 def line_validation_for_files(line):
-    """ Validate if the line is a file."""
+    """Validate if the line is a file."""
     if match := re.search(FILE_PATTERN, line):
         file_names = match.group(1).split(",")
         file_names = [file_name.strip() for file_name in file_names]
@@ -72,21 +68,21 @@ def line_validation_for_files(line):
 
 
 def line_validation_for_current_file_reference(line):
-    """ Validate if the line is a current file reference."""
+    """Validate if the line is a current file reference."""
     if CURRENT_FILE_TAG in line:
         return True
     return None
 
 
 def line_validation_for_error(line):
-    """ Validate if the line is an error."""
+    """Validate if the line is an error."""
     if ERROR_TAG in line:
         return True
     return None
 
 
 def line_validation_for_fill_text(line):
-    """ Validate if the line is a fill text."""
+    """Validate if the line is a fill text."""
     if match := FILL_TEXT_PATTERN.match(line):
         placeholder = match.group(1)
         return placeholder
@@ -94,21 +90,21 @@ def line_validation_for_fill_text(line):
 
 
 def line_validation_for_run_python_script(line):
-    """ Validate if the line is a run python script."""
+    """Validate if the line is a run python script."""
     if match := RUN_SCRIPT_PATTERN.match(line):
         return match.group(1)
     return None
 
 
 def line_validation_for_run_pylint(line):
-    """ Validate if the line is a run pylint."""
+    """Validate if the line is a run pylint."""
     if match := RUN_PYLINT_PATTERN.match(line):
         return match.group(1)
     return None
 
 
 def line_validation_for_run_unittest(line):
-    """ Validate if the line is a run unittest."""
+    """Validate if the line is a run unittest."""
     if match := re.search(UNITTEST_PATTERN, line):
         verbosity = 1
         if arguments := retrieve_optional_arguments(line):
@@ -118,7 +114,7 @@ def line_validation_for_run_unittest(line):
 
 
 def line_validation_for_directory_tree(line):
-    """ Validate if the line is a directory tree."""
+    """Validate if the line is a directory tree."""
     if match := DIRECTORY_TREE_PATTERN.match(line):
         dir = match.group(1)
         max_depth = DIRECTORY_TREE_DEFAULTS.MAX_DEPTH.value
@@ -137,7 +133,7 @@ def line_validation_for_directory_tree(line):
 
 
 def line_validation_for_summarize_python_script(line):
-    """ Validate if the line is a summarize python script."""
+    """Validate if the line is a summarize python script."""
     if match := SUMMARIZE_PYTHON_SCRIPT_PATTERN.match(line):
         include_definitions_without_docstrings = False
         if arguments := retrieve_optional_arguments(line):
@@ -148,7 +144,7 @@ def line_validation_for_summarize_python_script(line):
 
 
 def line_validation_for_summarize_folder(line):
-    """ Validate if the line is a summarize folder."""
+    """Validate if the line is a summarize folder."""
     if match := SUMMARIZE_FOLDER_PATTERN.match(line):
         dir = match.group(1)
         include_definitions_without_docstrings = False
@@ -161,8 +157,13 @@ def line_validation_for_summarize_folder(line):
                 excluded_dirs = retrieve_list_in_square_brackets(arguments[1], err_msg)
             if len(arguments) > 2:
                 excluded_files = retrieve_list_in_square_brackets(arguments[2], err_msg)
-        return dir, include_definitions_without_docstrings, excluded_dirs, excluded_files
-    
+        return (
+            dir,
+            include_definitions_without_docstrings,
+            excluded_dirs,
+            excluded_files,
+        )
+
 
 def line_validation_for_query_template(line):
     if result := QUERY_TEMPLATE_PATTERN.match(line):

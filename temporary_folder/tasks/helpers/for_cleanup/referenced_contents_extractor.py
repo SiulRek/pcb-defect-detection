@@ -1,21 +1,21 @@
-from temporary_folder.tasks.helpers.general.extractor_base import ExtractorBase
+from temporary_folder.tasks.constants.definitions import (
+    CLEANUP_REFERENCE_TYPES as REFERENCE_TYPE,
+)
 from temporary_folder.tasks.helpers.for_cleanup.line_validation import (
     line_validation_for_select_only,
     line_validation_for_select_not,
     line_validation_for_checkpoints,
 )
-from temporary_folder.tasks.constants.definitions import (
-    CLEANUP_REFERENCE_TYPES as REFERENCE_TYPE
-)
+from temporary_folder.tasks.helpers.general.extractor_base import ExtractorBase
 
 
 class ReferencedContentExtractor(ExtractorBase):
-    
+
     def validate_select_only_reference(self, line):
         if result := line_validation_for_select_only(line):
             return (REFERENCE_TYPE.SELECT_ONLY, result)
         return None
-    
+
     def validate_select_not_reference(self, line):
         if result := line_validation_for_select_not(line):
             return (REFERENCE_TYPE.SELECT_NOT, result)
@@ -25,7 +25,7 @@ class ReferencedContentExtractor(ExtractorBase):
         if line_validation_for_checkpoints(line):
             return (REFERENCE_TYPE.CHECKPOINTING, True)
         return None
-    
+
     def post_process_referenced_contents(self, referenced_contents):
         select_not = []
         select_only = []

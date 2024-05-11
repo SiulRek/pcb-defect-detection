@@ -13,11 +13,11 @@ from temporary_folder.tasks.helpers.for_cleanup.rearrange_imports import (
 from temporary_folder.tasks.helpers.for_cleanup.refactore_exception import (
     refactor_exception,
 )
-from temporary_folder.tasks.helpers.for_cleanup.remove_trailing_parts import (
-    remove_trailing_parts,
-)
 from temporary_folder.tasks.helpers.for_cleanup.remove_line_comments import (
     remove_line_comments,
+)
+from temporary_folder.tasks.helpers.for_cleanup.remove_trailing_parts import (
+    remove_trailing_parts,
 )
 from temporary_folder.tasks.helpers.for_cleanup.remove_unused_imports import (
     remove_unused_imports,
@@ -27,9 +27,7 @@ from temporary_folder.tasks.helpers.for_cleanup.run_black_formatting import (
 )
 from temporary_folder.tasks.helpers.general.execute_pylint import execute_pylint
 
-
 STRATEGIES = {
-    #
     "RT": (remove_trailing_parts, "Remove trailing parts", False),
     "RL": (remove_line_comments, "Remove line comments", False),
     "RE": (refactor_exception, "Refactor exception", False),
@@ -42,14 +40,14 @@ STRATEGIES = {
 
 
 def make_checkpoint(file_path, updated_code, description, checkpoint_dir):
-    """ 
+    """
     Create a checkpoint of the file at the current state.
-    
+
     Args:
-        file_path (str): Path to the file to create a checkpoint of.
-        updated_code (str): Updated code to save in the checkpoint.
-        description (str): Description of the changes made to the code.
-        checkpoint_dir (str): Directory to save the checkpoint in.
+        - file_path (str): Path to the file to create a checkpoint of.
+        - updated_code (str): Updated code to save in the checkpoint.
+        - description (str): Description of the changes made to the code.
+        - checkpoint_dir (str): Directory to save the checkpoint in.
     """
     if hasattr(make_checkpoint, "counter"):
         make_checkpoint.counter += 1
@@ -61,7 +59,7 @@ def make_checkpoint(file_path, updated_code, description, checkpoint_dir):
         checkpoint_dir = make_checkpoint.checkpoint_dir
     else:
         file_name = os.path.basename(file_path).split(".")[0]
-        id = '000'
+        id = "000"
         dir_name = id + "_" + file_name
         while os.path.exists(os.path.join(checkpoint_dir, dir_name)):
             id = str(int(id) + 1).zfill(3)
@@ -85,29 +83,36 @@ def cleanup_file(
     python_env_path=None,
 ):
     """
-    Apply cleanup strategies to a python file. The strategies are applied in the order they are 
-    defined in the STRATEGIES dictionary.
+    Apply cleanup strategies to a python file. The strategies are applied in the
+    order they are defined in the STRATEGIES dictionary.
 
     Args:
-        file_path (str): Path to the file to clean.
-        select_only (list): List of strategies to apply. Default to None.
-        select_not (list): List of strategies to exclude. Default to None.
-        checkpointing (bool): Whether to create checkpoints. Default to False.
-        checkpoint_dir (str): Directory to save the checkpoints in. Required if checkpointing is True.
-        python_env_path (str): Path to the python environment to use for subprocess cleaning. Required for subprocess cleaning.
+        - file_path (str): Path to the file to clean.
+        - select_only (list): List of strategies to apply. Default to None.
+        - select_not (list): List of strategies to exclude. Default to None.
+        - checkpointing (bool): Whether to create checkpoints.
+            DefaulttoFalse.
+        - checkpoint_dir (str): Directory to save the checkpointsin.Required
+            if checkpointing is True.
+        - python_env_path (str): Path to the python environment to
+            useforsubprocess cleaning. Required for subprocess cleaning.
     """
     if not file_path.endswith(".py"):
-        raise ValueError(f"File {file_path} is not a python file")
+        msg = f"File {file_path} is not a python file"
+        raise ValueError(msg)
     if not os.path.exists(file_path):
-        raise FileNotFoundError(f"File {file_path} not found")
+        msg = f"File {file_path} not found"
+        raise FileNotFoundError(msg)
     with open(file_path, "r") as file:
         code = file.read()
     if checkpointing and not checkpoint_dir:
-        raise ValueError("Output directory is required for checkpointing")
+        msg = "Output directory is required for checkpointing"
+        raise ValueError(msg)
     os.makedirs(checkpoint_dir, exist_ok=True)
 
     if select_only and select_not:
-        raise ValueError("Cannot have both select_only and select_not options specified.")
+        msg = "Cannot have both select_only and select_not options specified."
+        raise ValueError(msg)
 
     if select_only:
         strategies = {key: STRATEGIES[key] for key in select_only}
@@ -140,12 +145,10 @@ def cleanup_file(
             make_checkpoint(file_path, updated_code, description, checkpoint_dir)
 
 
-
 if __name__ == "__main__":
     path = r"path/to/file.py"
     cleanup_file(
         path,
-        # select_not=["PL", "BF", "FD"],
         checkpointing=True,
         checkpoint_dir=get_checkpoint_directory(),
         python_env_path=get_environment_path(),
