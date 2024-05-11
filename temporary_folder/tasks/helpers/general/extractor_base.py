@@ -54,19 +54,21 @@ class ExtractorBase:
 
     def extract_referenced_contents(self, file_path, root_dir):
         """
-        Extracts referenced contents from a specified file using validation methods, maintaining the order of their occurrence.
+        Extracts referenced contents from a specified file using validation methods, while maintaining
+        the order of their occurrence.
 
-        This method iterates through each line of the file, applying validation methods that start
-        with 'validate_' to extract specific content based on tags or patterns. Each validation can
-        return a single item or a list of items, which are collected into a list of referenced contents.
-        Non-referenced lines are gathered into a separate list.
+        This method iterates through each line of the file, applying validation methods that start with 
+        'validate_' to detect and extract specific content based on tags or patterns. The results may include
+        a single item or an aggregated list of items, based on the complexity of the validation logic. 
+        The non-referenced text is updated to exclude the extracted content, enhancing clarity and separation.
 
         Args:
             file_path (str): The path to the file from which to extract content.
-            root_dir (str): The root directory path, used to resolve relative paths and environment settings.
+            root_dir (str): The root directory path, used to resolve relative paths and environmental settings.
 
         Returns:
-            tuple: A tuple containing a list of referenced contents and the updated text.
+            tuple: A tuple where the first element is the result of post-processing the referenced contents,
+            defined in child classes, and the second element is the updated text stripped of referenced content.
         """
         self.file_path = file_path
         self.root_dir = root_dir
@@ -75,8 +77,8 @@ class ExtractorBase:
             text = file.read()
             referenced_contents, updated_text = self._extract_referenced_contents(text)
 
-        referenced_contents = self.post_process_referenced_contents(referenced_contents)
-        return referenced_contents, updated_text
+        process_results = self.post_process_referenced_contents(referenced_contents)
+        return process_results, updated_text
 
     def post_process_referenced_contents(self, referenced_contents):
         """
@@ -90,6 +92,6 @@ class ExtractorBase:
             referenced_contents (list): The list of referenced contents collected by the validation methods.
 
         Returns:
-            list: The processed list of referenced contents.
+            costum_type: A custom type or list of referenced contents after post-processing.
         """
         return referenced_contents
