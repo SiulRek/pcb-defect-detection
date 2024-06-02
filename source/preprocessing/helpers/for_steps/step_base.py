@@ -42,27 +42,33 @@ class StepBase(ABC):
             the preprocessing step.
 
     Public Methods:
-        - process_step(image_tensor: tf.Tensor, tf_target: Any) ->
-        - tf.Tensor: To be implemented by the child class to define the
+        - process_step(image_tensor: tf.Tensor, tf_target: Any) -> tf.Tensor: 
+            To be implemented by the child class to define the
             specific preprocessing functionality. The method takes an image
             tensor and an optional target, returning the processed image tensor.
 
     Child Class Template:
-        - class StepTemplate(StepBase): arguments_datatype = <datatype for
-            arguments> name = <Preprocessing step identifier>
-        - def __init__(self, **processing_step_specific_args):
-            super().__init__(locals())
+        - class StepTemplate(StepBase): 
+            arguments_datatype = <datatype for arguments> 
+            name = <Preprocessing step identifier>
+            
+            def __init__(self, **processing_step_specific_args):
+                super().__init__(locals())
 
-    @StepBase._nparray_pyfunc_wrapper # or @StepBase._tensor_pyfunc_wrapper def
-    process_step(self, image_tensor): # TODO image_tensor_processed = ... return
-    image_tensor_processed
+            @StepBase._nparray_pyfunc_wrapper # or @StepBase._tensor_pyfunc_wrapper 
+            def process_step(self, image_tensor): 
+                # TODO 
+                image_tensor_processed = ... 
+                return image_tensor_processed
 
     TODOs when integrating a new preprocessing step in the framework:
         - 1. Create preprocessing step class inheriting from `StepBase`
-            according to the template. 2. Add mapping of the class to the
-            constant `STEP_CLASS_MAPPING`
-        - {<self.name>: type(self)}. 3. Add JSON entry of the class to
-            .source/preprocessing/pipeline/template.json 4. Execute
+            according to the template. 
+        - 2. Add mapping of the class to the
+            constant `STEP_CLASS_MAPPING` {<self.name>: type(self)}. 
+        - 3. Add JSON entry of the class to
+            .source/preprocessing/pipeline/template.json 
+        - 4. Execute
             single_step_test.py over this class.
     """
 
@@ -92,7 +98,7 @@ class StepBase(ABC):
 
     @property
     def parameters(self):
-        """ The parameters property is read-only. """
+        """The parameters property is read-only."""
         return self._parameters
 
     def __eq__(self, obj: "StepBase") -> bool:

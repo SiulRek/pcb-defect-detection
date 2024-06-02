@@ -48,7 +48,8 @@ class ImagePreprocessor:
             pipeline from a JSON file.
         - load_randomized_pipe_from_json: Loads a pipeline from JSON with
             randomized parameters.
-        - Notes:
+    
+    Notes:
         - The pipeline should only contain instances of classes that inherit
             from StepBase.
         - The `set_pipe` and `pipe_append` methods include type checks to
