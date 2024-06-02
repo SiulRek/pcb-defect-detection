@@ -1,5 +1,6 @@
-from source.preprocessing.helpers.for_steps.step_base import StepBase
 import tensorflow as tf
+
+from source.preprocessing.helpers.for_steps.step_base import StepBase
 
 
 class Rotator(StepBase):

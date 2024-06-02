@@ -1,11 +1,11 @@
 import random
 
-import numpy as np
-
 import cv2
+import numpy as np
+import tensorflow as tf
+
 from source.preprocessing.helpers.for_steps.step_base import StepBase
 from source.preprocessing.helpers.for_steps.step_utils import correct_image_tensor_shape
-import tensorflow as tf
 
 
 class RandomPerspectiveTransformer(StepBase):

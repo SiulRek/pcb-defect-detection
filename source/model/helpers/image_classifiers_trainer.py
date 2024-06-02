@@ -5,11 +5,12 @@ import pickle
 
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, auc
+import tensorflow as tf
+
 from source.model.definitions.general import STRING_SEPARATOR as SEP
 from source.model.definitions.general import RESULT_FILE_NAME
 from source.model.definitions.image_classifier import FIGURES, STATISTICS
 from source.model.helpers.image_classifier_visualizer import ImageClassifierVisualizer
-import tensorflow as tf
 
 
 class ImageClassifiersTrainer:

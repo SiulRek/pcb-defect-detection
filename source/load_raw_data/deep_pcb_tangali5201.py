@@ -179,7 +179,7 @@ def get_tf_datasets(
 
     Returns:
         - train_tf_dataset, test_df_dataset (tf.data.Dataset,
-            tf.data.Dataset): A tuple of two TensorFlow Dataset object
+        - tf.data.Dataset): A tuple of two TensorFlow Dataset object
             containing shuffled paths and corresponding targets.
     """
 

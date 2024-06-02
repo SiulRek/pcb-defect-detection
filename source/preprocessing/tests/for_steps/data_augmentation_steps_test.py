@@ -26,9 +26,10 @@ Note:
 import unittest
 from unittest import skip
 
+import tensorflow as tf
+
 import source.preprocessing.steps as steps
 from source.preprocessing.tests.for_steps.single_step_test import TestSingleStep
-import tensorflow as tf
 
 ENABLE_VISUAL_INSPECTION = True
 

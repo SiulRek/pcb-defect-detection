@@ -2,6 +2,7 @@ import os
 import unittest
 
 import numpy as np
+import tensorflow as tf
 
 from source.data_handling.tfrecord_serialization.deserialize import (
     deserialize_dataset_from_tfrecord,
@@ -10,7 +11,6 @@ from source.data_handling.tfrecord_serialization.serialize import (
     serialize_dataset_to_tf_record,
 )
 from source.utils import TestResultLogger
-import tensorflow as tf
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
 OUTPUT_DIR = os.path.join(ROOT_DIR, "source", "data_handling", "tests", "outputs")

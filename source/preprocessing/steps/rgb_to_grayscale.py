@@ -1,5 +1,6 @@
-from source.preprocessing.helpers.for_steps.step_base import StepBase
 from tensorflow import image
+
+from source.preprocessing.helpers.for_steps.step_base import StepBase
 
 
 class RGBToGrayscale(StepBase):

@@ -53,7 +53,8 @@ def get_dataframe(
             'height_ratio', 'path', 'category_codes'
 
     Implementation Reference:
-    https://www.kaggle.com/code/leedh000/cpb-defect-detecting-with-yolov7.
+        -
+            https://www.kaggle.com/code/leedh000/cpb-defect-detecting-with-yolov7.
     """
 
     dataset = {

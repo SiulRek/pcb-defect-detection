@@ -17,6 +17,8 @@ import os
 import unittest
 from unittest.mock import patch
 
+import tensorflow as tf
+
 from source.load_raw_data.kaggle_dataset import load_tf_record
 from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
 from source.preprocessing.helpers.for_preprocessor.recursive_type_conversion import (
@@ -31,7 +33,6 @@ from source.preprocessing.image_preprocessor import ImagePreprocessor
 from source.preprocessing.steps import Rotator as StepToTest
 from source.utils import PCBVisualizerforTF
 from source.utils import SimplePopupHandler, TestResultLogger
-import tensorflow as tf
 
 # TODO Select Step to test here!
 STEP_PARAMETERS = {"angle": 180}

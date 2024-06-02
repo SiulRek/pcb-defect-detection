@@ -1,8 +1,8 @@
 import random
 
+import cv2
 import numpy as np
 
-import cv2
 from source.preprocessing.helpers.for_steps.step_base import StepBase
 
 

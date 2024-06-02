@@ -62,7 +62,7 @@ class SimplePopupHandler:
 
         Parameters:
             - dialog (str): The dialog message to display to the user.
-                Default is "Enter numbers separated by commas:".
+            - Default is "Enter numbers separated by commas:".
             - success_flag (bool): Whether to display a success message.
                 Default is True.
 

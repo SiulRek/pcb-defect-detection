@@ -1,8 +1,7 @@
 import os
 
-import numpy as np
-
 from PIL import Image
+import numpy as np
 
 
 def save_images_from_tf_dataset(
@@ -13,12 +12,12 @@ def save_images_from_tf_dataset(
 
     Args:
         - tf_dataset (tf.data.Dataset): A tf.data.Dataset object containing
-            images. Format: (image, label).
+        - images. Format: (image, label).
         - directory (str): The directory where the images will be saved.
         - name_prefix (str, optional): The prefix of the image file names.
-            Default: 'image'.
+        - Default: 'image'.
         - max_images (int, optional): The maximum number of images to save.
-            Default: None.
+        - Default: None.
     """
 
     if not os.path.exists(directory):

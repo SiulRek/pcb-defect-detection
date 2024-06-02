@@ -4,12 +4,13 @@ import shutil
 import unittest
 
 from matplotlib import pyplot as plt
+import tensorflow as tf
+
 from source.model.definitions.general import STRING_SEPARATOR as SEP
 from source.model.definitions.general import RESULT_FILE_NAME
 from source.model.definitions.image_classifier import FIGURES
 from source.model.helpers.image_classifiers_trainer import ImageClassifiersTrainer
 from source.utils import TestResultLogger
-import tensorflow as tf
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
 OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/model/tests/outputs")

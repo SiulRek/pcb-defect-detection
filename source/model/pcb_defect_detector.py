@@ -20,9 +20,7 @@ class PCBDefectDetector:
         )
 
     def train(self, *Args):
-        """ Train the PCB defect detection model.
-
- """
+        """ Train the PCB defect detection model. """
         if self.model is None:
             self.build_model()
         self.history = self.model.fit(

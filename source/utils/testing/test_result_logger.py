@@ -7,9 +7,8 @@ class TestResultLogger:
     A logger class for logging the results of unittest executions.
 
     This class logs the outcome of tests run using Python's unittest framework
-    to two log files:
-        - One for detailed test outcomes including errors and failures.
-        - Another for simply logging whether a test passed or not.
+    to two log files: - One for detailed test outcomes including errors and
+    failures. - Another for simply logging whether a test passed or not.
     """
 
     def __init__(self, log_file="./test_results.log", title=""):

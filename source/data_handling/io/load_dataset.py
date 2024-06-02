@@ -1,8 +1,9 @@
 import os
 
+import tensorflow as tf
+
 from source.data_handling.helpers.label_manager import LabelManager
 from source.data_handling.io.load_and_decode_image import load_and_decode_image
-import tensorflow as tf
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
 

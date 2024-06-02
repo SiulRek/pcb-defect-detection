@@ -12,6 +12,8 @@ import os
 import random
 import unittest
 
+import tensorflow as tf
+
 from source.load_raw_data.kaggle_dataset import load_tf_record
 from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
 from source.preprocessing.helpers.for_preprocessor.class_instances_serializer import (
@@ -26,7 +28,6 @@ from source.preprocessing.helpers.for_tests.copy_json_exclude_entries import (
 )
 from source.preprocessing.image_preprocessor import ImagePreprocessor
 from source.utils import TestResultLogger
-import tensorflow as tf
 
 N = 10  # Number of Pipelines Tests to run.
 ROOT_DIR = os.path.join(

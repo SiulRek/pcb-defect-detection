@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
 import functools
 
+import tensorflow as tf
+
 from source.preprocessing.helpers.for_steps.get_step_json_representation import (
     get_step_json_representation,
 )
 from source.preprocessing.helpers.for_steps.step_utils import correct_image_tensor_shape
-import tensorflow as tf
 
 
 class StepBase(ABC):
