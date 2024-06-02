@@ -1,6 +1,5 @@
-import tensorflow as tf
-
 from source.preprocessing.helpers.for_steps.step_base import StepBase
+import tensorflow as tf
 
 
 class MeanNormalizer(StepBase):
@@ -14,8 +13,8 @@ class MeanNormalizer(StepBase):
     name = "Mean Normalizer"
 
     def __init__(self):
-        """Initializes the MeanNormalizer object for integration into an image preprocessing
-        pipeline."""
+        """ Initializes the MeanNormalizer object for integration into an image
+        preprocessing pipeline. """
         super().__init__({})
         self.output_datatype = tf.float16
 

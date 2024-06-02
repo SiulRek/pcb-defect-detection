@@ -1,24 +1,25 @@
-import cv2
 import numpy as np
 
+import cv2
 from source.preprocessing.helpers.for_steps.step_base import StepBase
 
 
 class ErosionFilter(StepBase):
-    """A preprocessing step that applies erosion to an image."""
+    """ A preprocessing step that applies erosion to an image. """
 
     arguments_datatype = {"kernel_size": int, "iterations": int}
     name = "Erosion Filter"
 
     def __init__(self, kernel_size=3, iterations=1):
         """
-        Initializes the ErosionFilter object that can be integrated into an image preprocessing
-        pipeline.
+        Initializes the ErosionFilter object that can be integrated into an
+        image preprocessing pipeline.
 
         Args:
-            kernel_size (int, optional): The size of the erosion kernel. Defaults to 3.
-            iterations (int, optional): The number of times the erosion operation is applied.
-                Defaults to 1.
+            - kernel_size (int, optional): The size of the erosion kernel.
+                Defaults to 3.
+            - iterations (int, optional): The number of times the erosion
+                operation is applied. Defaults to 1.
         """
         super().__init__(locals())
 

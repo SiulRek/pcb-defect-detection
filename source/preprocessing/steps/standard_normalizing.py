@@ -1,13 +1,12 @@
-import tensorflow as tf
-
 from source.preprocessing.helpers.for_steps.step_base import StepBase
 from source.preprocessing.helpers.for_steps.step_utils import reduce_std
+import tensorflow as tf
 
 
 class StandardNormalizer(StepBase):
     """
-    A preprocessing step that applies standard normalization (Z-score normalization) to an image
-    tensor.
+    A preprocessing step that applies standard normalization (Z-score
+    normalization) to an image tensor.
 
     Note: The data type of the output image tensor is tf.float16.
     """
@@ -16,8 +15,8 @@ class StandardNormalizer(StepBase):
     name = "Standard Normalizer"
 
     def __init__(self):
-        """Initializes the StandardNormalizer object for integration into an image preprocessing
-        pipeline."""
+        """ Initializes the StandardNormalizer object for integration into an image
+        preprocessing pipeline. """
         super().__init__({})
         self.output_datatype = tf.float16
 

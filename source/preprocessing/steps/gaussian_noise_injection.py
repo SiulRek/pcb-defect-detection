@@ -1,13 +1,13 @@
-import tensorflow as tf
-
 from source.preprocessing.helpers.for_steps.step_base import StepBase
+import tensorflow as tf
 
 
 class GaussianNoiseInjector(StepBase):
     """
     A data augmentation step that injects Gaussian noise into an image tensor.
     The noise intensity can be specified. The output tensor type is tf.float32.
-    An optional boolean argument 'apply_clipping' controls whether to clip the output values.
+    An optional boolean argument 'apply_clipping' controls whether to clip the
+    output values.
     """
 
     arguments_datatype = {
@@ -20,16 +20,17 @@ class GaussianNoiseInjector(StepBase):
 
     def __init__(self, mean=0.0, sigma=0.05, apply_clipping=True, seed=42):
         """
-        Initializes the GaussianNoiseInjector object for integration into an image preprocessing
-            pipeline.
+        Initializes the GaussianNoiseInjector object for integration into an
+        image preprocessing pipeline.
 
         Args:
-            mean (float): The mean of the Gaussian noise distribution. Default is 0.0.
-            sigma (float): The standard deviation of the Gaussian noise distribution.
-                Default is 0.05.
-            apply_clipping (bool): If True, clips the output values to be within a valid range.
-                Default is True.
-            seed (int): Random seed for reproducibility. Default is 42.
+            - mean (float): The mean of the Gaussian noise distribution.
+                Default is 0.0.
+            - sigma (float): The standard deviation of the Gaussian noise
+                distribution. Default is 0.05.
+            - apply_clipping (bool): If True, clips the output values to be
+                within a valid range. Default is True.
+            - seed (int): Random seed for reproducibility. Default is 42.
         """
         super().__init__(locals())
 

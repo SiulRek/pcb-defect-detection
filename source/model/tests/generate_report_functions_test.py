@@ -1,12 +1,13 @@
-import unittest
 import os
-import shutil
 import pickle
-from source.utils import TestResultLogger
+import shutil
+import unittest
+
 from source.model.helpers.generate_report_functions import (
     get_experiments_data,
     sort_experiments_data,
 )
+from source.utils import TestResultLogger
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
 OUTPUT_DIR = os.path.join(ROOT_DIR, "source/model/tests/outputs")

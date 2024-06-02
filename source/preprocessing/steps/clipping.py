@@ -1,23 +1,24 @@
-import tensorflow as tf
-
 from source.preprocessing.helpers.for_steps.step_base import StepBase
+import tensorflow as tf
 
 
 class Clipper(StepBase):
-    """
-    A preprocessing step that clips the pixel values of an image tensor to a specified range.
-    """
+    """ A preprocessing step that clips the pixel values of an image tensor to a
+    specified range. """
 
     arguments_datatype = {"min_value": float, "max_value": float}
     name = "Clipper"
 
     def __init__(self, min_value=0.0, max_value=1.0):
         """
-        Initializes the Clipper object for integration into an image preprocessing pipeline.
+        Initializes the Clipper object for integration into an image
+        preprocessing pipeline.
 
         Args:
-            min_value (float): The minimum value to clip to. Default is 0.0.
-            max_value (float): The maximum value to clip to. Default is 1.0.
+            - min_value (float): The minimum value to clip to. Default is
+                0.0.
+            - max_value (float): The maximum value to clip to. Default is
+                1.0.
         """
         super().__init__(locals())
 

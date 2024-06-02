@@ -3,15 +3,14 @@ import os
 import unittest
 from unittest.mock import patch
 
-import tensorflow as tf
 import cv2
-
-from source.preprocessing.image_preprocessor import ImagePreprocessor
-from source.preprocessing.helpers.for_steps.step_base import StepBase
-from source.preprocessing.helpers.for_steps.step_utils import correct_image_tensor_shape
 from source.load_raw_data.kaggle_dataset import load_tf_record
 from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
+from source.preprocessing.helpers.for_steps.step_base import StepBase
+from source.preprocessing.helpers.for_steps.step_utils import correct_image_tensor_shape
+from source.preprocessing.image_preprocessor import ImagePreprocessor
 from source.utils import TestResultLogger
+import tensorflow as tf
 
 ROOT_DIR = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", ".."
@@ -75,11 +74,25 @@ class ErrorStep(StepBase):
 
 class TestImagePreprocessor(unittest.TestCase):
     """
-    Test suite for evaluating the `ImagePreprocessor` class functionality, specifically focusing on the robustness and reliability of the image preprocessing pipeline operations in various scenarios.
+    Test suite for evaluating the `ImagePreprocessor` class functionality,
+    specifically focusing on the robustness and reliability of the image
+    preprocessing pipeline operations in various scenarios.
 
-    This suite includes a variety of tests to ensure the proper functioning of the pipeline operations handled by the `ImagePreprocessor`, such as adding and removing steps, validating pipeline execution, and handling exceptions. It thoroughly tests the integrity of the operations, including the requirement to maintain consistent image shapes and correctly process images through multiple preprocessing steps. The suite also covers serialization and deserialization of the pipeline to and from JSON, ensuring the persistence mechanism's effectiveness. Additionally, it verifies the `ImagePreprocessor`'s handling of randomized parameters and its resilience in scenarios where processing exceptions are raised.
+    This suite includes a variety of tests to ensure the proper functioning of
+    the pipeline operations handled by the `ImagePreprocessor`, such as adding
+    and removing steps, validating pipeline execution, and handling exceptions.
+    It thoroughly tests the integrity of the operations, including the
+    requirement to maintain consistent image shapes and correctly process images
+    through multiple preprocessing steps. The suite also covers serialization
+    and deserialization of the pipeline to and from JSON, ensuring the
+    persistence mechanism's effectiveness. Additionally, it verifies the
+    `ImagePreprocessor`'s handling of randomized parameters and its resilience
+    in scenarios where processing exceptions are raised.
 
-    Note: The usage of color channel conversion steps serves as a reliable indicator; if the `ImagePreprocessor` handles these steps correctly, it's likely that other steps with a similar structure will be handled correctly as well.
+    Note: The usage of color channel conversion steps serves as a reliable
+    indicator; if the `ImagePreprocessor` handles these steps correctly, it's
+    likely that other steps with a similar structure will be handled correctly
+    as well.
     """
 
     @classmethod
@@ -121,11 +134,12 @@ class TestImagePreprocessor(unittest.TestCase):
 
     def test_pipe_pop_and_append(self):
         """
-        Tests the functionality of popping and appending steps in the image preprocessing pipeline.
+        Tests the functionality of popping and appending steps in the image
+        preprocessing pipeline.
 
-        This test case first populates the pipeline with specific steps, then pops the last step,
-        and finally appendes it back. It verifies both the popped step and the integrity of the
-        pipeline after these operations.
+        This test case first populates the pipeline with specific steps, then
+        pops the last step, and finally appendes it back. It verifies both the
+        popped step and the integrity of the pipeline after these operations.
         """
         pipeline = [
             RGBToGrayscale(param1=20, param2=(20, 20), param3=False),
@@ -145,10 +159,12 @@ class TestImagePreprocessor(unittest.TestCase):
 
     def test_pipeline_clear(self):
         """
-        Tests the functionality of clearing and reinitializing the image preprocessing pipeline.
+        Tests the functionality of clearing and reinitializing the image
+        preprocessing pipeline.
 
-        This test case verifies that the `pipe_clear` method of the ImagePreprocessor class effectively clears the
-        existing pipeline and allows to rebuild the pipeline from start.
+        This test case verifies that the `pipe_clear` method of the
+        ImagePreprocessor class effectively clears the existing pipeline and
+        allows to rebuild the pipeline from start.
         """
         pipeline = [
             RGBToGrayscale(param1=20, param2=(20, 20), param3=False),
@@ -168,9 +184,11 @@ class TestImagePreprocessor(unittest.TestCase):
 
     def test_deepcopy_of_pipeline(self):
         """
-        This test ensures that the ImagePreprocessor maintains a consistent and isolated state of its preprocessing pipeline.
+        This test ensures that the ImagePreprocessor maintains a consistent and
+        isolated state of its preprocessing pipeline.
 
-        Assert is equal implies, that the internal pipeline was successfully deep-copied.
+        Assert is equal implies, that the internal pipeline was successfully
+        deep-copied.
         """
         pipeline = [
             RGBToGrayscale(param1=20, param2=(20, 20), param3=False),
@@ -186,10 +204,13 @@ class TestImagePreprocessor(unittest.TestCase):
         self.assertEqual(preprocessor.pipeline, pipeline_expected)
 
     def test_invalid_step_in_pipeline(self):
-        """Tests the ImagePreprocessor's ability to validate the types of steps added to its pipeline.
+        """
+        Tests the ImagePreprocessor's ability to validate the types of steps
+        added to its pipeline.
 
-        This test ensures that the ImagePreprocessor class correctly identifies and rejects any objects
-        added to its pipeline that are not a subclass of StepBase.
+        This test ensures that the ImagePreprocessor class correctly identifies
+        and rejects any objects added to its pipeline that are not a subclass of
+        StepBase.
         """
 
         class StepNotOfStepBase:
@@ -209,9 +230,8 @@ class TestImagePreprocessor(unittest.TestCase):
         return string
 
     def test_pipeline_code_representation(self):
-        """
-        Tests ensures the correctness of the pipeline code representation generated by the ImagePreprocessor.
-        """
+        """ Tests ensures the correctness of the pipeline code representation
+        generated by the ImagePreprocessor. """
         pipeline = [
             RGBToGrayscale(param1=20, param2=(20, 20), param3=False),
             GrayscaleToRGB(param1=40, param2=(30, 30), param3="a nice str"),
@@ -230,12 +250,14 @@ class TestImagePreprocessor(unittest.TestCase):
         self.assertEqual(representation_output, representation_expected)
 
     def test_process_pipeline(self):
-        """Tests the functionality of the image preprocessing pipeline.
+        """
+        Tests the functionality of the image preprocessing pipeline.
 
-        This test case validates that the pipeline, when applied to an image dataset,
-        correctly processes images through multiple preprocessing steps and maintains
-        the integrity of the images' shape, specifically ensuring the color channel conversion was done and the
-        dimension is correct after processing.
+        This test case validates that the pipeline, when applied to an image
+        dataset, correctly processes images through multiple preprocessing steps
+        and maintains the integrity of the images' shape, specifically ensuring
+        the color channel conversion was done and the dimension is correct after
+        processing.
         """
         preprocessor = ImagePreprocessor()
         preprocessor.set_pipe(self.pipeline)
@@ -245,10 +267,12 @@ class TestImagePreprocessor(unittest.TestCase):
         )
 
     def test_process_pipeline_for_packed_dataset(self):
-        """Tests the functionality of the image preprocessing pipeline for packed datasets.
+        """
+        Tests the functionality of the image preprocessing pipeline for packed
+        datasets.
 
-        This test case validates that the pipeline, when applied to a packed dataset, meaning a dataset
-        with both images and labels.
+        This test case validates that the pipeline, when applied to a packed
+        dataset, meaning a dataset with both images and labels.
         """
         packed_dataset = load_tf_record().take(9)
         preprocessor = ImagePreprocessor()
@@ -262,8 +286,9 @@ class TestImagePreprocessor(unittest.TestCase):
 
     def test_set_default_datatype(self):
         """
-        Test the functionality of the set_default_datatype method.
-        This test changes the default output datatype and verifies if the processed images are in the new datatype.
+        Test the functionality of the set_default_datatype method. This test
+        changes the default output datatype and verifies if the processed images
+        are in the new datatype.
         """
         preprocessor = ImagePreprocessor()
         preprocessor.set_default_datatype(tf.float32)
@@ -282,10 +307,12 @@ class TestImagePreprocessor(unittest.TestCase):
             )
 
     def test_save_and_load_pipeline(self):
-        """Ensures the image preprocessing pipeline can be saved and subsequently loaded.
+        """
+        Ensures the image preprocessing pipeline can be saved and subsequently
+        loaded.
 
-        This test case checks the pipeline's persistence mechanism, verifying that the
-        pipeline can be serialized to JSON and reloaded to create an
+        This test case checks the pipeline's persistence mechanism, verifying
+        that the pipeline can be serialized to JSON and reloaded to create an
         identical pipeline setup.
         """
 
@@ -321,7 +348,8 @@ class TestImagePreprocessor(unittest.TestCase):
         """
         Tests loading a pipeline with randomized settings from a JSON file.
 
-        Ensures that the pipeline correctly uses random parameters for its steps as defined in the JSON file.
+        Ensures that the pipeline correctly uses random parameters for its steps
+        as defined in the JSON file.
         """
 
         mock_class_parameters = {
@@ -356,10 +384,11 @@ class TestImagePreprocessor(unittest.TestCase):
             self.assertTrue(pipeline[i].parameters["param3"])
 
     def test_not_raised_step_process_exception_1(self):
-        """Test case for ensuring that the ErrorStep subclass, when processing an image
-        dataset, raises an exception as expected, but the exception is caught and
-        handled silently by the ImagePreprocessor pipeline, allowing the execution
-        to continue without interruption.
+        """
+        Test case for ensuring that the ErrorStep subclass, when processing an
+        image dataset, raises an exception as expected, but the exception is
+        caught and handled silently by the ImagePreprocessor pipeline, allowing
+        the execution to continue without interruption.
         """
 
         pipeline = [
@@ -375,10 +404,11 @@ class TestImagePreprocessor(unittest.TestCase):
         self.assertIsNone(processed_images)
 
     def test_not_raised_step_process_exception_2(self):
-        """Test case for ensuring that when pipeline construction is faulty, when processing an image
-        dataset, raises an exception as expected, but the exception is caught and
-        handled silently by the ImagePreprocessor pipeline, allowing the execution
-        to continue without interruption.
+        """
+        Test case for ensuring that when pipeline construction is faulty, when
+        processing an image dataset, raises an exception as expected, but the
+        exception is caught and handled silently by the ImagePreprocessor
+        pipeline, allowing the execution to continue without interruption.
         """
 
         pipeline = [

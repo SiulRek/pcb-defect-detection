@@ -1,10 +1,9 @@
 import os
 import unittest
-import tensorflow as tf
 
 from source.data_handling.helpers.label_manager import LabelManager
 from source.utils import TestResultLogger
-
+import tensorflow as tf
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
 OUTPUT_DIR = os.path.join(ROOT_DIR, "source", "data_handling", "tests", "outputs")

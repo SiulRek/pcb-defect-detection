@@ -1,23 +1,27 @@
 def recursive_type_conversion(source_value, target_datatype_template):
     """
-    Converts the data type of a given value to match that of a template value, doing so recursively
-    for complex data structures.
+    Converts the data type of a given value to match that of a template value,
+    doing so recursively for complex data structures.
 
-    This function aims to transform the data type of `source_value` so that it matches the data type
-    of `target_datatype_template`. The conversion is performed recursively, which means that if
-    `source_value` is a collection (e.g., list, tuple, dictionary), each item within the collection
-    will also be converted to match the corresponding item in the `target_datatype_template`.
+    This function aims to transform the data type of `source_value` so that it
+    matches the data type of `target_datatype_template`. The conversion is
+    performed recursively, which means that if `source_value` is a collection
+    (e.g., list, tuple, dictionary), each item within the collection will also
+    be converted to match the corresponding item in the
+    `target_datatype_template`.
 
     Args:
-    - source_value: The value whose data type is to be converted.
-        It can be of any type: primitive data types, list, tuple, or dict.
-    - target_datatype_template: An instance of the desired data type that serves as a template for
-        conversion. It should be of the same structure as the `source_value` if it is a collection.
-        If it is a dictionary `target_datatype_template` shall have all keys of `source_value`,
-        the other way around is not required.
+        - source_value: The value whose data type is to be converted.
+        - It can be of any type: primitive data types, list, tuple, or dict.
+        - target_datatype_template: An instance of the desired data type
+            that serves as a template for conversion. It should be of the same
+            structure as the `source_value` if it is a collection. If it is a
+            dictionary `target_datatype_template` shall have all keys of
+            `source_value`, the other way around is not required.
 
     Returns:
-    - The `source_value` converted to the data type structure of `target_datatype_template`.
+        - The `source_value` converted to the data type structure of
+            `target_datatype_template`.
     """
 
     target_datatype = type(target_datatype_template)

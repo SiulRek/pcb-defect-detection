@@ -1,15 +1,14 @@
-import tensorflow as tf
-
 from source.preprocessing.helpers.for_steps.step_base import StepBase
+import tensorflow as tf
 
 
 class Rotator(StepBase):
     """
-    A preprocessing step that rotates an image tensor by a specified angle.
-    The angle of rotation is specified as an input parameter.
+    A preprocessing step that rotates an image tensor by a specified angle. The
+    angle of rotation is specified as an input parameter.
 
-    Note: the angle of rotation must be a multiple of 90 degrees. Otherwise, the angle will be
-        rounded to the nearest multiple of 90 degrees.
+    Note: the angle of rotation must be a multiple of 90 degrees. Otherwise, the
+    angle will be rounded to the nearest multiple of 90 degrees.
     """
 
     arguments_datatype = {"angle": float}
@@ -17,10 +16,12 @@ class Rotator(StepBase):
 
     def __init__(self, angle=90.0):
         """
-        Initializes the Rotator object for integration into an image preprocessing pipeline.
+        Initializes the Rotator object for integration into an image
+        preprocessing pipeline.
 
         Args:
-            angle (float): The angle of rotation in degrees. Default is 90.0.
+            - angle (float): The angle of rotation in degrees. Default is
+                90.0.
         """
         super().__init__(locals())
 

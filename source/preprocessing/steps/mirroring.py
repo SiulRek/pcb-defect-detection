@@ -1,24 +1,22 @@
-import tensorflow as tf
-
 from source.preprocessing.helpers.for_steps.step_base import StepBase
+import tensorflow as tf
 
 
 class Mirrorer(StepBase):
-    """
-    A preprocessing step that mirrors an image tensor either horizontally or vertically.
-    The direction of mirroring is specified as an input parameter.
-    """
+    """ A preprocessing step that mirrors an image tensor either horizontally or
+    vertically. The direction of mirroring is specified as an input parameter. """
 
     arguments_datatype = {"mirror_direction": str}
     name = "Mirrorer"
 
     def __init__(self, mirror_direction="horizontal"):
         """
-        Initializes the Mirrorer object for integration into an image preprocessing pipeline.
+        Initializes the Mirrorer object for integration into an image
+        preprocessing pipeline.
 
         Args:
-            mirror_direction (str): The direction for mirroring the image.
-                                    Accepts 'horizontal' or 'vertical'. Default is 'horizontal'.
+            - mirror_direction (str): The direction for mirroring the image.
+                Accepts 'horizontal' or 'vertical'. Default is 'horizontal'.
         """
         super().__init__(locals())
 

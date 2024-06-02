@@ -1,13 +1,14 @@
-import pandas as pd
 import os
 import xml.etree.ElementTree as ET
 
-from source.load_raw_data.get_tf_dataset import get_tf_dataset_from_df
+import pandas as pd
+
+from source.load_raw_data.category_codes import Category
 from source.load_raw_data.dataset_serialization import (
     load_tfrecord_from_file,
     save_tfrecord_to_file,
 )
-from source.load_raw_data.category_codes import Category
+from source.load_raw_data.get_tf_dataset import get_tf_dataset_from_df
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")
 
@@ -29,25 +30,30 @@ def get_dataframe(
     path_an=PATH_ANNOTATIONS, path_im=PATH_IMAGE, create_annotation_summary=True
 ):
     """
-    Load and process Kaggle PCB defect dataset annotations and images to create a Pandas DataFrame(https://www.kaggle.com/datasets/akhatova/pcb-defects/data).
+    Load and process Kaggle PCB defect dataset annotations and images to create
+    a Pandas
+    DataFrame(https://www.kaggle.com/datasets/akhatova/pcb-defects/data).
 
     Parameters:
-    - path_an (str): Path to the directory containing XML annotations.
-    - path_im (str): Path to the directory containing images.
-    - create_annotation_summary (bool): If True, create an annotation summary CSV file.
+        - path_an (str): Path to the directory containing XML annotations.
+        - path_im (str): Path to the directory containing images.
+        - create_annotation_summary (bool): If True, create an annotation
+            summary CSV file.
 
     Returns:
-    - pandas.DataFrame: A DataFrame containing processed data.
+        - pandas.DataFrame: A DataFrame containing processed data.
 
-    This function reads XML annotations for PCB defects, extracts information and stores
-    the information in a DataFrame.
+    This function reads XML annotations for PCB defects, extracts information
+    and stores the information in a DataFrame.
 
     The resulting DataFrame contains the following columns:
-    - 'class', 'xmin', 'ymin', 'xmax', 'ymax', 'file', 'defect_x_center', 'defect_y_center',
-      'defect_width', 'defect_height', 'image_width', 'image_height', 'width_ratio', 'height_ratio',
-      'path', 'category_codes'
+        - 'class', 'xmin', 'ymin', 'xmax', 'ymax', 'file',
+            'defect_x_center', 'defect_y_center', 'defect_width',
+            'defect_height', 'image_width', 'image_height', 'width_ratio',
+            'height_ratio', 'path', 'category_codes'
 
-    Implementation Reference: https://www.kaggle.com/code/leedh000/cpb-defect-detecting-with-yolov7.
+    Implementation Reference:
+    https://www.kaggle.com/code/leedh000/cpb-defect-detecting-with-yolov7.
     """
 
     dataset = {
@@ -192,15 +198,19 @@ def get_tf_dataset(
     Generates a TensorFlow Dataset from the Kaggle PCB defects dataset.
 
     Parameters:
-    - path_an (str): Path to the directory containing XML annotations.
-    - path_im (str): Path to the directory containing images.
-    - create_annotation_summary (bool): If True, create an annotation summary CSV file.
-    - random_seed (int, optional): The random seed for shuffling the dataset. Defaults to 34.
-    - sample_num (int, optional): Numbers of samples to take from the dataframe. Defaults to -1 -> All Samples are taken.
+        - path_an (str): Path to the directory containing XML annotations.
+        - path_im (str): Path to the directory containing images.
+        - create_annotation_summary (bool): If True, create an annotation
+            summary CSV file.
+        - random_seed (int, optional): The random seed for shuffling the
+            dataset. Defaults to 34.
+        - sample_num (int, optional): Numbers of samples to take from the
+            dataframe. Defaults to -1 -> All Samples are taken.
 
     Returns:
-    - tf.data.Dataset: A TensorFlow Dataset containing tuples of (image, category_code),
-        where 'image' is the decoded image file and 'category_code' is an integer label.
+        - tf.data.Dataset: A TensorFlow Dataset containing tuples of (image,
+            category_code), where 'image' is the decoded image file and
+            'category_code' is an integer label.
     """
 
     df = get_dataframe(path_an, path_im, create_annotation_summary)
@@ -210,11 +220,13 @@ def get_tf_dataset(
 
 def get_tf_dataset_with_category_zero(image_path=PATH_PCB_USED, random_seed=75):
     """
-    Generates a TensorFlow Dataset from the Kaggle PCB defects dataset with category zero.
+    Generates a TensorFlow Dataset from the Kaggle PCB defects dataset with
+    category zero.
 
     Parameters:
-    - image_path (str): Path to the directory containing images.
-    - random_seed (int, optional): The random seed for shuffling the dataset. Defaults to 34.
+        - image_path (str): Path to the directory containing images.
+        - random_seed (int, optional): The random seed for shuffling the
+            dataset. Defaults to 34.
     """
     all_files = []
     for image_name in os.listdir(image_path):
@@ -232,16 +244,20 @@ def get_tf_datasets_for_each_category(
     random_seed=75,
 ):
     """
-    Generates TensorFlow Datasets for each category of the Kaggle PCB defects dataset.
+    Generates TensorFlow Datasets for each category of the Kaggle PCB defects
+    dataset.
 
     Parameters:
-    - path_an (str): Path to the directory containing XML annotations.
-    - path_im (str): Path to the directory containing images.
-    - create_annotation_summary (bool): If True, create an annotation summary CSV file.
-    - random_seed (int, optional): The random seed for shuffling the dataset. Defaults to 34.
+        - path_an (str): Path to the directory containing XML annotations.
+        - path_im (str): Path to the directory containing images.
+        - create_annotation_summary (bool): If True, create an annotation
+            summary CSV file.
+        - random_seed (int, optional): The random seed for shuffling the
+            dataset. Defaults to 34.
 
     Returns:
-    - dict: A dictionary containing TensorFlow Datasets for each category.
+        - dict: A dictionary containing TensorFlow Datasets for each
+            category.
     """
 
     df = get_dataframe(path_an, path_im, create_annotation_summary)
@@ -257,25 +273,33 @@ def get_tf_datasets_for_each_category(
 
 
 def save_tf_record():
-    """Save the Kaggle PCB defects dataset as a TFRecord file.
+    """
+    Save the Kaggle PCB defects dataset as a TFRecord file.
 
-    This function generates a TensorFlow Dataset from the Kaggle PCB defects dataset and saves it to a TFRecord file for efficient future access. It includes image data and corresponding category codes.
+    This function generates a TensorFlow Dataset from the Kaggle PCB defects
+    dataset and saves it to a TFRecord file for efficient future access. It
+    includes image data and corresponding category codes.
 
     Note:
-        The TFRecord is saved to the path specified in 'RECORD_FILE'.
-        An annotation summary CSV file is also generated in the process.
+        - The TFRecord is saved to the path specified in 'RECORD_FILE'. An
+            annotation summary CSV file is also generated in the process.
     """
     save_tfrecord_to_file(get_tf_dataset(create_annotation_summary=True), RECORD_FILE)
 
 
 def load_tf_record():
-    """Load the TensorFlow dataset from a TFRecord file.
+    """
+    Load the TensorFlow dataset from a TFRecord file.
 
-    This function specifically loads the dataset from a TFRecord file that corresponds to the Kaggle PCB defects dataset. It ensures that the dataset is parsed and optimized for use, containing images along with their corresponding targets.
+    This function specifically loads the dataset from a TFRecord file that
+    corresponds to the Kaggle PCB defects dataset. It ensures that the dataset
+    is parsed and optimized for use, containing images along with their
+    corresponding targets.
 
     Returns:
-    - tf.data.Dataset: A TensorFlow Dataset containing tuples of (image, category_code),
-        where 'image' is the decoded image file and 'category_code' is an integer label.
+        - tf.data.Dataset: A TensorFlow Dataset containing tuples of (image,
+            category_code), where 'image' is the decoded image file and
+            'category_code' is an integer label.
     """
     return load_tfrecord_from_file(RECORD_FILE)
 

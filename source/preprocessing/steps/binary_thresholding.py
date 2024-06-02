@@ -1,5 +1,4 @@
 import cv2
-
 from source.preprocessing.helpers.for_steps.step_base import StepBase
 
 
@@ -7,22 +6,23 @@ class BinaryThresholder(StepBase):
     """
     A preprocessing step that applies binary Thresholding to an image.
 
-    Note: In the case of RGB images, it processes each color channel (Red, Green, Blue)
-    separately.
+    Note: In the case of RGB images, it processes each color channel (Red,
+    Green, Blue) separately.
     """
 
     arguments_datatype = {"thresh": int}
     name = "Binary Thresholding"
 
     def __init__(self, thresh=128):
-        """Initializes the BinaryThresholder object that can be integrated in an image
-            preprocessing pipeline.
+        """
+        Initializes the BinaryThresholder object that can be integrated in an
+        image preprocessing pipeline.
 
         Args:
-            thresh (int, optional): The threshold value used for binary thresholding. Pixel values
-                greater than this threshold are set to the maximum value (255, white), and values
-                less than or equal to the threshold are set to 0 (black). Defaults to 128.
-
+            - thresh (int, optional): The threshold value used for binary
+                thresholding. Pixel values greater than this threshold are set
+                to the maximum value (255, white), and values less than or equal
+                to the threshold are set to 0 (black). Defaults to 128.
         """
         super().__init__(locals())
 

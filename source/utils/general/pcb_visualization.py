@@ -1,18 +1,21 @@
-""" Disclaimer: The classes in this modules where used for visualization puproses during the development
- of the Image Preprocessing Framework. They are not used for plotting purposes in model development. """
+"""
+Disclaimer: The classes in this modules where used for visualization puproses
+during the development of the Image Preprocessing Framework. They are not used
+for plotting purposes in model development.
+ """
 
 from abc import ABC
-from copy import deepcopy
+
+import numpy as np
 
 import cv2
-import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import tensorflow as tf
 
 
 class PCBVisualizerBase(ABC):
-    """This class represents the base for the PCBVisualizer child classes."""
+    """ This class represents the base for the PCBVisualizer child classes. """
 
     def __init__(self, show_plot=True):
         self.last_fig = None
@@ -55,15 +58,16 @@ class PCBVisualizerBase(ABC):
 
 
 class PCBVisualizerforTF(PCBVisualizerBase):
-    """PCB Visualizer during image processing. Pass slice from tensorflow images as input parameter."""
+    """ PCB Visualizer during image processing. Pass slice from tensorflow images as
+    input parameter. """
 
     def plot_images(self, image_tf_dataset, title="Images"):
         """
         Plots 9 images from the given TensorFlow dataset.
 
         Parameters:
-        - image_tf_dataset: TensorFlow dataset containing the images.
-        - Title: Plot title. Defaults to 'Images
+            - image_tf_dataset: TensorFlow dataset containing the images.
+            - Title: Plot title. Defaults to 'Images
         """
 
         fig, axes = plt.subplots(3, 3, figsize=(10, 10))
@@ -89,10 +93,13 @@ class PCBVisualizerforTF(PCBVisualizerBase):
         Plots a comparison of original and processed image.
 
         Parameters:
-        - original_tf_dataset: TensorFlow dataset containing the origina image.
-        - compare_tf_dataset: TensorFlow dataset containing the compare image.
-        - index: The index number of the images in the corresponding dataset.
-        - Title: Plot title. Defaults to 'Image Comparison'.
+            - original_tf_dataset: TensorFlow dataset containing the origina
+                image.
+            - compare_tf_dataset: TensorFlow dataset containing the compare
+                image.
+            - index: The index number of the images in the corresponding
+                dataset.
+            - Title: Plot title. Defaults to 'Image Comparison'.
         """
 
         fig, axes = plt.subplots(1, 2, figsize=(12, 5))
@@ -122,9 +129,9 @@ class PCBVisualizerforTF(PCBVisualizerBase):
         Plots histograms for 9 images from the given TensorFlow dataset.
 
         Parameters:
-        - image_tf_dataset: TensorFlow dataset containing the images.
-        - title:    Plot title. Defaults to 'Histogram'.
-        - bins: Number of bins in the histograms. Defaults to 20.
+            - image_tf_dataset: TensorFlow dataset containing the images.
+            - title: Plot title. Defaults to 'Histogram'.
+            - bins: Number of bins in the histograms. Defaults to 20.
         """
 
         fig, axes = plt.subplots(3, 3, figsize=(10, 10))
@@ -147,12 +154,15 @@ class PCBVisualizerforTF(PCBVisualizerBase):
     def plot_frequency_spectrum_3D(
         self, image_tf_dataset, title="Frequency Spectrum of Images", cmap="viridis"
     ):
-        """Plots the 3D frequency spectrum of up to 9 images from a TensorFlow dataset.
+        """
+        Plots the 3D frequency spectrum of up to 9 images from a TensorFlow
+        dataset.
 
         Parameters:
-        - image_tf_dataset: TensorFlow dataset containing images.
-        - title: Title for the plot (default is "Frequency Spectrum of Images").
-        - cmap: Colormap used for 3D surface (default is 'viridis').
+            - image_tf_dataset: TensorFlow dataset containing images.
+            - title: Title for the plot (default is "Frequency Spectrum of
+                Images").
+            - cmap: Colormap used for 3D surface (default is 'viridis').
         """
 
         fig = plt.figure(figsize=(10, 10))
@@ -206,15 +216,16 @@ class PCBVisualizerforTF(PCBVisualizerBase):
 
 
 class PCBVisualizerforCV2(PCBVisualizerBase):
-    """PCB Visualizer during image processing. Pass list of canvas images as input parameter."""
+    """ PCB Visualizer during image processing. Pass list of canvas images as input
+    parameter. """
 
     def plot_images(self, image_list, title="Images"):
         """
         Plots up to 9 images from the given list of images.
 
         Parameters:
-        - image_list: List containing the canvas images.
-        - title: Plot title. Defaults to 'Images'.
+            - image_list: List containing the canvas images.
+            - title: Plot title. Defaults to 'Images'.
         """
 
         fig, axes = plt.subplots(3, 3, figsize=(10, 10))
@@ -243,10 +254,12 @@ class PCBVisualizerforCV2(PCBVisualizerBase):
         Plots a comparison of original and processed image.
 
         Parameters:
-        - original_img_list: List containing the original canvas image.
-        - processed_img_list: List containing the processed canvas image.
-        - index: The index number of the images in the corresponding list.
-        - Title: Plot title. Defaults to 'Image Comparison'.
+            - original_img_list: List containing the original canvas image.
+            - processed_img_list: List containing the processed canvas
+                image.
+            - index: The index number of the images in the corresponding
+                list.
+            - Title: Plot title. Defaults to 'Image Comparison'.
         """
 
         original_image = cv2.cvtColor(original_img_list[index], cv2.COLOR_BGR2RGB)
@@ -269,12 +282,14 @@ class PCBVisualizerforCV2(PCBVisualizerBase):
 
     def plot_detected_corners(self, image_list, corners_list, title="Detected Corners"):
         """
-        Plots up to 9 images with their detected corners from the given list of images.
+        Plots up to 9 images with their detected corners from the given list of
+        images.
 
         Parameters:
-        - images: List containing the canvas images.
-        - corners_list: List of lists containing the detected corners for each image.
-        - title: Plot title. Defaults to 'Detected Corners'.
+            - images: List containing the canvas images.
+            - corners_list: List of lists containing the detected corners
+                for each image.
+            - title: Plot title. Defaults to 'Detected Corners'.
         """
 
         fig, axes = plt.subplots(3, 3, figsize=(10, 10))

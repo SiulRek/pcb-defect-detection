@@ -1,14 +1,12 @@
-"""
-This module automates the creation of TensorFlow records for datasets available in the pcb-defect-detection repository.
-"""
+""" This module automates the creation of TensorFlow records for datasets available
+in the pcb-defect-detection repository. """
 
 import os
 
-import source.load_raw_data.kaggle_dataset as kaggle_dataset
 import source.load_raw_data.deep_pcb_tangali5201 as deep_pcb_dataset
+import source.load_raw_data.kaggle_dataset as kaggle_dataset
 from source.utils import SimplePopupHandler
 from source.utils import search_files_with_name
-
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")
 

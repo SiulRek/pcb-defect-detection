@@ -1,31 +1,28 @@
 from copy import deepcopy
 import io
-import pickle
 import os
+import pickle
 
-from sklearn.metrics import roc_curve, auc
 import matplotlib.pyplot as plt
-import tensorflow as tf
-
-from source.model.helpers.image_classifier_visualizer import ImageClassifierVisualizer
+from sklearn.metrics import roc_curve, auc
 from source.model.definitions.general import STRING_SEPARATOR as SEP
 from source.model.definitions.general import RESULT_FILE_NAME
-from source.model.definitions.image_classifier import FIGURES, METRICS, STATISTICS
+from source.model.definitions.image_classifier import FIGURES, STATISTICS
+from source.model.helpers.image_classifier_visualizer import ImageClassifierVisualizer
+import tensorflow as tf
 
 
 class ImageClassifiersTrainer:
-    """
-    A class to train multiple image classifiers of the same type on different datasets
-    and visualize their results.
-    """
+    """ A class to train multiple image classifiers of the same type on different
+    datasets and visualize their results. """
 
     def __init__(self, group_names, category_names, is_multiclass=True):
         """
         Initializes the ImageClassifiersTrainer.
 
         Args:
-        - group_names (list): Names of the groups of classifiers.
-        - category_names (list): Names of the categories.
+            - group_names (list): Names of the groups of classifiers.
+            - category_names (list): Names of the categories.
         """
         self.group_names = group_names
         self.groups_num = len(group_names)
@@ -47,7 +44,7 @@ class ImageClassifiersTrainer:
         Load a model and create copies for each group.
 
         Args:
-        - model: A compiled Keras model.
+            - model: A compiled Keras model.
         """
         compile_config = model.get_compile_config()
         self.models = {
@@ -61,11 +58,11 @@ class ImageClassifiersTrainer:
         Plot the summary of each trained model.
 
         Args:
-        - fontsize (int, optional): Font size for text in the plot.
-        - show_plot (bool, optional): Whether to display the plot.
+            - fontsize (int, optional): Font size for text in the plot.
+            - show_plot (bool, optional): Whether to display the plot.
 
         Returns:
-        - fig: Matplotlib figure for the model configuration.
+            - fig: Matplotlib figure for the model configuration.
         """
         model = list(self.models.values())[0]
 
@@ -119,9 +116,11 @@ class ImageClassifiersTrainer:
         Fit all models on their respective datasets.
 
         Args:
-        - datasets (dict): A dictionary with keys as group names and values as tuples of training and validation datasets.
-        - callbacks (list, optional): List of callbacks to pass to the fit method.
-        - kwargs: Additional arguments to pass to the fit method.
+            - datasets (dict): A dictionary with keys as group names and
+                values as tuples of training and validation datasets.
+            - callbacks (list, optional): List of callbacks to pass to the
+                fit method.
+            - kwargs: Additional arguments to pass to the fit method.
         """
         self._set_datasets(train_datasets, val_datasets)
 
@@ -147,11 +146,12 @@ class ImageClassifiersTrainer:
         Plot the training history of all models.
 
         Args:
-        - metrics (list, optional): List of metrics to plot. If None, all metrics are plotted.
-        - plot_show (bool, optional): Whether to display the plot.
+            - metrics (list, optional): List of metrics to plot. If None,
+                all metrics are plotted.
+            - plot_show (bool, optional): Whether to display the plot.
 
         Returns:
-        - fig: Matplotlib figure for the training history.
+            - fig: Matplotlib figure for the training history.
         """
         if not metrics:
             first_history = next(iter(self.histories.values()))
@@ -186,7 +186,8 @@ class ImageClassifiersTrainer:
         Calculate the predictions of all models on the test datasets.
 
         Args:
-        - test_datasets (dict): A dictionary with keys as group names and values as test datasets.
+            - test_datasets (dict): A dictionary with keys as group names
+                and values as test datasets.
         """
         assert set(test_datasets.keys()) == set(
             self.group_names
@@ -214,15 +215,17 @@ class ImageClassifiersTrainer:
         Plot the results of all models.
 
         Args:
-        - n_rows (int, optional): Number of rows in the plot.
-        - n_cols (int, optional): Number of columns in the plot.
-        - title (str, optional): Title of the plot.
-        - fontsize (int, optional): Font size for text in the plot.
-        - prediction_bar (bool, optional): Whether to show the prediction bar.
-        - show_plot (bool, optional): Whether to display the plot.
+            - n_rows (int, optional): Number of rows in the plot.
+            - n_cols (int, optional): Number of columns in the plot.
+            - title (str, optional): Title of the plot.
+            - fontsize (int, optional): Font size for text in the plot.
+            - prediction_bar (bool, optional): Whether to show the
+                prediction bar.
+            - show_plot (bool, optional): Whether to display the plot.
 
         Returns:
-        - figures (dict): A dictionary with group names as keys and Matplotlib figures as values.
+            - figures (dict): A dictionary with group names as keys and
+                Matplotlib figures as values.
         """
         if not self.model_predictions_calculated:
             raise Exception(
@@ -252,15 +255,17 @@ class ImageClassifiersTrainer:
         Plot the false results of all models.
 
         Args:
-        - n_rows (int, optional): Number of rows in the plot.
-        - n_cols (int, optional): Number of columns in the plot.
-        - title (str, optional): Title of the plot.
-        - fontsize (int, optional): Font size for text in the plot.
-        - prediction_bar (bool, optional): Whether to show the prediction bar.
-        - show_plot (bool, optional): Whether to display the plot.
+            - n_rows (int, optional): Number of rows in the plot.
+            - n_cols (int, optional): Number of columns in the plot.
+            - title (str, optional): Title of the plot.
+            - fontsize (int, optional): Font size for text in the plot.
+            - prediction_bar (bool, optional): Whether to show the
+                prediction bar.
+            - show_plot (bool, optional): Whether to display the plot.
 
         Returns:
-        - figures (dict): A dictionary with group names as keys and Matplotlib figures as values.
+            - figures (dict): A dictionary with group names as keys and
+                Matplotlib figures as values.
         """
         if not self.model_predictions_calculated:
             raise Exception(
@@ -284,12 +289,13 @@ class ImageClassifiersTrainer:
         Plot the confusion matrices of all models.
 
         Args:
-        - title (str, optional): Title of the plot.
-        - fontsize (int, optional): Font size for text in the plot.
-        - show_plot (bool, optional): Whether to display the plot.
+            - title (str, optional): Title of the plot.
+            - fontsize (int, optional): Font size for text in the plot.
+            - show_plot (bool, optional): Whether to display the plot.
 
         Returns:
-        - figures (dict): A dictionary with group names as keys and Matplotlib figures as values.
+            - figures (dict): A dictionary with group names as keys and
+                Matplotlib figures as values.
         """
         if not self.model_predictions_calculated:
             raise Exception(
@@ -308,13 +314,16 @@ class ImageClassifiersTrainer:
 
     def calculate_evaluation_metrics(self, average="macro"):
         """
-        Calculate and return metrics including average and standard deviation for each metric.
+        Calculate and return metrics including average and standard deviation
+        for each metric.
 
         Args:
-        - average (str, optional): Type of averaging used for multiclass classification. Default is 'macro'.
+            - average (str, optional): Type of averaging used for multiclass
+                classification. Default is 'macro'.
 
         Returns:
-        - dict: A dictionary containing metrics data including averages and standard deviations.
+            - dict: A dictionary containing metrics data including averages
+                and standard deviations.
         """
         if not self.model_predictions_calculated:
             raise Exception(
@@ -356,13 +365,17 @@ class ImageClassifiersTrainer:
         Plot the evaluation metrics of all models.
 
         Args:
-        - average (str, optional): Type of averaging used for multiclass classification. Default is 'macro'.
-        - title (str, optional): Title of the plot. If None, no title is set. Default is None.
-        - fontsize (int, optional): Font size for text in the plot. Default is 12.
-        - show_plot (bool, optional): Whether to display the plot. Default is True.
+            - average (str, optional): Type of averaging used for multiclass
+                classification. Default is 'macro'.
+            - title (str, optional): Title of the plot. If None, no title is
+                set. Default is None.
+            - fontsize (int, optional): Font size for text in the plot.
+                Default is 12.
+            - show_plot (bool, optional): Whether to display the plot.
+                Default is True.
 
         Returns:
-        - figure: Matplotlib figure for the evaluation metrics.
+            - figure: Matplotlib figure for the evaluation metrics.
         """
         metrics = self.calculate_evaluation_metrics(average=average)
         first_group_metrics = next(iter(metrics.values()))
@@ -393,12 +406,12 @@ class ImageClassifiersTrainer:
         Plot the ROC curves of all models on one plot and return the figure.
 
         Args:
-        - title (str, optional): Title of the plot.
-        - fontsize (int, optional): Font size for text in the plot.
-        - show_plot (bool, optional): Whether to display the plot.
+            - title (str, optional): Title of the plot.
+            - fontsize (int, optional): Font size for text in the plot.
+            - show_plot (bool, optional): Whether to display the plot.
 
         Returns:
-        - fig: Matplotlib figure object containing the ROC curves.
+            - fig: Matplotlib figure object containing the ROC curves.
         """
         if not self.model_predictions_calculated:
             raise Exception(
@@ -443,9 +456,11 @@ class ImageClassifiersTrainer:
         Save all figures to a directory.
 
         Args:
-        - figures (list): List containing figures or dictionary of figures.
-        - root (str): Root directory to save the figures.
-        - experiment_name (str, optional): Name of the experiment. Default is 'experiment'.
+            - figures (list): List containing figures or dictionary of
+                figures.
+            - root (str): Root directory to save the figures.
+            - experiment_name (str, optional): Name of the experiment.
+                Default is 'experiment'.
         """
         dir = os.path.join(project_directory, experiment_name)
         os.makedirs(dir, exist_ok=True)
@@ -456,7 +471,8 @@ class ImageClassifiersTrainer:
             elif isinstance(elem, plt.Figure):
                 true_figures.append(elem)
             else:
-                raise ValueError(f"Invalid figure type {type(elem)} in figures list")
+                msg = f"Invalid figure type {type(elem)} in figures list"
+                raise ValueError(msg)
 
         for fig in true_figures:
             figure_name = fig.name
@@ -469,11 +485,13 @@ class ImageClassifiersTrainer:
 
     def save_evaluation_metrics(self, project_directory, experiment_name="experiment"):
         """
-        Save the evaluation results on test datasets of all models to a pickle file.
+        Save the evaluation results on test datasets of all models to a pickle
+        file.
 
         Args:
-        - root (str): Project directory to save the results.
-        - experiment_name (str, optional): Name of the experiment. Default is 'experiment'.
+            - root (str): Project directory to save the results.
+            - experiment_name (str, optional): Name of the experiment.
+                Default is 'experiment'.
         """
         dir = os.path.join(project_directory, experiment_name)
         os.makedirs(dir, exist_ok=True)

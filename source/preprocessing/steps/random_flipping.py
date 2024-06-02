@@ -1,26 +1,27 @@
-import cv2
-import numpy as np
-
-from source.preprocessing.helpers.for_steps.step_base import StepBase
 import random
 
 
+import cv2
+from source.preprocessing.helpers.for_steps.step_base import StepBase
+
+
 class RandomFlipper(StepBase):
-    """
-    A data augmentation step that flips the image randomly in a specified direction.
-    """
+    """ A data augmentation step that flips the image randomly in a specified
+    direction. """
 
     arguments_datatype = {"flip_direction": str, "seed": int}
     name = "Random Flipper"
 
     def __init__(self, flip_direction="horizontal", seed=42):
         """
-        Initializes the RandomFlipper object for integration in an image preprocessing pipeline.
+        Initializes the RandomFlipper object for integration in an image
+        preprocessing pipeline.
 
         Args:
-            flip_direction (str): Direction of the potential flip. Can be 'horizontal', 'vertical',
-                or 'both'.
-            seed (int): Random seed for reproducible flipping. Default is 42.
+            - flip_direction (str): Direction of the potential flip. Can be
+                'horizontal', 'vertical', or 'both'.
+            - seed (int): Random seed for reproducible flipping. Default is
+                42.
         """
         super().__init__(locals())
         if flip_direction not in ["horizontal", "vertical", "both"]:

@@ -1,21 +1,22 @@
-import tensorflow as tf
-
 from source.preprocessing.helpers.for_steps.step_base import StepBase
+import tensorflow as tf
 
 
 class SquareShapePadder(StepBase):
-    """A preprocessing step that pads an image to a square shape using a specified pixel value."""
+    """ A preprocessing step that pads an image to a square shape using a specified
+    pixel value. """
 
     arguments_datatype = {"padding_pixel_value": int}
     name = "Square Shape Padder"
 
     def __init__(self, padding_pixel_value=0):
-        """Initializes the SquareShapePadder object for integration into an image preprocessing
-        pipeline.
+        """
+        Initializes the SquareShapePadder object for integration into an image
+        preprocessing pipeline.
 
         Args:
-            padding_pixel_value (int, optional): The pixel value to be used for padding.
-                Defaults to 0.
+            - padding_pixel_value (int, optional): The pixel value to be
+                used for padding. Defaults to 0.
         """
         super().__init__(locals())
 

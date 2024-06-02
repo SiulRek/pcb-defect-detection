@@ -2,9 +2,7 @@ import os
 import unittest
 
 from source.model.tests import image_classifiers_trainer_test
-
 from source.utils import TestResultLogger
-
 
 ROOT_DIR = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", ".."

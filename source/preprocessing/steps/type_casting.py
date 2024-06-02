@@ -1,19 +1,22 @@
-import tensorflow as tf
 from source.preprocessing.helpers.for_steps.step_base import StepBase
+import tensorflow as tf
 
 
 class TypeCaster(StepBase):
-    """A preprocessing step that casts an image tensor to a specified data type."""
+    """ A preprocessing step that casts an image tensor to a specified data type. """
 
     arguments_datatype = {"output_dtype": str}
     name = "Type Caster"
 
     def __init__(self, output_dtype="float16"):
-        """Initializes the TypeCaster object for integration into an image preprocessing pipeline.
+        """
+        Initializes the TypeCaster object for integration into an image
+        preprocessing pipeline.
 
         Args:
-            output_dtype (str): The desired data type to cast the image tensor to.
-                 Must be an attribute in tensorflow . Default is 'float16'.
+            - output_dtype (str): The desired data type to cast the image
+                tensor to. Must be an attribute in tensorflow . Default is
+                'float16'.
         """
         super().__init__(locals())
         self.output_datatype = getattr(tf, output_dtype)

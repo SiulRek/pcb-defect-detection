@@ -1,12 +1,13 @@
-import pandas as pd
 import os
 
-from source.load_raw_data.get_tf_dataset import get_tf_dataset_from_df
+import pandas as pd
+
+from source.load_raw_data.category_codes import Category
 from source.load_raw_data.dataset_serialization import (
     load_tfrecord_from_file,
     save_tfrecord_to_file,
 )
-from source.load_raw_data.category_codes import Category
+from source.load_raw_data.get_tf_dataset import get_tf_dataset_from_df
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")
 DATASET_DIR = os.path.join(ROOT_DIR, "data", "deep_pcb_tangsali5201")
@@ -23,15 +24,19 @@ class LoadDataError(Exception):
 
 
 def get_dataset_dictionary(path_to_paths_file, dataset_dir=DATASET_DIR):
-    """Reads dataset information from a given file path and returns a dictionary.
+    """
+    Reads dataset information from a given file path and returns a dictionary.
 
     Parameters:
-        path_to_paths_file (str): The path to the file containing paths to images and annotations.
-        dataset_dir (str, optional): The directory containing the dataset. Defaults to DATASET_DIR.
+        - path_to_paths_file (str): The path to the file containing paths to
+            images and annotations.
+        - dataset_dir (str, optional): The directory containing the dataset.
+            Defaults to DATASET_DIR.
 
     Returns:
-        dict: A dictionary containing dataset fields like 'path', 'path_without', 'group',
-              'xmin', 'ymin', 'xmax', 'ymax', and 'category_codes'.
+        - dict: A dictionary containing dataset fields like 'path',
+            'path_without', 'group', 'xmin', 'ymin', 'xmax', 'ymax', and
+            'category_codes'.
     """
 
     dataset = {
@@ -50,13 +55,15 @@ def get_dataset_dictionary(path_to_paths_file, dataset_dir=DATASET_DIR):
         with open(path_to_paths_file, "r") as file:
             lines.extend(file.read().splitlines())
     except FileNotFoundError as e:
-        raise LoadDataError(f"{path_to_paths_file} not found.") from e
+        msg = f"{path_to_paths_file} not found."
+        raise LoadDataError(msg)
 
     for line in lines:
 
         paths = line.split(" ")
         if len(paths) != 2:
-            raise LoadDataError(f"The Format of {path_to_paths_file} is incorrect.")
+            msg = f"The Format of {path_to_paths_file} is incorrect."
+            raise LoadDataError(msg)
 
         paths = [os.path.join(dataset_dir, path) for path in paths]
 
@@ -69,14 +76,16 @@ def get_dataset_dictionary(path_to_paths_file, dataset_dir=DATASET_DIR):
             with open(paths[1], "r") as file:
                 rows = file.read().splitlines()
         except FileNotFoundError as e:
-            raise LoadDataError(f"{paths[1]} not found.") from e
+            msg = f"{paths[1]} not found."
+            raise LoadDataError(msg)
 
         for row in rows:
 
             parts = row.split(" ")
 
             if len(parts) != 5:
-                raise LoadDataError(f"The format of {paths[1]} is incorrect.")
+                msg = f"The format of {paths[1]} is incorrect."
+                raise LoadDataError(msg)
 
             dataset["path"].append(img_path)
             dataset["path_without"].append(tmp_path)
@@ -88,9 +97,11 @@ def get_dataset_dictionary(path_to_paths_file, dataset_dir=DATASET_DIR):
             y_max = int(parts[3])
 
             if x_max < x_min:
-                raise LoadDataError(f"Xmax value ({x_max}) not valid (Xmax < Xmin).")
+                msg = f"Xmax value ({x_max}) not valid (Xmax < Xmin)."
+                raise LoadDataError(msg)
             if y_max < y_min:
-                raise LoadDataError(f"Ymax value ({y_max}) not valid (Ymax < Ymin).")
+                msg = f"Ymax value ({y_max}) not valid (Ymax < Ymin)."
+                raise LoadDataError(msg)
 
             dataset["xmin"].append(x_min)
             dataset["ymin"].append(y_min)
@@ -111,25 +122,31 @@ def get_dataset_dictionary(path_to_paths_file, dataset_dir=DATASET_DIR):
             elif code == 6:
                 dataset["category_codes"].append(Category.PIN_HOLE.value)
             else:
-                raise LoadDataError(f"Code {code} is invalid.")
+                msg = f"Code {code} is invalid."
+                raise LoadDataError(msg)
 
     return dataset
 
 
 def get_dataframes(dataset_dir=DATASET_DIR, create_annotation_summary=True):
-    """Generates and returns pandas DataFrames for training and testing deepPCB datasets of tangali5201 (https://github.com/tangsanli5201/DeepPCB/tree/master).
+    """
+    Generates and returns pandas DataFrames for training and testing deepPCB
+    datasets of tangali5201
+    (https://github.com/tangsanli5201/DeepPCB/tree/master).
 
     Parameters:
-        dataset_dir (str, optional): Directory path containing the dataset files.
-                                     Defaults to DATASET_DIR.
-        create_annotation_summary (bool, optional): If True, writes a summary CSV file.
-                                                    Defaults to True.
+        - dataset_dir (str, optional): Directory path containing the dataset
+            files. Defaults to DATASET_DIR.
+        - create_annotation_summary (bool, optional): If True, writes a
+            summary CSV file. Defaults to True.
 
     Returns:
-        tuple: A tuple containing the training and testing pandas DataFrames.
+        - tuple: A tuple containing the training and testing pandas
+            DataFrames.
 
     The resulting DataFrame contains the following columns:
-    - path', 'path_without', 'group', 'xmin', 'ymin', 'xmax', 'ymax', and 'category_codes'.
+        - path', 'path_without', 'group', 'xmin', 'ymin', 'xmax', 'ymax',
+            and 'category_codes'.
     """
 
     train_dataset = get_dataset_dictionary(os.path.join(dataset_dir, "trainval.txt"))
@@ -150,15 +167,20 @@ def get_tf_datasets(
     dataset_dir=DATASET_DIR, create_annotation_summary=False, random_seed=89
 ):
     """
-    Generates and returns TensorFlow datasets for training and testing deepPCB datasets of tangali5201.
+    Generates and returns TensorFlow datasets for training and testing deepPCB
+    datasets of tangali5201.
 
     Parameters:
-    - dataset_dir (str): Path to the dataset directory.
-    - create_annotation_summary (bool): If True, create an annotation summary CSV file.
-    - random_seed (int, optional): The random seed for shuffling the dataset. Defaults to 34.
+        - dataset_dir (str): Path to the dataset directory.
+        - create_annotation_summary (bool): If True, create an annotation
+            summary CSV file.
+        - random_seed (int, optional): The random seed for shuffling the
+            dataset. Defaults to 34.
 
     Returns:
-    - train_tf_dataset, test_df_dataset (tf.data.Dataset, tf.data.Dataset):  A tuple of two TensorFlow Dataset object containing shuffled paths and corresponding targets.
+        - train_tf_dataset, test_df_dataset (tf.data.Dataset,
+            tf.data.Dataset): A tuple of two TensorFlow Dataset object
+            containing shuffled paths and corresponding targets.
     """
 
     train_df, test_df = get_dataframes(dataset_dir, create_annotation_summary)
@@ -170,23 +192,29 @@ def get_tf_datasets(
 
 
 def save_tf_records():
-    """Generates and saves TensorFlow dataset for training and testing deepPCB datasets of tangali5201 to two TFRecord files."""
+    """ Generates and saves TensorFlow dataset for training and testing deepPCB
+    datasets of tangali5201 to two TFRecord files. """
     train_tf_dataset, test_tf_dataset = get_tf_datasets(create_annotation_summary=True)
     save_tfrecord_to_file(train_tf_dataset, TRAIN_RECORD_FILE)
     save_tfrecord_to_file(test_tf_dataset, TEST_RECORD_FILE)
 
 
 def load_tf_records():
-    """Loads TensorFlow training and test datasets from the TFRecord files of deepPCB datasets of tangali5201.
+    """
+    Loads TensorFlow training and test datasets from the TFRecord files of
+    deepPCB datasets of tangali5201.
 
-    This function reads the TFRecord files that were previously saved using the `save_tf_records` function.
-    It then converts the data in these files into TensorFlow Dataset objects. Each object in the dataset
-    is a tuple where the first element is the image and the second element is the category code.
+    This function reads the TFRecord files that were previously saved using the
+    `save_tf_records` function. It then converts the data in these files into
+    TensorFlow Dataset objects. Each object in the dataset is a tuple where the
+    first element is the image and the second element is the category code.
 
     Returns:
-        tuple: A tuple containing two TensorFlow Dataset objects. The first one is for the training data
-               and the second one is for the testing data. Both TensorFlow Datasets contain tuples of (image, category_code),
-        where 'image' is the decoded image file and 'category_code' is an integer label.
+        - tuple: A tuple containing two TensorFlow Dataset objects. The
+            first one is for the training data and the second one is for the
+            testing data. Both TensorFlow Datasets contain tuples of (image,
+            category_code), where 'image' is the decoded image file and
+            'category_code' is an integer label.
     """
     tf_train_dataset = load_tfrecord_from_file(TRAIN_RECORD_FILE)
     tf_test_dataset = load_tfrecord_from_file(TEST_RECORD_FILE)

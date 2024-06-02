@@ -1,59 +1,72 @@
 from copy import deepcopy
-import tensorflow as tf
 
-from source.preprocessing.helpers.for_steps.step_base import StepBase
-from source.preprocessing.helpers.for_preprocessor.step_class_mapping import (
-    STEP_CLASS_MAPPING,
+from source.load_raw_data.pack_images_and_labels import pack_images_and_labels
+from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
+from source.preprocessing.helpers.for_preprocessor.class_instances_serializer import (
+    ClassInstancesSerializer,
 )
 from source.preprocessing.helpers.for_preprocessor.get_pipeline_code_representation import (
     get_pipeline_code_representation,
 )
-from source.preprocessing.helpers.for_preprocessor.class_instances_serializer import (
-    ClassInstancesSerializer,
+from source.preprocessing.helpers.for_preprocessor.step_class_mapping import (
+    STEP_CLASS_MAPPING,
 )
-from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
-from source.load_raw_data.pack_images_and_labels import pack_images_and_labels
+from source.preprocessing.helpers.for_steps.step_base import StepBase
+import tensorflow as tf
 
 
 class ImagePreprocessor:
     """
-    Manages and processes a pipeline of image preprocessing steps for PCB images.
+    Manages and processes a pipeline of image preprocessing steps for PCB
+    images.
 
-    The ImagePreprocessor class encapsulates a sequence of preprocessing operations
-    defined as steps. Each step is a discrete preprocessing action, such as noise
-    reduction, normalization, etc., applied in sequence to an input dataset of images.
+    The ImagePreprocessor class encapsulates a sequence of preprocessing
+    operations defined as steps. Each step is a discrete preprocessing action,
+    such as noise reduction, normalization, etc., applied in sequence to an
+    input dataset of images.
 
     Attributes:
-        pipeline (list of StepBase Child classes): Preprocessing steps to be executed.
-        serializer (ClassInstancesSerializer): Serializes/deserializes the pipeline to/from JSON.
+        - pipeline (list of StepBase Child classes): Preprocessing steps to
+            be executed.
+        - serializer (ClassInstancesSerializer): Serializes/deserializes the
+            pipeline to/from JSON.
 
     Methods:
-        pipeline: Returns the current pipeline.
-        set_default_datatype: Sets the default datatype for the pipeline steps.
-        set_pipe: Sets the preprocessing pipeline with a deep copy of provided steps.
-        pipe_append: Appends a new step to the pipeline, verifying it is a subclass of StepBase.
-        pipe_pop: Pops a step from the pipeline.
-        process: Applies each preprocessing step to the provided dataset.
-        save_pipe_to_json: Serializes the preprocessing pipeline to a JSON file.
-        load_pipe_from_json: Loads and reconstructs a preprocessing pipeline from a JSON file.
-        load_randomized_pipe_from_json: Loads a pipeline from JSON with randomized parameters.
-    Notes:
-        - The pipeline should only contain instances of classes that inherit from StepBase.
-        - The `set_pipe` and `pipe_append` methods include type checks to enforce this.
-        - The JSON serialization and deserialization methods handle the conversion and
-            reconstruction of the pipeline steps, respectively.
-        - The `process` method's behavior changes based on the `raise_step_process_exception` flag,
-            allowing for flexible error handling during the preprocessing stage.
-        - The datatype thoughout the pipeline is the default datatype, except if explicitly set in
-            the step.
+        - pipeline: Returns the current pipeline.
+        - set_default_datatype: Sets the default datatype for the pipeline
+            steps.
+        - set_pipe: Sets the preprocessing pipeline with a deep copy of
+            provided steps.
+        - pipe_append: Appends a new step to the pipeline, verifying it is a
+            subclass of StepBase.
+        - pipe_pop: Pops a step from the pipeline.
+        - process: Applies each preprocessing step to the provided dataset.
+        - save_pipe_to_json: Serializes the preprocessing pipeline to a JSON
+            file.
+        - load_pipe_from_json: Loads and reconstructs a preprocessing
+            pipeline from a JSON file.
+        - load_randomized_pipe_from_json: Loads a pipeline from JSON with
+            randomized parameters.
+        - Notes:
+        - The pipeline should only contain instances of classes that inherit
+            from StepBase.
+        - The `set_pipe` and `pipe_append` methods include type checks to
+            enforce this.
+        - The JSON serialization and deserialization methods handle the
+            conversion and reconstruction of the pipeline steps, respectively.
+        - The `process` method's behavior changes based on the
+            `raise_step_process_exception` flag, allowing for flexible error
+            handling during the preprocessing stage.
+        - The datatype thoughout the pipeline is the default datatype,
+            except if explicitly set in the step.
         - tf.uint8 is the only input datatype all pipeline steps can handle.
     """
 
     def __init__(self, raise_step_process_exception=True):
         """
-        Initializes the ImagePreprocessor with an empty pipeline.
-        The `raise_step_process_exception` flag determines whether exceptions
-        during step processing are raised or logged.
+        Initializes the ImagePreprocessor with an empty pipeline. The
+        `raise_step_process_exception` flag determines whether exceptions during
+        step processing are raised or logged.
         """
         self._pipeline = []
         self._serializer = None
@@ -76,8 +89,9 @@ class ImagePreprocessor:
 
     def _initialize_class_instance_serializer(self, step_class_mapping):
         """
-        Checks if `step_class_mapping` is a dictionary and mapps to subclasses of `StepBase`,
-        if successfull instanciates the `ClassInstancesSerializer` for pipeline serialization and
+        Checks if `step_class_mapping` is a dictionary and mapps to subclasses
+        of `StepBase`, if successfull instanciates the
+        `ClassInstancesSerializer` for pipeline serialization and
         deserialization.
         """
         if not isinstance(step_class_mapping, dict):
@@ -97,7 +111,7 @@ class ImagePreprocessor:
         Sets the default datatype for the pipeline steps.
 
         Args:
-            datatype: The default output datatype if the pipeline steps.
+            - datatype: The default output datatype if the pipeline steps.
                 Must be a TensorFlow datatype (e.g., tf.float32, tf.uint8).
         """
         StepBase.default_output_datatype = datatype
@@ -108,7 +122,8 @@ class ImagePreprocessor:
         ensuring each step is an instance of a StepBase subclass.
 
         Args:
-            pipeline (list[StepBase]): List of preprocessing steps to be set in the pipeline.
+            - pipeline (list[StepBase]): List of preprocessing steps to be
+                set in the pipeline.
         """
         for step in pipeline:
             if not isinstance(step, StepBase):
@@ -118,19 +133,22 @@ class ImagePreprocessor:
         self._pipeline = deepcopy(pipeline)
 
     def pipe_pop(self):
-        """Pops the last step from the pipeline.
+        """
+        Pops the last step from the pipeline.
 
         Returns:
-            StepBase: The last step that was removed from the pipeline.
+            - StepBase: The last step that was removed from the pipeline.
         """
         return self._pipeline.pop()
 
     def pipe_append(self, step):
         """
-        Appends a new step to the pipeline, verifying that it is a subclass of StepBase.
+        Appends a new step to the pipeline, verifying that it is a subclass of
+        StepBase.
 
         Args:
-            step (StepBase): The preprocessing step to be appended to the pipeline.
+            - step (StepBase): The preprocessing step to be appended to the
+                pipeline.
         """
         if not isinstance(step, StepBase):
             raise ValueError(
@@ -139,36 +157,40 @@ class ImagePreprocessor:
         self._pipeline.append(deepcopy(step))
 
     def pipe_clear(self):
-        """Clears all steps from the pipeline"""
+        """ Clears all steps from the pipeline """
         self._pipeline.clear()
 
     def save_pipe_to_json(self, json_path):
         """
-        Serializes the preprocessing pipeline to the specified JSON file, saving the step
-        hyperparameter configurations.
+        Serializes the preprocessing pipeline to the specified JSON file, saving
+        the step hyperparameter configurations.
 
         Args:
-            json_path (str): File path where the pipeline configuration will be saved.
+            - json_path (str): File path where the pipeline configuration
+                will be saved.
         """
         self.serializer.save_instances_to_json(self.pipeline, json_path)
 
     def load_pipe_from_json(self, json_path):
         """
-        Loads and reconstructs a preprocessing pipeline from the specified JSON file.
+        Loads and reconstructs a preprocessing pipeline from the specified JSON
+        file.
 
         Args:
-            json_path (str): File path from where the pipeline configuration will be loaded.
+            - json_path (str): File path from where the pipeline
+                configuration will be loaded.
         """
         self._pipeline = self.serializer.get_instances_from_json(json_path)
 
     def load_randomized_pipe_from_json(self, json_path):
         """
-        Loads and reconstructs a preprocessing pipeline from the specified JSON file.
-        The parameters of preprocessing steps are randomized from the specified range in the JSON
-        file.
+        Loads and reconstructs a preprocessing pipeline from the specified JSON
+        file. The parameters of preprocessing steps are randomized from the
+        specified range in the JSON file.
 
         Args:
-            json_path (str): File path from where the pipeline configuration will be loaded.
+            - json_path (str): File path from where the pipeline
+                configuration will be loaded.
         """
         self._pipeline = self.serializer.get_randomized_instances_from_json(json_path)
 
@@ -177,14 +199,14 @@ class ImagePreprocessor:
         Generates a text representation of the pipeline's configuration.
 
         Returns:
-            str: A string representation of the pipeline in a code-like format.
+            - str: A string representation of the pipeline in a code-like
+                format.
         """
         return get_pipeline_code_representation(self.pipeline)
 
     def _consume_tf_dataset(self, tf_dataset):
-        """
-        Consumes a TensorFlow dataset to force the execution of the computation graph.
-        """
+        """ Consumes a TensorFlow dataset to force the execution of the computation
+        graph. """
         for _ in tf_dataset.take(1):
             pass
 
@@ -196,17 +218,19 @@ class ImagePreprocessor:
 
     def process(self, image_dataset):
         """
-        Applies each preprocessing step to the provided dataset and returns the processed dataset.
-        If `_raise_step_process_exception` is True, exceptions in processing a step will be caught
-        and logged, and the process will return None. If False, it will proceed without exception
+        Applies each preprocessing step to the provided dataset and returns the
+        processed dataset. If `_raise_step_process_exception` is True,
+        exceptions in processing a step will be caught and logged, and the
+        process will return None. If False, it will proceed without exception
         handling.
 
         Args:
-            image_dataset (tf.data.Dataset): The TensorFlow dataset to be processed. It can contain
-            images only or images and labels.
+            - image_dataset (tf.data.Dataset): The TensorFlow dataset to be
+                processed. It can contain images only or images and labels.
 
         Returns:
-            tf.data.Dataset: The processed dataset after applying all the steps in the pipeline.
+            - tf.data.Dataset: The processed dataset after applying all the
+                steps in the pipeline.
         """
         image_dataset, label_dataset = self._strip_dataset(image_dataset)
         processed_dataset = image_dataset

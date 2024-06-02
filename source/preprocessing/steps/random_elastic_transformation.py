@@ -1,26 +1,26 @@
-import cv2
 import numpy as np
 
+import cv2
 from source.preprocessing.helpers.for_steps.step_base import StepBase
 
 
 class RandomElasticTransformer(StepBase):
-    """
-    A data augmentation step that applies a Random Elastic Transformer to an image.
-    """
+    """ A data augmentation step that applies a Random Elastic Transformer to an
+    image. """
 
     arguments_datatype = {"alpha": float, "sigma": float, "seed": int}
     name = "Random Elastic Transformer"
 
     def __init__(self, alpha=34, sigma=4, seed=42):
         """
-        Initializes the RandomElasticTransformer object for integration into an image preprocessing
-        pipeline.
+        Initializes the RandomElasticTransformer object for integration into an
+        image preprocessing pipeline.
 
         Args:
-            alpha (float): Intensity of the transformation. Default is 34.
-            sigma (float): Standard deviation of the Gaussian filter. Default is 4.
-            seed (int): Random seed for reproducibility. Default is 42.
+            - alpha (float): Intensity of the transformation. Default is 34.
+            - sigma (float): Standard deviation of the Gaussian filter.
+                Default is 4.
+            - seed (int): Random seed for reproducibility. Default is 42.
         """
         super().__init__(locals())
 

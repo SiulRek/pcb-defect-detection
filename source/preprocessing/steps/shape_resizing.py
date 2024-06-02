@@ -1,13 +1,10 @@
-import tensorflow as tf
-
 from source.preprocessing.helpers.for_steps.step_base import StepBase
+import tensorflow as tf
 
 
 class ShapeResizer(StepBase):
-    """
-    A preprocessing step that resizes an image to a specified shape, potentially altering its
-    aspect ratio.
-    """
+    """ A preprocessing step that resizes an image to a specified shape, potentially
+    altering its aspect ratio. """
 
     arguments_datatype = {"desired_shape": (int, int), "resize_method": str}
     name = "Shape Resizer"
@@ -22,12 +19,15 @@ class ShapeResizer(StepBase):
 
     def __init__(self, desired_shape=(2000, 2000), resize_method="bilinear"):
         """
-        Initializes the ShapeResizer object for integration into an image preprocessing pipeline.
+        Initializes the ShapeResizer object for integration into an image
+        preprocessing pipeline.
 
         Args:
-            desired_shape (tuple of int): The desired height and width of the image after resizing.
-            resize_method (str): The method used for resizing. Options are 'bilinear', 'nearest',
-                                 'bicubic', 'lanczos3', 'lanczos5', and 'area'.
+            - desired_shape (tuple of int): The desired height and width of
+                the image after resizing.
+            - resize_method (str): The method used for resizing. Options are
+                'bilinear', 'nearest', 'bicubic', 'lanczos3', 'lanczos5', and
+                'area'.
         """
         self.check_resize_method(resize_method)
         super().__init__(locals())

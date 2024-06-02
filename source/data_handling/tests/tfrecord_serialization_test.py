@@ -1,16 +1,16 @@
 import os
 import unittest
-import tensorflow as tf
+
 import numpy as np
 
-from source.data_handling.tfrecord_serialization.serialize import (
-    serialize_dataset_to_tf_record,
-)
 from source.data_handling.tfrecord_serialization.deserialize import (
     deserialize_dataset_from_tfrecord,
 )
+from source.data_handling.tfrecord_serialization.serialize import (
+    serialize_dataset_to_tf_record,
+)
 from source.utils import TestResultLogger
-
+import tensorflow as tf
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
 OUTPUT_DIR = os.path.join(ROOT_DIR, "source", "data_handling", "tests", "outputs")
@@ -73,7 +73,7 @@ class TestTFRecordHandling(unittest.TestCase):
             os.remove(PNG_TFRECORD_FILE)
 
     def test_serialize_deserialize_jpeg(self):
-        """Test the serialization and deserialization of a JPEG dataset."""
+        """ Test the serialization and deserialization of a JPEG dataset. """
         serialize_dataset_to_tf_record(self.jpeg_dataset, JPEG_TFRECORD_FILE, "jpeg")
         restored_dataset = deserialize_dataset_from_tfrecord(
             JPEG_TFRECORD_FILE, tf.int8
@@ -101,7 +101,7 @@ class TestTFRecordHandling(unittest.TestCase):
             )
 
     def test_serialize_deserialize_png(self):
-        """Test the serialization and deserialization of a PNG dataset."""
+        """ Test the serialization and deserialization of a PNG dataset. """
         serialize_dataset_to_tf_record(self.png_dataset, PNG_TFRECORD_FILE, "png")
         restored_dataset = deserialize_dataset_from_tfrecord(PNG_TFRECORD_FILE, tf.int8)
 
@@ -127,7 +127,8 @@ class TestTFRecordHandling(unittest.TestCase):
             )
 
     def test_serialize_deserialize_with_float_labels(self):
-        """Test the serialization and deserialization of a dataset with floating-point labels."""
+        """ Test the serialization and deserialization of a dataset with
+        floating-point labels. """
         float_label_data_dicts = [
             {"path": "figure_4.png", "category_codes": [0.1, 0.2]},
             {"path": "figure_5.png", "category_codes": [1.1, 1.2]},
@@ -162,8 +163,8 @@ class TestTFRecordHandling(unittest.TestCase):
             )
 
     def test_file_not_found_error_on_serialization(self):
-        """Test if the correct exception is raised when the directory does not exist for
-        serialization."""
+        """ Test if the correct exception is raised when the directory does not
+        exist for serialization. """
         with self.assertRaises(FileNotFoundError):
             serialize_dataset_to_tf_record(
                 self.jpeg_dataset,
@@ -172,8 +173,8 @@ class TestTFRecordHandling(unittest.TestCase):
             )
 
     def test_file_not_found_error_on_deserialization(self):
-        """Test if the correct exception is raised when the TFRecord file does not exist for
-        deserialization."""
+        """ Test if the correct exception is raised when the TFRecord file does not
+        exist for deserialization. """
         with self.assertRaises(FileNotFoundError):
             deserialize_dataset_from_tfrecord(
                 os.path.join(ROOT_DIR, "non_existent_directory", "test.tfrecord"),

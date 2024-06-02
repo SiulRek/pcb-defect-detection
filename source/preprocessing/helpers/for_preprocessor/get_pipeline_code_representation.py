@@ -1,12 +1,14 @@
 def get_pipeline_code_representation(pipeline):
     """
-    Generates a python code representation of the preprocessing pipeline's configuration.
+    Generates a python code representation of the preprocessing pipeline's
+    configuration.
 
     Args:
-        pipeline (list): A list of preprocessing steps.
+        - pipeline (list): A list of preprocessing steps.
 
     Returns:
-        str: A string representation of the pipeline in a code-like format.
+        - str: A string representation of the pipeline in a code-like
+            format.
     """
 
     if not pipeline:

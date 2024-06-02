@@ -1,5 +1,4 @@
 import cv2
-
 from source.preprocessing.helpers.for_steps.step_base import StepBase
 
 
@@ -7,16 +6,16 @@ class OstuThresholder(StepBase):
     """
     A preprocessing step that applies Otsu's Thresholding to an image.
 
-    Note:     In the case of RGB images, it processes each color channel (Red, Green, Blue)
-    separately.
+    Note: In the case of RGB images, it processes each color channel (Red,
+    Green, Blue) separately.
     """
 
     arguments_datatype = {}
     name = "Otsu Thresholding"
 
     def __init__(self):
-        """Initializes the OstuThresholder object that can be integrated in an image preprocessing
-        pipeline."""
+        """ Initializes the OstuThresholder object that can be integrated in an
+        image preprocessing pipeline. """
         super().__init__(locals())
 
     @StepBase._nparray_pyfunc_wrapper

@@ -1,25 +1,34 @@
 """
-This module dynamically creates and manages unittest classes for testing various data augmentation steps, with each class inheriting from `TestDataAugmentationStep`.
-It utilizes dynamic class creation in Python to generate test cases for different data augmentation techniques.
-This module allows some tests to be skipped based on configuration flags and focuses on evaluating the augmentation's effect on the image.
+This module dynamically creates and manages unittest classes for testing various
+data augmentation steps, with each class inheriting from
+`TestDataAugmentationStep`. It utilizes dynamic class creation in Python to
+generate test cases for different data augmentation techniques. This module
+allows some tests to be skipped based on configuration flags and focuses on
+evaluating the augmentation's effect on the image.
 
 Key Components:
-    - SingleStepTest: A class that dynamically generates test cases for each preprocessing step in the framework.
-    - ENABLE_VISUAL_INSPECTION: A flag used to enable or disable tests that require visual inspection of augmented images.
-    - augmentation_steps_data: A collection of tuples (augmentation_class, arguments), representing different data augmentation steps and their parameters to be tested.
+    - SingleStepTest: A class that dynamically generates test cases for each
+        preprocessing step in the framework.
+    - ENABLE_VISUAL_INSPECTION: A flag used to enable or disable tests that
+        require visual inspection of augmented images.
+    - augmentation_steps_data: A collection of tuples (augmentation_class,
+        arguments), representing different data augmentation steps and their
+        parameters to be tested.
 
 Note:
-    - This module accommodates variations in data augmentation steps, recognizing that not all test cases in `TestDataAugmentationStep` are universally applicable. Certain augmentations may necessitate customized modifications to the standard test cases, reflecting the diverse nature of image augmentation challenges.
+    - This module accommodates variations in data augmentation steps,
+        recognizing that not all test cases in `TestDataAugmentationStep` are
+        universally applicable. Certain augmentations may necessitate customized
+        modifications to the standard test cases, reflecting the diverse nature
+        of image augmentation challenges.
 """
 
 import unittest
 from unittest import skip
 
-import tensorflow as tf
-
 import source.preprocessing.steps as steps
 from source.preprocessing.tests.for_steps.single_step_test import TestSingleStep
-
+import tensorflow as tf
 
 ENABLE_VISUAL_INSPECTION = True
 
@@ -41,10 +50,8 @@ def create_test_class_for_augmentation_step(augmentation_class, arguments):
             def _verify_image_shapes(
                 self, processed_images, original_images, color_channel_expected
             ):
-                """
-                Helper method to verify the image dimensions and color channels in a processed dataset.
-                Compa
-                """
+                """ Helper method to verify the image dimensions and color channels
+                in a processed dataset. Compa """
                 for processed_image in processed_images:
                     processed_data_shape = tuple(processed_image.shape[:2].as_list())
                     self.assertEqual(
@@ -103,14 +110,18 @@ augmentation_steps_data = [
 
 def load_data_augmentation_steps_tests():
     """
-    Dynamically loads and aggregates individual test suites for multiple data augmentation steps into a unified test suite.
+    Dynamically loads and aggregates individual test suites for multiple data
+    augmentation steps into a unified test suite.
 
-    This function iterates over a predefined list of data augmentation steps and their corresponding arguments. For each step,
-    it dynamically creates a test class using `create_test_class_for_augmentation_step` and then loads the test cases from these
-    classes into individual test suites. These suites are then combined into a single comprehensive test suite.
+    This function iterates over a predefined list of data augmentation steps and
+    their corresponding arguments. For each step, it dynamically creates a test
+    class using `create_test_class_for_augmentation_step` and then loads the
+    test cases from these classes into individual test suites. These suites are
+    then combined into a single comprehensive test suite.
 
     Returns:
-        unittest.TestSuite: A combined test suite that aggregates tests for multiple data augmentation step test classes.
+        - unittest.TestSuite: A combined test suite that aggregates tests
+            for multiple data augmentation step test classes.
     """
     test_suites = []
     loader = unittest.TestLoader()
@@ -122,7 +133,7 @@ def load_data_augmentation_steps_tests():
 
 
 if __name__ == "__main__":
-    """Main execution block for running the loaded test suite."""
+    """ Main execution block for running the loaded test suite. """
     runner = unittest.TextTestRunner()
     test_suites = load_data_augmentation_steps_tests()
     runner.run(test_suites)

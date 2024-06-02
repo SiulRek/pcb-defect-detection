@@ -1,17 +1,15 @@
 import os
-import shutil
 import pickle
+import shutil
 import unittest
 
-import tensorflow as tf
 from matplotlib import pyplot as plt
-
-from source.model.helpers.image_classifiers_trainer import ImageClassifiersTrainer
-from source.utils import TestResultLogger
 from source.model.definitions.general import STRING_SEPARATOR as SEP
 from source.model.definitions.general import RESULT_FILE_NAME
 from source.model.definitions.image_classifier import FIGURES
-
+from source.model.helpers.image_classifiers_trainer import ImageClassifiersTrainer
+from source.utils import TestResultLogger
+import tensorflow as tf
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
 OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/model/tests/outputs")
@@ -23,9 +21,11 @@ SAVE_PLOTS = True
 
 
 class TestImageClassifiersTrainer(unittest.TestCase):
-    """Tests for the ImageClassifiersTrainer class.
+    """
+    Tests for the ImageClassifiersTrainer class.
 
-    The ImageClassifiersTrainer class is used to train multiple image classifiers on different datasets and evaluate their performance.
+    The ImageClassifiersTrainer class is used to train multiple image
+    classifiers on different datasets and evaluate their performance.
     """
 
     @classmethod

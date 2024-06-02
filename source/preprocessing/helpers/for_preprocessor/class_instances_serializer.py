@@ -1,41 +1,45 @@
-import os
-import re
 import json
+import os
 import random
+import re
 
-from source.preprocessing.helpers.for_preprocessor.recursive_type_conversion import (
-    recursive_type_conversion,
-)
-from source.utils import get_sample_from_distribution
 from source.preprocessing.helpers.for_preprocessor.parse_and_repeat import (
     parse_and_repeat,
 )
 from source.preprocessing.helpers.for_preprocessor.randomly_select_sequential_keys import (
     randomly_select_sequential_keys,
 )
+from source.preprocessing.helpers.for_preprocessor.recursive_type_conversion import (
+    recursive_type_conversion,
+)
+from source.utils import get_sample_from_distribution
 
 
 class ClassInstancesSerializer:
     """
-    Manages serialization and deserialization of class instances to and from JSON format.
-    Supports saving class instances with parameters to JSON and reconstructing them with
-    optional parameter randomization. Useful for hyperparameter tuning and experimentation.
+    Manages serialization and deserialization of class instances to and from
+    JSON format. Supports saving class instances with parameters to JSON and
+    reconstructing them with optional parameter randomization. Useful for
+    hyperparameter tuning and experimentation.
 
     Attributes:
-        KEY_SEPARATOR (str): Separator for constructing unique keys in JSON files.
-        instance_mapping (dict): Maps class names to actual class objects.
+        - KEY_SEPARATOR (str): Separator for constructing unique keys in
+            JSON files.
+        - instance_mapping (dict): Maps class names to actual class objects.
 
     Public Methods:
-        save_instances_to_json(instance_list, json_path): Serializes class instances to JSON.
-        get_instances_from_json(json_path): Deserializes instances from JSON with specific
-            parameters.
-        get_randomized_instances_from_json(json_path): Deserializes instances from JSON with
-            randomized parameters.
+        - save_instances_to_json(instance_list, json_path): Serializes class
+            instances to JSON.
+        - get_instances_from_json(json_path): Deserializes instances from
+            JSON with specific parameters.
+        - get_randomized_instances_from_json(json_path): Deserializes
+            instances from JSON with randomized parameters.
 
     Note:
-    - This class relies on 'parameters' and optionally 'arguments_datatype' in class instances
-        for serialization and deserialization.
-    - The 'instance_mapping' is essential for class instantiation.
+        - This class relies on 'parameters' and optionally
+            'arguments_datatype' in class instances for serialization and
+            deserialization.
+        - The 'instance_mapping' is essential for class instantiation.
     """
 
     KEY_SEPARATOR = "__"
@@ -44,14 +48,16 @@ class ClassInstancesSerializer:
         """
         Initializes a new instance of the ClassInstancesSerializer class.
 
-        This handler manages serialization and deserialization of class instance configurations
-        to and from JSON files. It ensures that class instances are appropriately instantiated
-        with their corresponding parameters stored in a JSON format.
+        This handler manages serialization and deserialization of class instance
+        configurations to and from JSON files. It ensures that class instances
+        are appropriately instantiated with their corresponding parameters
+        stored in a JSON format.
 
         Args:
-            instance_mapping (dict): A dictionary mapping class names as strings to the actual
-                                     class objects. This enables the handler to instantiate objects
-                                     of the mapped classes from stored configurations.
+            - instance_mapping (dict): A dictionary mapping class names as
+                strings to the actual class objects. This enables the handler to
+                instantiate objects of the mapped classes from stored
+                configurations.
         """
         self.instance_mapping = instance_mapping
 
@@ -69,28 +75,29 @@ class ClassInstancesSerializer:
 
     def _verify_json_path(self, json_path):
         """
-        Verifies that the provided path is a JSON file and the base directory of the file exists.
+        Verifies that the provided path is a JSON file and the base directory of
+        the file exists.
 
         Args:
-            json_path (str): The file path to verify.
+            - json_path (str): The file path to verify.
         """
         if not os.path.exists(os.path.dirname(json_path)):
             raise ValueError(
                 f"The Base Directory of JSON path {json_path} does not exists."
             )
         if not json_path.endswith(".json"):
-            raise ValueError(f"Specified JSON path '{json_path}' is not JSON.")
+            msg = f"Specified JSON path '{json_path}' is not JSON."
+            raise ValueError(msg)
 
     def _serialize_to_json_value(self, obj):
         """
         Recursively converts Python objects to JSON serializable types.
 
         Args:
-            obj (object): The Python object to serialize.
+            - obj (object): The Python object to serialize.
 
         Returns:
-            object: The JSON-serializable representation of `obj`.
-
+            - object: The JSON-serializable representation of `obj`.
         """
         if type(obj) is tuple or type(obj) is list:
             return [self._serialize_to_json_value(item) for item in obj]
@@ -110,11 +117,13 @@ class ClassInstancesSerializer:
         Adds an instance's configuration to the configurations dictionary.
 
         Args:
-            instance (object): The class instance to add.
-            configurations (dict): The dictionary to which the instance's config will be added.
+            - instance (object): The class instance to add.
+            - configurations (dict): The dictionary to which the instance's
+                config will be added.
 
         Returns:
-            dict: Updated class instance configurations with the new instance's config added.
+            - dict: Updated class instance configurations with the new
+                instance's config added.
         """
         for class_name, mapped_class in self.instance_mapping.items():
             if isinstance(instance, mapped_class):
@@ -137,14 +146,16 @@ class ClassInstancesSerializer:
 
     def _generate_unique_key_name(self, current_key, dictionary):
         """
-        Generates a unique key name by appending incrementing numbers if a conflict exists.
+        Generates a unique key name by appending incrementing numbers if a
+        conflict exists.
 
         Args:
-            current_key (str): The base name for the key.
-            dictionary (dict): The dictionary which should not have conflicting keys.
+            - current_key (str): The base name for the key.
+            - dictionary (dict): The dictionary which should not have
+                conflicting keys.
 
         Returns:
-            str: A unique key name for the dictionary.
+            - str: A unique key name for the dictionary.
         """
         key = current_key
         i = 2  # Starts from 2 as 1 is the case of key name without identification.
@@ -159,21 +170,23 @@ class ClassInstancesSerializer:
     def _remove_newlines(self, match):
         """
         Removes newlines and spaces within square brackets in JSON strings.
-        Args:
-            match (re.Match): The regex match object containing the matched string.
+        Args: match (re.Match): The regex match object containing the matched
+        string.
 
         Returns:
-            str: The matched string with newlines and spaces removed.
+            - str: The matched string with newlines and spaces removed.
         """
         return match.group().replace("\n", "").replace(" ", "")
 
     def _save_configurations_to_json(self, configurations, json_path):
         """
-        Saves configurations of the class instances to a JSON file after serializing and formatting.
+        Saves configurations of the class instances to a JSON file after
+        serializing and formatting.
 
         Args:
-            configurations (dict): Dictionary containing the class instance configuration.
-            json_path (str): The file path where the JSON will be saved.
+            - configurations (dict): Dictionary containing the class
+                instance configuration.
+            - json_path (str): The file path where the JSON will be saved.
         """
 
         self._verify_json_path(json_path)
@@ -200,8 +213,8 @@ class ClassInstancesSerializer:
         Serializes a list of class instances to a JSON file.
 
         Args:
-            instance_list (list): A list of class instances to serialize.
-            json_path (str): The file path where the JSON will be saved.
+            - instance_list (list): A list of class instances to serialize.
+            - json_path (str): The file path where the JSON will be saved.
         """
         configurations = {}
         for instance in instance_list:
@@ -234,16 +247,23 @@ class ClassInstancesSerializer:
         return deserialized_parameters
 
     def _extract_arguments(self, json_data, class_name, mapped_class, randomized):
-        """Extracts and converts initialization parameters for a class instance from JSON data.
+        """
+        Extracts and converts initialization parameters for a class instance
+        from JSON data.
 
         Args:
-            json_data (dict): The JSON data from which to extract initialization parameters.
-            class_name (str): The name of the class for which parameters are being extracted.
-            mapped_class (type): The class object associated with 'class_name'.
-            randomized (bool): Determines whether parameters should be randomized from range.
+            - json_data (dict): The JSON data from which to extract
+                initialization parameters.
+            - class_name (str): The name of the class for which parameters
+                are being extracted.
+            - mapped_class (type): The class object associated with
+                'class_name'.
+            - randomized (bool): Determines whether parameters should be
+                randomized from range.
 
         Returns:
-            dict: A dictionary of deserialized and type-converted initialization parameters for the class.
+            - dict: A dictionary of deserialized and type-converted
+                initialization parameters for the class.
         """
 
         json_parameters = json_data.get(class_name)
@@ -270,15 +290,18 @@ class ClassInstancesSerializer:
 
     def _create_class_instance(self, class_name, json_data, randomized):
         """
-        Creates a class instance from the provided JSON data and additional parameters.
+        Creates a class instance from the provided JSON data and additional
+        parameters.
 
         Args:
-            class_name (str): The name of the class to instantiate.
-            json_data (dict): The JSON data containing the initialization parameters.
-            randomized (bool): Determines whether parameters should be randomized from range.
+            - class_name (str): The name of the class to instantiate.
+            - json_data (dict): The JSON data containing the initialization
+                parameters.
+            - randomized (bool): Determines whether parameters should be
+                randomized from range.
 
         Returns:
-            object: An instance of the class specified by 'class_name'.
+            - object: An instance of the class specified by 'class_name'.
         """
 
         class_name_parts = class_name.split(ClassInstancesSerializer.KEY_SEPARATOR)
@@ -306,15 +329,17 @@ class ClassInstancesSerializer:
 
     def _build_instances_from_json(self, json_path, randomized):
         """
-        Builds class instances from a JSON file. Depending on the 'randomized' flag, it either uses
-        specific parameters or randomly selects parameters from specified ranges.
+        Builds class instances from a JSON file. Depending on the 'randomized'
+        flag, it either uses specific parameters or randomly selects parameters
+        from specified ranges.
 
         Args:
-            json_path (str): The file path of the JSON to deserialize.
-            randomized (bool): Determines whether parameters should be randomized.
+            - json_path (str): The file path of the JSON to deserialize.
+            - randomized (bool): Determines whether parameters should be
+                randomized.
 
         Returns:
-            list: A list of class instances created from the JSON file.
+            - list: A list of class instances created from the JSON file.
         """
         self._verify_json_path(json_path)
         try:
@@ -347,21 +372,24 @@ class ClassInstancesSerializer:
         Deserializes class instances from a JSON file with specific parameters.
 
         Args:
-            json_path (str): The file path of the JSON to deserialize.
+            - json_path (str): The file path of the JSON to deserialize.
 
         Returns:
-            list: A list of class instances created from the JSON file with specific parameters.
+            - list: A list of class instances created from the JSON file
+                with specific parameters.
         """
         return self._build_instances_from_json(json_path, randomized=False)
 
     def get_randomized_instances_from_json(self, json_path):
         """
-        Deserializes class instances from a JSON file with randomly selected parameters.
+        Deserializes class instances from a JSON file with randomly selected
+        parameters.
 
         Args:
-            json_path (str): The file path of the JSON to deserialize.
+            - json_path (str): The file path of the JSON to deserialize.
 
         Returns:
-            list: A list of class instances created from the JSON file with random parameters.
+            - list: A list of class instances created from the JSON file
+                with random parameters.
         """
         return self._build_instances_from_json(json_path, randomized=True)

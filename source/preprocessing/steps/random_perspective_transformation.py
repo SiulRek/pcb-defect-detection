@@ -1,29 +1,29 @@
-import tensorflow as tf
-import numpy as np
 import random
-import cv2
 
+import numpy as np
+
+import cv2
 from source.preprocessing.helpers.for_steps.step_base import StepBase
 from source.preprocessing.helpers.for_steps.step_utils import correct_image_tensor_shape
+import tensorflow as tf
 
 
 class RandomPerspectiveTransformer(StepBase):
-    """
-    A preprocessing step that applies a perspective transformation to an image tensor.
-    This transformation simulates a change in the viewpoint.
-    """
+    """ A preprocessing step that applies a perspective transformation to an image
+    tensor. This transformation simulates a change in the viewpoint. """
 
     arguments_datatype = {"warp_scale": float, "seed": int}
     name = "Random Perspective Transformer"
 
     def __init__(self, warp_scale=0.2, seed=None):
         """
-        Initializes the RandomPerspectiveTransformer object for integration into an image
-        preprocessing pipeline.
+        Initializes the RandomPerspectiveTransformer object for integration into
+        an image preprocessing pipeline.
 
         Args:
-            warp_scale (float): Factor to scale the maximum warp intensity. Default is 0.2.
-            seed (int): Random seed for reproducibility. Default is None.
+            - warp_scale (float): Factor to scale the maximum warp
+                intensity. Default is 0.2.
+            - seed (int): Random seed for reproducibility. Default is None.
         """
         super().__init__(locals())
 

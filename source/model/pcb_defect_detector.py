@@ -4,18 +4,14 @@ import tensorflow as tf
 
 
 class PCBDefectDetector:
-    """
-    Class representing the machine learning model for detecting defects in PCBs.
-    """
+    """ Class representing the machine learning model for detecting defects in PCBs. """
 
     def __init__(self):
         self.model = None
         self.history = None
 
     def build_model(self):
-        """
-        Define and compile the machine learning model for PCB defect detection.
-        """
+        """ Define and compile the machine learning model for PCB defect detection. """
 
         self.model = tf.keras.Sequential([])  # Add the Layers
 
@@ -24,11 +20,9 @@ class PCBDefectDetector:
         )
 
     def train(self, *Args):
-        """
-        Train the PCB defect detection model.
+        """ Train the PCB defect detection model.
 
-
-        """
+ """
         if self.model is None:
             self.build_model()
         self.history = self.model.fit(
@@ -38,19 +32,13 @@ class PCBDefectDetector:
         return self.history
 
     def predict(self, data):
-        """
-        Predict defects in PCBs using the trained model.
-        """
+        """ Predict defects in PCBs using the trained model. """
         return self.model.predict(data)
 
     def save_model(self, path):
-        """
-        Save the trained model.
-        """
+        """ Save the trained model. """
         self.model.save(path)
 
     def load_model(self, path):
-        """
-        Load a trained model.
-        """
+        """ Load a trained model. """
         self.model = tf.keras.models.load_model(path)

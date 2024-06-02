@@ -1,9 +1,8 @@
 import os
-
 import unittest
+
 from source.utils import get_sample_from_distribution
 from source.utils import TestResultLogger
-
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
 OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/utils/tests/outputs")

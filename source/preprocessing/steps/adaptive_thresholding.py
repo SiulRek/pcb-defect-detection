@@ -1,5 +1,4 @@
 import cv2
-
 from source.preprocessing.helpers.for_steps.step_base import StepBase
 
 
@@ -7,8 +6,8 @@ class AdaptiveThresholder(StepBase):
     """
     A preprocessing step that applies adaptive Thresholding to an image.
 
-    Note: In the case of RGB images, it processes each color channel (Red, Green, Blue)
-    separately.
+    Note: In the case of RGB images, it processes each color channel (Red,
+    Green, Blue) separately.
     """
 
     arguments_datatype = {"block_size": int, "c": float}
@@ -16,13 +15,13 @@ class AdaptiveThresholder(StepBase):
 
     def __init__(self, block_size=15, c=-2):
         """
-        Initializes the AdaptiveThresholder object that can be integrated in an image
-            preprocessing pipeline.
+        Initializes the AdaptiveThresholder object that can be integrated in an
+        image preprocessing pipeline.
 
         Args:
-            block_size (int): Size of the pixel neighborhood that is used to calculate the threshold
-                value.
-            c (float): Constant subtracted from the mean or weighted mean.
+            - block_size (int): Size of the pixel neighborhood that is used
+                to calculate the threshold value.
+            - c (float): Constant subtracted from the mean or weighted mean.
         """
         super().__init__(locals())
 

@@ -1,5 +1,4 @@
 import cv2
-
 from source.preprocessing.helpers.for_steps.step_base import StepBase
 
 
@@ -7,8 +6,8 @@ class TruncatedThresholder(StepBase):
     """
     A preprocessing step that applies truncated thresholding to an image.
 
-    Note: In the case of RGB images, it processes each color channel (Red, Green, Blue)
-    separately.
+    Note: In the case of RGB images, it processes each color channel (Red,
+    Green, Blue) separately.
     """
 
     arguments_datatype = {"thresh": int}
@@ -16,14 +15,14 @@ class TruncatedThresholder(StepBase):
 
     def __init__(self, thresh=128):
         """
-        Initializes the TruncatedThresholder object that can be integrated into an image
-        preprocessing pipeline.
+        Initializes the TruncatedThresholder object that can be integrated into
+        an image preprocessing pipeline.
 
         Args:
-            thresh (int, optional): The threshold value used for truncated thresholding. Pixel
-                                    values greater than this threshold are set to the threshold
-                                    value itself, and values less than or equal to the threshold
-                                    remain unchanged. Defaults to 128.
+            - thresh (int, optional): The threshold value used for truncated
+                thresholding. Pixel values greater than this threshold are set
+                to the threshold value itself, and values less than or equal to
+                the threshold remain unchanged. Defaults to 128.
         """
         super().__init__(locals())
 

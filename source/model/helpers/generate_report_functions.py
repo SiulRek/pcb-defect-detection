@@ -1,5 +1,6 @@
 import os
 import pickle
+
 from source.model.definitions.general import REPORT_ELEMENT as ELEMENT
 
 
@@ -8,15 +9,18 @@ def get_experiments_data(project_directory, pickle_filename):
     Get the data from all experiments in the project directory.
 
     Args:
-        project_directory (str): The root directory of the project.
-        pickle_filename (str): The name of the pickle file containing the experiment results.
+        - project_directory (str): The root directory of the project.
+        - pickle_filename (str): The name of the pickle file containing the
+            experiment results.
 
     Returns:
-        list: A list of tuples, where each tuple contains the relative path of the experiment
-        directory and the data loaded from the pickle file.
+        - list: A list of tuples, where each tuple contains the relative
+            path of the experiment directory and the data loaded from the pickle
+            file.
     """
     if not os.path.exists(project_directory):
-        raise FileNotFoundError(f"Directory {project_directory} not found.")
+        msg = f"Directory {project_directory} not found."
+        raise FileNotFoundError(msg)
 
     experiments_data = []
     for root, _, files in os.walk(project_directory):
@@ -28,7 +32,8 @@ def get_experiments_data(project_directory, pickle_filename):
             experiments_data.append((relative_path, data))
 
     if not experiments_data:
-        raise FileNotFoundError(f"No experiments found in {project_directory}.")
+        msg = f"No experiments found in {project_directory}."
+        raise FileNotFoundError(msg)
     return experiments_data
 
 
@@ -37,15 +42,17 @@ def sort_experiments_data(experiments_data, sort_criteria):
     Sort the experiments data based on the sort criteria.
 
     Args:
-        experiments_data (list): A list of tuples where each tuple contains the relative path of the
-            experiment directory and the data loaded from the pickle file.
-        sort_criteria (tuple): Specifies the parameter to sort result by.
-            The first element is the name of the metrics and the second element is the name of the
-            statistics.
+        - experiments_data (list): A list of tuples where each tuple
+            contains the relative path of the experiment directory and the data
+            loaded from the pickle file.
+        - sort_criteria (tuple): Specifies the parameter to sort result by.
+            The first element is the name of the metrics and the second element
+            is the name of the statistics.
 
     Returns:
-        list: A sorted list of tuples where each tuple contains the relative path of the experiment
-            directory and the data loaded from the pickle file.
+        - list: A sorted list of tuples where each tuple contains the
+            relative path of the experiment directory and the data loaded from
+            the pickle file.
     """
     metric, statistic = sort_criteria
     try:
@@ -59,7 +66,8 @@ def sort_experiments_data(experiments_data, sort_criteria):
                 msg = f"Statistic {statistic} not found in experiment {path}."
             elif metric not in data[statistic]:
                 msg = f"Metric {metric} not found in experiment {path}."
-        raise ValueError(f"{msg}") from e
+        msg = f"{msg}"
+        raise ValueError(msg)
 
 
 def make_experiment_name(relative_path):
@@ -83,16 +91,19 @@ def generate_report_elements(
     Generate report elements as an ordered list of tuples.
 
     Args:
-        project_directory (str): The root directory of the project.
-        experiments_data (list): A list of tuples containing the relative path of the
-            experiment directory and the data loaded from the pickle file.
-        figure_names (list): The names of the figures to be included in the report for each
-            experiment.
-        no_name (str): The metric to be used as the primary in summary table.
+        - project_directory (str): The root directory of the project.
+        - experiments_data (list): A list of tuples containing the relative
+            path of the experiment directory and the data loaded from the pickle
+            file.
+        - figure_names (list): The names of the figures to be included in
+            the report for each experiment.
+        - no_name (str): The metric to be used as the primary in summary
+            table.
 
     Returns:
-        list: An ordered list of tuples, where the first element is the component type
-            ('title', 'table', 'figure', 'text') and the second is the content for that component.
+        - list: An ordered list of tuples, where the first element is the
+            component type ('title', 'table', 'figure', 'text') and the second
+            is the content for that component.
     """
     document_components = []
     document_components.append((ELEMENT.HEADER, header))

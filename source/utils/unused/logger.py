@@ -8,8 +8,9 @@ class Logger:
         Initializes the Logger class with basic configuration.
 
         Args:
-            log_file_path (str): Path to the log file.
-            log_level (logging.level): Level of logging. Default is logging.INFO.
+            - log_file_path (str): Path to the log file.
+            - log_level (logging.level): Level of logging. Default is
+                logging.INFO.
         """
         self.log_file = log_file
         self.log_level = log_level
@@ -31,31 +32,29 @@ class Logger:
         self.logger.addHandler(handler)
 
     def close_logger(self):
-        """
-        Close and remove all handlers attached to the logger.
-        """
+        """ Close and remove all handlers attached to the logger. """
         for handler in self.logger.handlers[:]:
             handler.close()
             self.logger.removeHandler(handler)
 
     def info(self, message):
-        """Writes an info message to the log."""
+        """ Writes an info message to the log. """
         self.logger.info(message)
 
     def warning(self, message):
-        """Writes a warning message to the log."""
+        """ Writes a warning message to the log. """
         self.logger.warning(message)
 
     def error(self, message):
-        """Writes an error message to the log."""
+        """ Writes an error message to the log. """
         self.logger.error(message)
 
     def log_title(self, title):
         """
         Logs a title string with a specific format.
 
-        This method formats the given title string with a pattern (dashes before and after)
-        and logs it at the INFO level.
+        This method formats the given title string with a pattern (dashes before
+        and after) and logs it at the INFO level.
         """
         formatted_title = "-" * 14 + f" {title} " + "-" * (60 - len(title) - 14)
         self.logger.info(formatted_title)

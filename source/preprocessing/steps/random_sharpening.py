@@ -1,26 +1,26 @@
-import cv2
-import numpy as np
 import random
 
+import numpy as np
+
+import cv2
 from source.preprocessing.helpers.for_steps.step_base import StepBase
 
 
 class RandomSharpening(StepBase):
-    """
-    A data augmentation step that applies random sharpening to an image.
-    """
+    """ A data augmentation step that applies random sharpening to an image. """
 
     arguments_datatype = {"min_intensity": float, "max_intensity": float, "seed": int}
     name = "Random Sharpening"
 
     def __init__(self, min_intensity=0.5, max_intensity=2.0, seed=42):
         """
-        Initializes the RandomSharpening object for integration in an image preprocessing pipeline.
+        Initializes the RandomSharpening object for integration in an image
+        preprocessing pipeline.
 
         Args:
-            min_intensity (float): Minimum intensity of sharpening.
-            max_intensity (float): Maximum intensity of sharpening.
-            seed (int): Random seed for reproducibility. Default is 42.
+            - min_intensity (float): Minimum intensity of sharpening.
+            - max_intensity (float): Maximum intensity of sharpening.
+            - seed (int): Random seed for reproducibility. Default is 42.
         """
         super().__init__(locals())
 

@@ -3,13 +3,14 @@ import tensorflow as tf
 
 def correct_image_tensor_shape(image_tensor):
     """
-    Corrects the shape of a TensorFlow image tensor based on the inferred dimensions.
+    Corrects the shape of a TensorFlow image tensor based on the inferred
+    dimensions.
 
     Parameters:
-    - image_tensor (tf.Tensor): The input image tensor.
+        - image_tensor (tf.Tensor): The input image tensor.
 
     Returns:
-    - tf.Tensor: A reshaped tensor based on inferred dimensions.
+        - tf.Tensor: A reshaped tensor based on inferred dimensions.
     """
 
     dims = tf.shape(image_tensor)
@@ -31,10 +32,11 @@ def reduce_std(tensor):
     Computes the standard deviation of a tensor.
 
     Parameters:
-    - tensor (tf.Tensor): The input tensor.
+        - tensor (tf.Tensor): The input tensor.
 
     Returns:
-    - tf.Tensor: The standard deviation of elements in the tensor as a scalar.
+        - tf.Tensor: The standard deviation of elements in the tensor as a
+            scalar.
     """
     mean = tf.reduce_mean(tensor)
     squared_deviations = tf.square(tensor - mean)
@@ -48,11 +50,13 @@ def squared_difference(tensor_a, tensor_b):
     Compute the squared difference of a tensor and a scalar or another tensor.
 
     Parameters:
-    - tensor_a (Tensor): A `Tensor`.
-    - tensor_b (scalar or Tensor): A scalar or a `Tensor` with the same type and shape as `tensor_a`.
+        - tensor_a (Tensor): A `Tensor`.
+        - tensor_b (scalar or Tensor): A scalar or a `Tensor` with the same
+            type and shape as `tensor_a`.
 
     Returns:
-    - Tensor: A `Tensor` containing the squared difference of the input tensor and the scalar or tensor.
+        - Tensor: A `Tensor` containing the squared difference of the input
+            tensor and the scalar or tensor.
     """
     difference = (
         tensor_a - tensor_b

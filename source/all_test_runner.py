@@ -1,17 +1,18 @@
 """
-This module is designed to facilitate the running of all unit tests across the various submodules of
-the PCB Defect Detection system. It uses Python's built-in unittest framework to run tests located
-in the 'tests' subdirectory of each module.
+This module is designed to facilitate the running of all unit tests across the
+various submodules of the PCB Defect Detection system. It uses Python's built-in
+unittest framework to run tests located in the 'tests' subdirectory of each
+module.
 """
 
 import os
 import unittest
 
-import source.utils.tests.test_runner as utils_tests
-import source.preprocessing.tests.test_runner as image_preprocessing_tests
 import source.data_handling.tests.test_runner as data_handling_tests
+import source.preprocessing.tests.test_runner as image_preprocessing_tests
 from source.utils import SimplePopupHandler
 from source.utils import TestResultLogger
+import source.utils.tests.test_runner as utils_tests
 
 FILE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 LOG_FILE = os.path.join(FILE_DIR, "test_results.log")

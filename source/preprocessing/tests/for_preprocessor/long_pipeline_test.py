@@ -1,32 +1,32 @@
-""" This module contains tests for long image preprocessing pipelines.
+"""
+This module contains tests for long image preprocessing pipelines.
 
-The task is to build large pipelines (not necessarily the most efficient ones) and
-test them on a dataset. The purpose of these long pipeline tests is to apply a
-preconfigured image preprocessing pipeline to a dataset and verify if any issues or
-bugs occur during the processing. This helps build confidence in the framework's ability
-to handle complex pipelines without any issues."""
+The task is to build large pipelines (not necessarily the most efficient ones)
+and test them on a dataset. The purpose of these long pipeline tests is to apply
+a preconfigured image preprocessing pipeline to a dataset and verify if any
+issues or bugs occur during the processing. This helps build confidence in the
+framework's ability to handle complex pipelines without any issues.
+"""
 
 import os
-import unittest
 import random
+import unittest
 
-import tensorflow as tf
-
-from source.preprocessing.image_preprocessor import ImagePreprocessor
-from source.preprocessing.helpers.for_steps.step_base import StepBase
-from source.preprocessing.helpers.for_preprocessor.step_class_mapping import (
-    STEP_CLASS_MAPPING,
-)
 from source.load_raw_data.kaggle_dataset import load_tf_record
 from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
-from source.utils import TestResultLogger
 from source.preprocessing.helpers.for_preprocessor.class_instances_serializer import (
     ClassInstancesSerializer,
 )
+from source.preprocessing.helpers.for_preprocessor.step_class_mapping import (
+    STEP_CLASS_MAPPING,
+)
+from source.preprocessing.helpers.for_steps.step_base import StepBase
 from source.preprocessing.helpers.for_tests.copy_json_exclude_entries import (
     copy_json_exclude_entries,
 )
-
+from source.preprocessing.image_preprocessor import ImagePreprocessor
+from source.utils import TestResultLogger
+import tensorflow as tf
 
 N = 10  # Number of Pipelines Tests to run.
 ROOT_DIR = os.path.join(
@@ -41,13 +41,14 @@ LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
 
 
 class RGBToGrayscale(StepBase):
-    """A preprocessing step that converts RGB image to Grayscale image."""
+    """ A preprocessing step that converts RGB image to Grayscale image. """
 
     arguments_datatype = {}
     name = "RGB To Grayscale"
 
     def __init__(self):
-        """Initializes the RGBToGrayscale object that can be integrated in an image preprocessing pipeline."""
+        """ Initializes the RGBToGrayscale object that can be integrated in an image
+        preprocessing pipeline. """
         super().__init__(locals())
 
     @StepBase._tensor_pyfunc_wrapper
@@ -62,15 +63,18 @@ class TestLongPipeline(unittest.TestCase):
     """
     This class is the base class for all the long pipeline tests.
 
-    The goal of the long pipeline tests is to identify if issues occure or bugs appear during processing
-    of long pipelines.
+    The goal of the long pipeline tests is to identify if issues occure or bugs
+    appear during processing of long pipelines.
 
-    The class creates an image preprocessor with a preconfigured pipeline. The pipeline is constructed from
-    a JSON template that contains all the image preprocessing steps of the framewor (some exclusions). The steps in the
-    pipeline are shuffled randomly. The class includes a method called test_process_pipeline which applies
-    the preprocessor to a dataset of images and verifies the output. If successful, it attempts to convert the processed
-    dataset to grayscale and verifies the conversion as well. If the dataset is accurately converted to grayscale, it can be
-    inferred that the pipeline has processed the dataset without any issues.
+    The class creates an image preprocessor with a preconfigured pipeline. The
+    pipeline is constructed from a JSON template that contains all the image
+    preprocessing steps of the framewor (some exclusions). The steps in the
+    pipeline are shuffled randomly. The class includes a method called
+    test_process_pipeline which applies the preprocessor to a dataset of images
+    and verifies the output. If successful, it attempts to convert the processed
+    dataset to grayscale and verifies the conversion as well. If the dataset is
+    accurately converted to grayscale, it can be inferred that the pipeline has
+    processed the dataset without any issues.
     """
 
     pipeline_id = None
@@ -169,7 +173,8 @@ def load_long_pipeline_tests(n=N):
     and load them into a test suite.
 
     Args:
-    - n (int): Number of TestLongPipeline classes to create. Default to N.
+        - n (int): Number of TestLongPipeline classes to create. Default to
+            N.
     """
 
     test_suites = []

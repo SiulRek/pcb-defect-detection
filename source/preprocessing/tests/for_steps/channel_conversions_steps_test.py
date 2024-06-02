@@ -1,26 +1,27 @@
-"""This module provides test suites for the RGBToGrayscale and GrayscaleToRGB
+""" This module provides test suites for the RGBToGrayscale and GrayscaleToRGB
 preprocessing steps within an image preprocessing pipeline. """
 
 import unittest
 from unittest import skip
 
+from source.preprocessing.image_preprocessor import ImagePreprocessor
 from source.preprocessing.steps import GrayscaleToRGB
 from source.preprocessing.steps import RGBToGrayscale
-
-from source.preprocessing.image_preprocessor import ImagePreprocessor
 from source.preprocessing.tests.for_steps.single_step_test import TestSingleStep
-
 
 ENABLE_VISUAL_INSPECTION = False
 
 
 class TestRGBToGrayscale(TestSingleStep):
     """
-    A test suite for verifying the functionality of the `RGBToGrayscale` preprocessing step.
+    A test suite for verifying the functionality of the `RGBToGrayscale`
+    preprocessing step.
 
-    This class inherits from `TestSingleStep` and overrides specific tests as the expected behaviour is slightly different
-    compared to general steps, due to the channel conversion. The `TestSingleStep` class focuses on ensuring the correct
-    functioning of these steps, both in isolation and when integrated into a pipeline.
+    This class inherits from `TestSingleStep` and overrides specific tests as
+    the expected behaviour is slightly different compared to general steps, due
+    to the channel conversion. The `TestSingleStep` class focuses on ensuring
+    the correct functioning of these steps, both in isolation and when
+    integrated into a pipeline.
     """
 
     parameters = {}
@@ -45,17 +46,19 @@ class TestRGBToGrayscale(TestSingleStep):
 
 class TestGrayscaleToRGB(TestSingleStep):
     """
-    A test suite for verifying the functionality of the `GrayscaleToRGB` preprocessing step.
+    A test suite for verifying the functionality of the `GrayscaleToRGB`
+    preprocessing step.
 
-    This class inherits from `TestSingleStep` and overrides specific tests as the expected behaviour is slightly different
-    compared to general steps, due to the channel conversion. The `TestSingleStep` class focuses on ensuring the correct
-    functioning of these steps, both in isolation and when integrated into a pipeline. It further evaluates
-    the interoperability of `GrayscaleToRGB` with `RGBToGrayscale` to confirm that sequential conversions within a pipeline
-    yield expected results.
+    This class inherits from `TestSingleStep` and overrides specific tests as
+    the expected behaviour is slightly different compared to general steps, due
+    to the channel conversion. The `TestSingleStep` class focuses on ensuring
+    the correct functioning of these steps, both in isolation and when
+    integrated into a pipeline. It further evaluates the interoperability of
+    `GrayscaleToRGB` with `RGBToGrayscale` to confirm that sequential
+    conversions within a pipeline yield expected results.
 
     Note:
-        The suite depends on `RGBToGrayscale` for full pipeline testing.
-
+        - The suite depends on `RGBToGrayscale` for full pipeline testing.
     """
 
     parameters = {}
@@ -100,13 +103,15 @@ class TestGrayscaleToRGB(TestSingleStep):
 
 def load_channel_conversion_steps_tests():
     """
-    Loads and combines test suites for RGBToGrayscale and GrayscaleToRGB preprocessing steps into a single test suite.
+    Loads and combines test suites for RGBToGrayscale and GrayscaleToRGB
+    preprocessing steps into a single test suite.
 
-    This function specifically creates test suites for testing the RGBToGrayscale and GrayscaleToRGB steps in an image
-    preprocessing pipeline.
+    This function specifically creates test suites for testing the
+    RGBToGrayscale and GrayscaleToRGB steps in an image preprocessing pipeline.
 
     Returns:
-        unittest.TestSuite: A unified test suite containing all the test cases from the RGBToGrayscale and GrayscaleToRGB test classes.
+        - unittest.TestSuite: A unified test suite containing all the test
+            cases from the RGBToGrayscale and GrayscaleToRGB test classes.
     """
     loader = unittest.TestLoader()
     suite1 = loader.loadTestsFromTestCase(TestRGBToGrayscale)

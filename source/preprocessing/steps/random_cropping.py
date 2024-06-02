@@ -1,24 +1,23 @@
-import tensorflow as tf
-
 from source.preprocessing.helpers.for_steps.step_base import StepBase
+import tensorflow as tf
 
 
 class RandomCropper(StepBase):
-    """
-    A data augmentation step that randomly crops a portion of the image.
-    """
+    """ A data augmentation step that randomly crops a portion of the image. """
 
     arguments_datatype = {"crop_size": (int, int), "seed": int}
     name = "Random Cropper"
 
     def __init__(self, crop_size=(256, 256), seed=42):
         """
-        Initializes the RandomCropper object for integration into an image preprocessing pipeline.
+        Initializes the RandomCropper object for integration into an image
+        preprocessing pipeline.
 
         Args:
-            crop_size (tuple): The size of the crop (width, height) in pixels.
-            seed (int): A seed for the random number generator for reproducible results.
-                Default is 42.
+            - crop_size (tuple): The size of the crop (width, height) in
+                pixels.
+            - seed (int): A seed for the random number generator for
+                reproducible results. Default is 42.
         """
         super().__init__(locals())
 

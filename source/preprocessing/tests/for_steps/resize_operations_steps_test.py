@@ -1,28 +1,34 @@
-"""This module provides test suites for the preprocessing steps performing resize
-operations within the image preprocessing pipeline. This module addresses the unique testing requirements for
-resize operations steps, ensuring their correct integration into the pipeline.
+"""
+This module provides test suites for the preprocessing steps performing resize
+operations within the image preprocessing pipeline. This module addresses the
+unique testing requirements for resize operations steps, ensuring their correct
+integration into the pipeline.
 """
 
 import unittest
 from unittest import skip
 
-from source.preprocessing.tests.for_steps.single_step_test import TestSingleStep
 import source.preprocessing.steps as steps
-
+from source.preprocessing.tests.for_steps.single_step_test import TestSingleStep
 
 ENABLE_VISUAL_INSPECTION = False
 
 
 class TestSquareShapePadder(TestSingleStep):
-    """A test suite for the SquareShapePadder step in the image preprocessing pipeline.
+    """
+    A test suite for the SquareShapePadder step in the image preprocessing
+    pipeline.
 
-    This class inherits from TestSingleStep and is specifically designed to test the
-    SquareShapePadder step, which pads images to make them square. It includes tests
-    to verify that images are correctly padded with the specified pixel value.
+    This class inherits from TestSingleStep and is specifically designed to test
+    the SquareShapePadder step, which pads images to make them square. It
+    includes tests to verify that images are correctly padded with the specified
+    pixel value.
 
     Attributes:
-        TestStep: The step class to be tested, in this case, steps.SquareShapePadder.
-        parameters: A dictionary containing parameters for the SquareShapePadder step.
+        - TestStep: The step class to be tested, in this case,
+            steps.SquareShapePadder.
+        - parameters: A dictionary containing parameters for the
+            SquareShapePadder step.
     """
 
     TestStep = steps.SquareShapePadder
@@ -38,9 +44,9 @@ class TestSquareShapePadder(TestSingleStep):
         self, processed_dataset, original_dataset, color_channel_expected
     ):
         """
-        Helper method to verify the image dimensions and color channels in a processed dataset.
-        Compares the processed images to the original dataset to ensure correct height, width,
-        and color channel transformations.
+        Helper method to verify the image dimensions and color channels in a
+        processed dataset. Compares the processed images to the original dataset
+        to ensure correct height, width, and color channel transformations.
         """
         for original_image, processed_image in zip(original_dataset, processed_dataset):
             processed_image_shape = tuple(processed_image.shape[:2].as_list())
@@ -62,13 +68,14 @@ class TestShapeResizer(TestSingleStep):
     """
     A test suite for the ShapeResizer step in the image preprocessing pipeline.
 
-    This class extends TestSingleStep and focuses on testing the ShapeResizer step,
-    which resizes images to a desired shape. It includes tests for verifying the
-    resize operation on both RGB and grayscale images.
+    This class extends TestSingleStep and focuses on testing the ShapeResizer
+    step, which resizes images to a desired shape. It includes tests for
+    verifying the resize operation on both RGB and grayscale images.
 
     Attributes:
-        TestStep: The step class to be tested, in this case, steps.ShapeResizer.
-        parameters: A dictionary of parameters for the ShapeResizer step.
+        - TestStep: The step class to be tested, in this case,
+            steps.ShapeResizer.
+        - parameters: A dictionary of parameters for the ShapeResizer step.
     """
 
     TestStep = steps.ShapeResizer
@@ -84,9 +91,9 @@ class TestShapeResizer(TestSingleStep):
         self, processed_dataset, original_dataset, color_channel_expected
     ):
         """
-        Helper method to verify the image dimensions and color channels in a processed dataset.
-        Compares the processed images to the original dataset to ensure correct height, width,
-        and color channel transformations.
+        Helper method to verify the image dimensions and color channels in a
+        processed dataset. Compares the processed images to the original dataset
+        to ensure correct height, width, and color channel transformations.
         """
         for original_image, processed_image in zip(original_dataset, processed_dataset):
             processed_image_shape = tuple(processed_image.shape[:2].as_list())
@@ -111,14 +118,18 @@ class TestShapeResizer(TestSingleStep):
 
 def load_resize_operations_steps_tests():
     """
-    Dynamically loads and aggregates individual test suites for resize operations preprocessing steps into a unified test suite.
+    Dynamically loads and aggregates individual test suites for resize
+    operations preprocessing steps into a unified test suite.
 
-    This function iterates over a predefined list of image preprocessing steps for resize operations and their corresponding arguments. For each step,
-    it dynamically creates a test class using `create_test_class_for_step` and then loads the test cases from these classes into
-    individual test suites. These suites are then combined into a single comprehensive test suite.
+    This function iterates over a predefined list of image preprocessing steps
+    for resize operations and their corresponding arguments. For each step, it
+    dynamically creates a test class using `create_test_class_for_step` and then
+    loads the test cases from these classes into individual test suites. These
+    suites are then combined into a single comprehensive test suite.
 
     Returns:
-        unittest.TestSuite: A combined test suite that aggregates tests for multiple image preprocessing step test classes.
+        - unittest.TestSuite: A combined test suite that aggregates tests
+            for multiple image preprocessing step test classes.
     """
     loader = unittest.TestLoader()
     test_suites = []

@@ -1,5 +1,4 @@
 import cv2
-
 from source.preprocessing.helpers.for_steps.step_base import StepBase
 
 
@@ -7,8 +6,8 @@ class ZeroThreshold(StepBase):
     """
     A preprocessing step that applies thresholding to zero on an image.
 
-    Note: In the case of RGB images, it processes each color channel (Red, Green, Blue)
-    separately.
+    Note: In the case of RGB images, it processes each color channel (Red,
+    Green, Blue) separately.
     """
 
     arguments_datatype = {"thresh": int}
@@ -16,12 +15,14 @@ class ZeroThreshold(StepBase):
 
     def __init__(self, thresh=128):
         """
-        Initializes the ZeroThreshold object for integration into an image preprocessing pipeline.
+        Initializes the ZeroThreshold object for integration into an image
+        preprocessing pipeline.
 
         Args:
-            thresh (int, optional): The threshold value used for thresholding to zero. Pixel values
-                                    greater than this threshold remain unchanged, and values less
-                                    than or equal to the threshold are set to 0. Defaults to 128.
+            - thresh (int, optional): The threshold value used for
+                thresholding to zero. Pixel values greater than this threshold
+                remain unchanged, and values less than or equal to the threshold
+                are set to 0. Defaults to 128.
         """
         super().__init__(locals())
 

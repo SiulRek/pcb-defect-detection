@@ -3,11 +3,13 @@ from tkinter import filedialog, simpledialog, messagebox
 
 
 class SimplePopupHandler:
-    """A handler class for displaying various simple pop-up dialogs using Tkinter.
+    """
+    A handler class for displaying various simple pop-up dialogs using Tkinter.
 
-    This class provides easy-to-use methods for interacting with the user via simple dialog boxes.
-    It can display informational messages, ask the user to input strings or numbers, present
-    yes/no questions, and facilitate file selection.
+    This class provides easy-to-use methods for interacting with the user via
+    simple dialog boxes. It can display informational messages, ask the user to
+    input strings or numbers, present yes/no questions, and facilitate file
+    selection.
     """
 
     def __init__(self):
@@ -15,7 +17,8 @@ class SimplePopupHandler:
         Initialize the SimplePopupHandler object.
 
         This constructor currently does not take any parameters, as all methods
-        are designed to be called independently and do not rely on instance attributes.
+        are designed to be called independently and do not rely on instance
+        attributes.
         """
         pass
 
@@ -24,7 +27,8 @@ class SimplePopupHandler:
         Display a popup window with the given message.
 
         Parameters:
-        - message (str): The message to be displayed in the popup window.
+            - message (str): The message to be displayed in the popup
+                window.
         """
         try:
             messagebox.showinfo("Message", message)
@@ -36,8 +40,8 @@ class SimplePopupHandler:
         Prompt the user to enter a string and display it in a popup window.
 
         Parameters:
-        - dialog (str): The dialog message to display to the user. Default is 'Enter a string'.
-
+            - dialog (str): The dialog message to display to the user.
+                Default is 'Enter a string'.
         """
         try:
             input_str = simpledialog.askstring("Input", dialog)
@@ -52,15 +56,18 @@ class SimplePopupHandler:
         self, dialog="Enter numbers separated by commas:", success_flag=True
     ):
         """
-        Prompt the user to enter a string of numbers separated by commas, convert it to a list of numbers, and
-        optionally display a 'Success' message in a popup window. Handle empty or invalid input.
+        Prompt the user to enter a string of numbers separated by commas,
+        convert it to a list of numbers, and optionally display a 'Success'
+        message in a popup window. Handle empty or invalid input.
 
         Parameters:
-        - dialog (str): The dialog message to display to the user. Default is "Enter numbers separated by commas:".
-        - success_flag (bool): Whether to display a success message. Default is True.
+            - dialog (str): The dialog message to display to the user.
+                Default is "Enter numbers separated by commas:".
+            - success_flag (bool): Whether to display a success message.
+                Default is True.
 
         Returns:
-        - numbers_list (list): List of numbers entered by the user.
+            - numbers_list (list): List of numbers entered by the user.
         """
 
         try:
@@ -103,13 +110,15 @@ class SimplePopupHandler:
 
     def ask_yes_no_question(self, question):
         """
-        Display a popup window with a Yes/No question and return True if Yes is clicked, False if No is clicked.
+        Display a popup window with a Yes/No question and return True if Yes is
+        clicked, False if No is clicked.
 
         Parameters:
-        - question (str): The question to be displayed in the popup window.
+            - question (str): The question to be displayed in the popup
+                window.
 
         Returns:
-        - bool: True if Yes is clicked, False if No is clicked.
+            - bool: True if Yes is clicked, False if No is clicked.
         """
         try:
             response = tk.messagebox.askquestion("Question", question)
@@ -123,10 +132,11 @@ class SimplePopupHandler:
 
     def browse_file(self):
         """
-        Open a file dialog to let the user browse and select a file, and return the selected file path.
+        Open a file dialog to let the user browse and select a file, and return
+        the selected file path.
 
         Returns:
-        - file_path (str): The path of the selected file.
+            - file_path (str): The path of the selected file.
         """
         try:
             file_path = filedialog.askopenfilename()

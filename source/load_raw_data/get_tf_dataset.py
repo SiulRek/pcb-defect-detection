@@ -3,25 +3,32 @@ import random
 
 import tensorflow as tf
 
-
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")
 
 
 def get_tf_dataset_from_df(dataframe, random_seed=34, sample_num=-1):
     """
-    Creates a TensorFlow Dataset object from the given dataframe containing file paths and category codes.
+    Creates a TensorFlow Dataset object from the given dataframe containing file
+    paths and category codes.
 
-    This function takes a DataFrame with file paths and category codes, and converts it into a TensorFlow Dataset. The dataset is shuffled based on the given random seed and can be limited to a specific number of samples.
+    This function takes a DataFrame with file paths and category codes, and
+    converts it into a TensorFlow Dataset. The dataset is shuffled based on the
+    given random seed and can be limited to a specific number of samples.
 
     Args:
-    - dataframe (pandas.DataFrame): A dataframe containing columns 'path' and 'category_codes'.
-        'path' should contain the relative file paths and 'category_codes' should contain the corresponding category codes.
-    - random_seed (int, optional): The random seed for shuffling the dataset. Defaults to 34.
-    - sample_num (int, optional): Numbers of samples to take from the dataframe. Defaults to -1 -> All Samples are taken.
+        - dataframe (pandas.DataFrame): A dataframe containing columns
+            'path' and 'category_codes'. 'path' should contain the relative file
+            paths and 'category_codes' should contain the corresponding category
+            codes.
+        - random_seed (int, optional): The random seed for shuffling the
+            dataset. Defaults to 34.
+        - sample_num (int, optional): Numbers of samples to take from the
+            dataframe. Defaults to -1 -> All Samples are taken.
 
     Returns:
-        tf.data.Dataset: A TensorFlow Dataset containing tuples of (image, category_code),
-        where 'image' is the decoded image file and 'category_code' is an integer label.
+        - tf.data.Dataset: A TensorFlow Dataset containing tuples of (image,
+            category_code), where 'image' is the decoded image file and
+            'category_code' is an integer label.
     """
 
     paths = []
@@ -36,7 +43,8 @@ def get_tf_dataset_from_df(dataframe, random_seed=34, sample_num=-1):
     elif sample_num <= len(paths):
         indices = list(range(sample_num))
     else:
-        raise ValueError(f"Sample Number {sample_num} is outside the range.")
+        msg = f"Sample Number {sample_num} is outside the range."
+        raise ValueError(msg)
 
     random.seed(random_seed)
     random.shuffle(indices)

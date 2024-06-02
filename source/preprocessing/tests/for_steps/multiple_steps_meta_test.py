@@ -1,12 +1,17 @@
-"""This module contains tests for validating the functionality of the image preprocessing test framework and focuses on dynamically generated test classes. It provides tests to ensure that test classes are correctly created for one example preprocessing step and that conditional test logic (skipping certain tests) functions as expected."""
+"""
+This module contains tests for validating the functionality of the image
+preprocessing test framework and focuses on dynamically generated test classes.
+It provides tests to ensure that test classes are correctly created for one
+example preprocessing step and that conditional test logic (skipping certain
+tests) functions as expected.
+"""
 
 import unittest
 from unittest.mock import patch
 
-from source.preprocessing.helpers.for_steps.step_base import StepBase
 from source.preprocessing.steps import AdaptiveHistogramEqualizer as ExampleStep
-from source.preprocessing.tests.multiple_steps_test import create_test_class_for_step
 from source.preprocessing.tests.for_steps.single_step_test import TestSingleStep
+from source.preprocessing.tests.multiple_steps_test import create_test_class_for_step
 
 
 class TestTestFramework(unittest.TestCase):

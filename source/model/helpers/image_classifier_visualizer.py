@@ -1,21 +1,23 @@
-import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-import tensorflow as tf
 
+import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from sklearn.metrics import confusion_matrix
+import tensorflow as tf
 
 
 class ImageClassifierVisualizer:
-    """Class for visualizing image classification results and model predictions."""
+    """ Class for visualizing image classification results and model predictions. """
 
     def __init__(self, class_names, is_multiclass=True):
-        """Initializes the ImageClassifierVisualizer class.
+        """
+        Initializes the ImageClassifierVisualizer class.
 
         Args:
-        - class_names (list): List of class names.
-        - is_multiclass (bool, optional): Whether the classification task is multiclass or binary.
+            - class_names (list): List of class names.
+            - is_multiclass (bool, optional): Whether the classification
+                task is multiclass or binary.
         """
         self.class_names = class_names
         self.num_classes = None
@@ -82,17 +84,19 @@ class ImageClassifierVisualizer:
         fontsize=12,
         show_plot=True,
     ):
-        """Plot images from a TensorFlow dataset in a grid.
+        """
+        Plot images from a TensorFlow dataset in a grid.
 
         Args:
-        - combined_dataset (tf.data.Dataset): TensorFlow dataset consisting of tuples (image, label).
-        - n_rows (int, optional): Number of rows in the grid.
-        - n_cols (int, optional): Number of columns in the grid.
-        - title (str, optional): Title of the plot.
-        - fontsize (int, optional): Font size of the labels.
+            - combined_dataset (tf.data.Dataset): TensorFlow dataset
+                consisting of tuples (image, label).
+            - n_rows (int, optional): Number of rows in the grid.
+            - n_cols (int, optional): Number of columns in the grid.
+            - title (str, optional): Title of the plot.
+            - fontsize (int, optional): Font size of the labels.
 
         Returns:
-        - fig: Figure of the images.
+            - fig: Figure of the images.
         """
         np_dataset = self._prepare_dataset(combined_dataset)
 
@@ -126,18 +130,20 @@ class ImageClassifierVisualizer:
         fontsize=12,
         show_plot=True,
     ):
-        """Plot images from a TensorFlow dataset in a grid.
+        """
+        Plot images from a TensorFlow dataset in a grid.
 
         Args:
-        - combined_dataset (tf.data.Dataset): TensorFlow dataset consisting of tuples (image, label).
-        - classes (list): List of classes to plot images for.
-        - n_rows (int, optional): Number of rows in the grid.
-        - n_cols (int, optional): Number of columns in the grid.
-        - title (str, optional): Title of the plot.
-        - fontsize (int, optional): Font size of the labels.
+            - combined_dataset (tf.data.Dataset): TensorFlow dataset
+                consisting of tuples (image, label).
+            - classes (list): List of classes to plot images for.
+            - n_rows (int, optional): Number of rows in the grid.
+            - n_cols (int, optional): Number of columns in the grid.
+            - title (str, optional): Title of the plot.
+            - fontsize (int, optional): Font size of the labels.
 
         Returns:
-        - fig: Figure of the images.
+            - fig: Figure of the images.
         """
         np_dataset = self._prepare_dataset(combined_dataset)
         filtered_dataset, _ = self._filter_np_dataset(np_dataset, classes)
@@ -161,18 +167,21 @@ class ImageClassifierVisualizer:
         fontsize=12,
         show_plot=True,
     ):
-        """Plot images from two TensorFlow datasets side by side in a grid.
+        """
+        Plot images from two TensorFlow datasets side by side in a grid.
 
         Args:
-        - combined_dataset_1 (tf.data.Dataset): First TensorFlow dataset consisting of tuples (image, label).
-        - combined_dataset_2 (tf.data.Dataset): Second TensorFlow dataset consisting of tuples (image, label).
-        - n_rows (int, optional): Number of rows in the grid.
-        - n_cols (int, optional): Number of columns in the grid.
-        - title (str, optional): Title of the plot.
-        - fontsize (int, optional): Font size of the labels.
+            - combined_dataset_1 (tf.data.Dataset): First TensorFlow dataset
+                consisting of tuples (image, label).
+            - combined_dataset_2 (tf.data.Dataset): Second TensorFlow
+                dataset consisting of tuples (image, label).
+            - n_rows (int, optional): Number of rows in the grid.
+            - n_cols (int, optional): Number of columns in the grid.
+            - title (str, optional): Title of the plot.
+            - fontsize (int, optional): Font size of the labels.
 
         Returns:
-        - fig: Figure of the images.
+            - fig: Figure of the images.
         """
         np_dataset_1 = self._prepare_dataset(combined_dataset_1, shuffle=False)
         np_dataset_2 = self._prepare_dataset(combined_dataset_2, shuffle=False)
@@ -209,19 +218,22 @@ class ImageClassifierVisualizer:
         fontsize=12,
         show_plot=True,
     ):
-        """Plot images from two TensorFlow datasets side by side in a grid.
+        """
+        Plot images from two TensorFlow datasets side by side in a grid.
 
         Args:
-        - combined_dataset_1 (tf.data.Dataset): First TensorFlow dataset consisting of tuples (image, label).
-        - combined_dataset_2 (tf.data.Dataset): Second TensorFlow dataset consisting of tuples (image, label).
-        - classes (list): List of classes to plot images for.
-        - n_rows (int, optional): Number of rows in the grid.
-        - n_cols (int, optional): Number of columns in the grid.
-        - title (str, optional): Title of the plot.
-        - fontsize (int, optional): Font size of the labels.
+            - combined_dataset_1 (tf.data.Dataset): First TensorFlow dataset
+                consisting of tuples (image, label).
+            - combined_dataset_2 (tf.data.Dataset): Second TensorFlow
+                dataset consisting of tuples (image, label).
+            - classes (list): List of classes to plot images for.
+            - n_rows (int, optional): Number of rows in the grid.
+            - n_cols (int, optional): Number of columns in the grid.
+            - title (str, optional): Title of the plot.
+            - fontsize (int, optional): Font size of the labels.
 
         Returns:
-        - fig: Figure of the images.
+            - fig: Figure of the images.
         """
         np_dataset_1 = self._prepare_dataset(combined_dataset_1, shuffle=False)
         np_dataset_2 = self._prepare_dataset(combined_dataset_2, shuffle=False)
@@ -242,14 +254,17 @@ class ImageClassifierVisualizer:
         return fig
 
     def calculate_model_predictions(self, model, dataset):
-        """Calculate model predictions and dataset, call this to visualize results with according methods.
+        """
+        Calculate model predictions and dataset, call this to visualize results
+        with according methods.
 
         Args:
-        - model (tf.keras.Model): Trained TensorFlow model.
-        - dataset (tf.data.Dataset): TensorFlow dataset consisting of tuples (image, label).
+            - model (tf.keras.Model): Trained TensorFlow model.
+            - dataset (tf.data.Dataset): TensorFlow dataset consisting of
+                tuples (image, label).
 
         Returns:
-        - fig: Figure of the images.
+            - fig: Figure of the images.
         """
         self.model = model
         self.predictions = model.predict(dataset)
@@ -337,18 +352,20 @@ class ImageClassifierVisualizer:
         prediction_bar=True,
         show_plot=True,
     ):
-        """Plots a set of images along with their predicted and true labels, with an optional prediction bar.
+        """
+        Plots a set of images along with their predicted and true labels, with
+        an optional prediction bar.
 
         Args:
-        - n_rows (int): Number of rows in the grid.
-        - n_cols (int): Number of columns in the grid.
-        - title (str, optional): Title of the plot.
-        - fontsize (int, optional): Font size of the labels.
-        - prediction_bar (bool): Whether to add a prediction bar.
-        - show_plot (bool): Whether to display the plot.
+            - n_rows (int): Number of rows in the grid.
+            - n_cols (int): Number of columns in the grid.
+            - title (str, optional): Title of the plot.
+            - fontsize (int, optional): Font size of the labels.
+            - prediction_bar (bool): Whether to add a prediction bar.
+            - show_plot (bool): Whether to display the plot.
 
         Returns:
-        - fig: Figure of the images.
+            - fig: Figure of the images.
         """
         if not self.model_predictions_prepared:
             raise ValueError(
@@ -376,19 +393,21 @@ class ImageClassifierVisualizer:
         prediction_bar=True,
         show_plot=True,
     ):
-        """Plots a set of images along with their predicted and true labels, with an optional prediction bar.
+        """
+        Plots a set of images along with their predicted and true labels, with
+        an optional prediction bar.
 
         Args:
-        - classes (list): List of classes to plot images for.
-        - n_rows (int): Number of rows in the grid.
-        - n_cols (int): Number of columns in the grid.
-        - title (str, optional): Title of the plot.
-        - fontsize (int, optional): Font size of the labels.
-        - prediction_bar (bool): Whether to add a prediction bar.
-        - show_plot (bool): Whether to display the plot.
+            - classes (list): List of classes to plot images for.
+            - n_rows (int): Number of rows in the grid.
+            - n_cols (int): Number of columns in the grid.
+            - title (str, optional): Title of the plot.
+            - fontsize (int, optional): Font size of the labels.
+            - prediction_bar (bool): Whether to add a prediction bar.
+            - show_plot (bool): Whether to display the plot.
 
         Returns:
-        - fig: Figure of the images.
+            - fig: Figure of the images.
         """
         if not self.model_predictions_prepared:
             raise ValueError(
@@ -419,18 +438,20 @@ class ImageClassifierVisualizer:
         prediction_bar=True,
         show_plot=True,
     ):
-        """Plots a set of images along with their predicted and true labels, with an optional prediction bar.
+        """
+        Plots a set of images along with their predicted and true labels, with
+        an optional prediction bar.
 
         Args:
-        - n_rows (int): Number of rows in the grid.
-        - n_cols (int): Number of columns in the grid.
-        - title (str, optional): Title of the plot.
-        - fontsize (int, optional): Font size of the labels.
-        - prediction_bar (bool): Whether to add a prediction bar.
-        - show_plot (bool): Whether to display the plot.
+            - n_rows (int): Number of rows in the grid.
+            - n_cols (int): Number of columns in the grid.
+            - title (str, optional): Title of the plot.
+            - fontsize (int, optional): Font size of the labels.
+            - prediction_bar (bool): Whether to add a prediction bar.
+            - show_plot (bool): Whether to display the plot.
 
         Returns:
-        - fig: Figure of the images.
+            - fig: Figure of the images.
         """
         if not self.model_predictions_prepared:
             raise ValueError(
@@ -476,15 +497,17 @@ class ImageClassifierVisualizer:
         Plot the confusion matrix of the model.
 
         Args:
-        - normalize (bool, optional): Whether to normalize the confusion matrix.
-        - title (str, optional): Title of the plot.
-        - cmap (matplotlib.colors.Colormap, optional): Colormap to use for the plot.
-        - fontsize (int, optional): Font size for text in the plot.
-        - fig_size (tuple, optional): Size of the figure.
-        - show_plot (bool, optional): Whether to display the plot.
+            - normalize (bool, optional): Whether to normalize the confusion
+                matrix.
+            - title (str, optional): Title of the plot.
+            - cmap (matplotlib.colors.Colormap, optional): Colormap to use
+                for the plot.
+            - fontsize (int, optional): Font size for text in the plot.
+            - fig_size (tuple, optional): Size of the figure.
+            - show_plot (bool, optional): Whether to display the plot.
 
         Returns:
-        - fig: Figure of the confusion matrix.
+            - fig: Figure of the confusion matrix.
         """
         if not self.model_predictions_prepared:
             raise ValueError(
@@ -515,13 +538,15 @@ class ImageClassifierVisualizer:
 
     def calculate_evaluation_metrics(self, average="macro"):
         """
-        Calculate the evaluation metrics for the model using true labels and predictions.
+        Calculate the evaluation metrics for the model using true labels and
+        predictions.
 
         Args:
-        - average (str, optional): The type of averaging to perform on the data.
+            - average (str, optional): The type of averaging to perform on
+                the data.
 
         Returns:
-        - dict: A dictionary containing the computed metrics.
+            - dict: A dictionary containing the computed metrics.
         """
         if not self.model_predictions_prepared:
             raise ValueError(
@@ -555,13 +580,16 @@ class ImageClassifierVisualizer:
         Create a plot with the provided text displayed.
 
         Args:
-        - text (str): Text to display in the plot.
-        - title (str, optional): Title of the plot. Defaults to 'Evaluation Metrics'.
-        - fontsize (int, optional): Font size for text in the plot. Defaults to 12.
-        - show_plot (bool, optional): Whether to display the plot. Defaults to True.
+            - text (str): Text to display in the plot.
+            - title (str, optional): Title of the plot. Defaults to
+                'Evaluation Metrics'.
+            - fontsize (int, optional): Font size for text in the plot.
+                Defaults to 12.
+            - show_plot (bool, optional): Whether to display the plot.
+                Defaults to True.
 
         Returns:
-        - fig: Figure containing the plotted text.
+            - fig: Figure containing the plotted text.
         """
         fig, ax = plt.subplots(figsize=fig_size)
         ax.text(
@@ -585,13 +613,14 @@ class ImageClassifierVisualizer:
         Plot the evaluation metrics of the model.
 
         Args:
-        - average (str, optional): Type of averaging to use for precision, recall, and F1 score.
-        - title (str, optional): Title of the plot.
-        - fontsize (int, optional): Font size for text in the plot.
-        - show_plot (bool, optional): Whether to display the plot.
+            - average (str, optional): Type of averaging to use for
+                precision, recall, and F1 score.
+            - title (str, optional): Title of the plot.
+            - fontsize (int, optional): Font size for text in the plot.
+            - show_plot (bool, optional): Whether to display the plot.
 
         Returns:
-        - fig: Figure of the evaluation metrics.
+            - fig: Figure of the evaluation metrics.
         """
 
         metrics = self.calculate_evaluation_metrics(average=average)

@@ -1,5 +1,5 @@
-from source.preprocessing.image_preprocessor import ImagePreprocessor
 from source.model.pcb_defect_detector import PCBDefectDetector
+from source.preprocessing.image_preprocessor import ImagePreprocessor
 
 # IMPORTANT ANNOTATIONS: The current functionality serves just as a template and as documentation of the current software plan.  Simplified Training procedure is shown here.
 

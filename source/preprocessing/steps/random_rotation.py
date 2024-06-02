@@ -1,27 +1,28 @@
-import cv2
-import numpy as np
 import random
 
+
+import cv2
 from source.preprocessing.helpers.for_steps.step_base import StepBase
 
 
 class RandomRotator(StepBase):
-    """
-    A preprocessing step that applies Random Rotator to an image within a specified angle range.
-    """
+    """ A preprocessing step that applies Random Rotator to an image within a
+    specified angle range. """
 
     arguments_datatype = {"angle_range": (int, int), "seed": int}
     name = "Random Rotator"
 
     def __init__(self, angle_range=(-90, 90), seed=42):
         """
-        Initializes the RandomRotator object that can be integrated in an image preprocessing
-            pipeline.
+        Initializes the RandomRotator object that can be integrated in an image
+        preprocessing pipeline.
 
         Args:
-            angle_range (tuple): Tuple of two integers specifying the range of angles for rotation.
-                                 For example, (-90, 90) allows rotations between -90 and 90 degrees.
-            seed (int): Random seed for reproducible rotations. Default is 42.
+            - angle_range (tuple): Tuple of two integers specifying the
+                range of angles for rotation. For example, (-90, 90) allows
+                rotations between -90 and 90 degrees.
+            - seed (int): Random seed for reproducible rotations. Default is
+                42.
         """
         super().__init__(locals())
 

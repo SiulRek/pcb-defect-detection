@@ -11,22 +11,27 @@ def enhance_dataset(
     repeat_num=None,
 ):
     """
-    Enhances a TensorFlow dataset by applying shuffling, batching, prefetching, and optionally
-    repeating a specified number of times or indefinitely if repeat_num is None and the repeat
-    parameter is set to True.
+    Enhances a TensorFlow dataset by applying shuffling, batching, prefetching,
+    and optionally repeating a specified number of times or indefinitely if
+    repeat_num is None and the repeat parameter is set to True.
 
     Args:
-    - dataset (tf.data.Dataset): The initial TensorFlow dataset to enhance.
-    - batch_size (int, optional): Size of batches of data.
-    - shuffle (bool, optional): Whether to shuffle the dataset. Default is False.
-    - random_seed (int, optional): Seed for random shuffling if shuffle is True.
-    - prefetch_buffer_size (int, optional): Number of batches to prefetch (default is
-        tf.data.experimental.AUTOTUNE).
-    - cache (bool, optional): Whether to cache the dataset. Default is False.
-    - repeat_num (int, optional): Number of times to repeat the dataset. None for indefinite repeat.
+        - dataset (tf.data.Dataset): The initial TensorFlow dataset to
+            enhance.
+        - batch_size (int, optional): Size of batches of data.
+        - shuffle (bool, optional): Whether to shuffle the dataset. Default
+            is False.
+        - random_seed (int, optional): Seed for random shuffling if shuffle
+            is True.
+        - prefetch_buffer_size (int, optional): Number of batches to
+            prefetch (default is tf.data.experimental.AUTOTUNE).
+        - cache (bool, optional): Whether to cache the dataset. Default is
+            False.
+        - repeat_num (int, optional): Number of times to repeat the dataset.
+            None for indefinite repeat.
 
     Returns:
-    - tf.data.Dataset: The enhanced TensorFlow dataset.
+        - tf.data.Dataset: The enhanced TensorFlow dataset.
     """
     if shuffle:
         shuffle_buffer_size = dataset.cardinality().numpy()

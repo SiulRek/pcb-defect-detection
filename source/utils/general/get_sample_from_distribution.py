@@ -11,11 +11,11 @@ def get_sample_from_distribution(distribution_data):
     the selected distribution.
 
     Parameters:
-    distribution_data (dict): A dictionary containing the distribution type
-                              and its corresponding parameters.
+        - distribution_data (dict): A dictionary containing the distribution
+            type and its corresponding parameters.
 
     Returns:
-    float: A single sample from the specified distribution.
+        - float: A single sample from the specified distribution.
     """
 
     distribution_map = {
@@ -31,7 +31,8 @@ def get_sample_from_distribution(distribution_data):
     }
 
     if "distribution" not in distribution_data.keys():
-        raise KeyError("No key named 'distribution' in 'distribution_data'.")
+        msg = "No key named 'distribution' in 'distribution_data'."
+        raise KeyError(msg)
 
     dist_function = distribution_map.get(distribution_data["distribution"].lower())
     if not dist_function:

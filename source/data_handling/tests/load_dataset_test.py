@@ -1,10 +1,11 @@
 import os
 import unittest
-import tensorflow as tf
+
 import numpy as np
 
 from source.data_handling.io.load_dataset import load_dataset
 from source.utils import TestResultLogger
+import tensorflow as tf
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
 OUTPUT_DIR = os.path.join(ROOT_DIR, "source", "data_handling", "tests", "outputs")
@@ -43,7 +44,7 @@ class TestLoadDataset(unittest.TestCase):
         self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
 
     def test_dataset_from_dicts(self):
-        """Test dataset creation from a list of dictionaries."""
+        """ Test dataset creation from a list of dictionaries. """
         dataset = load_dataset(self.data_dicts, "sparse_category_codes")
         expected_labels = [0, 1, 2, 3, 4]
         for (img, label), expected_label in zip(dataset, expected_labels):
@@ -53,7 +54,7 @@ class TestLoadDataset(unittest.TestCase):
             )
 
     def test_dataset_from_dataframe(self):
-        """Test dataset creation from a pandas DataFrame if pandas is installed."""
+        """ Test dataset creation from a pandas DataFrame if pandas is installed. """
         if self.pandas_installed:
             df = self.pd.DataFrame(self.data_dicts)
             dataset = load_dataset(df, "sparse_category_codes")
@@ -67,7 +68,7 @@ class TestLoadDataset(unittest.TestCase):
             self.skipTest("pandas is not installed.")
 
     def test_one_hot_encoding(self):
-        """Test one-hot encoding for category codes."""
+        """ Test one-hot encoding for category codes. """
         num_classes = 5  # Assuming there are 5 classes for the one-hot encoding
         dataset = load_dataset(
             self.data_dicts, "category_codes", num_classes=num_classes
@@ -81,7 +82,7 @@ class TestLoadDataset(unittest.TestCase):
             )
 
     def test_invalid_data_type(self):
-        """Test if ValueError is raised for invalid data type."""
+        """ Test if ValueError is raised for invalid data type. """
         with self.assertRaises(ValueError):
             load_dataset("invalid_data_type", "category_codes")
 

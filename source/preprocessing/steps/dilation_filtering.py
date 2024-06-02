@@ -1,20 +1,25 @@
-import cv2
 import numpy as np
+
+import cv2
 from source.preprocessing.helpers.for_steps.step_base import StepBase
 
 
 class DilationFilter(StepBase):
-    """A preprocessing step that applies dilation to an image."""
+    """ A preprocessing step that applies dilation to an image. """
 
     arguments_datatype = {"kernel_size": int, "iterations": int}
     name = "Dilation Filter"
 
     def __init__(self, kernel_size=3, iterations=1):
-        """Initializes the DilationFilter object that can be integrated into an image preprocessing pipeline.
+        """
+        Initializes the DilationFilter object that can be integrated into an
+        image preprocessing pipeline.
 
         Args:
-            kernel_size (int, optional): The size of the dilation kernel. Defaults to 3.
-            iterations (int, optional): The number of times the dilation operation is applied. Defaults to 1.
+            - kernel_size (int, optional): The size of the dilation kernel.
+                Defaults to 3.
+            - iterations (int, optional): The number of times the dilation
+                operation is applied. Defaults to 1.
         """
         super().__init__(locals())
 

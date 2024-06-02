@@ -1,5 +1,4 @@
 import os
-import re
 import unittest
 
 from source.preprocessing.helpers.for_preprocessor.randomly_select_sequential_keys import (
@@ -7,7 +6,6 @@ from source.preprocessing.helpers.for_preprocessor.randomly_select_sequential_ke
     is_sequential,
 )
 from source.utils import TestResultLogger
-
 
 ROOT_DIR = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", ".."
@@ -20,20 +18,21 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
     """
     Unit tests for `randomly_select_sequential_keys`.
 
-    This suite tests the accuracy of the function in identifying and handling sequential key
-    patterns in dictionaries. It covers various cases, including invalid patterns, sequential
-    integrity, and frequency-based key selection. Each test ensures the function's robustness
-    and error handling, verifying its consistency across different key configurations and
-    input scenarios.
+    This suite tests the accuracy of the function in identifying and handling
+    sequential key patterns in dictionaries. It covers various cases, including
+    invalid patterns, sequential integrity, and frequency-based key selection.
+    Each test ensures the function's robustness and error handling, verifying
+    its consistency across different key configurations and input scenarios.
 
     Note:
-    - All test cases take the default separator value of '__' for simplicity.
-    - The naming convention for the dictionary key looks like this:
-        {key identifier letter}_{key}_i{index}__I{index}F{frequency}__extra
-        ° Only the 'key' is required, the rest are dependent on the test cases.
-        ° __I{index}F{frequency} is the pattern that the function looks for.
-        ° i{index} is used to verify the operation as the pattern __I{index}F{frequency}
-        will be removed in the output dictionary.
+        - All test cases take the default separator value of '__' for
+            simplicity.
+        - The naming convention for the dictionary key looks like this: {key
+            identifier letter}_{key}_i{index}__I{index}F{frequency}__extra °
+            Only the 'key' is required, the rest are dependent on the test
+            cases. ° __I{index}F{frequency} is the pattern that the function
+            looks for. ° i{index} is used to verify the operation as the pattern
+            __I{index}F{frequency} will be removed in the output dictionary.
     """
 
     @classmethod
@@ -46,37 +45,36 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
 
     def get_stripped_dict_keys(self, input_dict, separator="__"):
         """
-        Get the keys of a dictionary with the separator and part after the separator removed.
+        Get the keys of a dictionary with the separator and part after the
+        separator removed.
 
         Args:
-        - input_dict (dict): The input dictionary.
-        - separator (str, optional): The separator used in the key pattern. Defaults to '__'.
+            - input_dict (dict): The input dictionary.
+            - separator (str, optional): The separator used in the key
+                pattern. Defaults to '__'.
 
         Returns:
-        - (list): A list of keys in the input dictionary.
+            - (list): A list of keys in the input dictionary.
         """
         return [key.split(separator)[0] for key in input_dict.keys()]
 
     def test_some_keys_not_matching(self):
-        """
-        Test that the function raises an error when only some keys do not match the pattern.
-        """
+        """ Test that the function raises an error when only some keys do not match
+        the pattern. """
         input_dict = {"a_key__I0": "value1", "b_key": "value2"}
         with self.assertRaises(KeyError):
             randomly_select_sequential_keys(input_dict)
 
     def test_non_sequential_indices(self):
-        """
-        Test that the function raises an error when the indices are not sequential.
-        """
+        """ Test that the function raises an error when the indices are not
+        sequential. """
         input_dict = {"a_key_i1__I1": "value1", "b_key_i3__I3": "value2"}
         with self.assertRaises(KeyError):
             randomly_select_sequential_keys(input_dict)
 
     def test_all_keys_matching(self):
-        """
-        Test that all keys are selected when all keys match the pattern and have different indices.
-        """
+        """ Test that all keys are selected when all keys match the pattern and have
+        different indices. """
         input_dict = {
             "a_key_i0__I0": "value0",
             "b_key_i1__I1": "value1",
@@ -89,9 +87,7 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
         self.assertTrue(is_sequential([int(key.split("i")[1]) for key in output_dict]))
 
     def test_normal_operation(self):
-        """
-        Test the normal operation of the function.
-        """
+        """ Test the normal operation of the function. """
         input_dict = {
             "a_key_i0__I0": "value0",
             "b_key_i0__I0": "alt0",
@@ -109,10 +105,11 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
         Generate test data with sequential keys for testing.
 
         Args:
-        - num_sequences (int): The number of sequential pairs to generate.
+            - num_sequences (int): The number of sequential pairs to
+                generate.
 
         Returns:
-        - (dict): A dictionary with generated test data.
+            - (dict): A dictionary with generated test data.
         """
         return {
             f"{i % 2}_key_i{i // 2}__I{i // 2}": f"value{i}"
@@ -120,9 +117,7 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
         }
 
     def test_normal_operation_with_long_sequence(self):
-        """
-        Test the normal operation of the function with a longer sequence.
-        """
+        """ Test the normal operation of the function with a longer sequence. """
         num_sequences = 111
         input_dict = self._generate_test_data(num_sequences)
         output_dict = randomly_select_sequential_keys(input_dict)
@@ -132,9 +127,8 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
         self.assertTrue(is_sequential([int(key.split("i")[1]) for key in output_dict]))
 
     def test_resilient_operation_1(self):
-        """
-        Test that the function is resilient to unique identifier specified in keys.
-        """
+        """ Test that the function is resilient to unique identifier specified in
+        keys. """
         input_dict = {
             "key_i1__1__I1": "value1",
             "key_i1__2__I1": "alt1",
@@ -150,9 +144,7 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
         )
 
     def test_resilient_operation_2(self):
-        """
-        Test that the function is resilient to the order of the keys.
-        """
+        """ Test that the function is resilient to the order of the keys. """
         input_dict = {
             "a_key_i1__I1": "value1",
             "b_key_i0__I0": "value0",
@@ -166,18 +158,15 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
         self.assertTrue(is_sequential([int(key.split("i")[1]) for key in output_dict]))
 
     def test_key_already_selected(self):
-        """
-        Test that the function is resilient to keys that have already been selected.
-        """
+        """ Test that the function is resilient to keys that have already been
+        selected. """
         input_dict = {"a_key__I0": "value0", "a_key__I1": "value1"}
 
         with self.assertRaises(KeyError):
             randomly_select_sequential_keys(input_dict)
 
     def test_keys_with_frequency_simple(self):
-        """
-        Test that keys with frequency specification are processed correctly.
-        """
+        """ Test that keys with frequency specification are processed correctly. """
         input_dict = {
             "a_key__I0": "value0",
             "b_key__I0F10": "alt0",
@@ -191,9 +180,8 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
         self.assertEqual(len(output_dict), 3)
 
     def test_keys_with_frequency_with_probability(self):
-        """
-        Test that keys with frequency specification are selected with the correct probability.
-        """
+        """ Test that keys with frequency specification are selected with the
+        correct probability. """
 
         input_dict = {
             "a_key__I0": "value0",
@@ -216,9 +204,8 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
         self.assertAlmostEqual(key_counts["c_key"], 91, delta=25)
 
     def test_pattern_ending_allowed(self):
-        """
-        Test that keys with additional allowed characters after the pattern are correctly identified.
-        """
+        """ Test that keys with additional allowed characters after the pattern are
+        correctly identified. """
         separator = "__"
         input_dict = {
             f"a_key{separator}extra{separator}I0": "value0",
@@ -240,9 +227,8 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
         self.assertEqual(output_dict, expected_dict)
 
     def test_pattern_ending_not_allowed(self):
-        """
-        Test that keys with additional not allowed characters after the pattern are correctly identified and lead to error.
-        """
+        """ Test that keys with additional not allowed characters after the pattern
+        are correctly identified and lead to error. """
         separator = "__"
         input_dict = {
             f"a_key{separator}I0": "value0",

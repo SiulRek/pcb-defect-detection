@@ -2,14 +2,12 @@ import os
 import unittest
 from unittest import defaultTestLoader as Loader
 
-from source.utils import TestResultLogger
-
 from source.data_handling.tests import label_manager_test
 from source.data_handling.tests import load_dataset_test
 from source.data_handling.tests import split_dataset_test
 from source.data_handling.tests import enhance_dataset_test
 from source.data_handling.tests import tfrecord_serialization_test
-
+from source.utils import TestResultLogger
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
 OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/data_handling/tests/outputs")

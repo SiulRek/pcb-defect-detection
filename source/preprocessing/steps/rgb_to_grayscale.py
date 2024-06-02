@@ -1,17 +1,16 @@
-from tensorflow import image
-
 from source.preprocessing.helpers.for_steps.step_base import StepBase
+from tensorflow import image
 
 
 class RGBToGrayscale(StepBase):
-    """A preprocessing step that converts RGB image to Grayscale image."""
+    """ A preprocessing step that converts RGB image to Grayscale image. """
 
     arguments_datatype = {}
     name = "RGB To Grayscale"
 
     def __init__(self):
-        """Initializes the RGBToGrayscale object that can be integrated in an image preprocessing
-        pipeline."""
+        """ Initializes the RGBToGrayscale object that can be integrated in an image
+        preprocessing pipeline. """
         super().__init__(locals())
 
     @StepBase._tensor_pyfunc_wrapper
