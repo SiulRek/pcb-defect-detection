@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 import tensorflow as tf
 
-from source.data_handling.io.load_dataset import load_dataset
+from source.data_handling.io.create_dataset import create_dataset
 from source.utils import TestResultLogger
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
@@ -13,7 +13,7 @@ DATA_DIR = os.path.join(ROOT_DIR, "source", "data_handling", "tests", "data")
 LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
 
 
-class TestLoadDataset(unittest.TestCase):
+class TestCreateDataset(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -45,7 +45,7 @@ class TestLoadDataset(unittest.TestCase):
 
     def test_dataset_from_dicts(self):
         """ Test dataset creation from a list of dictionaries. """
-        dataset = load_dataset(self.data_dicts, "sparse_category_codes")
+        dataset = create_dataset(self.data_dicts, "sparse_category_codes")
         expected_labels = [0, 1, 2, 3, 4]
         for (img, label), expected_label in zip(dataset, expected_labels):
             self.assertIsInstance(img, tf.Tensor, "Image should be a Tensor.")
@@ -57,7 +57,7 @@ class TestLoadDataset(unittest.TestCase):
         """ Test dataset creation from a pandas DataFrame if pandas is installed. """
         if self.pandas_installed:
             df = self.pd.DataFrame(self.data_dicts)
-            dataset = load_dataset(df, "sparse_category_codes")
+            dataset = create_dataset(df, "sparse_category_codes")
             expected_labels = [0, 1, 2, 3, 4]
             for (img, label), expected_label in zip(dataset, expected_labels):
                 self.assertIsInstance(img, tf.Tensor, "Image should be a Tensor.")
@@ -70,7 +70,7 @@ class TestLoadDataset(unittest.TestCase):
     def test_one_hot_encoding(self):
         """ Test one-hot encoding for category codes. """
         num_classes = 5  # Assuming there are 5 classes for the one-hot encoding
-        dataset = load_dataset(
+        dataset = create_dataset(
             self.data_dicts, "category_codes", num_classes=num_classes
         )
         expected_labels = [0, 1, 2, 3, 4]
@@ -84,7 +84,7 @@ class TestLoadDataset(unittest.TestCase):
     def test_invalid_data_type(self):
         """ Test if ValueError is raised for invalid data type. """
         with self.assertRaises(ValueError):
-            load_dataset("invalid_data_type", "category_codes")
+            create_dataset("invalid_data_type", "category_codes")
 
 
 if __name__ == "__main__":

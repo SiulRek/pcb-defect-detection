@@ -1,7 +1,7 @@
 import tensorflow as tf
 
 
-def load_and_decode_image(image_path):
+def decode_image(image_path):
     """
     Dynamically decodes an image from a given path based on its extension.
     Supports JPEG and PNG formats. Uses TensorFlow operations to handle path
