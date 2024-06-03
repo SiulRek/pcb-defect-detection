@@ -1,6 +1,5 @@
 import tensorflow as tf
 
-
 class LabelManager:
     """
     Manages different types of label encoding for machine learning models.
@@ -32,64 +31,64 @@ class LabelManager:
         self.label_type = label_type
         self.num_classes = num_classes
         if label_type == "category_codes":
-            self.get_label = self.get_categorical_labels
+            self.encode_label = self.encode_categorical_labels
         elif label_type == "sparse_category_codes":
-            self.get_label = self.get_sparse_categorical_labels
+            self.encode_label = self.encode_sparse_categorical_labels
         elif label_type == "object_detection":
-            self.get_label = self.get_object_detection_labels
+            self.encode_label = self.encode_object_detection_labels
 
-    def get_categorical_labels(self, sample):
+    def encode_categorical_labels(self, sample):
         """
         Encodes categorical labels into one-hot vectors.
 
         Args:
             - sample (dict): A dictionary containing the label data with key
-                'category_codes'.
+                'label'.
 
         Returns:
             - tf.Tensor: A one-hot encoded TensorFlow constant of the label.
         """
         try:
-            label = int(sample["category_codes"])
+            label = int(sample["label"])
             label = tf.constant(label, dtype=tf.int8)
             label = tf.one_hot(label, self.num_classes)
             return label
         except KeyError as e:
-            msg = "The sample dictionary does not contain the key 'category_codes'."
+            msg = "The sample dictionary does not contain the key 'label'."
             raise KeyError(msg) from e
         except ValueError as e:
-            msg = "The 'category_codes' key in sample should be convertable to integer."
+            msg = "The 'label' key in sample should be convertable to integer."
             raise ValueError(msg) from e
         # Except num_classes is invalid
         except tf.errors.OpError as e:
             msg = "Probably the number of classes is invalid."
             raise ValueError(msg) from e
 
-    def get_sparse_categorical_labels(self, sample):
+    def encode_sparse_categorical_labels(self, sample):
         """
         Encodes categorical labels into sparse format suitable for sparse
         categorical crossentropy.
 
         Args:
             - sample (dict): A dictionary containing the label data with key
-                'category_codes'.
+                'label'.
 
         Returns:
             - tf.Tensor: A TensorFlow constant of the label in sparse
                 format.
         """
         try:
-            label = int(sample["category_codes"])
+            label = int(sample["label"])
             label = tf.constant(label, dtype=tf.int8)
             return label
         except KeyError as e:
-            msg = "The sample dictionary does not contain the key 'category_codes'."
+            msg = "The sample dictionary does not contain the key 'label'."
             raise KeyError(msg) from e
         except ValueError as e:
-            msg = "The 'category_codes' key in sample should be convertable to integer."
+            msg = "The 'label' key in sample should be convertable to integer."
             raise ValueError(msg) from e
 
-    def get_object_detection_labels(self, sample):
+    def encode_object_detection_labels(self, sample):
         """
         Stub method for future implementation of object detection label
         encoding.

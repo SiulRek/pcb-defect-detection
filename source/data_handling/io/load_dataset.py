@@ -41,12 +41,11 @@ def load_dataset(data, label_type="category_codes", num_classes=None):
     if pandas_installed and isinstance(data, pd.DataFrame):
         paths = data["path"].tolist()
         labels = [
-            label_manager.get_label({"category_codes": sample["category_codes"]})
-            for _, sample in data.iterrows()
+            label_manager.encode_label(sample) for _, sample in data.iterrows()
         ]
     elif isinstance(data, list) and all(isinstance(item, dict) for item in data):
         paths = [item["path"] for item in data]
-        labels = [label_manager.get_label(item) for item in data]
+        labels = [label_manager.encode_label(item) for item in data]
     else:
         msg = "Data must be a list of dictionaries or a pandas DataFrame."
         raise ValueError(msg)

@@ -20,7 +20,7 @@ class TestLabelManager(unittest.TestCase):
         cls.logger.log_title("Label Manager Test")
 
     def setUp(self):
-        self.category_code_sample = {"category_codes": 2}
+        self.category_code_sample = {"label": 2}
         self.invalid_labels = {"wrong_key": 3}
 
     def tearDown(self):
@@ -28,7 +28,7 @@ class TestLabelManager(unittest.TestCase):
 
     def test_categorical_labels_valid_input(self):
         manager = LabelManager("category_codes", num_classes=4)
-        result = manager.get_label(self.category_code_sample)
+        result = manager.encode_label(self.category_code_sample)
         expected = tf.constant([0, 0, 1, 0], dtype=tf.float32)
         self.assertTrue(
             tf.reduce_all(tf.equal(result, expected)),
@@ -38,11 +38,11 @@ class TestLabelManager(unittest.TestCase):
     def test_categorical_labels_invalid_key(self):
         manager = LabelManager("category_codes", num_classes=4)
         with self.assertRaises(KeyError):
-            manager.get_label(self.invalid_labels)
+            manager.encode_label(self.invalid_labels)
 
     def test_sparse_categorical_labels_valid_input(self):
         manager = LabelManager("sparse_category_codes")
-        result = manager.get_label(self.category_code_sample)
+        result = manager.encode_label(self.category_code_sample)
         expected = tf.constant(2, dtype=tf.int8)
         self.assertTrue(
             tf.reduce_all(tf.equal(result, expected)),
@@ -52,12 +52,12 @@ class TestLabelManager(unittest.TestCase):
     def test_sparse_categorical_labels_invalid_key(self):
         manager = LabelManager("sparse_category_codes")
         with self.assertRaises(KeyError):
-            manager.get_label(self.invalid_labels)
+            manager.encode_label(self.invalid_labels)
 
     def test_object_detection_labels_not_implemented(self):
         manager = LabelManager("object_detection")
         with self.assertRaises(NotImplementedError):
-            manager.get_label(self.category_code_sample)
+            manager.encode_label(self.category_code_sample)
 
 
 if __name__ == "__main__":

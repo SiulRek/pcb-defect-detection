@@ -31,11 +31,11 @@ class TestLoadDataset(unittest.TestCase):
 
     def setUp(self):
         self.data_dicts = [
-            {"path": "figure_1.jpeg", "category_codes": 0},
-            {"path": "figure_2.jpeg", "category_codes": 1},
-            {"path": "figure_3.jpeg", "category_codes": 2},
-            {"path": "figure_4.png", "category_codes": 3},
-            {"path": "figure_5.png", "category_codes": 4},
+            {"path": "figure_1.jpeg", "label": 0},
+            {"path": "figure_2.jpeg", "label": 1},
+            {"path": "figure_3.jpeg", "label": 2},
+            {"path": "figure_4.png", "label": 3},
+            {"path": "figure_5.png", "label": 4},
         ]
         for data_dict in self.data_dicts:
             data_dict["path"] = os.path.join(DATA_DIR, data_dict["path"])

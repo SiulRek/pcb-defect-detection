@@ -6,6 +6,12 @@ def load_and_decode_image(image_path):
     Dynamically decodes an image from a given path based on its extension.
     Supports JPEG and PNG formats. Uses TensorFlow operations to handle path
     operations directly on tensors.
+
+    Args:
+        - image_path (str): The path to the image file.
+    
+    Returns:
+        - tf.Tensor: A tensor representing the image.
     """
     image = tf.io.read_file(image_path)
 
@@ -27,5 +33,4 @@ def load_and_decode_image(image_path):
             lambda: tf.cast(tf.constant([]), tf.uint8),
         ),
     )
-
     return image
