@@ -53,10 +53,9 @@ def serialize_dataset_to_tf_record(dataset, filepath, image_format):
         raise ValueError(msg)
 
     if not os.path.exists(os.path.dirname(filepath)):
-        raise FileNotFoundError(
-            f"Directory '{os.path.dirname(filepath)}' does not exist."
-        )
-
+        msg = f"Directory '{os.path.dirname(filepath)}' does not exist."
+        raise FileNotFoundError(msg)
+    
     with tf.io.TFRecordWriter(filepath) as writer:
         for image, label in dataset:
             example = serialize_sample(image, label)
