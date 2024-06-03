@@ -31,15 +31,15 @@ class LabelManager:
         self.label_type = label_type
         self.num_classes = num_classes
         if label_type == "category_codes":
-            self.encode_label = self.encode_categorical_labels
+            self.encode_label = self.encode_categorical_label
         elif label_type == "sparse_category_codes":
-            self.encode_label = self.encode_sparse_categorical_labels
+            self.encode_label = self.encode_sparse_categorical_label
         elif label_type == "object_detection":
-            self.encode_label = self.encode_object_detection_labels
+            self.encode_label = self.encode_object_detection_label
 
-    def encode_categorical_labels(self, sample):
+    def encode_categorical_label(self, sample):
         """
-        Encodes categorical labels into one-hot vectors.
+        Encodes catogircal label in sample into one-hot encoded format.
 
         Args:
             - sample (dict): A dictionary containing the label data with key
@@ -64,10 +64,10 @@ class LabelManager:
             msg = "Probably the number of classes is invalid."
             raise ValueError(msg) from e
 
-    def encode_sparse_categorical_labels(self, sample):
+    def encode_sparse_categorical_label(self, sample):
         """
-        Encodes categorical labels into sparse format suitable for sparse
-        categorical crossentropy.
+        Encodes categorical label in sample into sparse format suitable for
+        sparse categorical crossentropy loss.
 
         Args:
             - sample (dict): A dictionary containing the label data with key
@@ -88,7 +88,7 @@ class LabelManager:
             msg = "The 'label' key in sample should be convertable to integer."
             raise ValueError(msg) from e
 
-    def encode_object_detection_labels(self, sample):
+    def encode_object_detection_label(self, sample):
         """
         Stub method for future implementation of object detection label
         encoding.
