@@ -20,11 +20,32 @@ class TestLabelManager(unittest.TestCase):
         cls.logger.log_title("Label Manager Test")
 
     def setUp(self):
+        self.binary_sample = {"label": 1}
         self.category_code_sample = {"label": 2}
         self.invalid_labels = {"wrong_key": 3}
+        self.invalid_binary_sample = {"label": 2}
 
     def tearDown(self):
         self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
+
+    def test_binary_labels_valid_input(self):
+        manager = LabelManager("binary")
+        result = manager.encode_label(self.binary_sample)
+        expected = tf.constant(1, dtype=tf.float32)
+        self.assertTrue(
+            tf.reduce_all(tf.equal(result, expected)),
+            "The binary labels do not match expected output.",
+        )
+
+    def test_binary_labels_invalid_key(self):
+        manager = LabelManager("binary")
+        with self.assertRaises(KeyError):
+            manager.encode_label(self.invalid_labels)
+
+    def test_binary_labels_invalid_value(self):
+        manager = LabelManager("binary")
+        with self.assertRaises(ValueError):
+            manager.encode_label(self.invalid_binary_sample)
 
     def test_categorical_labels_valid_input(self):
         manager = LabelManager("category_codes", num_classes=4)
@@ -43,7 +64,7 @@ class TestLabelManager(unittest.TestCase):
     def test_sparse_categorical_labels_valid_input(self):
         manager = LabelManager("sparse_category_codes")
         result = manager.encode_label(self.category_code_sample)
-        expected = tf.constant(2, dtype=tf.int8)
+        expected = tf.constant(2, dtype=tf.float32)
         self.assertTrue(
             tf.reduce_all(tf.equal(result, expected)),
             "The sparse categorical labels do not match expected output.",
@@ -55,6 +76,88 @@ class TestLabelManager(unittest.TestCase):
             manager.encode_label(self.invalid_labels)
 
     def test_object_detection_labels_not_implemented(self):
+        manager = LabelManager("object_detection")
+        with self.assertRaises(NotImplementedError):
+            manager.encode_label(self.category_code_sample)
+
+    def test_label_dtype(self):
+        manager = LabelManager("category_codes", num_classes=4)
+        self.assertEqual(
+            manager.label_dtype,
+            tf.float32,
+            "Label dtype for category_codes should be tf.float32",
+        )
+
+        manager = LabelManager("sparse_category_codes")
+        self.assertEqual(
+            manager.label_dtype,
+            tf.float32,
+            "Label dtype for sparse_category_codes should be tf.float32",
+        )
+
+        manager = LabelManager("object_detection")
+        self.assertEqual(
+            manager.label_dtype,
+            tf.float32,
+            "Label dtype for object_detection should be tf.float32",
+        )
+
+        manager = LabelManager("binary")
+        self.assertEqual(
+            manager.label_dtype,
+            tf.float32,
+            "Label dtype for binary should be tf.float32",
+        )
+
+    def test_label_conversion_dtype(self):
+        manager = LabelManager("category_codes", num_classes=4)
+        result = manager.encode_label(self.category_code_sample)
+        self.assertEqual(
+            result.dtype,
+            tf.float32,
+            "The dtype of the encoded categorical label should be tf.float32",
+        )
+
+        manager = LabelManager("category_codes", num_classes=4, dtype=tf.int32)
+        result = manager.encode_label(self.category_code_sample)
+        self.assertEqual(
+            result.dtype,
+            tf.int32,
+            "The dtype of the encoded categorical label should be tf.int32",
+        )
+
+        manager = LabelManager("sparse_category_codes")
+        result = manager.encode_label(self.category_code_sample)
+        self.assertEqual(
+            result.dtype,
+            tf.float32,
+            "The dtype of the encoded sparse categorical label should be tf.float32",
+        )
+
+        manager = LabelManager("sparse_category_codes", dtype=tf.int32)
+        result = manager.encode_label(self.category_code_sample)
+        self.assertEqual(
+            result.dtype,
+            tf.int32,
+            "The dtype of the encoded sparse categorical label should be tf.int32",
+        )
+
+        manager = LabelManager("binary")
+        result = manager.encode_label(self.binary_sample)
+        self.assertEqual(
+            result.dtype,
+            tf.float32,
+            "The dtype of the encoded binary label should be tf.float32",
+        )
+
+        manager = LabelManager("binary", dtype=tf.int32)
+        result = manager.encode_label(self.binary_sample)
+        self.assertEqual(
+            result.dtype,
+            tf.int32,
+            "The dtype of the encoded binary label should be tf.int32",
+        )
+
         manager = LabelManager("object_detection")
         with self.assertRaises(NotImplementedError):
             manager.encode_label(self.category_code_sample)
