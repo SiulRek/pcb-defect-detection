@@ -16,11 +16,12 @@ def create_dataset(data, label_type="category_codes", num_classes=None):
 
     Args:
         - data (list of dicts or pandas.DataFrame): Data containing 'path'
-            and 'category_codes'. 'path' should contain the relative file paths
-            and 'category_codes' should contain the corresponding labels for the
-            specified 'label_type'.
+            and labels. 'path' should contain the relative file paths and labels
+            should contain the corresponding labels for the specified
+            'label_type'.
         - label_type (str, optional): Specifies the label encoding strategy
-            ('category_codes', 'sparse_category_codes', or 'object_detection').
+            ('binary', 'category_codes', 'sparse_category_codes', or
+            'object_detection').
         - num_classes (int, optional): The number of classes for
             'category_codes' label encoding.
 
@@ -40,12 +41,13 @@ def create_dataset(data, label_type="category_codes", num_classes=None):
 
     if pandas_installed and isinstance(data, pd.DataFrame):
         paths = data["path"].tolist()
-        labels = [
-            label_manager.encode_label(sample) for _, sample in data.iterrows()
-        ]
+        labels = [label_manager.encode_label(label) for label in data["label"]]
     elif isinstance(data, list) and all(isinstance(item, dict) for item in data):
         paths = [item["path"] for item in data]
-        labels = [label_manager.encode_label(item) for item in data]
+        labels = [label_manager.encode_label(item["label"]) for item in data]
+    elif isinstance(data, dict):
+        paths = data["path"]
+        labels = [label_manager.encode_label(label) for label in data["label"]]
     else:
         msg = "Data must be a list of dictionaries or a pandas DataFrame."
         raise ValueError(msg)

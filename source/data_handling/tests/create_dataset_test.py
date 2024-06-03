@@ -40,12 +40,33 @@ class TestCreateDataset(unittest.TestCase):
         for data_dict in self.data_dicts:
             data_dict["path"] = os.path.join(DATA_DIR, data_dict["path"])
 
+        self.data_dict = {
+            "path": [
+                os.path.join(DATA_DIR, "figure_1.jpeg"),
+                os.path.join(DATA_DIR, "figure_2.jpeg"),
+            ],
+            "label": [
+                0,
+                1
+             ]
+        }
+
     def tearDown(self):
         self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
 
     def test_dataset_from_dicts(self):
         """ Test dataset creation from a list of dictionaries. """
         dataset = create_dataset(self.data_dicts, "sparse_category_codes")
+        expected_labels = [0, 1, 2, 3, 4]
+        for (img, label), expected_label in zip(dataset, expected_labels):
+            self.assertIsInstance(img, tf.Tensor, "Image should be a Tensor.")
+            self.assertEqual(
+                label.numpy(), expected_label, "Label does not match expected."
+            )
+
+    def test_dataset_from_dict(self):
+        """ Test dataset creation from a single dictionary with a list of labels. """
+        dataset = create_dataset(self.data_dict, "sparse_category_codes")
         expected_labels = [0, 1, 2, 3, 4]
         for (img, label), expected_label in zip(dataset, expected_labels):
             self.assertIsInstance(img, tf.Tensor, "Image should be a Tensor.")

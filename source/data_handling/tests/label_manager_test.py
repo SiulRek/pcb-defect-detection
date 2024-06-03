@@ -20,65 +20,50 @@ class TestLabelManager(unittest.TestCase):
         cls.logger.log_title("Label Manager Test")
 
     def setUp(self):
-        self.binary_sample = {"label": 1}
-        self.category_code_sample = {"label": 2}
-        self.invalid_labels = {"wrong_key": 3}
-        self.invalid_binary_sample = {"label": 2}
+        self.binary_label = 1
+        self.invalid_binary_label = 2
+        self.categorical_label = 2
+        self.invalid_label_key = {"wrong_key": 3}
 
     def tearDown(self):
         self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
 
     def test_binary_labels_valid_input(self):
         manager = LabelManager("binary")
-        result = manager.encode_label(self.binary_sample)
+        result = manager.encode_label(self.binary_label)
         expected = tf.constant(1, dtype=tf.float32)
         self.assertTrue(
             tf.reduce_all(tf.equal(result, expected)),
             "The binary labels do not match expected output.",
         )
 
-    def test_binary_labels_invalid_key(self):
-        manager = LabelManager("binary")
-        with self.assertRaises(KeyError):
-            manager.encode_label(self.invalid_labels)
-
     def test_binary_labels_invalid_value(self):
         manager = LabelManager("binary")
         with self.assertRaises(ValueError):
-            manager.encode_label(self.invalid_binary_sample)
+            manager.encode_label(self.invalid_binary_label)
 
     def test_categorical_labels_valid_input(self):
         manager = LabelManager("category_codes", num_classes=4)
-        result = manager.encode_label(self.category_code_sample)
+        result = manager.encode_label(self.categorical_label)
         expected = tf.constant([0, 0, 1, 0], dtype=tf.float32)
         self.assertTrue(
             tf.reduce_all(tf.equal(result, expected)),
             "The categorical labels do not match expected output.",
         )
 
-    def test_categorical_labels_invalid_key(self):
-        manager = LabelManager("category_codes", num_classes=4)
-        with self.assertRaises(KeyError):
-            manager.encode_label(self.invalid_labels)
-
     def test_sparse_categorical_labels_valid_input(self):
         manager = LabelManager("sparse_category_codes")
-        result = manager.encode_label(self.category_code_sample)
+        result = manager.encode_label(self.categorical_label)
         expected = tf.constant(2, dtype=tf.float32)
         self.assertTrue(
             tf.reduce_all(tf.equal(result, expected)),
             "The sparse categorical labels do not match expected output.",
         )
 
-    def test_sparse_categorical_labels_invalid_key(self):
-        manager = LabelManager("sparse_category_codes")
-        with self.assertRaises(KeyError):
-            manager.encode_label(self.invalid_labels)
-
     def test_object_detection_labels_not_implemented(self):
         manager = LabelManager("object_detection")
         with self.assertRaises(NotImplementedError):
-            manager.encode_label(self.category_code_sample)
+            manager.encode_label(self.categorical_label)
 
     def test_label_dtype(self):
         manager = LabelManager("category_codes", num_classes=4)
@@ -87,7 +72,6 @@ class TestLabelManager(unittest.TestCase):
             tf.float32,
             "Label dtype for category_codes should be tf.float32",
         )
-
         manager = LabelManager("sparse_category_codes")
         self.assertEqual(
             manager.label_dtype,
@@ -111,7 +95,7 @@ class TestLabelManager(unittest.TestCase):
 
     def test_label_conversion_dtype(self):
         manager = LabelManager("category_codes", num_classes=4)
-        result = manager.encode_label(self.category_code_sample)
+        result = manager.encode_label(self.categorical_label)
         self.assertEqual(
             result.dtype,
             tf.float32,
@@ -119,7 +103,7 @@ class TestLabelManager(unittest.TestCase):
         )
 
         manager = LabelManager("category_codes", num_classes=4, dtype=tf.int32)
-        result = manager.encode_label(self.category_code_sample)
+        result = manager.encode_label(self.categorical_label)
         self.assertEqual(
             result.dtype,
             tf.int32,
@@ -127,7 +111,7 @@ class TestLabelManager(unittest.TestCase):
         )
 
         manager = LabelManager("sparse_category_codes")
-        result = manager.encode_label(self.category_code_sample)
+        result = manager.encode_label(self.categorical_label)
         self.assertEqual(
             result.dtype,
             tf.float32,
@@ -135,7 +119,7 @@ class TestLabelManager(unittest.TestCase):
         )
 
         manager = LabelManager("sparse_category_codes", dtype=tf.int32)
-        result = manager.encode_label(self.category_code_sample)
+        result = manager.encode_label(self.categorical_label)
         self.assertEqual(
             result.dtype,
             tf.int32,
@@ -143,7 +127,7 @@ class TestLabelManager(unittest.TestCase):
         )
 
         manager = LabelManager("binary")
-        result = manager.encode_label(self.binary_sample)
+        result = manager.encode_label(self.binary_label)
         self.assertEqual(
             result.dtype,
             tf.float32,
@@ -151,7 +135,7 @@ class TestLabelManager(unittest.TestCase):
         )
 
         manager = LabelManager("binary", dtype=tf.int32)
-        result = manager.encode_label(self.binary_sample)
+        result = manager.encode_label(self.binary_label)
         self.assertEqual(
             result.dtype,
             tf.int32,
@@ -160,7 +144,7 @@ class TestLabelManager(unittest.TestCase):
 
         manager = LabelManager("object_detection")
         with self.assertRaises(NotImplementedError):
-            manager.encode_label(self.category_code_sample)
+            manager.encode_label(self.categorical_label)
 
 
 if __name__ == "__main__":

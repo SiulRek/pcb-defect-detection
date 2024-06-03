@@ -1,4 +1,6 @@
 import tensorflow as tf
+
+
 class LabelManager:
     """
     Manages different types of label encoding for machine learning models.
@@ -10,8 +12,8 @@ class LabelManager:
             categorical label encoding.
 
     Methods:
-        - get_label: Depending on the `label_type`, it delegates to the
-            corresponding method to fetch labels.
+        - encode_label: Depending on the `label_type`, it delegates to the
+            corresponding method to encode labels.
     """
 
     default_label_dtype = {
@@ -28,16 +30,15 @@ class LabelManager:
 
         Args:
             - label_type (str): The type of label encoding to manage.
-                Supported types are 'binary_codes',
-                'category_codes','sparse_category_codes', and
-                'object_detection'.
+                Supported types are 'binary', 'category_codes',
+                'sparse_category_codes', and 'object_detection'.
             - num_classes (int, optional): The total number of classes.
                 Required if label_type is 'category_codes'.
-            - dtype (tf.DType, optional): The data type of the label. If not
+            - dtype (tf.DType, optional): The data type of the label.
         """
         self.label_type = label_type
         self.num_classes = num_classes
-        self.encode_label = self._get_label_encoder(label_type)
+        self._encode_label_func = self._get_label_encoder(label_type)
         self.label_dtype = dtype or self.default_label_dtype[label_type]
 
     def _get_label_encoder(self, label_type):
@@ -46,125 +47,107 @@ class LabelManager:
 
         Args:
             - label_type (str): The type of label encoding to manage.
-                Supported types are 'binary_codes',
-                'category_codes','sparse_category_codes', and
-                'object_detection'.
+                Supported types are 'binary', 'category_codes',
+                'sparse_category_codes', and 'object_detection'.
 
         Returns:
             - function: The label encoder method based on the label type.
         """
         if label_type == "binary":
             return self.encode_binary_label
-        elif label_type == "category_codes":
+        if label_type == "category_codes":
             return self.encode_categorical_label
-        elif label_type == "sparse_category_codes":
+        if label_type == "sparse_category_codes":
             return self.encode_sparse_categorical_label
-        elif label_type == "object_detection":
+        if label_type == "object_detection":
             return self.encode_object_detection_label
-        else:
-            msg = "The label type '{}' is not supported.".format(label_type)
-            raise ValueError(msg)
-    
-    def _extract_label(self, sample):
+        msg = f"The label type '{label_type}' is not supported."
+        raise ValueError(msg)
+
+    def encode_label(self, label):
         """
-        Extracts the label from the sample.
+        Encodes a label based on the label type specified during initialization.
 
         Args:
-            - sample (dict or int): The sample containing the label.
-        
+            - label (int): The label to encode.
+
         Returns:
-            - int: The label extracted from the sample.
+            - tf.Tensor: A TensorFlow constant of the encoded label.
         """
-        if isinstance(sample, dict):
-            return int(sample["label"])
-        return int(sample)
-        
-    def encode_binary_label(self, sample):
+        return self._encode_label_func(label)
+
+    def encode_binary_label(self, label):
         """
-        Encodes binary label in sample into format suitable for binary
-        classification.
+        Encodes a binary label into a format suitable for binary classification.
 
         Args:
-            - sample (dict): A dictionary containing the label data with key
-                'label'.
+            - label (int): The label to encode.
 
         Returns:
             - tf.Tensor: A TensorFlow constant of the label in binary
                 format.
         """
         try:
-            label = self._extract_label(sample)
+            label = int(label)
             if label not in [0, 1]:
-                msg = "The 'label' key in sample is invalid for binary classification."
+                msg = "The label is invalid for binary classification."
                 raise ValueError(msg)
             label = tf.constant(label, dtype=self.label_dtype)
             return label
-        except KeyError as e:
-            msg = "The sample dictionary does not contain the key 'label'."
-            raise KeyError(msg) from e
         except ValueError as e:
-            msg = "The 'label' key in sample should be convertable to integer."
+            msg = "The label should be convertible to an integer."
             raise ValueError(msg) from e
 
-    def encode_categorical_label(self, sample):
+    def encode_categorical_label(self, label):
         """
-        Encodes catogircal label in sample into one-hot encoded format.
+        Encodes a categorical label into one-hot encoded format.
 
         Args:
-            - sample (dict): A dictionary containing the label data with key
-                'label'.
+            - label (int): The label to encode.
 
         Returns:
             - tf.Tensor: A one-hot encoded TensorFlow constant of the label.
         """
         try:
-            label = self._extract_label(sample)
+            label = int(label)
             label = tf.constant(label, dtype=tf.int8)
             label = tf.one_hot(label, self.num_classes)
             label = tf.cast(label, self.label_dtype)
             return label
-        except KeyError as e:
-            msg = "The sample dictionary does not contain the key 'label'."
-            raise KeyError(msg) from e
         except ValueError as e:
-            msg = "The 'label' key in sample should be convertable to integer."
+            msg = "The label should be convertible to an integer."
             raise ValueError(msg) from e
-        # Except num_classes is invalid
         except tf.errors.OpError as e:
-            msg = "Probably the number of classes is invalid."
+            msg = "The number of classes is probably invalid."
             raise ValueError(msg) from e
 
-    def encode_sparse_categorical_label(self, sample):
+    def encode_sparse_categorical_label(self, label):
         """
-        Encodes categorical label in sample into sparse format suitable for
-        sparse categorical crossentropy loss.
+        Encodes a categorical label into sparse format suitable for sparse
+        categorical crossentropy loss.
 
         Args:
-            - sample (dict): A dictionary containing the label data with key
-                'label'.
+            - label (int): The label to encode.
 
         Returns:
             - tf.Tensor: A TensorFlow constant of the label in sparse
                 format.
         """
         try:
-            label = self._extract_label(sample)
+            label = int(label)
             label = tf.constant(label, dtype=self.label_dtype)
             return label
-        except KeyError as e:
-            msg = "The sample dictionary does not contain the key 'label'."
-            raise KeyError(msg) from e
         except ValueError as e:
-            msg = "The 'label' key in sample should be convertable to integer."
+            msg = "The label should be convertible to an integer."
             raise ValueError(msg) from e
 
-    def encode_object_detection_label(self, sample):
+    def encode_object_detection_label(self, _):
         """
         Stub method for future implementation of object detection label
         encoding.
 
         Args:
-            - sample (dict): A dictionary containing the label data.
+            - label (int): The label to encode.
 
         Raises:
             - NotImplementedError: Indicates that the method is not yet
