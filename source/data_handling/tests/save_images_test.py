@@ -111,16 +111,14 @@ class TestSaveImages(unittest.TestCase):
                 result["label"], label, f"The label for {file_path} should be {label}."
             )
 
-    def test_save_images_custom_prefix_suffix(self):
-        """ Test saving images with custom prefix and suffix. """
+    def test_save_images_string_prefix(self):
+        """ Test saving images with a string prefix. """
         prefix = "custom_prefix"
-        suffix = "_suffix"
         results = save_images(
             self.jpeg_dataset,
             self.test_output_dir,
             image_format="jpg",
             prefix=prefix,
-            suffix=suffix,
         )
         self.assertEqual(
             len(results),
@@ -140,8 +138,79 @@ class TestSaveImages(unittest.TestCase):
                 f"The file {file_path} should start with {prefix}.",
             )
             self.assertTrue(
-                file_path.endswith(suffix + ".jpg"),
-                f"The file {file_path} should end with {suffix}.jpg.",
+                file_path.endswith(".jpg"),
+                f"The file {file_path} should end with .jpg.",
+            )
+            self.assertEqual(
+                result["label"], label, f"The label for {file_path} should be {label}."
+            )
+
+    def test_save_images_function_prefix_1(self):
+        """ Test saving images with a function prefix. """
+        def prefix_func(label):
+            return f"label_{label}"
+
+        results = save_images(
+            self.jpeg_dataset,
+            self.test_output_dir,
+            image_format="jpg",
+            prefix=prefix_func,
+        )
+        self.assertEqual(
+            len(results),
+            len(self.jpeg_data_dicts),
+            "The number of results should be equal to the number of dataset samples.",
+        )
+
+        for result, label in zip(
+            results, [d["category_codes"] for d in self.jpeg_data_dicts]
+        ):
+            file_path = result["path"]
+            self.assertTrue(
+                os.path.exists(file_path), f"The file {file_path} should exist."
+            )
+            expected_prefix = f"label_{label}"
+            self.assertTrue(
+                file_path.startswith(os.path.join(self.test_output_dir, expected_prefix)),
+                f"The file {file_path} should start with {expected_prefix}.",
+            )
+            self.assertTrue(
+                file_path.endswith(".jpg"),
+                f"The file {file_path} should end with .jpg.",
+            )
+            self.assertEqual(
+                result["label"], label, f"The label for {file_path} should be {label}."
+            )
+
+    def test_save_images_function_prefix_2(self):
+        """ Test saving images with a function prefix. """
+        results = save_images(
+            self.jpeg_dataset,
+            self.test_output_dir,
+            image_format="jpg",
+            prefix=str,
+        )
+        self.assertEqual(
+            len(results),
+            len(self.jpeg_data_dicts),
+            "The number of results should be equal to the number of dataset samples.",
+        )
+
+        for result, label in zip(
+            results, [d["category_codes"] for d in self.jpeg_data_dicts]
+        ):
+            file_path = result["path"]
+            self.assertTrue(
+                os.path.exists(file_path), f"The file {file_path} should exist."
+            )
+            expected_prefix = str(label)
+            self.assertTrue(
+                file_path.startswith(os.path.join(self.test_output_dir, expected_prefix)),
+                f"The file {file_path} should start with {expected_prefix}.",
+            )
+            self.assertTrue(
+                file_path.endswith(".jpg"),
+                f"The file {file_path} should end with .jpg.",
             )
             self.assertEqual(
                 result["label"], label, f"The label for {file_path} should be {label}."
