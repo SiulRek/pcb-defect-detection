@@ -1,6 +1,7 @@
 import tensorflow as tf
 
 
+# TODO make label type and dtype property
 class LabelManager:
     """
     Manages different types of label encoding for machine learning models.
@@ -112,26 +113,6 @@ class LabelManager:
             msg = "The label is not in the list of category names."
             raise ValueError(msg) from e
 
-    # def convert_to_string(self, label):
-    #     """
-    #     Converts a label to a string format in the case of numeric labels. If it
-    #     is not a numeric label or tensor, it...
-
-    #     Args:
-    #         - label (str or int): The label to convert.
-
-    #     Returns:
-    #         - str: The label in string format.
-    #     """
-    #     if not isinstance(label, int) or isinstance(label, tf.Tensor):
-    #         msg = "The label is not a numeric label."
-    #         raise ValueError(msg)
-    #     try:
-    #         return self.category_names[label]
-    #     except IndexError as e:
-    #         msg = "The label is not in the list of category names."
-    #         raise ValueError(msg) from e
-
     def encode_label(self, label):
         """
         Encodes a label based on the label type and category names specified
@@ -224,3 +205,26 @@ class LabelManager:
         """
         msg = "Object Detection Labels are not yet implemented."
         raise NotImplementedError(msg)
+
+    def decode_label(self, label):
+        """
+        Decodes a label from a numeric format to a string format based on the
+        category names provided during initialization.
+
+        Args:
+            - label (int): The label to decode.
+
+        Returns:
+            - str: The label in string format.
+        """
+        if not self.category_names:
+            msg = "No category names are provided for conversion."
+            raise ValueError(msg)
+        if not isinstance(label, int) and not isinstance(label, tf.Tensor):
+            msg = "The label is not a numeric label."
+            raise ValueError(msg)
+        try:
+            return self.category_names[label]
+        except IndexError as e:
+            msg = "The label is not in the list of category names."
+            raise ValueError(msg) from e
