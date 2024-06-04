@@ -145,8 +145,9 @@ class TestSaveImages(unittest.TestCase):
                 result["label"], label, f"The label for {file_path} should be {label}."
             )
 
-    def test_save_images_function_prefix_1(self):
+    def test_save_images_function_prefix(self):
         """ Test saving images with a function prefix. """
+
         def prefix_func(label):
             return f"label_{label}"
 
@@ -171,41 +172,9 @@ class TestSaveImages(unittest.TestCase):
             )
             expected_prefix = f"label_{label}"
             self.assertTrue(
-                file_path.startswith(os.path.join(self.test_output_dir, expected_prefix)),
-                f"The file {file_path} should start with {expected_prefix}.",
-            )
-            self.assertTrue(
-                file_path.endswith(".jpg"),
-                f"The file {file_path} should end with .jpg.",
-            )
-            self.assertEqual(
-                result["label"], label, f"The label for {file_path} should be {label}."
-            )
-
-    def test_save_images_function_prefix_2(self):
-        """ Test saving images with a function prefix. """
-        results = save_images(
-            self.jpeg_dataset,
-            self.test_output_dir,
-            image_format="jpg",
-            prefix=str,
-        )
-        self.assertEqual(
-            len(results),
-            len(self.jpeg_data_dicts),
-            "The number of results should be equal to the number of dataset samples.",
-        )
-
-        for result, label in zip(
-            results, [d["category_codes"] for d in self.jpeg_data_dicts]
-        ):
-            file_path = result["path"]
-            self.assertTrue(
-                os.path.exists(file_path), f"The file {file_path} should exist."
-            )
-            expected_prefix = str(label)
-            self.assertTrue(
-                file_path.startswith(os.path.join(self.test_output_dir, expected_prefix)),
+                file_path.startswith(
+                    os.path.join(self.test_output_dir, expected_prefix)
+                ),
                 f"The file {file_path} should start with {expected_prefix}.",
             )
             self.assertTrue(

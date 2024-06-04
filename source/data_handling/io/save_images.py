@@ -1,6 +1,8 @@
 import math
 import os
+
 import tensorflow as tf
+
 
 def save_images(
     dataset, output_dir, image_format="jpg", prefix="image", start_number=0
@@ -9,12 +11,16 @@ def save_images(
     Saves a dataset of images and labels to file paths.
 
     Args:
-        - dataset (tf.data.Dataset): The dataset containing images and labels.
+        - dataset (tf.data.Dataset): The dataset containing images and
+            labels.
         - output_dir (str): The directory to save the encoded image files.
-        - image_format (str, optional): The format for saving images ('jpg' or 'png').
-        - prefix (str or function, optional): The prefix for naming the saved images.
-            If a function is provided, it should take a label and return a string.
-        - start_number (int, optional): The starting number for the sequential naming.
+        - image_format (str, optional): The format for saving images ('jpg'
+            or 'png').
+        - prefix (str or function, optional): The prefix for naming the
+            saved images. If a function is provided, it should take a label and
+            return a string.
+        - start_number (int, optional): The starting number for the
+            sequential naming.
 
     Returns:
         - list of dict: A list of dictionaries with 'path' and 'label' keys.
@@ -23,7 +29,8 @@ def save_images(
         os.makedirs(output_dir)
 
     if image_format not in ["jpg", "png"]:
-        raise ValueError("Image format not supported. Use 'jpg' or 'png'.")
+        msg = "Image format not supported. Use 'jpg' or 'png'."
+        raise ValueError(msg)
 
     num_samples = sum(1 for _ in dataset)
     num_digits = max(4, math.ceil(math.log10(num_samples + start_number)))
