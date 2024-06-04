@@ -3,26 +3,26 @@ import xml.etree.ElementTree as ET
 
 import pandas as pd
 
-from source.load_raw_data.category_codes import Category
-from source.load_raw_data.dataset_serialization import (
+from pcb_defect_detection.deprecated.loading.category_codes import Category
+from pcb_defect_detection.deprecated.loading.dataset_serialization import (
     load_tfrecord_from_file,
     save_tfrecord_to_file,
 )
-from source.load_raw_data.get_tf_dataset import get_tf_dataset_from_df
+from pcb_defect_detection.deprecated.loading.get_tf_dataset import get_tf_dataset_from_df
 
-ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")
+ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
 
 PATH_ANNOTATIONS = os.path.join(
-    ROOT_DIR, r"data/pcb_defects_kaggle/Annotations"
+    ROOT_DIR, r"pcb_defect_detection/data/pcb_defects_kaggle/Annotations"
 )  # Path to annotations.
 PATH_IMAGE = os.path.join(
-    ROOT_DIR, r"data/pcb_defects_kaggle/images"
+    ROOT_DIR, r"pcb_defect_detection/data/pcb_defects_kaggle/images"
 )  # Path to .jpg images.
 PATH_PCB_USED = os.path.join(
-    ROOT_DIR, r"data/pcb_defects_kaggle/PCB_USED"
+    ROOT_DIR, r"pcb_defect_detection/data/pcb_defects_kaggle/PCB_USED"
 )  # Path to .jpg PCB used.
 RECORD_FILE = os.path.join(
-    ROOT_DIR, r"data/tensorflow_records/pcb_defects_kaggle.tfrecord"
+    ROOT_DIR, r"pcb_defect_detection/data/tensorflow_records/pcb_defects_kaggle.tfrecord"
 )
 
 

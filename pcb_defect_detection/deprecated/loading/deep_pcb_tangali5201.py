@@ -2,20 +2,20 @@ import os
 
 import pandas as pd
 
-from source.load_raw_data.category_codes import Category
-from source.load_raw_data.dataset_serialization import (
+from pcb_defect_detection.deprecated.loading.category_codes import Category
+from pcb_defect_detection.deprecated.loading.dataset_serialization import (
     load_tfrecord_from_file,
     save_tfrecord_to_file,
 )
-from source.load_raw_data.get_tf_dataset import get_tf_dataset_from_df
+from pcb_defect_detection.deprecated.loading.get_tf_dataset import get_tf_dataset_from_df
 
-ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")
-DATASET_DIR = os.path.join(ROOT_DIR, "data", "deep_pcb_tangsali5201")
+ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
+DATASET_DIR = os.path.join(ROOT_DIR, "pcb_defect_detection", "data", "deep_pcb_tangsali5201")
 TRAIN_RECORD_FILE = os.path.join(
-    ROOT_DIR, r"data\tensorflow_records\deep_pcb_train.tfrecord"
+    ROOT_DIR, "pcb_defect_detection", "data", "tensorflow_records", "deep_pcb_train.tfrecord"
 )
 TEST_RECORD_FILE = os.path.join(
-    ROOT_DIR, r"data\tensorflow_records\deep_pcb_test.tfrecord"
+    ROOT_DIR, "pcb_defect_detection", "data", "tensorflow_records", "deep_pcb_test.tfrecord"
 )
 
 

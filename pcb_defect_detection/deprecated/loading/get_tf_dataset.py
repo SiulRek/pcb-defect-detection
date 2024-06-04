@@ -3,7 +3,7 @@ import random
 
 import tensorflow as tf
 
-ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")
+ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
 
 
 def get_tf_dataset_from_df(dataframe, random_seed=34, sample_num=-1):

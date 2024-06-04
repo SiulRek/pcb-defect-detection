@@ -12,7 +12,7 @@ The folder `load_raw_data` are used for preprocessing and preparing raw data for
 
 - [deep_pcb_tangali5201.py](deep_pcb_tangali5201.py) [[2]](#references): Tangali5201 provided the deepPCB dataset for this script. It has functions for reading dataset information, constructing pandas DataFrames for training and testing, creating a training and testing TensorFlow dataset and serializing this datasets to TFRecord files for future use.
 
-- [create_tf_records_local.py](create_tf_records_local.py): This script automates the TensorFlow record generation for the PCB defect detection datasets. It interfaces with the Kaggle and deep_pcb_tangali5201 datasets, making it easier to generate TFRecord files. 
+- [create_tf_records_local.py](create_tf_records_local.py): This script automates the TensorFlow record generation for the PCB defect detection datasets. It interfaces with the Kaggle and deep_pcb_tangali5201 datasets, making it easier to generate TFRecord files. 
 
 ## References
 
