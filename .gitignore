@@ -13,6 +13,7 @@ batch_scripts/
 
 # Local and Temporary Files
 **/local/
+**/temp/
 **/temp.*
 **/test.*
 
