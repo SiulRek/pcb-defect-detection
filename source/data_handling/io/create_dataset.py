@@ -8,7 +8,7 @@ from source.data_handling.io.decode_image import decode_image
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
 
 
-def create_dataset(data, label_type="category_codes", num_classes=None):
+def create_dataset(data, category_names, label_type="category_codes"):
     """
     Creates a TensorFlow Dataset object from the given data containing file
     paths and labels using LabelManager for label encoding. Data can be a list
@@ -19,11 +19,11 @@ def create_dataset(data, label_type="category_codes", num_classes=None):
             and labels. 'path' should contain the relative file paths and labels
             should contain the corresponding labels for the specified
             'label_type'.
+        - category_names (list): The existing category names for label
+            encoding.
         - label_type (str, optional): Specifies the label encoding strategy
             ('binary', 'category_codes', 'sparse_category_codes', or
             'object_detection').
-        - num_classes (int, optional): The number of classes for
-            'category_codes' label encoding.
 
     Returns:
         - tf.data.Dataset: A TensorFlow Dataset containing tuples of (image,
@@ -36,8 +36,7 @@ def create_dataset(data, label_type="category_codes", num_classes=None):
         pandas_installed = True
     except ImportError:
         pandas_installed = False
-
-    label_manager = LabelManager(label_type, num_classes=num_classes)
+    label_manager = LabelManager(label_type, category_names=category_names)
 
     if pandas_installed and isinstance(data, pd.DataFrame):
         paths = data["path"].tolist()
