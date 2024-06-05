@@ -2,8 +2,8 @@ from copy import deepcopy
 
 import tensorflow as tf
 
-from source.load_raw_data.pack_images_and_labels import pack_images_and_labels
-from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
+from source.data_handling.manipulation.pack_images_and_labels import pack_images_and_labels
+from source.data_handling.manipulation.unpack_dataset import unpack_dataset
 from source.preprocessing.helpers.for_preprocessor.class_instances_serializer import (
     ClassInstancesSerializer,
 )
@@ -215,7 +215,7 @@ class ImagePreprocessor:
     def _strip_dataset(self, dataset):
         for element in dataset.take(1):
             if isinstance(element, tuple) and len(element) == 2:
-                return unpack_tf_dataset(dataset)
+                return unpack_dataset(dataset)
             return dataset, None
 
     def process(self, image_dataset):
