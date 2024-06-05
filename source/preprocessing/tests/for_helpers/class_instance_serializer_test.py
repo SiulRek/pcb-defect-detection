@@ -5,13 +5,7 @@ import unittest
 from source.preprocessing.helpers.for_preprocessor.class_instances_serializer import (
     ClassInstancesSerializer,
 )
-from source.utils import TestResultLogger
-
-ROOT_DIR = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", ".."
-)
-OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/preprocessing/tests/outputs")
-LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
+from source.testing.base_test_case import BaseTestCase
 
 
 class MockClass1:
@@ -60,7 +54,7 @@ class MockClassInvalidparametersAttr:
         self.parameters = param1
 
 
-class TestClassInstancesSerializer(unittest.TestCase):
+class TestClassInstancesSerializer(BaseTestCase):
     """
     Test suite for the ClassInstancesSerializer class.
 
@@ -71,14 +65,10 @@ class TestClassInstancesSerializer(unittest.TestCase):
     and edge cases appropriately.
     """
 
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.logger = TestResultLogger(LOG_FILE, "class Instance Serializer Test")
-
     def setUp(self):
-        os.makedirs(OUTPUT_DIR, exist_ok=True)
-        self.json_path = os.path.join(OUTPUT_DIR, "test_config.json")
-        with open(self.json_path, "a"):
+        super().setUp()
+        self.json_path = os.path.join(self.temp_dir, "test_config.json")
+        with open(self.json_path, "w"):
             pass
         self.instance_mapping = {"MockClass1": MockClass1, "MockClass2": MockClass2}
         self.serializer = ClassInstancesSerializer(self.instance_mapping)
@@ -93,10 +83,6 @@ class TestClassInstancesSerializer(unittest.TestCase):
                 param1="win"
             ),  # All is expected to be initialized to default value.
         ]
-
-    def tearDown(self):
-        os.remove(self.json_path)
-        self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
 
     def test_serialize_success_1(self):
         """ Test the serialization to JSON value of a variety of different data
@@ -216,7 +202,7 @@ class TestClassInstancesSerializer(unittest.TestCase):
 
     def test_creation_of_json(self):
         """ Test the creation of a JSON file. """
-        json = os.path.join(OUTPUT_DIR, "serializer_test_file.json")
+        json = os.path.join(self.output_dir, "serializer_test_file.json")
         self.serializer.save_instances_to_json([], json)  # Now a File is created.
         os.remove(json)
 
