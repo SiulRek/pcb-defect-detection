@@ -5,16 +5,10 @@ import unittest
 from source.preprocessing.helpers.for_tests.copy_json_exclude_entries import (
     copy_json_exclude_entries,
 )
-from source.utils import TestResultLogger
-
-ROOT_DIR = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", ".."
-)
-OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/preprocessing/tests/outputs")
-LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
+from source.testing.base_test_case import BaseTestCase
 
 
-class TestCopyJsonExcludeEntries(unittest.TestCase):
+class TestCopyJsonExcludeEntries(BaseTestCase):
     """
     Test cases for the copy_json_exclude_entries function.
 
@@ -31,18 +25,20 @@ class TestCopyJsonExcludeEntries(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        os.makedirs(OUTPUT_DIR, exist_ok=True)
-        cls.logger = TestResultLogger(LOG_FILE, "Recursive Type Conversion Test")
-        cls.source_file = os.path.join(OUTPUT_DIR, "source.json")
-        cls.dest_file = os.path.join(OUTPUT_DIR, "dest.json")
+        super().setUpClass()  
+
+        cls.source_file = os.path.join(cls.output_dir, "source.json")
+        cls.dest_file = os.path.join(cls.output_dir, "dest.json")
 
     def setUp(self):
+        super().setUp()  
+
         source_data = {"key1": "value1", "key2": "value2", "key3": "value3"}
         with open(self.source_file, "w") as file:
             json.dump(source_data, file)
 
     def tearDown(self):
-        self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
+        super().tearDown()  
 
         if os.path.exists(self.source_file):
             os.remove(self.source_file)
@@ -57,7 +53,6 @@ class TestCopyJsonExcludeEntries(unittest.TestCase):
             dest_data = json.load(file)
 
         self.assertNotIn("key2", dest_data)
-
         self.assertIn("key1", dest_data)
         self.assertIn("key3", dest_data)
 
