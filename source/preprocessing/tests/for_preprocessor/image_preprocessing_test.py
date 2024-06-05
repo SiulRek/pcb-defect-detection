@@ -6,25 +6,24 @@ from unittest.mock import patch
 import cv2
 import tensorflow as tf
 
-from source.load_raw_data.kaggle_dataset import load_tf_record
-from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
+from source.preprocessing.helpers.for_preprocessor.recursive_type_conversion import (
+    recursive_type_conversion,
+)
+from source.preprocessing.helpers.for_preprocessor.step_class_mapping import (
+    STEP_CLASS_MAPPING,
+)
 from source.preprocessing.helpers.for_steps.step_base import StepBase
 from source.preprocessing.helpers.for_steps.step_utils import correct_image_tensor_shape
 from source.preprocessing.image_preprocessor import ImagePreprocessor
-from source.utils import TestResultLogger
+from source.testing.base_test_case import BaseTestCase
+from source.utils import PCBVisualizerforTF, SimplePopupHandler
 
-ROOT_DIR = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", ".."
-)
-JSON_TEST_FILE = os.path.join(
-    ROOT_DIR, r"source/preprocessing/pipelines/test_pipe.json"
-)
-OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/preprocessing/tests/outputs")
-LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
+STEP_PARAMETERS = {"angle": 180}
+
+JSON_TEMPLATE_REL = os.path.join(r"source/preprocessing/pipelines/template.json")
 
 
 class GrayscaleToRGB(StepBase):
-
     arguments_datatype = {"param1": int, "param2": (int, int), "param3": bool}
     name = "Grayscale_to_RGB"
 
@@ -39,7 +38,6 @@ class GrayscaleToRGB(StepBase):
 
 
 class RGBToGrayscale(StepBase):
-
     arguments_datatype = {"param1": int, "param2": (int, int), "param3": bool}
     name = "RGB_to_Grayscale"
 
@@ -50,7 +48,7 @@ class RGBToGrayscale(StepBase):
     def process_step(self, image_nparray):
         blurred_image = cv2.GaussianBlur(
             image_nparray, ksize=(5, 5), sigmaX=2
-        )  # Randomly choosen action.
+        )  # Randomly chosen action.
         blurred_image = tf.convert_to_tensor(blurred_image, dtype=tf.uint8)
         image_grayscale_tensor = tf.image.rgb_to_grayscale(blurred_image)
         image_grayscale_tensor = correct_image_tensor_shape(image_grayscale_tensor)
@@ -59,7 +57,6 @@ class RGBToGrayscale(StepBase):
 
 
 class ErrorStep(StepBase):
-
     name = "ErrorStep"
 
     def __init__(self):
@@ -73,7 +70,7 @@ class ErrorStep(StepBase):
         return processed_image
 
 
-class TestImagePreprocessor(unittest.TestCase):
+class TestImagePreprocessor(BaseTestCase):
     """
     Test suite for evaluating the `ImagePreprocessor` class functionality,
     specifically focusing on the robustness and reliability of the image
@@ -98,18 +95,25 @@ class TestImagePreprocessor(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        super().setUpClass()
+        cls.json_template = os.path.join(cls.root_dir, JSON_TEMPLATE_REL)
+        cls.image_dataset = cls.load_image_dataset()
+        cls.popup_handler = SimplePopupHandler()
+        cls.visual_inspection = True
+        cls.step_visualization_dir = os.path.join(cls.visualizations_dir, "image_preprocessor")
+        if __name__ == "__main__":
+            cls.visual_inspection = cls.popup_handler.ask_yes_no_question(
+                "Do you want to make a visual inspection?"
+            )
 
-        if not os.path.exists(OUTPUT_DIR):
-            os.mkdir(OUTPUT_DIR)
-
-        kaggle_dataset = load_tf_record().take(
-            9
-        )  # To reduce testing time test cases share this attribute Do not change this attribute.
-        cls.image_dataset = unpack_tf_dataset(kaggle_dataset)[0]
-        cls.logger = TestResultLogger(LOG_FILE, "Image Preprocessor Test")
+        if cls.visual_inspection:
+            if not os.path.isdir(cls.step_visualization_dir):
+                os.makedirs(cls.step_visualization_dir)
 
     def setUp(self):
-        with open(JSON_TEST_FILE, "a"):
+        super().setUp()
+        self.json_test_file = os.path.join(self.temp_dir, "test_pipeline.json")
+        with open(self.json_test_file, "a"):
             pass
         self.pipeline = [
             RGBToGrayscale(param1=20, param2=(20, 20), param3=False),
@@ -120,9 +124,9 @@ class TestImagePreprocessor(unittest.TestCase):
         ]
 
     def tearDown(self):
-        if os.path.exists(JSON_TEST_FILE):
-            os.remove(JSON_TEST_FILE)
-        self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
+        super().tearDown()
+        if os.path.exists(self.json_test_file):
+            os.remove(self.json_test_file)
 
     def _verify_image_shapes(
         self, processed_images, original_images, color_channel_expected
@@ -139,7 +143,7 @@ class TestImagePreprocessor(unittest.TestCase):
         preprocessing pipeline.
 
         This test case first populates the pipeline with specific steps, then
-        pops the last step, and finally appendes it back. It verifies both the
+        pops the last step, and finally appends it back. It verifies both the
         popped step and the integrity of the pipeline after these operations.
         """
         pipeline = [
@@ -275,15 +279,24 @@ class TestImagePreprocessor(unittest.TestCase):
         This test case validates that the pipeline, when applied to a packed
         dataset, meaning a dataset with both images and labels.
         """
-        packed_dataset = load_tf_record().take(9)
+        unpacked_dataset = self.image_dataset
+        # The dataset is packed with itself to create a dataset with both images and labels.
+        packed_dataset = tf.data.Dataset.zip((unpacked_dataset, unpacked_dataset))
+
         preprocessor = ImagePreprocessor()
         preprocessor.set_pipe(self.pipeline)
         processed_dataset = preprocessor.process(packed_dataset)
-        processed_images = unpack_tf_dataset(processed_dataset)[0]
-        original_images = unpack_tf_dataset(packed_dataset)[0]
-        self._verify_image_shapes(
-            processed_images, original_images, color_channel_expected=1
-        )
+        
+        processed_images, processed_labels = zip(*processed_dataset)
+
+        processed_images = list(processed_images)
+        processed_labels = list(processed_labels)
+        original_images = list(unpacked_dataset)
+
+        self._verify_image_shapes(processed_images, original_images, color_channel_expected=1)
+
+        # Check if the labels are not modified.
+        self._verify_image_shapes(processed_labels, original_images, color_channel_expected=3)
 
     def test_set_default_datatype(self):
         """
@@ -326,9 +339,9 @@ class TestImagePreprocessor(unittest.TestCase):
         ):
             old_preprocessor = ImagePreprocessor()
             old_preprocessor.set_pipe(self.pipeline)
-            old_preprocessor.save_pipe_to_json(JSON_TEST_FILE)
+            old_preprocessor.save_pipe_to_json(self.json_test_file)
             new_preprocessor = ImagePreprocessor()
-            new_preprocessor.load_pipe_from_json(JSON_TEST_FILE)
+            new_preprocessor.load_pipe_from_json(self.json_test_file)
 
         self.assertEqual(
             len(old_preprocessor.pipeline),
@@ -363,7 +376,7 @@ class TestImagePreprocessor(unittest.TestCase):
             "Grayscale_to_RGB": mock_class_parameters,
         }
 
-        with open(JSON_TEST_FILE, "w") as file:
+        with open(self.json_test_file, "w") as file:
             json.dump(json_data, file)
 
         mock_mapping = {
@@ -374,7 +387,7 @@ class TestImagePreprocessor(unittest.TestCase):
             "source.preprocessing.image_preprocessor.STEP_CLASS_MAPPING", mock_mapping
         ):
             preprocessor = ImagePreprocessor()
-            preprocessor.load_randomized_pipe_from_json(JSON_TEST_FILE)
+            preprocessor.load_randomized_pipe_from_json(self.json_test_file)
             pipeline = preprocessor.pipeline
 
         self.assertIsInstance(pipeline[0], RGBToGrayscale)
