@@ -2,7 +2,12 @@ from abc import ABC
 import os
 import unittest
 
-from source.testing.test_result_logger import TestResultLogger
+from source.testing.helpers.load_dataset_from_tf_records import (
+    load_dataset_from_tf_records,
+)
+from source.testing.helpers.test_result_logger import TestResultLogger
+
+DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "image_data")
 
 
 class BaseTestCase(unittest.TestCase, ABC):
@@ -82,3 +87,16 @@ class BaseTestCase(unittest.TestCase, ABC):
         """ Instance-level teardown method that logs the outcome of each test
         method. """
         self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
+
+    def load_image_dataset(self):
+        """
+        Load the image dataset used for testing. This method is intended to be
+        overridden by derived test classes to return the appropriate dataset.
+
+        Returns:
+            - tf.data.Dataset: The image dataset to be used for testing.
+        """
+        tf_records_path = os.path.join(
+            DATA_DIR, "tf_records", "geometrical_forms.tfrecord"
+        )
+        return load_dataset_from_tf_records(tf_records_path)

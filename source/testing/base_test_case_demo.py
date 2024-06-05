@@ -1,4 +1,7 @@
 import unittest
+
+import matplotlib.pyplot as plt
+
 from source.testing.base_test_case import BaseTestCase
 
 
@@ -14,7 +17,7 @@ class BaseTestCaseDemo(BaseTestCase):
     def compute_output_dir(cls):
         # Overriding the method to avoid the need for a 'tests' directory.
         return super().compute_output_dir("testing")
-    
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -32,8 +35,16 @@ class BaseTestCaseDemo(BaseTestCase):
     def test_example_functionality(self):
         """ An example test that logs its outcome and demonstrates the logging
         functionality. """
-        self.assertTrue(True)  
+        self.assertTrue(True)
 
+    def test_load_image_dataset(self):
+        """ An example test that demonstrates the usage of a helper method. """
+        dataset = self.load_image_dataset()
+        for image in dataset.take(1):
+            # plot the image to outputs directory
+            self.assertIsNotNone(image)
+            plt.imshow(image)
+            plt.savefig(f"{self.output_dir}/loaded_image.png")
 
     def tearDown(self):
         super().tearDown()
