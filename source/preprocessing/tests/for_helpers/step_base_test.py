@@ -1,20 +1,11 @@
-import os
 import unittest
 
 import cv2
 import tensorflow as tf
 
-from source.load_raw_data.kaggle_dataset import load_tf_record
-from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
 from source.preprocessing.helpers.for_steps.step_base import StepBase
 from source.preprocessing.helpers.for_steps.step_utils import correct_image_tensor_shape
-from source.utils import TestResultLogger
-
-ROOT_DIR = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", ".."
-)
-OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/preprocessing/tests/outputs")
-LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
+from source.testing.base_test_case import BaseTestCase
 
 
 class TfTestStep(StepBase):
@@ -44,16 +35,14 @@ class PyTestStep(StepBase):
     def process_step(self, image_nparray):
         blurred_image = cv2.GaussianBlur(
             image_nparray, ksize=(5, 5), sigmaX=2
-        )  # Randomly choosen action.
+        )  # Randomly chosen action.
         blurred_image_tensor = tf.convert_to_tensor(blurred_image, dtype=tf.uint8)
         image_grayscale_tensor = tf.image.rgb_to_grayscale(blurred_image_tensor)
         processed_img = (image_grayscale_tensor.numpy()).astype("uint8")
         return processed_img
 
-    # Note in real usage conversion of np.array to tensor and viceversa in one process_step is not recommended.
 
-
-class TestStepBase(unittest.TestCase):
+class TestStepBase(BaseTestCase):
     """
     Test suite for validating the functionality of the preprocessing steps
     parent class `StepBase` in the image preprocessing module.
@@ -72,19 +61,14 @@ class TestStepBase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        if not os.path.exists(OUTPUT_DIR):
-            os.mkdir(OUTPUT_DIR)
-        kaggle_dataset = load_tf_record().take(9)
-        cls.image_dataset = unpack_tf_dataset(kaggle_dataset)[0]
-        cls.logger = TestResultLogger(LOG_FILE, "Step Base Test")
+        super().setUpClass()  # Ensures that the base class setup is executed
+        cls.image_dataset = cls.load_image_dataset()
 
     def setUp(self):
+        super().setUp()  # Ensures that the base class setup is called
         self.local_vars = {"param1": 10, "param2": (10, 10), "param3": True}
         self.tf_preprocessing_step = TfTestStep(**self.local_vars)
         self.py_preprocessing_step = PyTestStep(**self.local_vars)
-
-    def tearDown(self):
-        self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
 
     def _verify_image_shapes(
         self, processed_images, original_images, color_channel_expected
@@ -159,7 +143,8 @@ class TestStepBase(unittest.TestCase):
         processed_dataset = tf_preprocessing_step.process_step(self.image_dataset)
         for img in processed_dataset.take(1):
             self.assertEqual(img.dtype, tf.float16)
-        # Check if 'default_output_datatypes' in 'StepBase' remains unchanged, when Child Class changes 'output_datatypes' attribute.
+        # Check if 'default_output_datatypes' in 'StepBase' remains unchanged,
+        # when Child Class changes 'output_datatypes' attribute.
         tf_preprocessing_step.output_datatype = tf.uint8
         self.assertEqual(StepBase.default_output_datatype, tf.float16)
         StepBase.default_output_datatype = image_datatype_kept
