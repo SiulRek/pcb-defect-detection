@@ -94,7 +94,8 @@ class BaseTestCase(unittest.TestCase, ABC):
         if os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
 
-    def load_image_dataset(self):
+    @classmethod
+    def load_image_dataset(cls):
         """
         Load the image dataset used for testing. This method is intended to be
         overridden by derived test classes to return the appropriate dataset.
