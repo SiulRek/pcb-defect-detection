@@ -5,16 +5,10 @@ from source.preprocessing.helpers.for_preprocessor.randomly_select_sequential_ke
     randomly_select_sequential_keys,
     is_sequential,
 )
-from source.utils import TestResultLogger
-
-ROOT_DIR = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", ".."
-)
-OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/preprocessing/tests/outputs")
-LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
+from source.testing.base_test_case import BaseTestCase
 
 
-class TestRandomlySelectSequentialKeys(unittest.TestCase):
+class TestRandomlySelectSequentialKeys(BaseTestCase):
     """
     Unit tests for `randomly_select_sequential_keys`.
 
@@ -37,11 +31,32 @@ class TestRandomlySelectSequentialKeys(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        os.makedirs(OUTPUT_DIR, exist_ok=True)
-        cls.logger = TestResultLogger(LOG_FILE, "Randomly Select Sequential Keys")
+        super().setUpClass()  
+
+        cls.test_data_directory = os.path.join(
+            cls.output_dir, "randomly_select_sequential_keys_tests"
+        )
+        os.makedirs(cls.test_data_directory, exist_ok=True)
 
     def tearDown(self):
-        self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
+        super().tearDown()  
+
+
+    def get_stripped_dict_keys(self, input_dict, separator="__"):
+        """
+        Get the keys of a dictionary with the separator and part after the
+        separator removed.
+
+        Args:
+            - input_dict (dict): The input dictionary.
+            - separator (str, optional): The separator used in the key
+                pattern. Defaults to '__'.
+
+        Returns:
+            - (list): A list of keys in the input dictionary.
+        """
+        return [key.split(separator)[0] for key in input_dict.keys()]
+
 
     def get_stripped_dict_keys(self, input_dict, separator="__"):
         """
