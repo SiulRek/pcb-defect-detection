@@ -1,5 +1,6 @@
 import logging
 import unittest
+import warnings
 
 
 class TestResultLogger:
@@ -11,37 +12,50 @@ class TestResultLogger:
     failures. - Another for simply logging whether a test passed or not.
     """
 
-    def __init__(self, log_file="./test_results.log", title=""):
+    def __init__(
+        self, log_file="./test_results.log", title="", remove_existing_handlers=False
+    ):
         """
-        Initialize the `TestResultLogger` with specified log files.
+        Initialize the TestResultLogger with specified log files.
 
         Args:
             - log_file (str): The path to the detailed log file. Defaults to
                 'test_results.log'.
-            - title (str): The title to be logged when `TestResultLogger` is
+            - title (str): The title to be logged when TestResultLogger is
                 initialized. Defaults to '' (no title).
+            - remove_existing_handlers (bool): Whether to remove existing
+                handlers from the logger. Defaults to False.
         """
         self.log_file = log_file
         self.log_file_simple = log_file.replace(".log", "_simple.log")
+        self.remove_existing_handlers = remove_existing_handlers
         self.setup_logger()
         if title:
             self.log_title(title)
 
-    def _setup_file_handler(self, logger, file_name):
+    def _setup_file_handler(self, logger, file_path):
         """
-        Helper method to set up a file handler for a logger.
+        Setup a file handler for the logger.
 
         Args:
-            - logger (logging.Logger): The logger object.
-            - file_name (str): The file name for the log file.
+            - logger (logging.Logger): Logger object to configure.
+            - file_path (str): File path for logging.
         """
-        if not logger.handlers:  # Check if the logger already has handlers
+        if self.remove_existing_handlers:
+            while logger.handlers:
+                logger.removeHandler(logger.handlers[-1])
+
+        if not logger.handlers:
             logger.setLevel(logging.INFO)
-            file_handler = logging.FileHandler(file_name, mode="w")
+            file_handler = logging.FileHandler(file_path, mode="w")
             file_handler.setFormatter(
                 logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
             )
             logger.addHandler(file_handler)
+        else:
+            logger.setLevel(logging.INFO)
+            msg = "Logger already has handlers. Skipping setup."
+            warnings.warn(msg)
 
     def setup_logger(self):
         """
@@ -87,7 +101,7 @@ class TestResultLogger:
         if outcome_type == "passed":
             self.simple_logger.info(log_message)
             self.logger.info(log_message)
-        elif outcome_type == "failure" or outcome_type == "raised exc":
+        elif outcome_type in ["failure", "raised exc"]:
             self.simple_logger.error(log_message)
             log_message += f"\nMessage: {message}"
             self.logger.error(log_message)
