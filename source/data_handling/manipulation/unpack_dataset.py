@@ -1,4 +1,4 @@
-def unpack_tf_dataset(tf_dataset):
+def unpack_dataset(tf_dataset):
     """
     Unpacks a tf.data.Dataset into two tf.data.Dataset objects for images and
     labels.
