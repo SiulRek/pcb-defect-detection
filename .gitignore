@@ -25,7 +25,7 @@ source/utils/test_result_logger.py
 
 # Data Files
 **/annotation_summary.csv
-**/*.tfrecord
+pcb_defect_detection/data/tensorflow_records
 
 # Specific Source Files
 source/preprocessing/tests/outputs/
