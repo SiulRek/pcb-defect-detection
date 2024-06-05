@@ -1,5 +1,7 @@
 from abc import ABC
 import os
+import shutil
+import sys
 import unittest
 
 from source.testing.helpers.load_dataset_from_tf_records import (
@@ -25,7 +27,13 @@ class BaseTestCase(unittest.TestCase, ABC):
     """
 
     @classmethod
-    def compute_output_dir(cls, parent_folder="tests"):
+    def _get_class_file_path(cls):
+        module_name = cls.__module__
+        module = sys.modules[module_name]
+        return getattr(module, "__file__", "Module has no file location")
+
+    @classmethod
+    def _compute_output_dir(cls, parent_folder="tests"):
         """
         Computes the directory path for test outputs by traversing up the file
         hierarchy until a directory named 'tests' is found. It then returns the
@@ -38,17 +46,17 @@ class BaseTestCase(unittest.TestCase, ABC):
         Returns:
             - str: The path to the output directory.
         """
-        current_dir = os.path.dirname(os.path.abspath(__file__))
+        current_dir = os.path.dirname(cls._get_class_file_path())
         while parent_folder not in os.listdir(current_dir):
             current_dir = os.path.dirname(current_dir)
-            if os.path.splitdrive(current_dir)[1] == os.sep:
+            if current_dir == os.path.dirname(current_dir):
                 msg = "Tests directory not found in the path hierarchy."
                 raise NotADirectoryError(msg)
 
         return os.path.join(current_dir, parent_folder, "outputs")
 
     @classmethod
-    def get_test_case_name(cls):
+    def _get_test_case_name(cls):
         """
         Generates a more readable test case name by removing 'Test' prefix and
         adding spaces before each capital letter in the class name.
@@ -60,33 +68,31 @@ class BaseTestCase(unittest.TestCase, ABC):
         if name.startswith("Test"):
             name = name[4:]
         name = [letter if letter.islower() else f" {letter}" for letter in name]
-        return "".join(name)
+        return "".join(name) + " Test"
 
     @classmethod
     def setUpClass(cls):
         """ Class-level setup method that ensures necessary directories are created
         and initializes logging for the test case. """
-        cls.output_dir = cls.compute_output_dir()
-        if not os.path.exists(cls.output_dir):
-            os.makedirs(cls.output_dir)
+        cls.output_dir = cls._compute_output_dir()
         cls.temp_dir = os.path.join(cls.output_dir, "temp")
-        if not os.path.exists(cls.temp_dir):
-            os.makedirs(cls.temp_dir)
+
+        os.makedirs(cls.output_dir, exist_ok=True)
 
         cls.log_file = os.path.join(cls.output_dir, "test_results.log")
-        cls.logger = TestResultLogger(cls.log_file, cls.get_test_case_name())
+        cls.logger = TestResultLogger(cls.log_file, cls._get_test_case_name())
 
-    @classmethod
-    def tearDownClass(cls):
-        """ Class-level teardown method that removes the temporary directory created
-        during the test setup. """
-        if os.path.exists(cls.temp_dir):
-            os.rmdir(cls.temp_dir)
+    def setUp(self):
+        """ Instance-level setup method that creates a temporary directory for use
+        during the test. """
+        os.makedirs(self.temp_dir, exist_ok=True)
 
     def tearDown(self):
-        """ Instance-level teardown method that logs the outcome of each test
-        method. """
+        """ Instance-level teardown method that logs the outcome of each test method
+        and removes the temporary directory created during the test setup. """
         self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
+        if os.path.exists(self.temp_dir):
+            shutil.rmtree(self.temp_dir)
 
     def load_image_dataset(self):
         """

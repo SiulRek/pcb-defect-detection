@@ -14,9 +14,9 @@ class BaseTestCaseDemo(BaseTestCase):
     """
 
     @classmethod
-    def compute_output_dir(cls):
+    def _compute_output_dir(cls):
         # Overriding the method to avoid the need for a 'tests' directory.
-        return super().compute_output_dir("testing")
+        return super()._compute_output_dir("testing")
 
     @classmethod
     def setUpClass(cls):
