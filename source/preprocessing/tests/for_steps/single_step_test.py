@@ -2,7 +2,7 @@
 This module contains a suite of tests designed to validate image preprocessing
 steps before their integration into an image preprocessing pipeline. Each
 preprocessing step must successfully pass all the tests specified in this module
-or costumized tests to ensure its functionality, compatibility, and reliability
+or customized tests to ensure its functionality, compatibility, and reliability
 within the pipeline!
 
 Note:
@@ -19,8 +19,6 @@ from unittest.mock import patch
 
 import tensorflow as tf
 
-from source.load_raw_data.kaggle_dataset import load_tf_record
-from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
 from source.preprocessing.helpers.for_preprocessor.recursive_type_conversion import (
     recursive_type_conversion,
 )
@@ -31,22 +29,14 @@ from source.preprocessing.helpers.for_steps.step_base import StepBase
 from source.preprocessing.helpers.for_steps.step_utils import correct_image_tensor_shape
 from source.preprocessing.image_preprocessor import ImagePreprocessor
 from source.preprocessing.steps import Rotator as StepToTest
-from source.utils import PCBVisualizerforTF
-from source.utils import SimplePopupHandler, TestResultLogger
+from source.testing.base_test_case import BaseTestCase
+from source.utils import PCBVisualizerforTF, SimplePopupHandler
 
 # TODO Select Step to test here!
 STEP_PARAMETERS = {"angle": 180}
 
-ROOT_DIR = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", ".."
-)
-JSON_TEST_FILE = os.path.join(
-    ROOT_DIR, r"source/preprocessing/pipelines/test_pipe.json"
-)
-JSON_TEMP_FILE = os.path.join(ROOT_DIR, r"source/preprocessing/pipelines/template.json")
-OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/preprocessing/tests/outputs")
-VISUALIZATION_DIR = os.path.join(OUTPUT_DIR, "preprocessing_visualization")
-LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
+
+JSON_TEMPLATE_REL = os.path.join(r"source/preprocessing/pipelines/template.json")
 
 
 class RGBToGrayscale(StepBase):
@@ -90,7 +80,7 @@ class TypeCaster(StepBase):
 
         Args:
             - output_dtype (str): The desired data type to cast the image
-                tensor to. Must be an attribute in tensorflow . Default is
+                tensor to. Must be an attribute in tensorflow. Default is
                 'float16'.
         """
         super().__init__(locals())
@@ -102,7 +92,7 @@ class TypeCaster(StepBase):
         return image_tensor
 
 
-class TestSingleStep(unittest.TestCase):
+class TestSingleStep(BaseTestCase):
     """
     A unit test class for testing individual image preprocessing steps in to be
     integrated in the image preprocessing framework. The class focuses on
@@ -118,25 +108,20 @@ class TestSingleStep(unittest.TestCase):
     images.
     """
 
-    # Class Attributes (overwritten when class is dynamically loaded (eg. multiple_steps_test.py) or costumized (channel_conversion_steps_test.py))
+    # Class Attributes (overwritten when class is dynamically loaded (eg. multiple_steps_test.py) or customized (channel_conversion_steps_test.py))
     parameters = STEP_PARAMETERS
     TestStep = StepToTest
 
     @classmethod
     def setUpClass(cls):
-
-        if not os.path.exists(OUTPUT_DIR):
-            os.mkdir(OUTPUT_DIR)
-
-        kaggle_dataset = load_tf_record().take(9)
-        cls.image_dataset = unpack_tf_dataset(kaggle_dataset)[0]
+        super().setUpClass()
+        cls.json_template = os.path.join(cls.root_dir, JSON_TEMPLATE_REL)
+        cls.image_dataset = cls.load_image_dataset()
 
         cls.popup_handler = SimplePopupHandler()
-        cls.logger = TestResultLogger(LOG_FILE, f"{cls.TestStep.name} Test")
-
         cls.visual_inspection = True
         step_name_edit = cls.TestStep.name.replace(" ", "_").lower()
-        cls.step_visualization_dir = os.path.join(VISUALIZATION_DIR, step_name_edit)
+        cls.step_visualization_dir = os.path.join(cls.visualizations_dir, step_name_edit)
         if __name__ == "__main__":
             cls.visual_inspection = cls.popup_handler.ask_yes_no_question(
                 "Do you want to make a visual inspection?"
@@ -147,14 +132,16 @@ class TestSingleStep(unittest.TestCase):
                 os.makedirs(cls.step_visualization_dir)
 
     def setUp(self):
-        with open(JSON_TEST_FILE, "a"):
+        super().setUp()  
+        self.json_test_file = os.path.join(self.temp_dir, "test_step.json")
+        with open(self.json_test_file, "a"):
             pass
         self.test_step = self.TestStep(**self.parameters)
 
     def tearDown(self):
-        if os.path.exists(JSON_TEST_FILE):
-            os.remove(JSON_TEST_FILE)
-        self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
+        super().tearDown() 
+        if os.path.exists(self.json_test_file):
+            os.remove(self.json_test_file)
 
     def _verify_image_shapes(
         self, processed_images, original_images, color_channel_expected
@@ -225,11 +212,11 @@ class TestSingleStep(unittest.TestCase):
     def test_process_execution(self):
         """
         Verifies the execution and efficacy of the preprocessing step on an
-        image dataset. This test validates that the preprocessing step: 1.
-        Executes without errors on a dataset of images. 2. Alters the images in
-        a way that is detectable when compared to the original images,
-        suggesting successful transformation. 3. Processes images into the
-        specified output datatype of the preprocessing step.
+        image dataset. This test validates that the preprocessing step:
+        1. Executes without errors on a dataset of images.
+        2. Alters the images in a way that is detectable when compared to the original images,
+           suggesting successful transformation.
+        3. Processes images into the specified output datatype of the preprocessing step.
 
         The test involves applying the preprocessing step to an image dataset
         and comparing the processed images against the original ones. It
@@ -307,7 +294,7 @@ class TestSingleStep(unittest.TestCase):
 
         step_name = self.test_step.name
 
-        with open(JSON_TEMP_FILE, "r") as file:
+        with open(self.json_template, "r") as file:
             json_data = json.load(file)
 
         self.assertIn(
@@ -315,7 +302,7 @@ class TestSingleStep(unittest.TestCase):
         )
 
         preprocessor = ImagePreprocessor()
-        preprocessor.load_pipe_from_json(JSON_TEMP_FILE)
+        preprocessor.load_pipe_from_json(self.json_template)
 
         step_is_instance = [
             isinstance(step, self.TestStep) for step in preprocessor.pipeline
@@ -336,9 +323,9 @@ class TestSingleStep(unittest.TestCase):
             old_preprocessor = ImagePreprocessor()
             pipeline = [RGBToGrayscale(), self.test_step]
             old_preprocessor.set_pipe(pipeline)
-            old_preprocessor.save_pipe_to_json(JSON_TEST_FILE)
+            old_preprocessor.save_pipe_to_json(self.json_test_file)
             new_preprocessor = ImagePreprocessor()
-            new_preprocessor.load_pipe_from_json(JSON_TEST_FILE)
+            new_preprocessor.load_pipe_from_json(self.json_test_file)
 
         self.assertEqual(
             len(old_preprocessor._pipeline),
