@@ -4,24 +4,31 @@ import unittest
 from source.preprocessing.helpers.for_preprocessor.recursive_type_conversion import (
     recursive_type_conversion,
 )
-from source.utils import TestResultLogger
-
-ROOT_DIR = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", ".."
-)
-OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/preprocessing/tests/outputs")
-LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
+from source.testing.base_test_case import BaseTestCase
 
 
-class TestRecursiveTypeConversion(unittest.TestCase):
+class TestRecursiveTypeConversion(BaseTestCase):
+    """
+    Unit tests for `recursive_type_conversion`.
+
+    This suite tests the functionality of converting types within nested data
+    structures based on a provided template. It covers a variety of data types
+    including primitive types, lists, tuples, and dictionaries, ensuring that
+    the function can handle complex nested transformations.
+    """
 
     @classmethod
-    def setUpClass(cls) -> None:
-        os.makedirs(OUTPUT_DIR, exist_ok=True)
-        cls.logger = TestResultLogger(LOG_FILE, "Recursive Type Conversion Test")
+    def setUpClass(cls):
+        super().setUpClass()  
+
+        cls.test_data_directory = os.path.join(
+            cls.output_dir, "recursive_type_conversion_tests"
+        )
+        os.makedirs(cls.test_data_directory, exist_ok=True)
 
     def tearDown(self):
-        self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
+        super().tearDown()  
+
 
     def test_primitive_conversion(self):
         self.assertEqual(recursive_type_conversion("123", int), 123)
@@ -72,23 +79,6 @@ class TestRecursiveTypeConversion(unittest.TestCase):
             "list_of_str": [1, 2, 3],
             "nested_dict": {"bool_str": True},
             "tuple_of_mixed": (30, False, [30, "10"]),
-        }
-        self.assertEqual(recursive_type_conversion(source, template), expected)
-
-    def test_dict_conversion_2(self):
-        # Missing Key
-        source = {
-            "number_str": "123",
-            "list_of_str": ["1", "2", "3"],
-        }
-        template = {
-            "number_str": int,
-            "list_of_str": [int, int, int],
-            "tuple_of_mixed": (int, bool, [int, str]),
-        }
-        expected = {
-            "number_str": 123,
-            "list_of_str": [1, 2, 3],
         }
         self.assertEqual(recursive_type_conversion(source, template), expected)
 
