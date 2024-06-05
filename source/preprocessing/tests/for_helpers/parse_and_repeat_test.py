@@ -4,22 +4,16 @@ import unittest
 from source.preprocessing.helpers.for_preprocessor.parse_and_repeat import (
     parse_and_repeat,
 )
-from source.utils import TestResultLogger
-
-ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
-OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/preprocessing/tests/outputs")
-LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
+from source.testing.base_test_case import BaseTestCase
 
 
-class TestParseAndRepeat(unittest.TestCase):
+class TestParseAndRepeat(BaseTestCase):
 
     @classmethod
-    def setUpClass(cls) -> None:
-        os.makedirs(OUTPUT_DIR, exist_ok=True)
-        cls.logger = TestResultLogger(LOG_FILE, "Parse and Repeat Test")
-
-    def tearDown(self):
-        self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.test_data_directory = os.path.join(cls.temp_dir, "parse_and_repeat_tests")
+        os.makedirs(cls.test_data_directory, exist_ok=True)
 
     def test_basic_functionality(self):
         self.assertEqual(
