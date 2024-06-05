@@ -10,7 +10,7 @@ def parse_tfrecord(sample_proto, label_dtype):
         "label": tf.io.FixedLenFeature([], tf.string),
     }
     sample = tf.io.parse_single_example(sample_proto, feature_description)
-    image = tf.io.decode_image(sample["image"], channels=3)
+    image = tf.io.decode_image(sample["image"], channels=3) # Detects whether the image is a JPEG or PNG image
     label = tf.io.parse_tensor(sample["label"], out_type=label_dtype)
     return image, label
 
@@ -27,13 +27,6 @@ def deserialize_dataset_from_tfrecord(filepath, label_dtype):
     Returns:
         - tf.data.Dataset: A dataset object containing image and label
             pairs.
-
-    Note:
-        Once images are deserialized and converted into tensors, the
-        original format (PNG or JPEG) does not matter because the images are
-        now represented as consistent tensors (arrays of pixel values).
-        Machine learning pipelines process these tensors uniformly, without
-        needing to know the original file format.
     """
     if not os.path.exists(filepath):
         msg = f"tfrecord '{filepath}' does not exist."
