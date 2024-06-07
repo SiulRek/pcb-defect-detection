@@ -9,6 +9,7 @@ from source.testing.helpers.load_dataset_from_tf_records import (
 )
 from source.testing.helpers.test_result_logger import TestResultLogger
 
+ROOT_DIR = os.path.join(os.path.abspath(__file__), "..", "..", "..")
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "image_data")
 
 
@@ -74,10 +75,14 @@ class BaseTestCase(unittest.TestCase, ABC):
     def setUpClass(cls):
         """ Class-level setup method that ensures necessary directories are created
         and initializes logging for the test case. """
+        cls.root_dir = ROOT_DIR
+        cls.root_dir = os.path.normpath(cls.root_dir)
         cls.output_dir = cls._compute_output_dir()
+        cls.visualizations_dir = os.path.join(cls.output_dir, "visualizations")
         cls.temp_dir = os.path.join(cls.output_dir, "temp")
 
         os.makedirs(cls.output_dir, exist_ok=True)
+        os.makedirs(cls.visualizations_dir, exist_ok=True)
 
         cls.log_file = os.path.join(cls.output_dir, "test_results.log")
         cls.logger = TestResultLogger(cls.log_file, cls._get_test_case_name())

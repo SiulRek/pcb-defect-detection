@@ -17,7 +17,6 @@ def _parse_image_function(proto):
     }
     parsed_features = tf.io.parse_single_example(proto, image_feature_description)
     image = tf.io.decode_png(parsed_features["image_raw"], channels=3)
-    image = tf.cast(image, tf.float32) / 255.0
     return image
 
 

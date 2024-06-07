@@ -1,10 +1,10 @@
-# NOTE: The functionality in DataHandling is not used in the module
-# here, as this makes the testing framework more independent.
 import os
 
 import tensorflow as tf
 
 
+# NOTE: The functionality in DataHandling is not used in the module
+# here, as this makes the testing framework more independent.
 def _bytes_feature(value):
     """ Returns a bytes_list from a string / byte. """
     if isinstance(value, type(tf.constant(0))):
@@ -25,8 +25,7 @@ def serialize_image(image_path):
     """
     image_string = tf.io.read_file(image_path)
     image_decoded = tf.image.decode_png(image_string)
-    image_resized = tf.image.resize(image_decoded, [224, 224])
-    image_bytes = tf.io.encode_png(tf.cast(image_resized, tf.uint8))
+    image_bytes = tf.io.encode_png(tf.cast(image_decoded, tf.uint8))
     feature = {"image_raw": _bytes_feature(image_bytes)}
     example_proto = tf.train.Example(features=tf.train.Features(feature=feature))
     return example_proto.SerializeToString()
