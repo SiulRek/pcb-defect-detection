@@ -76,7 +76,7 @@
     },
 
     "Shape Resizer": {
-        "desired_shape": [2000,2000],
+        "desired_shape": [200,300],
         "resize_method": "bilinear"
     },
 
