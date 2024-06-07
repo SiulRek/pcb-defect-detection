@@ -79,7 +79,7 @@ class TestShapeResizer(TestSingleStep):
     """
 
     TestStep = steps.ShapeResizer
-    parameters = {"desired_shape": (1900, 2100), "resize_method": "nearest"}
+    parameters = {"desired_shape": (200, 300), "resize_method": "nearest"}
 
     if not ENABLE_VISUAL_INSPECTION:
 
