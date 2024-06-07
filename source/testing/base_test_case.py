@@ -46,7 +46,6 @@ class BaseTestCase(unittest.TestCase):
             - str: The path to the output directory.
         """
         current_dir = os.path.dirname(cls._get_class_file_path())
-        print(current_dir)
 
         while parent_folder not in os.listdir(current_dir):
             current_dir = os.path.dirname(current_dir)
