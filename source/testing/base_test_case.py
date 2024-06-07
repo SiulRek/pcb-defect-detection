@@ -1,4 +1,3 @@
-from abc import ABC
 import os
 import shutil
 import sys
@@ -13,7 +12,7 @@ ROOT_DIR = os.path.join(os.path.abspath(__file__), "..", "..", "..")
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "image_data")
 
 
-class BaseTestCase(unittest.TestCase, ABC):
+class BaseTestCase(unittest.TestCase):
     """
     Abstract base class for all test cases, providing setup and teardown
     operations that are common across various tests. This class ensures that all
@@ -29,9 +28,8 @@ class BaseTestCase(unittest.TestCase, ABC):
 
     @classmethod
     def _get_class_file_path(cls):
-        module_name = cls.__module__
-        module = sys.modules[module_name]
-        return getattr(module, "__file__", "Module has no file location")
+        file_path = sys.modules[cls.__module__].__file__
+        return file_path
 
     @classmethod
     def _compute_output_dir(cls, parent_folder="tests"):
@@ -48,6 +46,8 @@ class BaseTestCase(unittest.TestCase, ABC):
             - str: The path to the output directory.
         """
         current_dir = os.path.dirname(cls._get_class_file_path())
+        print(current_dir)
+
         while parent_folder not in os.listdir(current_dir):
             current_dir = os.path.dirname(current_dir)
             if current_dir == os.path.dirname(current_dir):
@@ -68,9 +68,12 @@ class BaseTestCase(unittest.TestCase, ABC):
         name = cls.__name__
         if name.startswith("Test"):
             name = name[4:]
-        name = [letter if letter.islower() else f" {letter}" for letter in name]
-        return "".join(name) + " Test"
-
+        name = [letter if not letter.isupper() else f" {letter}" for letter in name]
+        name = "".join(name).strip()
+        name = name.replace("_", " ")
+        name = name.replace("  ", " ")
+        return name
+    
     @classmethod
     def setUpClass(cls):
         """ Class-level setup method that ensures necessary directories are created
