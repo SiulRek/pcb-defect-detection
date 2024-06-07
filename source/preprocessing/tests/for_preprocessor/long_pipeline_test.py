@@ -14,8 +14,6 @@ import unittest
 
 import tensorflow as tf
 
-from source.load_raw_data.kaggle_dataset import load_tf_record
-from source.load_raw_data.unpack_tf_dataset import unpack_tf_dataset
 from source.preprocessing.helpers.for_preprocessor.class_instances_serializer import (
     ClassInstancesSerializer,
 )
@@ -27,18 +25,9 @@ from source.preprocessing.helpers.for_tests.copy_json_exclude_entries import (
     copy_json_exclude_entries,
 )
 from source.preprocessing.image_preprocessor import ImagePreprocessor
-from source.utils import TestResultLogger
+from source.testing.base_test_case import BaseTestCase
 
-N = 10  # Number of Pipelines Tests to run.
-ROOT_DIR = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", ".."
-)
-OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/preprocessing/tests/outputs")
-JSON_TEMPLATE_FILE = os.path.join(
-    ROOT_DIR, r"source/preprocessing/pipelines/template.json"
-)
-JSON_TEST_FILE = os.path.join(OUTPUT_DIR, "test_pipe.json")
-LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
+N = 100  # Number of Pipelines Tests to run.
 
 
 class RGBToGrayscale(StepBase):
@@ -60,7 +49,7 @@ class RGBToGrayscale(StepBase):
         return image_tensor
 
 
-class TestLongPipeline(unittest.TestCase):
+class TestLongPipeline(BaseTestCase):
     """
     This class is the base class for all the long pipeline tests.
 
@@ -82,26 +71,21 @@ class TestLongPipeline(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        super().setUpClass()
+        cls.json_template_file = os.path.join(
+            cls.root_dir, r"source/preprocessing/pipelines/template.json"
+        )
+        cls.json_test_file = os.path.join(cls.temp_dir, "test_pipe.json")
+        cls.log_file = os.path.join(cls.output_dir, "test_results.log")
 
-        if not os.path.exists(OUTPUT_DIR):
-            os.mkdir(OUTPUT_DIR)
-
-        kaggle_dataset = load_tf_record().take(
-            9
-        )  # To reduce testing time test cases share this attribute Do not change this attribute.
-        cls.image_dataset = unpack_tf_dataset(kaggle_dataset)[0]
-        cls.logger = TestResultLogger(LOG_FILE, f"Long Pipeline Test {cls.pipeline_id}")
+        cls.image_dataset = cls.load_image_dataset()
 
     def setUp(self):
-        with open(JSON_TEST_FILE, "a"):
+        super().setUp()
+        with open(self.json_test_file, "a"):
             pass
         self.preprocessor = self.create_preconfigured_image_preprocessor()
         # print(self.preprocessor.get_pipe_code_representation())
-
-    def tearDown(self):
-        if os.path.exists(JSON_TEST_FILE):
-            os.remove(JSON_TEST_FILE)
-        self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
 
     def create_preconfigured_image_preprocessor(self):
         excluded_keys = [
@@ -112,10 +96,12 @@ class TestLongPipeline(unittest.TestCase):
             "Type Caster",
             "Random Color Jitterer",
         ]
-        copy_json_exclude_entries(JSON_TEMPLATE_FILE, JSON_TEST_FILE, excluded_keys)
+        copy_json_exclude_entries(
+            self.json_template_file, self.json_test_file, excluded_keys
+        )
 
         serializer = ClassInstancesSerializer(STEP_CLASS_MAPPING)
-        pipeline = serializer.get_instances_from_json(JSON_TEST_FILE)
+        pipeline = serializer.get_instances_from_json(self.json_test_file)
         random.shuffle(pipeline)
 
         preprocessor = ImagePreprocessor()
@@ -139,12 +125,11 @@ class TestLongPipeline(unittest.TestCase):
         return True
 
     def test_process_pipeline(self):
-
         try:
             processed_dataset = self.preprocessor.process(self.image_dataset)
         except Exception as e:
             raise BrokenPipeError(
-                "An exception occured while processing the dataset. This is the problematic pipeline: \n"
+                "An exception occurred while processing the dataset. This is the problematic pipeline: \n"
                 + self.preprocessor.get_pipe_code_representation()
             ) from e
 
@@ -171,7 +156,7 @@ class TestLongPipeline(unittest.TestCase):
 def load_long_pipeline_tests(n=N):
     """
     This function dynamically creates n classes inheriting from TestLongPipeline
-    and load them into a test suite.
+    and loads them into a test suite.
 
     Args:
         - n (int): Number of TestLongPipeline classes to create. Default to
@@ -179,8 +164,8 @@ def load_long_pipeline_tests(n=N):
     """
 
     test_suites = []
-    for i in range(1, N + 1):
-        test_class_name = f"{TestLongPipeline.__name__}{i}"
+    for i in range(1, n + 1):
+        test_class_name = f"{TestLongPipeline.__name__}_{i}"
         test_class = type(test_class_name, (TestLongPipeline,), {"pipeline_id": i})
         test_suite = unittest.TestLoader().loadTestsFromTestCase(test_class)
         test_suites.append(test_suite)
