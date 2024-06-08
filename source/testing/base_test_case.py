@@ -74,7 +74,7 @@ class BaseTestCase(unittest.TestCase):
         name = "".join(name).strip()
         name = name.replace("_", " ")
         name = name.replace("  ", " ")
-        return name
+        return name + " Test"
 
     @classmethod
     def setUpClass(cls):
