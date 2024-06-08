@@ -3,6 +3,9 @@ import shutil
 import sys
 import unittest
 
+import numpy as np
+import tensorflow as tf
+
 from source.testing.helpers.load_dataset_from_tf_records import (
     load_dataset_from_tf_records,
 )
@@ -72,7 +75,7 @@ class BaseTestCase(unittest.TestCase):
         name = name.replace("_", " ")
         name = name.replace("  ", " ")
         return name
-    
+
     @classmethod
     def setUpClass(cls):
         """ Class-level setup method that ensures necessary directories are created
@@ -114,3 +117,29 @@ class BaseTestCase(unittest.TestCase):
             DATA_DIR, "tf_records", "geometrical_forms.tfrecord"
         )
         return load_dataset_from_tf_records(tf_records_path)
+
+    @classmethod
+    def load_sign_language_digits_dataset(cls, sample_num=5, labeled=False):
+        """
+        Load the sign language digits dataset used for testing. This method is
+        intended to be overridden by derived test classes to return the
+        appropriate dataset.
+
+        Returns:
+            - tf.data.Dataset: The sign language digits dataset to be used
+                for testing.
+        """
+        dataset_dir = os.path.join(DATA_DIR, "numpy_datasets", "sign_language_digits")
+        X = np.load(os.path.join(dataset_dir, "X.npy"))
+        Y = np.load(os.path.join(dataset_dir, "Y.npy"))
+
+        X = (X * 255).astype(np.uint8)
+        if X.ndim == 3:
+            X = np.stack([X]*3, axis=-1) 
+
+        if sample_num:
+            X = X[:sample_num]
+            Y = Y[:sample_num]
+        if labeled:
+            return tf.data.Dataset.from_tensor_slices((X, Y))
+        return tf.data.Dataset.from_tensor_slices(X)

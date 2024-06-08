@@ -1,34 +1,54 @@
 import logging
 import unittest
-import warnings
 
 
 class TestResultLogger:
     """
-    A logger class for logging the results of unittest executions.
+    A Singleton logger class for logging the results of unittest executions.
+    There is an optional setup_logger step to initialize file handlers and
+    logging format for results. This class generates two types of logs: detailed
+    and simplified version.
 
-    This class logs the outcome of tests run using Python's unittest framework
-    to two log files: - One for detailed test outcomes including errors and
-    failures. - Another for simply logging whether a test passed or not.
+    Detailed Log:
+        - Includes specific information about the status of each test -
+            whether it passed, failed, or raised an exception.
+        - Simplified Log: Only includes whether the test passed or not.
     """
 
-    def __init__(
-        self, log_file="./test_results.log", title="", remove_existing_handlers=False
-    ):
+    _instance = None
+    _setup_file_handlers = True
+    _failures_count = 0
+    _errors_count = 0
+
+    def __new__(cls, *args, **kwargs):
         """
-        Initialize the TestResultLogger with specified log files.
+        Ensures a single instance of the TestResultLogger class. If an instance
+        already exists, it returns that instance, else it creates a new one.
+
+        Returns:
+            - TestResultLogger: instance of TestResultLogger class
+        """
+        if cls._instance is None:
+            cls._instance = super(TestResultLogger, cls).__new__(cls)
+        else:
+            cls._setup_file_handlers = False
+        return cls._instance
+
+    def __init__(self, log_file="./test_results.log", title=""):
+        """
+        Initialize the TestResultLogger with specified log file and optional
+        title. If this is the first instance, the logger setup is called unless
+        the _skip_setup variable is True. Optionally, a title can be logged at
+        the creation of the instance.
 
         Args:
             - log_file (str): The path to the detailed log file. Defaults to
                 'test_results.log'.
             - title (str): The title to be logged when TestResultLogger is
                 initialized. Defaults to '' (no title).
-            - remove_existing_handlers (bool): Whether to remove existing
-                handlers from the logger. Defaults to False.
         """
         self.log_file = log_file
         self.log_file_simple = log_file.replace(".log", "_simple.log")
-        self.remove_existing_handlers = remove_existing_handlers
         self.setup_logger()
         if title:
             self.log_title(title)
@@ -41,21 +61,12 @@ class TestResultLogger:
             - logger (logging.Logger): Logger object to configure.
             - file_path (str): File path for logging.
         """
-        if self.remove_existing_handlers:
-            while logger.handlers:
-                logger.removeHandler(logger.handlers[-1])
-
-        if not logger.handlers:
-            logger.setLevel(logging.INFO)
-            file_handler = logging.FileHandler(file_path, mode="w")
-            file_handler.setFormatter(
-                logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-            )
-            logger.addHandler(file_handler)
-        else:
-            logger.setLevel(logging.INFO)
-            msg = "Logger already has handlers. Skipping setup."
-            warnings.warn(msg)
+        logger.setLevel(logging.INFO)
+        file_handler = logging.FileHandler(file_path, mode="w")
+        file_handler.setFormatter(
+            logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+        )
+        logger.addHandler(file_handler)
 
     def setup_logger(self):
         """
@@ -67,11 +78,12 @@ class TestResultLogger:
         """
         # Logger for detailed test outcomes
         self.logger = logging.getLogger("TestResultLogger")
-        self._setup_file_handler(self.logger, self.log_file)
-
         # Logger for simplified test outcomes
         self.simple_logger = logging.getLogger("TestResultLoggerSimple")
-        self._setup_file_handler(self.simple_logger, self.log_file_simple)
+
+        if self._setup_file_handlers:
+            self._setup_file_handler(self.logger, self.log_file)
+            self._setup_file_handler(self.simple_logger, self.log_file_simple)
 
     def log_title(self, title):
         """
@@ -125,17 +137,17 @@ class TestResultLogger:
         try:
             success = True
 
-            for error in result.errors:
-                if error[0]._testMethodName == test_method_name:
-                    success = False
-                    self._log_outcome("raised exc", test_method_name, error[1])
-                    break
+            if self._errors_count + 1 == len(result.errors):
+                success = False
+                error = result.errors[self._errors_count]
+                self._log_outcome("raised exc", test_method_name, error[1])
+                self._errors_count += 1
 
-            for failure in result.failures:
-                if failure[0]._testMethodName == test_method_name:
-                    success = False
-                    self._log_outcome("failure", test_method_name, failure[1])
-                    break
+            if self._failures_count + 1 == len(result.failures):
+                success = False
+                failure = result.failures[self._failures_count]
+                self._log_outcome("failure", test_method_name, failure[1])
+                self._failures_count += 1
 
             if success:
                 self._log_outcome("passed", test_method_name)
