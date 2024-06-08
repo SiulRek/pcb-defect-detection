@@ -9,7 +9,7 @@ from source.preprocessing.steps import GrayscaleToRGB
 from source.preprocessing.steps import RGBToGrayscale
 from source.preprocessing.tests.for_steps.single_step_test import TestSingleStep
 
-ENABLE_VISUAL_INSPECTION = False
+ENABLE_VISUAL_INSPECTION = True
 
 
 class TestRGBToGrayscale(TestSingleStep):

@@ -11,7 +11,7 @@ from unittest import skip
 import source.preprocessing.steps as steps
 from source.preprocessing.tests.for_steps.single_step_test import TestSingleStep
 
-ENABLE_VISUAL_INSPECTION = False
+ENABLE_VISUAL_INSPECTION = True
 
 
 class TestSquareShapePadder(TestSingleStep):
