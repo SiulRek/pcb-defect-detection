@@ -1,112 +1,124 @@
-import os
 import unittest
 
 import numpy as np
+import pandas as pd
 import tensorflow as tf
 
 from source.data_handling.io.create_dataset import create_dataset
-from source.utils import TestResultLogger
-
-ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
-OUTPUT_DIR = os.path.join(ROOT_DIR, "source", "data_handling", "tests", "outputs")
-DATA_DIR = os.path.join(ROOT_DIR, "source", "data_handling", "tests", "data")
-LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
+from source.testing.base_test_case import BaseTestCase
 
 
-class TestCreateDataset(unittest.TestCase):
+class TestCreateDataset(BaseTestCase):
+    """ Test suite for the create_dataset function. """
+
     @classmethod
     def setUpClass(cls):
-        os.makedirs(OUTPUT_DIR, exist_ok=True)
-        cls.logger = TestResultLogger(LOG_FILE)
-        cls.logger.log_title("Dataset Test")
-
-        # Check if pandas is installed and import it if available
-        try:
-            import pandas as pd
-
-            cls.pandas_installed = True
-            cls.pd = pd
-        except ImportError:
-            cls.pandas_installed = False
+        super().setUpClass()
+        cls.jpg_dict, cls.png_dict = cls.load_sign_language_digits_dict()
 
     def setUp(self):
-        self.data_dicts = [
-            {"path": "figure_1.jpeg", "label": "class_0"},
-            {"path": "figure_2.jpeg", "label": "class_1"},
-            {"path": "figure_3.jpeg", "label": "class_2"},
-            {"path": "figure_4.png", "label": "class_3"},
-            {"path": "figure_5.png", "label": "class_4"},
-        ]
-        for data_dict in self.data_dicts:
-            data_dict["path"] = os.path.join(DATA_DIR, data_dict["path"])
+        super().setUp()
+        self.category_names = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
-        self.data_dict = {
-            "path": [
-                os.path.join(DATA_DIR, "figure_1.jpeg"),
-                os.path.join(DATA_DIR, "figure_2.jpeg"),
-            ],
-            "label": [0, 1],
-        }
-        self.category_names = ["class_0", "class_1", "class_2", "class_3", "class_4"]
+    def test_create_dataset_from_dicts_jpg(self):
+        """ Test create_dataset with a list of dictionaries containing JPG images. """
+        data = self.jpg_dict
+        dataset = create_dataset(data, self.category_names)
+        self.assertIsInstance(dataset, tf.data.Dataset)
+        for i, (image, label) in enumerate(dataset):
+            self.assertIsInstance(image, tf.Tensor)
+            self.assertIsInstance(label, tf.Tensor)
+            label = self._convert_label(label)
+            expected_label = self._convert_label(data["label"][i])
+            self.assertEqual(label, expected_label)
 
-    def tearDown(self):
-        self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
+    def test_create_dataset_from_dicts_png(self):
+        """ Test create_dataset with a list of dictionaries containing PNG images. """
+        data = self.png_dict
+        dataset = create_dataset(data, self.category_names)
+        self.assertIsInstance(dataset, tf.data.Dataset)
+        for i, (image, label) in enumerate(dataset):
+            self.assertIsInstance(image, tf.Tensor)
+            self.assertIsInstance(label, tf.Tensor)
+            label = self._convert_label(label)
+            expected_label = self._convert_label(self.png_dict["label"][i])
+            self.assertEqual(label, expected_label)
+
+    def test_create_dataset_from_dataframe_jpg(self):
+        """ Test create_dataset with a pandas DataFrame containing JPG images. """
+        data = pd.DataFrame(self.jpg_dict)
+        dataset = create_dataset(data, self.category_names)
+        self.assertIsInstance(dataset, tf.data.Dataset)
+        for i, (image, label) in enumerate(dataset):
+            self.assertIsInstance(image, tf.Tensor)
+            self.assertIsInstance(label, tf.Tensor)
+            label = self._convert_label(label)
+            expected_label = self._convert_label(self.jpg_dict["label"][i])
+            self.assertEqual(label, expected_label)
+
+    def test_create_dataset_from_dataframe_png(self):
+        """ Test create_dataset with a pandas DataFrame containing PNG images. """
+        data = pd.DataFrame(self.png_dict)
+        dataset = create_dataset(data, self.category_names)
+        self.assertIsInstance(dataset, tf.data.Dataset)
+        for i, (image, label) in enumerate(dataset):
+            self.assertIsInstance(image, tf.Tensor)
+            self.assertIsInstance(label, tf.Tensor)
+            label = self._convert_label(label)
+            expected_label = self._convert_label(self.png_dict["label"][i])
+            self.assertEqual(label, expected_label)
 
     def test_dataset_from_dicts(self):
         """ Test dataset creation from a list of dictionaries. """
-        dataset = create_dataset(
-            self.data_dicts, self.category_names, "sparse_category_codes"
-        )
-        expected_labels = [0, 1, 2, 3, 4]
-        for (img, label), expected_label in zip(dataset, expected_labels):
-            self.assertIsInstance(img, tf.Tensor, "Image should be a Tensor.")
-            self.assertEqual(
-                label.numpy(), expected_label, "Label does not match expected."
-            )
-
-    def test_dataset_from_dict(self):
-        """ Test dataset creation from a single dictionary with a list of labels. """
-        dataset = create_dataset(
-            self.data_dict, self.category_names, "sparse_category_codes"
-        )
-        expected_labels = [0, 1]
-        for (img, label), expected_label in zip(dataset, expected_labels):
-            self.assertIsInstance(img, tf.Tensor, "Image should be a Tensor.")
-            self.assertEqual(
-                label.numpy(), expected_label, "Label does not match expected."
-            )
-
-    def test_dataset_from_dataframe(self):
-        """ Test dataset creation from a pandas DataFrame if pandas is installed. """
-        if self.pandas_installed:
-            df = self.pd.DataFrame(self.data_dicts)
-            dataset = create_dataset(df, self.category_names, "sparse_category_codes")
-            expected_labels = [0, 1, 2, 3, 4]
-            for (img, label), expected_label in zip(dataset, expected_labels):
-                self.assertIsInstance(img, tf.Tensor, "Image should be a Tensor.")
-                self.assertEqual(
-                    label.numpy(), expected_label, "Label does not match expected."
-                )
-        else:
-            self.skipTest("pandas is not installed.")
+        data = [
+            {"path": self.png_dict["path"][0], "label": self.png_dict["label"][0]},
+            {"path": self.jpg_dict["path"][1], "label": self.jpg_dict["label"][1]},
+        ]
+        dataset = create_dataset(data, self.category_names)
+        self.assertIsInstance(dataset, tf.data.Dataset)
+        for i, (image, label) in enumerate(dataset):
+            self.assertIsInstance(image, tf.Tensor)
+            self.assertIsInstance(label, tf.Tensor)
+            label = self._convert_label(label)
+            expected_label = self._convert_label(data[i]["label"])
+            self.assertEqual(label, expected_label)
 
     def test_one_hot_encoding(self):
         """ Test one-hot encoding for category codes. """
-        dataset = create_dataset(self.data_dicts, self.category_names, "category_codes")
-        expected_labels = [0, 1, 2, 3, 4]
-        for (_, label), expected_label in zip(dataset, expected_labels):
-            expected_one_hot = tf.one_hot(
-                expected_label, depth=len(self.category_names)
-            )
-            self.assertTrue(
-                np.array_equal(label.numpy(), expected_one_hot.numpy()),
-                "One-hot encoded labels do not match expected.",
-            )
+        data = pd.DataFrame(self.jpg_dict)
+        label_type = "category_codes"
+        dataset = create_dataset(data, self.category_names, label_type=label_type)
+        self.assertIsInstance(dataset, tf.data.Dataset)
+        for i, (image, label) in enumerate(dataset):
+            self.assertIsInstance(image, tf.Tensor)
+            self.assertIsInstance(label, tf.Tensor)
+            expected_label = self._expected_one_hot_label(self.jpg_dict["label"][i])
+            self.assertTrue(np.array_equal(label.numpy(), expected_label))
 
     def test_invalid_data_type(self):
         """ Test if ValueError is raised for invalid data type. """
+        data = "invalid_data_type"
         with self.assertRaises(ValueError):
-            create_dataset("invalid_data_type", self.category_names, "category_codes")
+            create_dataset(data, self.category_names)
+
+    def _convert_label(self, label):
+        """ Helper function to convert the label to the expected type. """
+        if isinstance(label, str):
+            return int(label)
+        if isinstance(label, list):  
+
+            return label.index(1)
+        if isinstance(label, tf.Tensor):
+            if label.shape[-1] == len(self.category_names):
+                return tf.argmax(label).numpy()
+            return label.numpy()
+
+    def _expected_one_hot_label(self, label):
+        """ Helper function to get the expected one-hot label encoding as a numpy
+        array. """
+        one_hot_label = np.zeros(len(self.category_names))
+        one_hot_label[int(label)] = 1
+        return one_hot_label
 
 
 if __name__ == "__main__":
