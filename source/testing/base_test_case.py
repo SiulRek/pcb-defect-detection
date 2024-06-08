@@ -82,6 +82,7 @@ class BaseTestCase(unittest.TestCase):
         and initializes logging for the test case. """
         cls.root_dir = ROOT_DIR
         cls.root_dir = os.path.normpath(cls.root_dir)
+        cls.data_dir = DATA_DIR
         cls.output_dir = cls._compute_output_dir()
         cls.visualizations_dir = os.path.join(cls.output_dir, "visualizations")
         cls.temp_dir = os.path.join(cls.output_dir, "temp")
@@ -103,7 +104,6 @@ class BaseTestCase(unittest.TestCase):
         self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
         if os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
-
     @classmethod
     def load_image_dataset(cls):
         """
@@ -114,7 +114,7 @@ class BaseTestCase(unittest.TestCase):
             - tf.data.Dataset: The image dataset to be used for testing.
         """
         tf_records_path = os.path.join(
-            DATA_DIR, "tf_records", "geometrical_forms.tfrecord"
+            cls.data_dir, "tf_records", "geometrical_forms.tfrecord"
         )
         return load_dataset_from_tf_records(tf_records_path)
 
@@ -129,13 +129,15 @@ class BaseTestCase(unittest.TestCase):
             - tf.data.Dataset: The sign language digits dataset to be used
                 for testing.
         """
-        dataset_dir = os.path.join(DATA_DIR, "numpy_datasets", "sign_language_digits")
+        dataset_dir = os.path.join(
+            cls.data_dir, "numpy_datasets", "sign_language_digits"
+        )
         X = np.load(os.path.join(dataset_dir, "X.npy"))
         Y = np.load(os.path.join(dataset_dir, "Y.npy"))
 
         X = (X * 255).astype(np.uint8)
         if X.ndim == 3:
-            X = np.stack([X]*3, axis=-1) 
+            X = np.stack([X] * 3, axis=-1)
 
         if sample_num:
             X = X[:sample_num]
@@ -143,3 +145,30 @@ class BaseTestCase(unittest.TestCase):
         if labeled:
             return tf.data.Dataset.from_tensor_slices((X, Y))
         return tf.data.Dataset.from_tensor_slices(X)
+
+    @classmethod
+    def load_sign_language_digits_dict(cls):
+        """
+        Load the sign language digits dataset as dictionaries. This method loads
+        the dataset and returns it as two separate dictionaries for images in
+        JPG and PNG formats.
+
+        Returns:
+            - tuple: A tuple containing two dictionaries, one for JPG images
+                and one for PNG images. Each dictionary contains 'path' and
+                'label' keys.
+        """
+        dataset_dir = os.path.join(cls.data_dir, "sign_language_digits")
+        jpg_dict = {"path": [], "label": []}
+        png_dict = {"path": [], "label": []}
+        for file in os.listdir(dataset_dir):
+            label = file.split(".")[0].split("_")[-1]
+            file_path = os.path.join(dataset_dir, file)
+            if file.endswith(".jpg"):
+                jpg_dict["path"].append(file_path)
+                jpg_dict["label"].append(label)
+            elif file.endswith(".png"):
+                png_dict["path"].append(file_path)
+                png_dict["label"].append(label)
+
+        return jpg_dict, png_dict
