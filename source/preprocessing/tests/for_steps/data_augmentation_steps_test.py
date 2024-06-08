@@ -40,6 +40,14 @@ def create_test_class_for_augmentation_step(augmentation_class, arguments):
         TestStep = augmentation_class
         parameters = arguments
 
+        @classmethod
+        def setUpClass(cls):
+            super().setUpClass()
+            cls.image_dataset = cls.load_sign_language_digits_dataset(
+                sample_num=5,
+                labeled=False
+            ) # Overwrite dataset defined in TestSingleStep
+
         if not ENABLE_VISUAL_INSPECTION:
 
             @skip("Visual inspection not enabled")
@@ -81,8 +89,10 @@ def create_test_class_for_augmentation_step(augmentation_class, arguments):
                 prc_img = tf.cast(prc_img, dtype=ori_img.dtype)
                 if ori_img.shape != prc_img.shape:
                     equal_flag = False
+                    break
                 elif not tf.reduce_all(tf.equal(ori_img, prc_img)).numpy():
                     equal_flag = False
+                    break
             self.assertFalse(equal_flag)
 
     name = augmentation_class.name.replace(" ", "")
@@ -96,13 +106,13 @@ augmentation_steps_data = [
     (steps.RandomFlipper, {"flip_direction": "horizontal", "seed": 42}),
     (
         steps.GaussianNoiseInjector,
-        {"mean": 0.0, "sigma": 0.2, "apply_clipping": True, "seed": 42},
+        {"mean": 0.0, "sigma": 0.5, "apply_clipping": True, "seed": 42},
     ),
     (
         steps.RandomColorJitterer,
         {"brightness": 0.3, "contrast": 0.3, "saturation": 0.3, "hue": 0.1, "seed": 42},
     ),
-    (steps.RandomCropper, {"crop_size": (250, 250), "seed": 42}),
+    (steps.RandomCropper, {"crop_size": (24, 24), "seed": 42}),
     (steps.RandomPerspectiveTransformer, {"warp_scale": 0.2, "seed": 42}),
     (steps.RandomElasticTransformer, {"alpha": 34, "sigma": 4, "seed": 42}),
     (steps.RandomSharpening, {"min_intensity": 2, "max_intensity": 5.0, "seed": 42}),
