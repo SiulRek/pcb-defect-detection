@@ -1,29 +1,17 @@
-import os
 import unittest
 
 import tensorflow as tf
 
 from source.data_handling.manipulation.enhance_dataset import enhance_dataset
-from source.utils import TestResultLogger
-
-ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
-OUTPUT_DIR = os.path.join(ROOT_DIR, "source", "data_handling", "tests", "outputs")
-DATA_DIR = os.path.join(ROOT_DIR, "source", "data_handling", "tests", "data")
-LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
+from source.testing.base_test_case import BaseTestCase
 
 
-class TestEnhanceDataset(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        os.makedirs(OUTPUT_DIR, exist_ok=True)
-        cls.logger = TestResultLogger(LOG_FILE)
-        cls.logger.log_title("Enhance Dataset Test")
+class TestEnhanceDataset(BaseTestCase):
+    """ Test suite for the enhance_dataset function. """
 
     def setUp(self):
+        super().setUp()
         self.dataset = tf.data.Dataset.range(100)
-
-    def tearDown(self):
-        self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
 
     def test_shuffling(self):
         original_first_element = next(iter(self.dataset)).numpy()

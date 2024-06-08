@@ -1,32 +1,19 @@
-import os
 import unittest
-
 import tensorflow as tf
 
 from source.data_handling.helpers.label_manager import LabelManager
-from source.utils import TestResultLogger
-
-ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
-OUTPUT_DIR = os.path.join(ROOT_DIR, "source", "data_handling", "tests", "outputs")
-LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
+from source.testing.base_test_case import BaseTestCase
 
 
-class TestLabelManager(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls) -> None:
-        os.makedirs(OUTPUT_DIR, exist_ok=True)
-        cls.logger = TestResultLogger(LOG_FILE)
-        cls.logger.log_title("Label Manager Test")
+class TestLabelManager(BaseTestCase):
+    """ Test suite for the LabelManager class. """
 
     def setUp(self):
+        super().setUp()
         self.binary_label = 1
         self.invalid_binary_label = 2
         self.categorical_label = 2
         self.invalid_label_key = {"wrong_key": 3}
-
-    def tearDown(self):
-        self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
 
     def test_binary_labels_valid_input(self):
         manager = LabelManager("binary")

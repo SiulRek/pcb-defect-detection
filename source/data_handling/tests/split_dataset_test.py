@@ -1,29 +1,17 @@
-import os
 import unittest
 
 import tensorflow as tf
 
 from source.data_handling.manipulation.split_dataset import split_dataset
-from source.utils import TestResultLogger
-
-ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
-OUTPUT_DIR = os.path.join(ROOT_DIR, "source", "data_handling", "tests", "outputs")
-DATA_DIR = os.path.join(ROOT_DIR, "source", "data_handling", "tests", "data")
-LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
+from source.testing.base_test_case import BaseTestCase
 
 
-class TestDatasetFunctions(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        os.makedirs(OUTPUT_DIR, exist_ok=True)
-        cls.logger = TestResultLogger(LOG_FILE)
-        cls.logger.log_title("Dataset Splitting Test")
+class TestDatasetFunctions(BaseTestCase):
+    """ Test suite for the split_dataset function. """
 
     def setUp(self):
+        super().setUp()
         self.dataset = tf.data.Dataset.range(100)
-
-    def tearDown(self):
-        self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
 
     def test_split_proportions(self):
         train, val, test = split_dataset(self.dataset)
