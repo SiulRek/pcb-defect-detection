@@ -1,6 +1,5 @@
-from source.utils.general.pcb_visualization import (
-    PCBVisualizerforCV2,
-    PCBVisualizerforTF,
+from source.utils.general.image_plotter import (
+    ImagePlotter,
 )
 from source.utils.general.get_sample_from_distribution import (
     get_sample_from_distribution,

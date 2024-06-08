@@ -6,17 +6,11 @@ from unittest.mock import patch
 import cv2
 import tensorflow as tf
 
-from source.preprocessing.helpers.for_preprocessor.recursive_type_conversion import (
-    recursive_type_conversion,
-)
-from source.preprocessing.helpers.for_preprocessor.step_class_mapping import (
-    STEP_CLASS_MAPPING,
-)
 from source.preprocessing.helpers.for_steps.step_base import StepBase
 from source.preprocessing.helpers.for_steps.step_utils import correct_image_tensor_shape
 from source.preprocessing.image_preprocessor import ImagePreprocessor
 from source.testing.base_test_case import BaseTestCase
-from source.utils import PCBVisualizerforTF, SimplePopupHandler
+from source.utils import SimplePopupHandler
 
 STEP_PARAMETERS = {"angle": 180}
 
@@ -100,7 +94,9 @@ class TestImagePreprocessor(BaseTestCase):
         cls.image_dataset = cls.load_image_dataset()
         cls.popup_handler = SimplePopupHandler()
         cls.visual_inspection = True
-        cls.step_visualization_dir = os.path.join(cls.visualizations_dir, "image_preprocessor")
+        cls.step_visualization_dir = os.path.join(
+            cls.visualizations_dir, "image_preprocessor"
+        )
         if __name__ == "__main__":
             cls.visual_inspection = cls.popup_handler.ask_yes_no_question(
                 "Do you want to make a visual inspection?"
@@ -286,17 +282,21 @@ class TestImagePreprocessor(BaseTestCase):
         preprocessor = ImagePreprocessor()
         preprocessor.set_pipe(self.pipeline)
         processed_dataset = preprocessor.process(packed_dataset)
-        
+
         processed_images, processed_labels = zip(*processed_dataset)
 
         processed_images = list(processed_images)
         processed_labels = list(processed_labels)
         original_images = list(unpacked_dataset)
 
-        self._verify_image_shapes(processed_images, original_images, color_channel_expected=1)
+        self._verify_image_shapes(
+            processed_images, original_images, color_channel_expected=1
+        )
 
         # Check if the labels are not modified.
-        self._verify_image_shapes(processed_labels, original_images, color_channel_expected=3)
+        self._verify_image_shapes(
+            processed_labels, original_images, color_channel_expected=3
+        )
 
     def test_set_default_datatype(self):
         """

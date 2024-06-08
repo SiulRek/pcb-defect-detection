@@ -30,7 +30,7 @@ from source.preprocessing.helpers.for_steps.step_utils import correct_image_tens
 from source.preprocessing.image_preprocessor import ImagePreprocessor
 from source.preprocessing.steps import Rotator as StepToTest
 from source.testing.base_test_case import BaseTestCase
-from source.utils import PCBVisualizerforTF, SimplePopupHandler
+from source.utils import ImagePlotter, SimplePopupHandler
 
 # TODO Select Step to test here!
 STEP_PARAMETERS = {"angle": 180}
@@ -346,34 +346,34 @@ class TestSingleStep(BaseTestCase):
         """
         if self.visual_inspection:
             directory = self.step_visualization_dir
-            pcb_visualizer = PCBVisualizerforTF(show_plot=False)
+            plotter = ImagePlotter(show_plot=False)
             processed_rgb_dataset = self.test_step.process_step(self.image_dataset)
-            pcb_visualizer.plot_images(processed_rgb_dataset, "Processed RGB Images")
+            plotter.plot_images(processed_rgb_dataset, "Processed RGB Images")
             figure_name = "processed_rgb_images"
-            pcb_visualizer.save_plot_to_file(os.path.join(directory, figure_name))
-            pcb_visualizer.plot_image_comparison(
+            plotter.save_plot_to_file(os.path.join(directory, figure_name))
+            plotter.plot_image_comparison(
                 self.image_dataset, processed_rgb_dataset, 1, "RGB Images comparison"
             )
             figure_name = "rgb_images_comparison"
-            pcb_visualizer.save_plot_to_file(os.path.join(directory, figure_name))
+            plotter.save_plot_to_file(os.path.join(directory, figure_name))
 
             grayscaled_dataset = RGBToGrayscale().process_step(self.image_dataset)
             processed_grayscaled_dataset = self.test_step.process_step(
                 grayscaled_dataset
             )
-            pcb_visualizer.plot_images(
+            plotter.plot_images(
                 processed_grayscaled_dataset, "Processed Grayscale Images"
             )
             figure_name = "processed_grayscaled_images"
-            pcb_visualizer.save_plot_to_file(os.path.join(directory, figure_name))
-            pcb_visualizer.plot_image_comparison(
+            plotter.save_plot_to_file(os.path.join(directory, figure_name))
+            plotter.plot_image_comparison(
                 grayscaled_dataset,
                 processed_grayscaled_dataset,
                 1,
                 "Grayscale Images comparison",
             )
             figure_name = "grayscaled_images_comparison"
-            pcb_visualizer.save_plot_to_file(os.path.join(directory, figure_name))
+            plotter.save_plot_to_file(os.path.join(directory, figure_name))
 
 
 if __name__ == "__main__":
