@@ -24,10 +24,10 @@ from source.preprocessing.tests.for_steps.multiple_steps_test import (
 from source.preprocessing.tests.for_steps.resize_operations_steps_test import (
     load_resize_operations_steps_tests,
 )
-from source.utils import TestResultLogger
+from source.testing.helpers.test_result_logger import TestResultLogger
 
 ROOT_DIR = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", ".."
+    os.path.dirname(os.path.abspath(__file__)), "..", "..", ".."
 )
 OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/preprocessing/tests/outputs")
 LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
@@ -69,6 +69,6 @@ if __name__ == "__main__":
     """ Main execution block for running the aggregated test suite. """
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    test_result_logger = TestResultLogger(LOG_FILE)  # Initialize Test Result Logger.
+    TestResultLogger(LOG_FILE)  # Initialize Test Result Logger.
     test_suite = unittest.TestSuite()
     unittest.TextTestRunner().run(load_tests(test_suite))
