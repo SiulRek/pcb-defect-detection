@@ -10,8 +10,8 @@ import unittest
 
 import source.data_handling.tests.test_runner as data_handling_tests
 import source.preprocessing.tests.test_runner as image_preprocessing_tests
+from source.testing.helpers.test_result_logger import TestResultLogger
 from source.utils import SimplePopupHandler
-from source.utils import TestResultLogger
 import source.utils.tests.test_runner as utils_tests
 
 FILE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)))
