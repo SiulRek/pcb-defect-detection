@@ -2,8 +2,8 @@ import json
 import os
 import unittest
 
-from source.preprocessing.helpers.for_preprocessor.class_instances_serializer import (
-    ClassInstancesSerializer,
+from source.preprocessing.helpers.for_preprocessor.json_instances_serializer import (
+    JSONInstancesSerializer,
 )
 from source.testing.base_test_case import BaseTestCase
 
@@ -71,7 +71,7 @@ class TestClassInstancesSerializer(BaseTestCase):
         with open(self.json_path, "w"):
             pass
         self.instance_mapping = {"MockClass1": MockClass1, "MockClass2": MockClass2}
-        self.serializer = ClassInstancesSerializer(self.instance_mapping)
+        self.serializer = JSONInstancesSerializer(self.instance_mapping)
         self.instance_list = [
             MockClass1(
                 param1="hallo", param2=20, param3={"key1": 30, "key2": (3.2, True)}
@@ -211,7 +211,7 @@ class TestClassInstancesSerializer(BaseTestCase):
         mock_class_parameters_1 = {"param1": "hallo", "param2": 20}
         mock_class_parameters_2 = {"param1": "servus", "param2": 3}
         temp_key = (
-            "MockClass2" + ClassInstancesSerializer.KEY_SEPARATOR + "2"
+            "MockClass2" + JSONInstancesSerializer.KEY_SEPARATOR + "2"
         )  # As two keys of the same name are not allowed.
         json_data = {
             "MockClass2": mock_class_parameters_1,
@@ -248,7 +248,7 @@ class TestClassInstancesSerializer(BaseTestCase):
             "param2": {"distribution": "uniform", "low": 1, "high": 10},
         }
         temp_key = (
-            "MockClass2" + ClassInstancesSerializer.KEY_SEPARATOR + "2"
+            "MockClass2" + JSONInstancesSerializer.KEY_SEPARATOR + "2"
         )  # As two keys of the same name are not allowed.
         json_data = {
             "MockClass2": mock_class_parameters_1,
@@ -284,7 +284,7 @@ class TestClassInstancesSerializer(BaseTestCase):
             "param3": {"key1": 30, "key2": (3.2, True)},
         }
         mock_class_parameters_2 = {"param1": "servus", "param2": 3}
-        sep = ClassInstancesSerializer.KEY_SEPARATOR
+        sep = JSONInstancesSerializer.KEY_SEPARATOR
         key_1 = "MockClass1" + sep + "i0" + sep + "I0"
         key_2 = "MockClass2" + sep + "i0" + sep + "I0F9"
         key_3 = "MockClass1" + sep + "i1" + sep + "I1"
@@ -355,7 +355,7 @@ class TestClassInstancesSerializer(BaseTestCase):
         }  # 'param2' is not specified in JSON, initialization to default is expected.
         mock_class_parameters_2 = {"param1": "servus"}
         temp_key = (
-            "MockClass2" + ClassInstancesSerializer.KEY_SEPARATOR + "2"
+            "MockClass2" + JSONInstancesSerializer.KEY_SEPARATOR + "2"
         )  # As two keys of the same name are not allowed.
         json_data = {
             "MockClass2": mock_class_parameters_1,
@@ -417,7 +417,7 @@ class TestClassInstancesSerializer(BaseTestCase):
         }
         mock_class_parameters_2 = {"param1": ["servus"], "param2": [30]}
         temp_key = (
-            "MockClass2" + ClassInstancesSerializer.KEY_SEPARATOR + "2"
+            "MockClass2" + JSONInstancesSerializer.KEY_SEPARATOR + "2"
         )  # As two keys of the same name are not allowed.
         json_data = {
             "MockClass2": mock_class_parameters_1,

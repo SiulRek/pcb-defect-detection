@@ -14,8 +14,8 @@ import unittest
 
 import tensorflow as tf
 
-from source.preprocessing.helpers.for_preprocessor.class_instances_serializer import (
-    ClassInstancesSerializer,
+from source.preprocessing.helpers.for_preprocessor.json_instances_serializer import (
+    JSONInstancesSerializer,
 )
 from source.preprocessing.helpers.for_preprocessor.step_class_mapping import (
     STEP_CLASS_MAPPING,
@@ -100,7 +100,7 @@ class TestLongPipeline(BaseTestCase):
             self.json_template_file, self.json_test_file, excluded_keys
         )
 
-        serializer = ClassInstancesSerializer(STEP_CLASS_MAPPING)
+        serializer = JSONInstancesSerializer(STEP_CLASS_MAPPING)
         pipeline = serializer.get_instances_from_json(self.json_test_file)
         random.shuffle(pipeline)
 

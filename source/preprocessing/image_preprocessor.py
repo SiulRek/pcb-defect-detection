@@ -4,8 +4,8 @@ import tensorflow as tf
 
 from source.data_handling.manipulation.pack_images_and_labels import pack_images_and_labels
 from source.data_handling.manipulation.unpack_dataset import unpack_dataset
-from source.preprocessing.helpers.for_preprocessor.class_instances_serializer import (
-    ClassInstancesSerializer,
+from source.preprocessing.helpers.for_preprocessor.json_instances_serializer import (
+    JSONInstancesSerializer,
 )
 from source.preprocessing.helpers.for_preprocessor.get_pipeline_code_representation import (
     get_pipeline_code_representation,
@@ -106,7 +106,7 @@ class ImagePreprocessor:
                     f"At least one mapped class is not a class or subclass of StepBase."
                 )
                 raise ValueError(msg)
-        self._serializer = ClassInstancesSerializer(step_class_mapping)
+        self._serializer = JSONInstancesSerializer(step_class_mapping)
 
     def set_default_datatype(self, datatype):
         """

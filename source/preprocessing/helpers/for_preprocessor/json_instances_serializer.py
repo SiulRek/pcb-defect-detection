@@ -15,7 +15,7 @@ from source.preprocessing.helpers.for_preprocessor.recursive_type_conversion imp
 from source.utils import get_sample_from_distribution
 
 
-class ClassInstancesSerializer:
+class JSONInstancesSerializer:
     """
     Manages serialization and deserialization of class instances to and from
     JSON format. Supports saving class instances with parameters to JSON and
@@ -162,7 +162,7 @@ class ClassInstancesSerializer:
         while (
             key in dictionary.keys()
         ):  # Same namining of entries are not allowed in json.
-            sep = ClassInstancesSerializer.KEY_SEPARATOR
+            sep = JSONInstancesSerializer.KEY_SEPARATOR
             key = key.split(sep)[0] + sep + str(i)
             i += 1
         return key
@@ -304,7 +304,7 @@ class ClassInstancesSerializer:
             - object: An instance of the class specified by 'class_name'.
         """
 
-        class_name_parts = class_name.split(ClassInstancesSerializer.KEY_SEPARATOR)
+        class_name_parts = class_name.split(JSONInstancesSerializer.KEY_SEPARATOR)
 
         if class_name_parts[0] not in self.instance_mapping.keys():
             raise KeyError(
@@ -344,7 +344,7 @@ class ClassInstancesSerializer:
         self._verify_json_path(json_path)
         try:
             with open(json_path, "r") as file:
-                separator = ClassInstancesSerializer.KEY_SEPARATOR
+                separator = JSONInstancesSerializer.KEY_SEPARATOR
                 json_data = json.load(file)
                 json_data = randomly_select_sequential_keys(
                     json_data, separator=separator
