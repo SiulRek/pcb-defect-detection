@@ -2,7 +2,7 @@ import os
 import unittest
 from unittest import defaultTestLoader as Loader
 
-from source.utils import TestResultLogger
+from source.testing.helpers.test_result_logger import TestResultLogger
 from source.utils.tests import get_sample_from_distribution_test
 
 ROOT_DIR = os.path.join(
