@@ -59,10 +59,9 @@ class BaseTestCase(unittest.TestCase):
         return os.path.join(current_dir, parent_folder, "outputs")
 
     @classmethod
-    def _get_test_case_name(cls):
+    def _get_test_case_title(cls):
         """
-        Generates a more readable test case name by removing 'Test' prefix and
-        adding spaces before each capital letter in the class name.
+        Generates a formatted test case name to be used as the title in the log.
 
         Returns:
             - str: The formatted test case name.
@@ -74,7 +73,27 @@ class BaseTestCase(unittest.TestCase):
         name = "".join(name).strip()
         name = name.replace("_", " ")
         name = name.replace("  ", " ")
-        return name + " Test"
+        return name.strip() + " Test"
+
+    @classmethod
+    def _get_test_case_folder_name(cls):
+        """
+        Generates a formatted test case name to be used as the folder name.
+
+        Returns:
+            - str: The formatted test case name.
+        """
+        name = cls.__name__
+        if name.startswith("Test"):
+            name = name[4:]
+        name = [
+            letter if not letter.isupper() else f"_{letter.lower()}" for letter in name
+        ]
+        name = "".join(name).strip()
+        name = name.replace(" ", "")
+        if name.startswith("_"):
+            name = name[1:]
+        return name + "_test"
 
     @classmethod
     def setUpClass(cls):
@@ -84,14 +103,23 @@ class BaseTestCase(unittest.TestCase):
         cls.root_dir = os.path.normpath(cls.root_dir)
         cls.data_dir = DATA_DIR
         cls.output_dir = cls._compute_output_dir()
+        cls.results_dir = os.path.join(cls.output_dir, cls._get_test_case_folder_name())
         cls.visualizations_dir = os.path.join(cls.output_dir, "visualizations")
         cls.temp_dir = os.path.join(cls.output_dir, "temp")
 
         os.makedirs(cls.output_dir, exist_ok=True)
+        os.makedirs(cls.results_dir, exist_ok=True)
         os.makedirs(cls.visualizations_dir, exist_ok=True)
 
         cls.log_file = os.path.join(cls.output_dir, "test_results.log")
-        cls.logger = TestResultLogger(cls.log_file, cls._get_test_case_name())
+        cls.logger = TestResultLogger(cls.log_file, cls._get_test_case_title())
+
+    @classmethod
+    def tearDownClass(cls):
+        """ Class-level teardown method that removes the results directory if it is
+        empy. """
+        if not os.listdir(cls.results_dir):
+            os.rmdir(cls.results_dir)
 
     def setUp(self):
         """ Instance-level setup method that creates a temporary directory for use
@@ -104,6 +132,7 @@ class BaseTestCase(unittest.TestCase):
         self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
         if os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
+
     @classmethod
     def load_image_dataset(cls):
         """
