@@ -14,7 +14,6 @@ class TestSaveImages(BaseTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.logger.log_title("Save Images Test")
 
     def setUp(self):
         super().setUp()
