@@ -39,7 +39,7 @@ class BaseTestCaseDemo(BaseTestCase):
 
     def test_load_image_dataset(self):
         """ An example test that demonstrates the usage of a helper method. """
-        dataset = self.load_image_dataset()
+        dataset = self.load_geometrical_forms_dataset()
         for image in dataset.take(1):
             # plot the image to outputs directory
             self.assertIsNotNone(image)

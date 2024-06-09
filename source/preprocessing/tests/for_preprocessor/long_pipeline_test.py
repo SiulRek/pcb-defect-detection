@@ -78,7 +78,7 @@ class TestLongPipeline(BaseTestCase):
         cls.json_test_file = os.path.join(cls.temp_dir, "test_pipe.json")
         cls.log_file = os.path.join(cls.output_dir, "test_results.log")
 
-        cls.image_dataset = cls.load_image_dataset()
+        cls.image_dataset = cls.load_geometrical_forms_dataset()
 
     def setUp(self):
         super().setUp()

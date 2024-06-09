@@ -134,10 +134,9 @@ class BaseTestCase(unittest.TestCase):
             shutil.rmtree(self.temp_dir)
 
     @classmethod
-    def load_image_dataset(cls):
+    def load_geometrical_forms_dataset(cls):
         """
-        Load the image dataset used for testing. This method is intended to be
-        overridden by derived test classes to return the appropriate dataset.
+        Load the image dataset used for testing. The dataset is unlabeled!
 
         Returns:
             - tf.data.Dataset: The image dataset to be used for testing.

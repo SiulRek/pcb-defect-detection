@@ -91,7 +91,7 @@ class TestImagePreprocessor(BaseTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.json_template = os.path.join(cls.root_dir, JSON_TEMPLATE_REL)
-        cls.image_dataset = cls.load_image_dataset()
+        cls.image_dataset = cls.load_geometrical_forms_dataset()
         cls.popup_handler = SimplePopupHandler()
         cls.visual_inspection = True
         cls.step_visualization_dir = os.path.join(

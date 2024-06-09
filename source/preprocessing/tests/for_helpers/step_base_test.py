@@ -62,7 +62,7 @@ class TestStepBase(BaseTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()  # Ensures that the base class setup is executed
-        cls.image_dataset = cls.load_image_dataset()
+        cls.image_dataset = cls.load_geometrical_forms_dataset()
 
     def setUp(self):
         super().setUp()  # Ensures that the base class setup is called
