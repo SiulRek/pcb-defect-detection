@@ -31,16 +31,12 @@ class TestRandomlySelectSequentialKeys(BaseTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super().setUpClass()  
+        super().setUpClass()
 
         cls.test_data_directory = os.path.join(
             cls.output_dir, "randomly_select_sequential_keys_tests"
         )
         os.makedirs(cls.test_data_directory, exist_ok=True)
-
-    def tearDown(self):
-        super().tearDown()  
-
 
     def get_stripped_dict_keys(self, input_dict, separator="__"):
         """
@@ -56,7 +52,6 @@ class TestRandomlySelectSequentialKeys(BaseTestCase):
             - (list): A list of keys in the input dictionary.
         """
         return [key.split(separator)[0] for key in input_dict.keys()]
-
 
     def get_stripped_dict_keys(self, input_dict, separator="__"):
         """
@@ -232,9 +227,9 @@ class TestRandomlySelectSequentialKeys(BaseTestCase):
 
         expected_dict = {
             f"a_key{separator}extra": "value0",
-            f"b_key": "value1",
+            "b_key": "value1",
             f"c_key{separator}extra": "value2",
-            f"d_key": "value3",
+            "d_key": "value3",
             f"e_key{separator}extra": "value4",
         }
 

@@ -19,16 +19,12 @@ class TestRecursiveTypeConversion(BaseTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super().setUpClass()  
+        super().setUpClass()
 
         cls.test_data_directory = os.path.join(
             cls.output_dir, "recursive_type_conversion_tests"
         )
         os.makedirs(cls.test_data_directory, exist_ok=True)
-
-    def tearDown(self):
-        super().tearDown()  
-
 
     def test_primitive_conversion(self):
         self.assertEqual(recursive_type_conversion("123", int), 123)
