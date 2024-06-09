@@ -8,7 +8,7 @@ from source.preprocessing.tests.for_helpers import recursive_type_conversion_tes
 from source.preprocessing.tests.for_helpers import randomly_select_sequential_keys_test
 from source.preprocessing.tests.for_helpers import parse_and_repeat_test
 from source.preprocessing.tests.for_helpers import class_instance_serializer_test
-from source.preprocessing.tests.for_preprocessor import image_preprocessing_test
+from source.preprocessing.tests.for_preprocessor import image_preprocessor_test
 from source.preprocessing.tests.for_preprocessor.long_pipeline_test import (
     load_long_pipeline_tests,
 )
@@ -56,7 +56,7 @@ def load_tests(test_suite):
     test_suite.addTest(Loader.loadTestsFromModule(class_instance_serializer_test))
     test_suite.addTest(Loader.loadTestsFromModule(parse_and_repeat_test))
     test_suite.addTest(Loader.loadTestsFromModule(step_base_test))
-    test_suite.addTest(Loader.loadTestsFromModule(image_preprocessing_test))
+    test_suite.addTest(Loader.loadTestsFromModule(image_preprocessor_test))
     test_suite.addTest(load_multiple_steps_tests())
     test_suite.addTest(load_channel_conversion_steps_tests())
     test_suite.addTest(load_resize_operations_steps_tests())
