@@ -1,20 +1,21 @@
 import tensorflow as tf
 
 
-# TODO make label type and dtype property
 class LabelManager:
     """
     Manages different types of label encoding for machine learning models.
 
     Attributes:
-        - label_type (str): The type of labels managed, which determines the
-            encoding method used.
-        - num_categories (int, optional): The number of categories used for
+        - category_names (list): The existing category names for label
+            encoding.
+        - num_categories (int): The number of categories used for
             categorical label encoding.
 
     Methods:
         - encode_label: Depending on the `label_type`, it delegates to the
             corresponding method to encode labels.
+        - decode_label: Decodes a label from a numeric format to a string
+            format.
     """
 
     default_label_dtype = {
@@ -33,34 +34,51 @@ class LabelManager:
             - label_type (str): The type of label encoding to manage.
                 Supported types are 'binary', 'category_codes',
                 'sparse_category_codes', and 'object_detection'.
-            - category_names (list, optional): The exising category names
+            - category_names (list, optional): The existing category names
                 for label encoding.
             - dtype (tf.DType, optional): The data type of the label.
         """
-        self.label_type = label_type
+        self._label_type = label_type
         self.num_categories = None
         self.category_names = None
         self._set_category_params(category_names)
         self._encode_label_func = self._get_label_encoder(label_type)
-        self.label_dtype = dtype or self.default_label_dtype[label_type]
+        self._label_dtype = dtype or self.default_label_dtype[label_type]
+
+    @property
+    def label_type(self):
+        """
+        Returns the label type of the manager.
+
+        Returns:
+            - str: The label type of the manager.
+        """
+        return self._label_type
+
+    @property
+    def label_dtype(self):
+        """
+        Returns the data type of the label.
+
+        Returns:
+            - tf.DType: The data type of the label.
+        """
+        return self._label_dtype
 
     def _set_category_params(self, category_names):
         """
-        Returns the number of categories based on the category names provided.
+        Sets the number of categories based on the category names provided.
 
         Args:
             - category_names (list): The list of category names.
-
-        Returns:
-            - int: The number of categories based on the category names.
         """
-        if not category_names and self.label_type in [
+        if not category_names and self._label_type in [
             "category_codes",
             "sparse_category_codes",
         ]:
             msg = "The category names are required at least to derive the number of categories."
             raise ValueError(msg)
-        elif not category_names and self.label_type == "binary":
+        elif not category_names and self._label_type == "binary":
             self.num_categories = 2
             self.category_names = ["0", "1"]
         elif category_names:
@@ -142,7 +160,7 @@ class LabelManager:
             if label not in [0, 1]:
                 msg = "The label is invalid for binary classification."
                 raise ValueError(msg)
-            label = tf.constant(label, dtype=self.label_dtype)
+            label = tf.constant(label, dtype=self._label_dtype)
             return label
         except ValueError as e:
             msg = "The label should be convertible to an integer."
@@ -162,7 +180,7 @@ class LabelManager:
             label = self.convert_to_numeric(label)
             label = tf.constant(label, dtype=tf.int8)
             label = tf.one_hot(label, self.num_categories)
-            label = tf.cast(label, self.label_dtype)
+            label = tf.cast(label, self._label_dtype)
             return label
         except ValueError as e:
             msg = "The label should be convertible to an integer."
@@ -185,7 +203,7 @@ class LabelManager:
         """
         try:
             label = self.convert_to_numeric(label)
-            label = tf.constant(label, dtype=self.label_dtype)
+            label = tf.constant(label, dtype=self._label_dtype)
             return label
         except ValueError as e:
             msg = "The label should be convertible to an integer."
