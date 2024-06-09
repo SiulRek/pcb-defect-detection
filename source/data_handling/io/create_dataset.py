@@ -48,7 +48,7 @@ def create_dataset(data, category_names, label_type="category_codes"):
         paths = data["path"]
         labels = [label_manager.encode_label(label) for label in data["label"]]
     else:
-        msg = "Data must be a list of dictionaries or a pandas DataFrame."
+        msg = "Data must be a list of dictionaries, dictionary, or pandas DataFrame."
         raise ValueError(msg)
 
     dataset = tf.data.Dataset.from_tensor_slices((paths, labels))
