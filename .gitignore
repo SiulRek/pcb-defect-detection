@@ -26,6 +26,7 @@ source/utils/test_result_logger.py
 # Data Files
 **/annotation_summary.csv
 pcb_defect_detection/data/tensorflow_records
+source/testing/outputs/loaded_image.png
 
 # Specific Source Files
 source/preprocessing/tests/outputs/
