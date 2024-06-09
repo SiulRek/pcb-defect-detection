@@ -204,6 +204,39 @@ class TestImagePreprocessor(BaseTestCase):
         pipeline.append("Changing pipeline by appending invalid element to it.")
         self.assertEqual(preprocessor.pipeline, pipeline_expected)
 
+    def test_image_preprocessor_equality(self):
+        """ Test the equality operator for the ImagePreprocessor class. """
+        preprocessor1 = ImagePreprocessor()
+        preprocessor2 = ImagePreprocessor()
+
+        pipeline = [
+            RGBToGrayscale(param1=20, param2=(20, 20), param3=False),
+            GrayscaleToRGB(param1=40, param2=(30, 30), param3=False),
+        ]
+
+        preprocessor1.set_pipe(pipeline)
+        preprocessor2.set_pipe(pipeline)
+
+        self.assertEqual(
+            preprocessor1, preprocessor2, "The preprocessors should be equal."
+        )
+
+        preprocessor2.pipe_append(
+            RGBToGrayscale(param1=50, param2=(50, 50), param3=True)
+        )
+
+        self.assertNotEqual(
+            preprocessor1,
+            preprocessor2,
+            "The preprocessors should not be equal after modifying one of them.",
+        )
+
+        self.assertNotEqual(
+            preprocessor1,
+            "Not an ImagePreprocessor",
+            "The preprocessor should not be equal to an unrelated type.",
+        )
+
     def test_invalid_step_in_pipeline(self):
         """
         Tests the ImagePreprocessor's ability to validate the types of steps
@@ -376,7 +409,7 @@ class TestImagePreprocessor(BaseTestCase):
             "Grayscale_to_RGB": mock_class_parameters,
         }
 
-        with open(self.json_test_file, "w") as file:
+        with open(self.json_test_file, "w", encoding="utf-8") as file:
             json.dump(json_data, file)
 
         mock_mapping = {

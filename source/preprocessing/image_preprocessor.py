@@ -2,13 +2,15 @@ from copy import deepcopy
 
 import tensorflow as tf
 
-from source.data_handling.manipulation.pack_images_and_labels import pack_images_and_labels
-from source.data_handling.manipulation.unpack_dataset import unpack_dataset
-from source.preprocessing.helpers.for_preprocessor.json_instances_serializer import (
-    JSONInstancesSerializer,
+from source.data_handling.manipulation.pack_images_and_labels import (
+    pack_images_and_labels,
 )
+from source.data_handling.manipulation.unpack_dataset import unpack_dataset
 from source.preprocessing.helpers.for_preprocessor.get_pipeline_code_representation import (
     get_pipeline_code_representation,
+)
+from source.preprocessing.helpers.for_preprocessor.json_instances_serializer import (
+    JSONInstancesSerializer,
 )
 from source.preprocessing.helpers.for_preprocessor.step_class_mapping import (
     STEP_CLASS_MAPPING,
@@ -48,7 +50,7 @@ class ImagePreprocessor:
             pipeline from a JSON file.
         - load_randomized_pipe_from_json: Loads a pipeline from JSON with
             randomized parameters.
-    
+
     Notes:
         - The pipeline should only contain instances of classes that inherit
             from StepBase.
@@ -77,6 +79,11 @@ class ImagePreprocessor:
         self._occurred_exception_message = ""
         self.set_default_datatype(tf.uint8)
 
+    def __eq__(self, other):
+        if not isinstance(other, ImagePreprocessor):
+            return False
+        return self.pipeline == other.pipeline
+
     @property
     def pipeline(self):
         return self._pipeline
@@ -103,7 +110,7 @@ class ImagePreprocessor:
         for mapped_class in step_class_mapping.values():
             if not issubclass(mapped_class, StepBase):
                 msg = (
-                    f"At least one mapped class is not a class or subclass of StepBase."
+                    "At least one mapped class is not a class or subclass of StepBase."
                 )
                 raise ValueError(msg)
         self._serializer = JSONInstancesSerializer(step_class_mapping)
