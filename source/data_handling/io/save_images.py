@@ -21,12 +21,19 @@ def save_images(
             return a string.
         - start_number (int, optional): The starting number for the
             sequential naming.
-
-    Returns:
-        - list of dict: A list of dictionaries with 'path' and 'label' keys.
     """
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
+
+    convert_to_uint8 = False
+    for image, _ in dataset.take(1):
+        if image.dtype in [tf.float32, tf.float64, tf.float16]:
+            convert_to_uint8 = True
+        elif not image.dtype == tf.uint8:
+            msg = "Image data type not supported."
+            raise ValueError(msg)
+    if convert_to_uint8:
+        dataset = dataset.map(lambda x, y: (tf.cast(x * 255, tf.uint8), y))
 
     if image_format not in ["jpg", "png"]:
         msg = "Image format not supported. Use 'jpg' or 'png'."
@@ -35,13 +42,15 @@ def save_images(
     num_samples = sum(1 for _ in dataset)
     num_digits = max(4, math.ceil(math.log10(num_samples + start_number)))
 
-    results = []
     seq_number = start_number
 
     if image_format == "jpg":
         encode_fn = tf.image.encode_jpeg
-    else:
+    elif image_format == "png":
         encode_fn = tf.image.encode_png
+    else:
+        msg = "Image format not supported."
+        raise ValueError(msg)
 
     for image, label in dataset:
         unique_id = f"{seq_number:0{num_digits}d}"
@@ -57,7 +66,3 @@ def save_images(
 
         encoded_image = encode_fn(image)
         tf.io.write_file(file_path, encoded_image)
-
-        results.append({"path": file_path, "label": label.numpy()})
-
-    return results
