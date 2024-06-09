@@ -1,24 +1,11 @@
-import os
 import unittest
 
+from source.testing.base_test_case import BaseTestCase
 from source.utils import get_sample_from_distribution
-from source.utils import TestResultLogger
-
-ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
-OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/utils/tests/outputs")
-LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
 
 
-class TestGetSampleFromDistribution(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls) -> None:
-        os.makedirs(OUTPUT_DIR, exist_ok=True)
-        cls.logger = TestResultLogger(LOG_FILE)
-        cls.logger.log_title("Get Sample From Distribution Test")
-
-    def tearDown(self):
-        self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
+class TestGetSampleFromDistribution(BaseTestCase):
+    """ Test suite for the get_sample_from_distribution function. """
 
     def test_gaussian_distribution(self):
         data = {"distribution": "gaussian", "loc": 0, "scale": 1}
