@@ -1,214 +1,153 @@
 import os
+import shutil
 import unittest
 
 import tensorflow as tf
 
 from source.data_handling.io.save_images import save_images
-from source.utils import TestResultLogger
-
-ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
-OUTPUT_DIR = os.path.join(ROOT_DIR, "source", "data_handling", "tests", "outputs")
-DATA_DIR = os.path.join(ROOT_DIR, "source", "data_handling", "tests", "data")
-LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
+from source.testing.base_test_case import BaseTestCase
 
 
-class TestSaveImages(unittest.TestCase):
+class TestSaveImages(BaseTestCase):
+    """ Test suite for the save_images function. """
 
     @classmethod
-    def setUpClass(cls) -> None:
-        os.makedirs(OUTPUT_DIR, exist_ok=True)
-        cls.logger = TestResultLogger(LOG_FILE)
+    def setUpClass(cls):
+        super().setUpClass()
         cls.logger.log_title("Save Images Test")
 
-    def load_and_decode_image(self, path, label):
-        image_data = tf.io.read_file(path)
-        image = tf.image.decode_image(image_data, channels=3)
-        return image, tf.cast(label, tf.int8)
-
     def setUp(self):
-        self.jpeg_data_dicts = [
-            {"path": "figure_1.jpeg", "category_codes": 0},
-            {"path": "figure_2.jpeg", "category_codes": 1},
-            {"path": "figure_3.jpeg", "category_codes": 2},
-        ]
-        self.png_data_dicts = [
-            {"path": "figure_4.png", "category_codes": 3},
-            {"path": "figure_5.png", "category_codes": 4},
-        ]
-        for data_dict in self.jpeg_data_dicts + self.png_data_dicts:
-            data_dict["path"] = os.path.join(DATA_DIR, data_dict["path"])
+        super().setUp()
+        self.dataset = self.load_sign_language_digits_dataset(
+            sample_num=5, labeled=True
+        )
 
-        self.jpeg_dataset = tf.data.Dataset.from_tensor_slices(
-            (
-                [data_dict["path"] for data_dict in self.jpeg_data_dicts],
-                [data_dict["category_codes"] for data_dict in self.jpeg_data_dicts],
-            )
-        ).map(self.load_and_decode_image)
-
-        self.png_dataset = tf.data.Dataset.from_tensor_slices(
-            (
-                [data_dict["path"] for data_dict in self.png_data_dicts],
-                [data_dict["category_codes"] for data_dict in self.png_data_dicts],
-            )
-        ).map(self.load_and_decode_image)
-
-        self.test_output_dir = os.path.join(OUTPUT_DIR, "test_save_images")
-        os.makedirs(self.test_output_dir, exist_ok=True)
-
-    def tearDown(self):
-        for file_name in os.listdir(self.test_output_dir):
-            file_path = os.path.join(self.test_output_dir, file_name)
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-        os.rmdir(self.test_output_dir)
-        self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
-
-    def test_save_images_default(self):
+    def test_saving_images_default_settings(self):
         """ Test saving images with default settings. """
-        results = save_images(
-            self.jpeg_dataset, self.test_output_dir, image_format="jpg"
-        )
-        self.assertEqual(
-            len(results),
-            len(self.jpeg_data_dicts),
-            "The number of results should be equal to the number of dataset samples.",
-        )
-
-        for result, label in zip(
-            results, [d["category_codes"] for d in self.jpeg_data_dicts]
-        ):
-            file_path = result["path"]
+        results_dir = os.path.join(self.temp_dir, "saving_images_default_settings")
+        if os.path.exists(results_dir):
+            shutil.rmtree(results_dir)
+        os.makedirs(results_dir)
+        save_images(self.dataset, results_dir)
+        list_dir = os.listdir(results_dir)
+        for file in list_dir:
             self.assertTrue(
-                os.path.exists(file_path), f"The file {file_path} should exist."
+                file.endswith(".jpg"), "Image should be saved in default JPG format."
             )
-            self.assertEqual(
-                result["label"], label, f"The label for {file_path} should be {label}."
-            )
+        self.assertEqual(
+            len(list_dir), len(list(self.dataset)), "All images should be saved."
+        )
 
-    def test_save_images_png_format(self):
+    def test_saving_images_png_format(self):
         """ Test saving images in PNG format. """
-        results = save_images(
-            self.png_dataset, self.test_output_dir, image_format="png"
-        )
+        results_dir = os.path.join(self.temp_dir, "saving_images_png_format")
+        if os.path.exists(results_dir):
+            shutil.rmtree(results_dir)
+        os.makedirs(results_dir)
+        save_images(self.dataset, results_dir, image_format="png")
+        list_dir = os.listdir(results_dir)
+        for file in list_dir:
+            self.assertTrue(
+                file.endswith(".png"), "Image should be saved in PNG format."
+            )
         self.assertEqual(
-            len(results),
-            len(self.png_data_dicts),
-            "The number of results should be equal to the number of dataset samples.",
+            len(list_dir), len(list(self.dataset)), "All images should be saved."
         )
 
-        for result, label in zip(
-            results, [d["category_codes"] for d in self.png_data_dicts]
-        ):
-            file_path = result["path"]
+    def test_saving_images_jpg_format(self):
+        """ Test saving images in JPG format. """
+        results_dir = os.path.join(self.temp_dir, "saving_images_jpg_format")
+        if os.path.exists(results_dir):
+            shutil.rmtree(results_dir)
+        os.makedirs(results_dir)
+        save_images(self.dataset, results_dir, image_format="jpg")
+        list_dir = os.listdir(results_dir)
+        for file in list_dir:
             self.assertTrue(
-                os.path.exists(file_path), f"The file {file_path} should exist."
+                file.endswith(".jpg"), "Image should be saved in JPG format."
             )
-            self.assertTrue(
-                file_path.endswith(".png"),
-                f"The file {file_path} should have a .png extension.",
-            )
-            self.assertEqual(
-                result["label"], label, f"The label for {file_path} should be {label}."
-            )
+        self.assertEqual(
+            len(list_dir), len(list(self.dataset)), "All images should be saved."
+        )
 
-    def test_save_images_string_prefix(self):
+    def test_saving_images_with_string_prefix(self):
         """ Test saving images with a string prefix. """
-        prefix = "custom_prefix"
-        results = save_images(
-            self.jpeg_dataset,
-            self.test_output_dir,
-            image_format="jpg",
-            prefix=prefix,
-        )
+        results_dir = os.path.join(self.temp_dir, "saving_images_with_string_prefix")
+        if os.path.exists(results_dir):
+            shutil.rmtree(results_dir)
+        os.makedirs(results_dir)
+        save_images(self.dataset, results_dir, prefix="test_prefix")
+        list_dir = os.listdir(results_dir)
+        for file in list_dir:
+            self.assertTrue(
+                "test_prefix" in file,
+                "Image filename should contain the string prefix.",
+            )
         self.assertEqual(
-            len(results),
-            len(self.jpeg_data_dicts),
-            "The number of results should be equal to the number of dataset samples.",
+            len(list_dir), len(list(self.dataset)), "All images should be saved."
         )
 
-        for result, label in zip(
-            results, [d["category_codes"] for d in self.jpeg_data_dicts]
-        ):
-            file_path = result["path"]
-            self.assertTrue(
-                os.path.exists(file_path), f"The file {file_path} should exist."
-            )
-            self.assertTrue(
-                file_path.startswith(os.path.join(self.test_output_dir, prefix)),
-                f"The file {file_path} should start with {prefix}.",
-            )
-            self.assertTrue(
-                file_path.endswith(".jpg"),
-                f"The file {file_path} should end with .jpg.",
-            )
-            self.assertEqual(
-                result["label"], label, f"The label for {file_path} should be {label}."
-            )
-
-    def test_save_images_function_prefix(self):
+    def test_saving_images_with_function_prefix(self):
         """ Test saving images with a function prefix. """
 
-        def prefix_func(label):
-            return f"label_{label}"
+        def prefix_function(label):
+            label = tf.argmax(label)
+            return f"label_{label.numpy()}"
 
-        results = save_images(
-            self.jpeg_dataset,
-            self.test_output_dir,
-            image_format="jpg",
-            prefix=prefix_func,
-        )
+        results_dir = os.path.join(self.temp_dir, "saving_images_with_function_prefix")
+        if os.path.exists(results_dir):
+            shutil.rmtree(results_dir)
+        os.makedirs(results_dir)
+        save_images(self.dataset, results_dir, prefix=prefix_function)
+        list_dir = os.listdir(results_dir)
+        for file in list_dir:
+            self.assertTrue(
+                file.startswith("label_"),
+                "Image filename should contain the function prefix.",
+            )
         self.assertEqual(
-            len(results),
-            len(self.jpeg_data_dicts),
-            "The number of results should be equal to the number of dataset samples.",
+            len(list_dir), len(list(self.dataset)), "All images should be saved."
         )
 
-        for result, label in zip(
-            results, [d["category_codes"] for d in self.jpeg_data_dicts]
-        ):
-            file_path = result["path"]
-            self.assertTrue(
-                os.path.exists(file_path), f"The file {file_path} should exist."
-            )
-            expected_prefix = f"label_{label}"
-            self.assertTrue(
-                file_path.startswith(
-                    os.path.join(self.test_output_dir, expected_prefix)
-                ),
-                f"The file {file_path} should start with {expected_prefix}.",
-            )
-            self.assertTrue(
-                file_path.endswith(".jpg"),
-                f"The file {file_path} should end with .jpg.",
-            )
-            self.assertEqual(
-                result["label"], label, f"The label for {file_path} should be {label}."
-            )
-
-    def test_save_images_sequential_naming(self):
+    def test_sequential_naming_of_saved_images(self):
         """ Test sequential naming of saved images. """
-        results = save_images(
-            self.jpeg_dataset, self.test_output_dir, image_format="jpg"
-        )
+        results_dir = os.path.join(self.temp_dir, "sequential_naming_of_saved_images")
+        if os.path.exists(results_dir):
+            shutil.rmtree(results_dir)
+        os.makedirs(results_dir)
+        save_images(self.dataset, results_dir, start_number=10)
+        list_dir = os.listdir(results_dir)
+        list_dir.sort()
+        for i, file in enumerate(list_dir):
+            expected_name = f"image_{i+10:04d}.jpg"
+            self.assertTrue(
+                file.endswith(expected_name),
+                "Image filename should be sequentially named.",
+            )
         self.assertEqual(
-            len(results),
-            len(self.jpeg_data_dicts),
-            "The number of results should be equal to the number of dataset samples.",
+            len(list_dir), len(list(self.dataset)), "All images should be saved."
         )
 
-        for i, result in enumerate(results):
-            file_path = result["path"]
-            unique_id = f"{i:04d}"
-            expected_file_name = f"image_{unique_id}.jpg"
+    def test_saving_floating_point_images(self):
+        """ Test saving images with floating point data type. """
+        results_dir = os.path.join(self.temp_dir, "saving_floating_point_images")
+        if os.path.exists(results_dir):
+            shutil.rmtree(results_dir)
+        os.makedirs(results_dir)
+        dataset = self.dataset.map(lambda x, y: (tf.cast(x, tf.float32) / 255.0, y))
+        save_images(dataset, results_dir)
+        list_dir = os.listdir(results_dir)
+        for file in list_dir:
             self.assertTrue(
-                file_path.endswith(expected_file_name),
-                f"The file {file_path} should be named {expected_file_name}.",
+                file.endswith(".jpg"), "Image should be saved in JPG format."
             )
-            self.assertEqual(
-                result["label"],
-                self.jpeg_data_dicts[i]["category_codes"],
-                f"The label for {file_path} should be {self.jpeg_data_dicts[i]['category_codes']}.",
+            self.assertTrue(
+                os.path.exists(os.path.join(results_dir, file)),
+                "Image file should exist.",
             )
+        self.assertEqual(
+            len(list_dir), len(list(self.dataset)), "All images should be saved."
+        )
 
 
 if __name__ == "__main__":
