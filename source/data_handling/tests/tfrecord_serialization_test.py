@@ -14,7 +14,7 @@ from source.data_handling.tfrecord_serialization.serialize import (
 from source.testing.base_test_case import BaseTestCase
 
 
-class TestTFRecordIO(BaseTestCase):
+class TestTFRecordSerialization(BaseTestCase):
     """ Test suite for TFRecord serialization and deserialization functions. """
 
     @classmethod
