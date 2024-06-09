@@ -7,7 +7,7 @@ from source.data_handling.tests import create_dataset_test
 from source.data_handling.tests import split_dataset_test
 from source.data_handling.tests import enhance_dataset_test
 from source.data_handling.tests import tfrecord_serialization_test
-from source.utils import TestResultLogger
+from source.testing.helpers.test_result_logger import TestResultLogger
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
 OUTPUT_DIR = os.path.join(ROOT_DIR, r"source/data_handling/tests/outputs")
