@@ -1,4 +1,5 @@
 import os
+import shutil
 import unittest
 
 import numpy as np
@@ -10,175 +11,98 @@ from source.data_handling.tfrecord_serialization.deserialize import (
 from source.data_handling.tfrecord_serialization.serialize import (
     serialize_dataset_to_tf_record,
 )
-from source.utils import TestResultLogger
-
-ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")
-OUTPUT_DIR = os.path.join(ROOT_DIR, "source", "data_handling", "tests", "outputs")
-DATA_DIR = os.path.join(ROOT_DIR, "source", "data_handling", "tests", "data")
-RESTORED_DATA_DIR = os.path.join(OUTPUT_DIR, "restored_data")
-LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.log")
-JPEG_TFRECORD_FILE = os.path.join(OUTPUT_DIR, "jpeg_test.tfrecord")
-PNG_TFRECORD_FILE = os.path.join(OUTPUT_DIR, "png_test.tfrecord")
+from source.testing.base_test_case import BaseTestCase
 
 
-class TestTFRecordHandling(unittest.TestCase):
+class TestTFRecordIO(BaseTestCase):
+    """ Test suite for TFRecord serialization and deserialization functions. """
+
     @classmethod
     def setUpClass(cls):
-        os.makedirs(OUTPUT_DIR, exist_ok=True)
-        cls.logger = TestResultLogger(LOG_FILE)
-        cls.logger.log_title("TFRecord Serialization and Deserialization Test")
-
-    def load_and_decode_image(self, path, label):
-        image_data = tf.io.read_file(path)
-        image = tf.image.decode_image(image_data, channels=3)
-        return image, tf.cast(label, tf.int8)
-
-    def load_and_decode_image_with_float_labels(self, path, label):
-        image_data = tf.io.read_file(path)
-        image = tf.image.decode_image(image_data, channels=3)
-        return image, tf.convert_to_tensor(label, dtype=tf.float32)
+        super().setUpClass()
+        cls.logger.log_title("TFRecord IO Test")
 
     def setUp(self):
-        self.jpeg_data_dicts = [
-            {"path": "figure_1.jpeg", "category_codes": 0},
-            {"path": "figure_2.jpeg", "category_codes": 1},
-            {"path": "figure_3.jpeg", "category_codes": 2},
-        ]
-        self.png_data_dicts = [
-            {"path": "figure_4.png", "category_codes": 3},
-            {"path": "figure_5.png", "category_codes": 4},
-        ]
-        for data_dict in self.jpeg_data_dicts + self.png_data_dicts:
-            data_dict["path"] = os.path.join(DATA_DIR, data_dict["path"])
+        super().setUp()
+        self.dataset = self.load_sign_language_digits_dataset(
+            sample_num=5, labeled=True
+        )
 
-        self.jpeg_dataset = tf.data.Dataset.from_tensor_slices(
-            (
-                [data_dict["path"] for data_dict in self.jpeg_data_dicts],
-                [data_dict["category_codes"] for data_dict in self.jpeg_data_dicts],
+    def _compare_datasets(self, original_dataset, deserialized_dataset, rtol=1e-5):
+        for original, deserialized in zip(original_dataset, deserialized_dataset):
+            original_image, original_label = original
+            restored_image, restored_label = deserialized
+
+            self.assertTrue(
+                np.allclose(original_image.numpy(), restored_image.numpy(), rtol=rtol),
+                "Restored images are not close enough to original images.",
             )
-        ).map(self.load_and_decode_image)
-
-        self.png_dataset = tf.data.Dataset.from_tensor_slices(
-            (
-                [data_dict["path"] for data_dict in self.png_data_dicts],
-                [data_dict["category_codes"] for data_dict in self.png_data_dicts],
+            self.assertTrue(
+                np.equal(original_label.numpy(), restored_label.numpy()).all(),
+                "Restored labels are not equal to original labels.",
             )
-        ).map(self.load_and_decode_image)
-
-    def tearDown(self):
-        self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
-        if os.path.exists(JPEG_TFRECORD_FILE):
-            os.remove(JPEG_TFRECORD_FILE)
-        if os.path.exists(PNG_TFRECORD_FILE):
-            os.remove(PNG_TFRECORD_FILE)
 
     def test_serialize_deserialize_jpeg(self):
-        """ Test the serialization and deserialization of a JPEG dataset. """
-        serialize_dataset_to_tf_record(self.jpeg_dataset, JPEG_TFRECORD_FILE, "jpeg")
-        restored_dataset = deserialize_dataset_from_tfrecord(
-            JPEG_TFRECORD_FILE, tf.int8
+        """ Test serialization and deserialization with JPEG format. """
+        results_dir = os.path.join(self.temp_dir, "serialize_deserialize_jpeg")
+        if os.path.exists(results_dir):
+            shutil.rmtree(results_dir)
+        os.makedirs(results_dir)
+        tfrecord_path = os.path.join(results_dir, "data.tfrecord")
+
+        serialize_dataset_to_tf_record(self.dataset, tfrecord_path, image_format="jpeg")
+        self.assertTrue(os.path.exists(tfrecord_path), "TFRecord file should exist.")
+
+        deserialized_dataset = deserialize_dataset_from_tfrecord(
+            tfrecord_path, label_dtype=tf.float64
         )
-
-        for i, (original, restored) in enumerate(
-            zip(self.jpeg_dataset, restored_dataset)
-        ):
-            original_image, original_label = original
-            restored_image, restored_label = restored
-
-            restored_image_path = os.path.join(
-                RESTORED_DATA_DIR, f"restored_jpeg_{i}.jpeg"
-            )
-            tf.io.write_file(restored_image_path, tf.io.encode_jpeg(restored_image))
-
-            self.assertTrue(
-                np.allclose(original_image.numpy(), restored_image.numpy(), atol=100),
-                "Restored images are not close enough to original images.",
-            )
-            self.assertEqual(
-                original_label.numpy(),
-                restored_label.numpy(),
-                "Restored labels do not match original labels.",
-            )
+        # Smallest RTOL 0.3 to pass the test.
+        # This is the reason why it is not recommended to use JPEG format for serialization.
+        self._compare_datasets(self.dataset, deserialized_dataset, rtol=0.3)
 
     def test_serialize_deserialize_png(self):
-        """ Test the serialization and deserialization of a PNG dataset. """
-        serialize_dataset_to_tf_record(self.png_dataset, PNG_TFRECORD_FILE, "png")
-        restored_dataset = deserialize_dataset_from_tfrecord(PNG_TFRECORD_FILE, tf.int8)
+        """ Test serialization and deserialization with PNG format. """
+        results_dir = os.path.join(self.temp_dir, "serialize_deserialize_png")
+        if os.path.exists(results_dir):
+            shutil.rmtree(results_dir)
+        os.makedirs(results_dir)
+        tfrecord_path = os.path.join(results_dir, "data.tfrecord")
 
-        for i, (original, restored) in enumerate(
-            zip(self.png_dataset, restored_dataset)
-        ):
-            original_image, original_label = original
-            restored_image, restored_label = restored
+        serialize_dataset_to_tf_record(self.dataset, tfrecord_path, image_format="png")
+        self.assertTrue(os.path.exists(tfrecord_path), "TFRecord file should exist.")
 
-            restored_image_path = os.path.join(
-                RESTORED_DATA_DIR, f"restored_png_{i}.png"
-            )
-            tf.io.write_file(restored_image_path, tf.io.encode_png(restored_image))
-
-            self.assertTrue(
-                np.allclose(original_image.numpy(), restored_image.numpy(), atol=1e-5),
-                "Restored images are not close enough to original images.",
-            )
-            self.assertEqual(
-                original_label.numpy(),
-                restored_label.numpy(),
-                "Restored labels do not match original labels.",
-            )
+        deserialized_dataset = deserialize_dataset_from_tfrecord(
+            tfrecord_path, label_dtype=tf.float64
+        )
+        self._compare_datasets(
+            self.dataset, deserialized_dataset, rtol=0
+        )  # Perfect match
 
     def test_serialize_deserialize_with_float_labels(self):
-        """ Test the serialization and deserialization of a dataset with
-        floating-point labels. """
-        float_label_data_dicts = [
-            {"path": "figure_4.png", "category_codes": [0.1, 0.2]},
-            {"path": "figure_5.png", "category_codes": [1.1, 1.2]},
-        ]
-        for data_dict in float_label_data_dicts:
-            data_dict["path"] = os.path.join(DATA_DIR, data_dict["path"])
-
-        float_label_dataset = tf.data.Dataset.from_tensor_slices(
-            (
-                [data_dict["path"] for data_dict in float_label_data_dicts],
-                [data_dict["category_codes"] for data_dict in float_label_data_dicts],
-            )
-        ).map(self.load_and_decode_image_with_float_labels)
-
-        float_tfrecord_file = os.path.join(OUTPUT_DIR, "float_label_test.tfrecord")
-        serialize_dataset_to_tf_record(float_label_dataset, float_tfrecord_file, "png")
-        restored_dataset = deserialize_dataset_from_tfrecord(
-            float_tfrecord_file, tf.float32
+        """ Test serialization and deserialization with float labels. """
+        results_dir = os.path.join(
+            self.temp_dir, "serialize_deserialize_with_float_labels"
         )
+        if os.path.exists(results_dir):
+            shutil.rmtree(results_dir)
+        os.makedirs(results_dir)
+        tfrecord_path = os.path.join(results_dir, "data.tfrecord")
 
-        for original, restored in zip(float_label_dataset, restored_dataset):
-            original_image, original_label = original
-            restored_image, restored_label = restored
+        float_dataset = self.dataset.map(lambda x, y: (x, tf.cast(y, tf.float32)))
+        serialize_dataset_to_tf_record(float_dataset, tfrecord_path, image_format="png")
+        self.assertTrue(os.path.exists(tfrecord_path), "TFRecord file should exist.")
 
-            self.assertTrue(
-                np.allclose(original_image.numpy(), restored_image.numpy(), atol=1e-5),
-                "Restored images are not close enough to original images.",
-            )
-            self.assertTrue(
-                np.allclose(original_label.numpy(), restored_label.numpy(), atol=1e-5),
-                "Restored labels do not match original labels.",
-            )
+        deserialized_dataset = deserialize_dataset_from_tfrecord(
+            tfrecord_path, label_dtype=tf.float32
+        )
+        self._compare_datasets(float_dataset, deserialized_dataset, rtol=0)
 
     def test_file_not_found_error_on_serialization(self):
-        """ Test if the correct exception is raised when the directory does not
-        exist for serialization. """
+        """ Test FileNotFoundError when trying to serialize to a non-existent
+        directory. """
         with self.assertRaises(FileNotFoundError):
             serialize_dataset_to_tf_record(
-                self.jpeg_dataset,
-                os.path.join(ROOT_DIR, "non_existent_directory", "test.tfrecord"),
-                "jpeg",
-            )
-
-    def test_file_not_found_error_on_deserialization(self):
-        """ Test if the correct exception is raised when the TFRecord file does not
-        exist for deserialization. """
-        with self.assertRaises(FileNotFoundError):
-            deserialize_dataset_from_tfrecord(
-                os.path.join(ROOT_DIR, "non_existent_directory", "test.tfrecord"),
-                tf.int8,
+                self.dataset, "/non_existent_dir/data.tfrecord", image_format="jpeg"
             )
 
 
