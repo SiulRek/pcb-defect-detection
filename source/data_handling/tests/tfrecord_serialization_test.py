@@ -97,6 +97,23 @@ class TestTFRecordSerialization(BaseTestCase):
         )
         self._compare_datasets(float_dataset, deserialized_dataset, rtol=0)
 
+    def test_serialize_deserialize_batched_dataset(self):
+        """ Test serialization and deserialization with batched dataset. """
+        results_dir = os.path.join(self.temp_dir, "serialize_deserialize_batched_dataset")
+        if os.path.exists(results_dir):
+            shutil.rmtree(results_dir)
+        os.makedirs(results_dir)
+        tfrecord_path = os.path.join(results_dir, "data.tfrecord")
+
+        batched_dataset = self.dataset.batch(2)
+        serialize_dataset_to_tf_record(batched_dataset, tfrecord_path, image_format="png")
+        self.assertTrue(os.path.exists(tfrecord_path), "TFRecord file should exist.")
+
+        deserialized_dataset = deserialize_dataset_from_tfrecord(
+            tfrecord_path, label_dtype=tf.float64
+        )
+        self._compare_datasets(self.dataset, deserialized_dataset, rtol=0)
+
     def test_file_not_found_error_on_serialization(self):
         """ Test FileNotFoundError when trying to serialize to a non-existent
         directory. """
@@ -104,7 +121,6 @@ class TestTFRecordSerialization(BaseTestCase):
             serialize_dataset_to_tf_record(
                 self.dataset, "/non_existent_dir/data.tfrecord", image_format="jpeg"
             )
-
 
 if __name__ == "__main__":
     unittest.main()

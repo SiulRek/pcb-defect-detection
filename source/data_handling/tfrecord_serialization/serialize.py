@@ -5,8 +5,10 @@ import tensorflow as tf
 
 def _bytes_feature(value):
     """ Returns a bytes_list from a string / byte. """
-    if isinstance(value, type(tf.constant(0))):  # if value is a Tensor
-        value = value.numpy()  # get its numpy value
+    if isinstance(value, type(tf.constant(0))):  
+
+        value = value.numpy()  
+
     return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
 
@@ -34,7 +36,8 @@ def serialize_sample_for_jpeg(image, label):
 
 def serialize_dataset_to_tf_record(dataset, filepath, image_format):
     """
-    Saves a dataset to a TFRecord file.
+    Saves a dataset to a TFRecord file. If the dataset is batched, it will be
+    unbatched before saving.
 
     Args:
         - dataset (tf.data.Dataset): A dataset object containing image and
@@ -55,7 +58,10 @@ def serialize_dataset_to_tf_record(dataset, filepath, image_format):
     if not os.path.exists(os.path.dirname(filepath)):
         msg = f"Directory '{os.path.dirname(filepath)}' does not exist."
         raise FileNotFoundError(msg)
-    
+
+    if dataset.element_spec[0].shape.ndims == 4:
+        dataset = dataset.unbatch()
+
     with tf.io.TFRecordWriter(filepath) as writer:
         for image, label in dataset:
             example = serialize_sample(image, label)

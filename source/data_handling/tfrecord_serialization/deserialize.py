@@ -10,7 +10,7 @@ def parse_tfrecord(sample_proto, label_dtype):
         "label": tf.io.FixedLenFeature([], tf.string),
     }
     sample = tf.io.parse_single_example(sample_proto, feature_description)
-    image = tf.io.decode_image(sample["image"], channels=3) # Detects whether the image is a JPEG or PNG image
+    image = tf.io.decode_image(sample["image"], channels=3)
     label = tf.io.parse_tensor(sample["label"], out_type=label_dtype)
     return image, label
 
