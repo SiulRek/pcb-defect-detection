@@ -27,7 +27,11 @@ class BaseTestCase(unittest.TestCase):
         - temp_dir (str): Temporary directory for use during tests.
         - log_file (str): Path to the log file used to record test results.
         - logger (TestResultLogger): Logger instance to log test outcomes.
+        - remove_temp_dir (bool): Indicates whether the temp directory
+            should be removed after tests.
     """
+
+    remove_temp_dir = True
 
     @classmethod
     def _get_class_file_path(cls):
@@ -118,8 +122,10 @@ class BaseTestCase(unittest.TestCase):
     def tearDownClass(cls):
         """ Class-level teardown method that removes the results directory if it is
         empy. """
-        if not os.listdir(cls.results_dir):
-            os.rmdir(cls.results_dir)
+        for dir_ in [cls.results_dir, cls.visualizations_dir]:
+            if os.path.exists(dir_):
+                shutil.rmtree(dir_)
+        
 
     def setUp(self):
         """ Instance-level setup method that creates a temporary directory for use
@@ -130,7 +136,7 @@ class BaseTestCase(unittest.TestCase):
         """ Instance-level teardown method that logs the outcome of each test method
         and removes the temporary directory created during the test setup. """
         self.logger.log_test_outcome(self._outcome.result, self._testMethodName)
-        if os.path.exists(self.temp_dir):
+        if os.path.exists(self.temp_dir) and self.remove_temp_dir:
             shutil.rmtree(self.temp_dir)
 
     @classmethod
