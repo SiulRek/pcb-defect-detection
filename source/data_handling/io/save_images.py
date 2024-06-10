@@ -8,7 +8,8 @@ def save_images(
     dataset, output_dir, image_format="jpg", prefix="image", start_number=0
 ):
     """
-    Saves a dataset of images and labels to file paths.
+    Saves a dataset of images and labels to file paths. If dataset is batched,
+    it will be unbatched before saving.
 
     Args:
         - dataset (tf.data.Dataset): The dataset containing images and
@@ -34,6 +35,9 @@ def save_images(
             raise ValueError(msg)
     if convert_to_uint8:
         dataset = dataset.map(lambda x, y: (tf.cast(x * 255, tf.uint8), y))
+
+    if dataset.element_spec[0].shape.ndims == 4:
+        dataset = dataset.unbatch()
 
     if image_format not in ["jpg", "png"]:
         msg = "Image format not supported. Use 'jpg' or 'png'."

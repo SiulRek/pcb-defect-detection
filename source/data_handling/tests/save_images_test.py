@@ -148,6 +148,26 @@ class TestSaveImages(BaseTestCase):
             len(list_dir), len(list(self.dataset)), "All images should be saved."
         )
 
+    def test_saving_images_with_batched_dataset(self):
+        """ Test saving images with a batched dataset. """
+        results_dir = os.path.join(self.temp_dir, "saving_images_with_batched_dataset")
+        if os.path.exists(results_dir):
+            shutil.rmtree(results_dir)
+        os.makedirs(results_dir)
+        dataset = self.dataset.batch(2)
+        save_images(dataset, results_dir)
+        list_dir = os.listdir(results_dir)
+        for file in list_dir:
+            self.assertTrue(
+                file.endswith(".jpg"), "Image should be saved in JPG format."
+            )
+            self.assertTrue(
+                os.path.exists(os.path.join(results_dir, file)),
+                "Image file should exist.",
+            )
+        self.assertEqual(
+            len(list_dir), len(list(self.dataset)), "All images should be saved."
+        )
 
 if __name__ == "__main__":
     unittest.main()
